@@ -1,6 +1,6 @@
 namespace SecretSpots.Domain;
 
-public class User
+public class User : IHasCreatedAt
 {
     public Guid Id { get; set; }
     public required string Email { get; set; }
