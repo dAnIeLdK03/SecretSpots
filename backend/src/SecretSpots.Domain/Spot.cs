@@ -2,7 +2,7 @@ using NetTopologySuite.Geometries;
 
 namespace SecretSpots.Domain;
 
-public class Spot
+public class Spot : IHasCreatedAt
 {
     public Guid Id { get; set; }
     public required string Name { get; set; }

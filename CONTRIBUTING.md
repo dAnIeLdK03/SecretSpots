@@ -25,11 +25,30 @@
 
 GitHub изисква поне 1 одобрение от **друг** акаунт, за да работи "Require approvals" — self-approval на собствен PR не се брои. Repото е соло, затова ruleset-ът изисква PR (блокира директен push), но не изисква формално approval — прегледът става от теб самия през PR diff-а, преди да натиснеш "Merge".
 
+## Локални тайни (никога не се commit-ват)
+
+`appsettings.Development.json` вече не съдържа `Jwt:Secret` и `ConnectionStrings:Postgres` — GitGuardian хвана и двете като hardcoded secrets в PR #7 (dev-only стойности, но repото е public, значи щяха да останат публично видими завинаги в git историята). Вместо това:
+
+**Backend API** — през [`dotnet user-secrets`](https://learn.microsoft.com/aspnet/core/security/app-secrets) (съхранява се извън repo-то, per-machine):
+```bash
+cd backend/src/SecretSpots.Api
+dotnet user-secrets set "Jwt:Secret" "<произволен base64 низ, поне 32 байта>"
+dotnet user-secrets set "ConnectionStrings:Postgres" "Host=localhost;Port=5432;Database=secretspots;Username=secretspots;Password=secretspots_local_dev"
+```
+
+**Тестовия проект** — през environment variable (тестовете хващат реален Postgres, не InMemory — виж `TestDbContextFactory.cs`):
+```bash
+export SECRETSPOTS_TEST_CONNECTION_STRING="Host=localhost;Port=5432;Database=secretspots_test;Username=secretspots;Password=secretspots_local_dev"
+```
+
+И двете стойности по-горе съвпадат с credentials-ите в `docker-compose.yml` — само локални, не продукционни тайни.
+
 ## Тестове преди PR
 
 ```bash
 cd backend
 dotnet build
+export SECRETSPOTS_TEST_CONNECTION_STRING="Host=localhost;Port=5432;Database=secretspots_test;Username=secretspots;Password=secretspots_local_dev"
 dotnet test
 ```
 

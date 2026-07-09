@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Auth.EmailAlreadyRegistered" xml:space="preserve">
+    <value>Вече съществува акаунт с този имейл.</value>
+  </data>
+  <data name="Auth.InvalidCredentials" xml:space="preserve">
+    <value>Грешен имейл или парола.</value>
+  </data>
+  <data name="Auth.InvalidOrExpiredRefreshToken" xml:space="preserve">
+    <value>Този refresh токен е невалиден или е изтекъл.</value>
+  </data>
+  <data name="Auth.EmailRequired" xml:space="preserve">
+    <value>Имейлът е задължителен.</value>
+  </data>
+  <data name="Auth.EmailInvalidFormat" xml:space="preserve">
+    <value>Въведете валиден имейл адрес.</value>
+  </data>
+  <data name="Auth.PasswordRequired" xml:space="preserve">
+    <value>Паролата е задължителна.</value>
+  </data>
+  <data name="Auth.PasswordTooShort" xml:space="preserve">
+    <value>Паролата трябва да е поне 8 символа.</value>
+  </data>
+  <data name="Auth.DisplayNameRequired" xml:space="preserve">
+    <value>Показваното име е задължително.</value>
+  </data>
+  <data name="Auth.DisplayNameTooLong" xml:space="preserve">
+    <value>Показваното име трябва да е най-много 50 символа.</value>
+  </data>
+  <data name="Auth.RefreshTokenRequired" xml:space="preserve">
+    <value>Refresh токенът е задължителен.</value>
+  </data>
+  <data name="Auth.PasswordRequiresUpper" xml:space="preserve">
+    <value>Паролата трябва да съдържа поне една главна буква.</value>
+  </data>
+  <data name="Auth.PasswordRequiresLower" xml:space="preserve">
+    <value>Паролата трябва да съдържа поне една малка буква.</value>
+  </data>
+  <data name="Auth.PasswordRequiresDigit" xml:space="preserve">
+    <value>Паролата трябва да съдържа поне една цифра.</value>
+  </data>
+  <data name="Auth.PasswordRequiresSpecial" xml:space="preserve">
+    <value>Паролата трябва да съдържа поне един специален символ.</value>
+  </data>
+  <data name="Auth.PasswordIsCommon" xml:space="preserve">
+    <value>Тази парола е твърде разпространена. Изберете друга.</value>
+  </data>
+  <data name="Auth.UserNotFound" xml:space="preserve">
+    <value>Потребителят не е намерен.</value>
+  </data>
+  <data name="Common.UnexpectedError" xml:space="preserve">
+    <value>Възникна грешка. Опитайте отново.</value>
+  </data>
+</root>
