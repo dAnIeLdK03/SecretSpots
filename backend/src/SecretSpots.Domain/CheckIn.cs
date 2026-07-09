@@ -1,6 +1,6 @@
 namespace SecretSpots.Domain;
 
-public class CheckIn
+public class CheckIn : IHasCreatedAt
 {
     public Guid Id { get; set; }
     public Guid SpotId { get; set; }

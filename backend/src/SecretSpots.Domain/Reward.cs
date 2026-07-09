@@ -1,6 +1,6 @@
 namespace SecretSpots.Domain;
 
-public class Reward
+public class Reward : IHasCreatedAt
 {
     public Guid Id { get; set; }
     public Guid BusinessId { get; set; }
