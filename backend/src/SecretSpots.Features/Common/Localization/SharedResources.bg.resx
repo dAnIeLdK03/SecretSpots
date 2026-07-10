@@ -102,6 +102,15 @@
   <data name="CheckIns.PhotoUrlInvalid" xml:space="preserve">
     <value>Въведете валиден адрес на снимка.</value>
   </data>
+  <data name="Photos.FileRequired" xml:space="preserve">
+    <value>Файл със снимка е задължителен.</value>
+  </data>
+  <data name="Photos.FileTooLarge" xml:space="preserve">
+    <value>Снимката е твърде голяма.</value>
+  </data>
+  <data name="Photos.InvalidImage" xml:space="preserve">
+    <value>Файлът не е валидно изображение.</value>
+  </data>
   <data name="Common.UnexpectedError" xml:space="preserve">
     <value>Възникна грешка. Опитайте отново.</value>
   </data>
