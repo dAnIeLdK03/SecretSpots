@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using SecretSpots.Features.Common.Persistence;
 namespace SecretSpots.Features.Common.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260710104307_AddSpotPhotoUrlAndGeographyLocation")]
+    partial class AddSpotPhotoUrlAndGeographyLocation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,7 +56,7 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Businesses", (string)null);
+                    b.ToTable("Businesses");
                 });
 
             modelBuilder.Entity("SecretSpots.Domain.CheckIn", b =>
@@ -80,7 +83,7 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CheckIns", (string)null);
+                    b.ToTable("CheckIns");
                 });
 
             modelBuilder.Entity("SecretSpots.Domain.RefreshToken", b =>
@@ -110,7 +113,7 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                     b.HasIndex("Token")
                         .IsUnique();
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("SecretSpots.Domain.Reward", b =>
@@ -138,7 +141,7 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Rewards", (string)null);
+                    b.ToTable("Rewards");
                 });
 
             modelBuilder.Entity("SecretSpots.Domain.Spot", b =>
@@ -178,7 +181,7 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Location"), "GIST");
 
-                    b.ToTable("Spots", (string)null);
+                    b.ToTable("Spots");
                 });
 
             modelBuilder.Entity("SecretSpots.Domain.User", b =>
@@ -210,7 +213,7 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

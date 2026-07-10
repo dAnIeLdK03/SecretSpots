@@ -41,6 +41,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasIndex(r => r.Token)
             .IsUnique();
 
+        modelBuilder.Entity<Spot>()
+            .Property(s => s.Location)
+            .HasColumnType("geography (Point, 4326)");
+
+        modelBuilder.Entity<Spot>()
+            .HasIndex(s => s.Location)
+            .HasMethod("GIST");
+
         base.OnModelCreating(modelBuilder);
     }
 }
