@@ -7,6 +7,7 @@ using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Security;
+using SecretSpots.Features.Common.Validation;
 
 namespace SecretSpots.Features.Spots;
 
@@ -34,22 +35,16 @@ public static class CreateSpot
 
             RuleFor(c => c.PhotoUrl)
                 .NotEmpty().WithMessage(localizer[SpotsMessageKeys.PhotoUrlRequired].Value)
-                .Must(BeAValidUrl).WithMessage(localizer[SpotsMessageKeys.PhotoUrlInvalid].Value);
+                .Must(UrlValidation.IsHttpUrl).WithMessage(localizer[SpotsMessageKeys.PhotoUrlInvalid].Value);
 
             RuleFor(c => c.Category)
                 .IsInEnum().WithMessage(localizer[SpotsMessageKeys.InvalidCategory].Value);
 
             RuleFor(c => c.Latitude)
-                .InclusiveBetween(-90, 90).WithMessage(localizer[SpotsMessageKeys.LatitudeOutOfRange].Value);
+                .InclusiveBetween(-90, 90).WithMessage(localizer[GeoMessageKeys.LatitudeOutOfRange].Value);
 
             RuleFor(c => c.Longitude)
-                .InclusiveBetween(-180, 180).WithMessage(localizer[SpotsMessageKeys.LongitudeOutOfRange].Value);
-        }
-
-        private static bool BeAValidUrl(string photoUrl)
-        {
-            return Uri.TryCreate(photoUrl, UriKind.Absolute, out var uri)
-                && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+                .InclusiveBetween(-180, 180).WithMessage(localizer[GeoMessageKeys.LongitudeOutOfRange].Value);
         }
     }
 

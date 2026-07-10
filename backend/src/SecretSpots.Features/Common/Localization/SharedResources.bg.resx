@@ -81,14 +81,26 @@
   <data name="Spots.InvalidCategory" xml:space="preserve">
     <value>Изберете валидна категория.</value>
   </data>
-  <data name="Spots.LatitudeOutOfRange" xml:space="preserve">
+  <data name="Geo.LatitudeOutOfRange" xml:space="preserve">
     <value>Географската ширина трябва да е между -90 и 90.</value>
   </data>
-  <data name="Spots.LongitudeOutOfRange" xml:space="preserve">
+  <data name="Geo.LongitudeOutOfRange" xml:space="preserve">
     <value>Географската дължина трябва да е между -180 и 180.</value>
   </data>
   <data name="Spots.RadiusOutOfRange" xml:space="preserve">
     <value>Радиусът трябва да е между 0 и 100 км.</value>
+  </data>
+  <data name="CheckIns.SpotNotFound" xml:space="preserve">
+    <value>Това място вече не съществува.</value>
+  </data>
+  <data name="CheckIns.TooFarFromSpot" xml:space="preserve">
+    <value>Твърде далеч си от това място, за да направиш check-in.</value>
+  </data>
+  <data name="CheckIns.PhotoUrlRequired" xml:space="preserve">
+    <value>Снимка като доказателство е задължителна.</value>
+  </data>
+  <data name="CheckIns.PhotoUrlInvalid" xml:space="preserve">
+    <value>Въведете валиден адрес на снимка.</value>
   </data>
   <data name="Common.UnexpectedError" xml:space="preserve">
     <value>Възникна грешка. Опитайте отново.</value>
