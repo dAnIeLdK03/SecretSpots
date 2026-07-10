@@ -15,6 +15,9 @@ internal static class TestOptionsFactory
         RefreshTokenDays = 30,
     });
 
-    public static IOptions<CrystalsOptions> Crystals(int startingBalance = 0) =>
-        Options.Create(new CrystalsOptions { StartingBalance = startingBalance });
+    public static IOptions<CrystalsOptions> Crystals(int startingBalance = 0, int checkInReward = 10) =>
+        Options.Create(new CrystalsOptions { StartingBalance = startingBalance, CheckInReward = checkInReward });
+
+    public static IOptions<CheckInOptions> CheckIn(double maxDistanceMeters = 75) =>
+        Options.Create(new CheckInOptions { MaxDistanceMeters = maxDistanceMeters });
 }

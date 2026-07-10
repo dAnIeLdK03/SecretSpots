@@ -81,14 +81,26 @@
   <data name="Spots.InvalidCategory" xml:space="preserve">
     <value>Choose a valid category.</value>
   </data>
-  <data name="Spots.LatitudeOutOfRange" xml:space="preserve">
+  <data name="Geo.LatitudeOutOfRange" xml:space="preserve">
     <value>Latitude must be between -90 and 90.</value>
   </data>
-  <data name="Spots.LongitudeOutOfRange" xml:space="preserve">
+  <data name="Geo.LongitudeOutOfRange" xml:space="preserve">
     <value>Longitude must be between -180 and 180.</value>
   </data>
   <data name="Spots.RadiusOutOfRange" xml:space="preserve">
     <value>Radius must be between 0 and 100 km.</value>
+  </data>
+  <data name="CheckIns.SpotNotFound" xml:space="preserve">
+    <value>This spot no longer exists.</value>
+  </data>
+  <data name="CheckIns.TooFarFromSpot" xml:space="preserve">
+    <value>You're too far from this spot to check in.</value>
+  </data>
+  <data name="CheckIns.PhotoUrlRequired" xml:space="preserve">
+    <value>A proof photo is required.</value>
+  </data>
+  <data name="CheckIns.PhotoUrlInvalid" xml:space="preserve">
+    <value>Enter a valid photo URL.</value>
   </data>
   <data name="Common.UnexpectedError" xml:space="preserve">
     <value>Something went wrong. Please try again.</value>
