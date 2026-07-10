@@ -102,6 +102,15 @@
   <data name="CheckIns.PhotoUrlInvalid" xml:space="preserve">
     <value>Enter a valid photo URL.</value>
   </data>
+  <data name="Photos.FileRequired" xml:space="preserve">
+    <value>A photo file is required.</value>
+  </data>
+  <data name="Photos.FileTooLarge" xml:space="preserve">
+    <value>The photo is too large.</value>
+  </data>
+  <data name="Photos.InvalidImage" xml:space="preserve">
+    <value>The file is not a valid image.</value>
+  </data>
   <data name="Common.UnexpectedError" xml:space="preserve">
     <value>Something went wrong. Please try again.</value>
   </data>

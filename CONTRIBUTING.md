@@ -34,7 +34,17 @@ GitHub изисква поне 1 одобрение от **друг** акаун
 cd backend/src/SecretSpots.Api
 dotnet user-secrets set "Jwt:Secret" "<произволен base64 низ, поне 32 байта>"
 dotnet user-secrets set "ConnectionStrings:Postgres" "Host=localhost;Port=5432;Database=secretspots;Username=secretspots;Password=secretspots_local_dev"
+dotnet user-secrets set "R2:AccessKeyId" "<от Cloudflare R2 API token>"
+dotnet user-secrets set "R2:SecretAccessKey" "<от Cloudflare R2 API token>"
 ```
+
+### Настройка на Cloudflare R2 bucket (еднократно, за Photos slice-а)
+
+1. Cloudflare акаунт → **R2** → Create bucket (произволно име, напр. `secretspots-photos`).
+2. Bucket → Settings → Public access → включва се (стига default r2.dev subdomain-а за сега) → копира се публичния base URL.
+3. R2 → Manage API tokens → create token с Object Read & Write права, ограничен до bucket-а → копират се Access Key ID + Secret Access Key (виж командите по-горе).
+4. Account ID се вижда в R2 overview страницата на dashboard-а.
+5. `AccountId`, `BucketName`, `PublicBaseUrl` (не са тайни) отиват в `appsettings.Development.json` под `"R2"` секцията.
 
 **Тестовия проект** — през environment variable (тестовете хващат реален Postgres, не InMemory — виж `TestDbContextFactory.cs`):
 ```bash
