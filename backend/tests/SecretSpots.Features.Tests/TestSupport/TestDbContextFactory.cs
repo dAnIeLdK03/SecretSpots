@@ -15,6 +15,12 @@ internal static class TestDbContextFactory
     private const string MissingConnectionStringMessage =
         "Missing '" + ConnectionStringEnvVar + "' environment variable. See CONTRIBUTING.md for local test setup.";
 
+    // xUnit runs test classes in parallel by default; without this, concurrent Create() calls
+    // race to apply the same pending migration against the shared real Postgres test database
+    // ("column already exists"). Migrate() only ever needs to run once per test process.
+    private static readonly object MigrationLock = new();
+    private static bool _migrated;
+
     public static AppDbContext Create()
     {
         var connectionString = Environment.GetEnvironmentVariable(ConnectionStringEnvVar)
@@ -25,7 +31,19 @@ internal static class TestDbContextFactory
             .Options;
 
         var context = new AppDbContext(options);
-        context.Database.Migrate();
+
+        if (!_migrated)
+        {
+            lock (MigrationLock)
+            {
+                if (!_migrated)
+                {
+                    context.Database.Migrate();
+                    _migrated = true;
+                }
+            }
+        }
+
         return context;
     }
 }

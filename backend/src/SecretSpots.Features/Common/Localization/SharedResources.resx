@@ -60,6 +60,36 @@
   <data name="Auth.UserNotFound" xml:space="preserve">
     <value>User not found.</value>
   </data>
+  <data name="Spots.NameRequired" xml:space="preserve">
+    <value>Name is required.</value>
+  </data>
+  <data name="Spots.NameTooLong" xml:space="preserve">
+    <value>Name must be at most 100 characters long.</value>
+  </data>
+  <data name="Spots.DescriptionRequired" xml:space="preserve">
+    <value>Description is required.</value>
+  </data>
+  <data name="Spots.DescriptionTooLong" xml:space="preserve">
+    <value>Description must be at most 2000 characters long.</value>
+  </data>
+  <data name="Spots.PhotoUrlRequired" xml:space="preserve">
+    <value>A photo is required.</value>
+  </data>
+  <data name="Spots.PhotoUrlInvalid" xml:space="preserve">
+    <value>Enter a valid photo URL.</value>
+  </data>
+  <data name="Spots.InvalidCategory" xml:space="preserve">
+    <value>Choose a valid category.</value>
+  </data>
+  <data name="Spots.LatitudeOutOfRange" xml:space="preserve">
+    <value>Latitude must be between -90 and 90.</value>
+  </data>
+  <data name="Spots.LongitudeOutOfRange" xml:space="preserve">
+    <value>Longitude must be between -180 and 180.</value>
+  </data>
+  <data name="Spots.RadiusOutOfRange" xml:space="preserve">
+    <value>Radius must be between 0 and 100 km.</value>
+  </data>
   <data name="Common.UnexpectedError" xml:space="preserve">
     <value>Something went wrong. Please try again.</value>
   </data>

@@ -60,6 +60,36 @@
   <data name="Auth.UserNotFound" xml:space="preserve">
     <value>Потребителят не е намерен.</value>
   </data>
+  <data name="Spots.NameRequired" xml:space="preserve">
+    <value>Името е задължително.</value>
+  </data>
+  <data name="Spots.NameTooLong" xml:space="preserve">
+    <value>Името трябва да е най-много 100 символа.</value>
+  </data>
+  <data name="Spots.DescriptionRequired" xml:space="preserve">
+    <value>Описанието е задължително.</value>
+  </data>
+  <data name="Spots.DescriptionTooLong" xml:space="preserve">
+    <value>Описанието трябва да е най-много 2000 символа.</value>
+  </data>
+  <data name="Spots.PhotoUrlRequired" xml:space="preserve">
+    <value>Снимката е задължителна.</value>
+  </data>
+  <data name="Spots.PhotoUrlInvalid" xml:space="preserve">
+    <value>Въведете валиден адрес на снимка.</value>
+  </data>
+  <data name="Spots.InvalidCategory" xml:space="preserve">
+    <value>Изберете валидна категория.</value>
+  </data>
+  <data name="Spots.LatitudeOutOfRange" xml:space="preserve">
+    <value>Географската ширина трябва да е между -90 и 90.</value>
+  </data>
+  <data name="Spots.LongitudeOutOfRange" xml:space="preserve">
+    <value>Географската дължина трябва да е между -180 и 180.</value>
+  </data>
+  <data name="Spots.RadiusOutOfRange" xml:space="preserve">
+    <value>Радиусът трябва да е между 0 и 100 км.</value>
+  </data>
   <data name="Common.UnexpectedError" xml:space="preserve">
     <value>Възникна грешка. Опитайте отново.</value>
   </data>

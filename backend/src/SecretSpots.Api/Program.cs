@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
@@ -12,10 +13,14 @@ using SecretSpots.Features.Common.ExceptionHandling;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Security;
+using SecretSpots.Features.Spots;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var featuresAssembly = Assembly.Load("SecretSpots.Features");
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -124,5 +129,6 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
     .WithName("HealthCheck");
 
 app.MapAuthEndpoints();
+app.MapSpotsEndpoints();
 
 app.Run();
