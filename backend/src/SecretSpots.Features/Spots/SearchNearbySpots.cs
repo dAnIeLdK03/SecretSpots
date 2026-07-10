@@ -5,6 +5,7 @@ using NetTopologySuite.Geometries;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
+using SecretSpots.Features.Common.Validation;
 
 namespace SecretSpots.Features.Spots;
 
@@ -20,10 +21,10 @@ public static class SearchNearbySpots
         public Validator(IStringLocalizer<SharedResources> localizer)
         {
             RuleFor(q => q.Latitude)
-                .InclusiveBetween(-90, 90).WithMessage(localizer[SpotsMessageKeys.LatitudeOutOfRange].Value);
+                .InclusiveBetween(-90, 90).WithMessage(localizer[GeoMessageKeys.LatitudeOutOfRange].Value);
 
             RuleFor(q => q.Longitude)
-                .InclusiveBetween(-180, 180).WithMessage(localizer[SpotsMessageKeys.LongitudeOutOfRange].Value);
+                .InclusiveBetween(-180, 180).WithMessage(localizer[GeoMessageKeys.LongitudeOutOfRange].Value);
 
             RuleFor(q => q.RadiusKm)
                 .ExclusiveBetween(0, 100).WithMessage(localizer[SpotsMessageKeys.RadiusOutOfRange].Value);
