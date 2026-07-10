@@ -15,25 +15,26 @@ public static class ExceptionHandlingExtensions
         return app.UseExceptionHandler(errorApp => errorApp.Run(HandleAsync));
     }
 
+    // Both branches go through the built-in Results.ValidationProblem/Results.Problem so every
+    // error response — expected validation failures, Result<T> failures (via ToProblem()), and
+    // truly unexpected exceptions — shares the same ProblemDetails shape.
     private static async Task HandleAsync(HttpContext context)
     {
         var error = context.Features.Get<IExceptionHandlerFeature>()?.Error;
 
         if (error is ValidationException validationException)
         {
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            await context.Response.WriteAsJsonAsync(new
-            {
-                errors = validationException.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }),
-            });
+            var errors = validationException.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+
+            await Microsoft.AspNetCore.Http.Results.ValidationProblem(errors).ExecuteAsync(context);
             return;
         }
 
         var localizer = context.RequestServices.GetRequiredService<IStringLocalizer<SharedResources>>();
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        await context.Response.WriteAsJsonAsync(new
-        {
-            message = localizer[CommonMessageKeys.UnexpectedError].Value,
-        });
+        await Microsoft.AspNetCore.Http.Results.Problem(
+            detail: localizer[CommonMessageKeys.UnexpectedError].Value,
+            statusCode: StatusCodes.Status500InternalServerError).ExecuteAsync(context);
     }
 }
