@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SecretSpots.Api;
 using SecretSpots.Features.Auth;
+using SecretSpots.Features.CheckIns;
 using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.ExceptionHandling;
 using SecretSpots.Features.Common.Mediator;
@@ -58,6 +59,7 @@ builder.Services.AddLocalization();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.Configure<CrystalsOptions>(builder.Configuration.GetSection("Crystals"));
+builder.Services.Configure<CheckInOptions>(builder.Configuration.GetSection("CheckIn"));
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, UserContext>();
@@ -130,5 +132,6 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
 
 app.MapAuthEndpoints();
 app.MapSpotsEndpoints();
+app.MapCheckInsEndpoints();
 
 app.Run();
