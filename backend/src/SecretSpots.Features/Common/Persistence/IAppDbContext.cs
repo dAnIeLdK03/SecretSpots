@@ -12,6 +12,7 @@ public interface IAppDbContext
     DbSet<CheckIn> CheckIns { get; }
     DbSet<Business> Businesses { get; }
     DbSet<Reward> Rewards { get; }
+    DbSet<RewardRedemption> RewardRedemptions { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

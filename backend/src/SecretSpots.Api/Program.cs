@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SecretSpots.Api;
 using SecretSpots.Features.Auth;
+using SecretSpots.Features.Businesses;
 using SecretSpots.Features.CheckIns;
 using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.ExceptionHandling;
@@ -16,6 +17,7 @@ using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Storage;
 using SecretSpots.Features.Photos;
+using SecretSpots.Features.Rewards;
 using SecretSpots.Features.Spots;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -148,5 +150,7 @@ app.MapAuthEndpoints();
 app.MapSpotsEndpoints();
 app.MapCheckInsEndpoints();
 app.MapPhotosEndpoints();
+app.MapBusinessesEndpoints();
+app.MapRewardsEndpoints();
 
 app.Run();

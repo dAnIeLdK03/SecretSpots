@@ -111,6 +111,45 @@
   <data name="Photos.InvalidImage" xml:space="preserve">
     <value>The file is not a valid image.</value>
   </data>
+  <data name="Businesses.NameRequired" xml:space="preserve">
+    <value>Name is required.</value>
+  </data>
+  <data name="Businesses.NameTooLong" xml:space="preserve">
+    <value>Name must be at most 100 characters long.</value>
+  </data>
+  <data name="Businesses.DescriptionRequired" xml:space="preserve">
+    <value>Description is required.</value>
+  </data>
+  <data name="Businesses.DescriptionTooLong" xml:space="preserve">
+    <value>Description must be at most 2000 characters long.</value>
+  </data>
+  <data name="Businesses.NotFound" xml:space="preserve">
+    <value>This business no longer exists.</value>
+  </data>
+  <data name="Rewards.TitleRequired" xml:space="preserve">
+    <value>Title is required.</value>
+  </data>
+  <data name="Rewards.TitleTooLong" xml:space="preserve">
+    <value>Title must be at most 100 characters long.</value>
+  </data>
+  <data name="Rewards.DescriptionRequired" xml:space="preserve">
+    <value>Description is required.</value>
+  </data>
+  <data name="Rewards.DescriptionTooLong" xml:space="preserve">
+    <value>Description must be at most 2000 characters long.</value>
+  </data>
+  <data name="Rewards.CrystalCostOutOfRange" xml:space="preserve">
+    <value>Crystal cost must be greater than zero.</value>
+  </data>
+  <data name="Rewards.NotFound" xml:space="preserve">
+    <value>This reward no longer exists.</value>
+  </data>
+  <data name="Rewards.NotYourBusiness" xml:space="preserve">
+    <value>You don't own the business this reward belongs to.</value>
+  </data>
+  <data name="Rewards.InsufficientBalance" xml:space="preserve">
+    <value>You don't have enough crystals for this reward.</value>
+  </data>
   <data name="Common.UnexpectedError" xml:space="preserve">
     <value>Something went wrong. Please try again.</value>
   </data>

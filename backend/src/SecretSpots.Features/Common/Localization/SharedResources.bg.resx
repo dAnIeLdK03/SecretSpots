@@ -111,6 +111,45 @@
   <data name="Photos.InvalidImage" xml:space="preserve">
     <value>Файлът не е валидно изображение.</value>
   </data>
+  <data name="Businesses.NameRequired" xml:space="preserve">
+    <value>Името е задължително.</value>
+  </data>
+  <data name="Businesses.NameTooLong" xml:space="preserve">
+    <value>Името трябва да е най-много 100 символа.</value>
+  </data>
+  <data name="Businesses.DescriptionRequired" xml:space="preserve">
+    <value>Описанието е задължително.</value>
+  </data>
+  <data name="Businesses.DescriptionTooLong" xml:space="preserve">
+    <value>Описанието трябва да е най-много 2000 символа.</value>
+  </data>
+  <data name="Businesses.NotFound" xml:space="preserve">
+    <value>Този бизнес вече не съществува.</value>
+  </data>
+  <data name="Rewards.TitleRequired" xml:space="preserve">
+    <value>Заглавието е задължително.</value>
+  </data>
+  <data name="Rewards.TitleTooLong" xml:space="preserve">
+    <value>Заглавието трябва да е най-много 100 символа.</value>
+  </data>
+  <data name="Rewards.DescriptionRequired" xml:space="preserve">
+    <value>Описанието е задължително.</value>
+  </data>
+  <data name="Rewards.DescriptionTooLong" xml:space="preserve">
+    <value>Описанието трябва да е най-много 2000 символа.</value>
+  </data>
+  <data name="Rewards.CrystalCostOutOfRange" xml:space="preserve">
+    <value>Цената в кристали трябва да е по-голяма от нула.</value>
+  </data>
+  <data name="Rewards.NotFound" xml:space="preserve">
+    <value>Тази оферта вече не съществува.</value>
+  </data>
+  <data name="Rewards.NotYourBusiness" xml:space="preserve">
+    <value>Не притежаваш бизнеса, на който принадлежи тази оферта.</value>
+  </data>
+  <data name="Rewards.InsufficientBalance" xml:space="preserve">
+    <value>Нямаш достатъчно кристали за тази оферта.</value>
+  </data>
   <data name="Common.UnexpectedError" xml:space="preserve">
     <value>Възникна грешка. Опитайте отново.</value>
   </data>
