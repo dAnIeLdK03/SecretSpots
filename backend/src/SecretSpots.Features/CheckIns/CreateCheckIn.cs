@@ -101,7 +101,17 @@ public static class CreateCheckIn
                 CrystalsAwarded = reward,
             };
 
+            var notification = new Notification
+            {
+                Id = Guid.NewGuid(),
+                UserId = userContext.UserId,
+                Type = NotificationType.CrystalsEarned,
+                RelatedSpotId = spot.Id,
+                CrystalsAwarded = reward,
+            };
+
             db.CheckIns.Add(checkIn);
+            db.Notifications.Add(notification);
             await db.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(
