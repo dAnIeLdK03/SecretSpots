@@ -13,6 +13,7 @@ public interface IAppDbContext
     DbSet<Business> Businesses { get; }
     DbSet<Reward> Rewards { get; }
     DbSet<RewardRedemption> RewardRedemptions { get; }
+    DbSet<Notification> Notifications { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

@@ -117,6 +117,11 @@ public class CreateCheckInHandlerTests
         Assert.Equal(spot.Id, savedCheckIn.SpotId);
         Assert.Equal(user.Id, savedCheckIn.UserId);
         Assert.Equal(10, savedCheckIn.CrystalsAwarded);
+
+        var notification = await db.Notifications.SingleAsync(n => n.UserId == user.Id);
+        Assert.Equal(NotificationType.CrystalsEarned, notification.Type);
+        Assert.Equal(spot.Id, notification.RelatedSpotId);
+        Assert.Equal(10, notification.CrystalsAwarded);
     }
 
     [Fact]

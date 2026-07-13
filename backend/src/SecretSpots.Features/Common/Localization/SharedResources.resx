@@ -150,6 +150,21 @@
   <data name="Rewards.InsufficientBalance" xml:space="preserve">
     <value>You don't have enough crystals for this reward.</value>
   </data>
+  <data name="Notifications.CrystalsEarnedMessage" xml:space="preserve">
+    <value>You earned {0} crystals.</value>
+  </data>
+  <data name="Notifications.NewSpotNearbyMessage" xml:space="preserve">
+    <value>A new spot was added nearby.</value>
+  </data>
+  <data name="Notifications.NotFound" xml:space="preserve">
+    <value>This notification no longer exists.</value>
+  </data>
+  <data name="Notifications.PageOutOfRange" xml:space="preserve">
+    <value>Page must be 1 or greater.</value>
+  </data>
+  <data name="Notifications.PageSizeOutOfRange" xml:space="preserve">
+    <value>Page size must be between 1 and 100.</value>
+  </data>
   <data name="Common.UnexpectedError" xml:space="preserve">
     <value>Something went wrong. Please try again.</value>
   </data>
