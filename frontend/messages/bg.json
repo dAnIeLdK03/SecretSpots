@@ -1,0 +1,10 @@
+{
+  "Layout": {
+    "appName": "SecretSpots"
+  },
+  "HomePage": {
+    "title": "SecretSpots",
+    "backendStatus": "Статус на бекенда",
+    "unknownError": "Неизвестна грешка"
+  }
+}
