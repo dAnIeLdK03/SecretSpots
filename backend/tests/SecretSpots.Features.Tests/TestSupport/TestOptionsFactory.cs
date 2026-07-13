@@ -20,4 +20,13 @@ internal static class TestOptionsFactory
 
     public static IOptions<CheckInOptions> CheckIn(double maxDistanceMeters = 75) =>
         Options.Create(new CheckInOptions { MaxDistanceMeters = maxDistanceMeters });
+
+    public static IOptions<PhotoOptions> Photo(
+        long maxFileSizeBytes = 10 * 1024 * 1024, int maxDimensionPixels = 1920, int webpQuality = 80) =>
+        Options.Create(new PhotoOptions
+        {
+            MaxFileSizeBytes = maxFileSizeBytes,
+            MaxDimensionPixels = maxDimensionPixels,
+            WebpQuality = webpQuality,
+        });
 }

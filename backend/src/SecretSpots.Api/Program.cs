@@ -14,6 +14,8 @@ using SecretSpots.Features.Common.ExceptionHandling;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Security;
+using SecretSpots.Features.Common.Storage;
+using SecretSpots.Features.Photos;
 using SecretSpots.Features.Spots;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,10 +62,22 @@ builder.Services.AddLocalization();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.Configure<CrystalsOptions>(builder.Configuration.GetSection("Crystals"));
 builder.Services.Configure<CheckInOptions>(builder.Configuration.GetSection("CheckIn"));
+builder.Services.Configure<R2Options>(builder.Configuration.GetSection("R2"));
+builder.Services.Configure<PhotoOptions>(builder.Configuration.GetSection("Photos"));
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
+builder.Services.AddSingleton<IPhotoStorage, R2PhotoStorage>();
+
+// Kestrel's own default MaxRequestBodySize (~28.6MB) is looser than our actual photo size
+// limit — without this, an oversized-but-under-Kestrel's-cap upload would be fully received
+// and buffered before UploadPhoto's FluentValidation check gets a chance to reject it.
+var maxPhotoFileSizeBytes = builder.Configuration.GetValue<long?>("Photos:MaxFileSizeBytes")
+    ?? new PhotoOptions().MaxFileSizeBytes;
+const long multipartOverheadBytes = 1024 * 1024;
+builder.WebHost.ConfigureKestrel(serverOptions =>
+    serverOptions.Limits.MaxRequestBodySize = maxPhotoFileSizeBytes + multipartOverheadBytes);
 
 var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
 if (string.IsNullOrWhiteSpace(jwtOptions?.Secret))
@@ -133,5 +147,6 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
 app.MapAuthEndpoints();
 app.MapSpotsEndpoints();
 app.MapCheckInsEndpoints();
+app.MapPhotosEndpoints();
 
 app.Run();

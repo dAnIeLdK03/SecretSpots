@@ -24,6 +24,15 @@
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.28" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
 
+    <!-- Photo upload: R2 (S3-compatible) storage + server-side image processing -->
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.100.3" />
+    <!-- Pinned below 4.x deliberately: 4.0.0 added a mandatory build-time license key even for
+         the free tier (Six Labors Split License still applies to both versions — <1M USD annual
+         revenue qualifies for the free Apache 2.0 path) but requires signing up at sixlabors.com
+         and wiring a license key/file into the build. 3.1.11 has the same free terms without that
+         extra registration step. -->
+    <PackageVersion Include="SixLabors.ImageSharp" Version="3.1.11" />
+
     <!-- Tests -->
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
