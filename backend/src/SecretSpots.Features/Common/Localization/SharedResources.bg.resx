@@ -111,6 +111,21 @@
   <data name="Photos.InvalidImage" xml:space="preserve">
     <value>Файлът не е валидно изображение.</value>
   </data>
+  <data name="Notifications.CrystalsEarnedMessage" xml:space="preserve">
+    <value>Спечели {0} кристала.</value>
+  </data>
+  <data name="Notifications.NewSpotNearbyMessage" xml:space="preserve">
+    <value>Добавено е ново място наблизо.</value>
+  </data>
+  <data name="Notifications.NotFound" xml:space="preserve">
+    <value>Това известие вече не съществува.</value>
+  </data>
+  <data name="Notifications.PageOutOfRange" xml:space="preserve">
+    <value>Страницата трябва да е 1 или по-голяма.</value>
+  </data>
+  <data name="Notifications.PageSizeOutOfRange" xml:space="preserve">
+    <value>Размерът на страницата трябва да е между 1 и 100.</value>
+  </data>
   <data name="Common.UnexpectedError" xml:space="preserve">
     <value>Възникна грешка. Опитайте отново.</value>
   </data>

@@ -29,4 +29,7 @@ internal static class TestOptionsFactory
             MaxDimensionPixels = maxDimensionPixels,
             WebpQuality = webpQuality,
         });
+
+    public static IOptions<NotificationsOptions> Notifications(int defaultPageSize = 20, int maxPageSize = 100) =>
+        Options.Create(new NotificationsOptions { DefaultPageSize = defaultPageSize, MaxPageSize = maxPageSize });
 }
