@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SecretSpots.Api;
 using SecretSpots.Features.Auth;
+using SecretSpots.Features.Businesses;
 using SecretSpots.Features.CheckIns;
 using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.ExceptionHandling;
@@ -15,7 +16,9 @@ using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Storage;
+using SecretSpots.Features.Notifications;
 using SecretSpots.Features.Photos;
+using SecretSpots.Features.Rewards;
 using SecretSpots.Features.Spots;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,6 +67,7 @@ builder.Services.Configure<CrystalsOptions>(builder.Configuration.GetSection("Cr
 builder.Services.Configure<CheckInOptions>(builder.Configuration.GetSection("CheckIn"));
 builder.Services.Configure<R2Options>(builder.Configuration.GetSection("R2"));
 builder.Services.Configure<PhotoOptions>(builder.Configuration.GetSection("Photos"));
+builder.Services.Configure<NotificationsOptions>(builder.Configuration.GetSection("Notifications"));
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, UserContext>();
@@ -148,5 +152,8 @@ app.MapAuthEndpoints();
 app.MapSpotsEndpoints();
 app.MapCheckInsEndpoints();
 app.MapPhotosEndpoints();
+app.MapBusinessesEndpoints();
+app.MapRewardsEndpoints();
+app.MapNotificationsEndpoints();
 
 app.Run();
