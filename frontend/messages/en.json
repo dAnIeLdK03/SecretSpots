@@ -1,0 +1,10 @@
+{
+  "Layout": {
+    "appName": "SecretSpots"
+  },
+  "HomePage": {
+    "title": "SecretSpots",
+    "backendStatus": "Backend status",
+    "unknownError": "Unknown error"
+  }
+}
