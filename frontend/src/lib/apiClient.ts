@@ -1,3 +1,7 @@
+import { useAuthStore } from "@/store/useAuthStore";
+import { getCurrentLocale } from "@/lib/currentLocale";
+import { getRefreshToken, setRefreshToken, clearRefreshToken } from "@/lib/refreshTokenStorage";
+
 export interface ProblemDetails {
   type?: string;
   title?: string;
@@ -17,23 +21,96 @@ export class ApiError extends Error {
   }
 }
 
+export function getErrorMessage(err: unknown, fallback: string): string {
+  if (err instanceof ApiError && (err.problem.detail || err.problem.title)) {
+    return err.message;
+  }
+  return fallback;
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
-async function doFetch(path: string, options: RequestInit = {}): Promise<Response> {
+const AUTH_ENDPOINTS_EXEMPT_FROM_REFRESH = ["/auth/login", "/auth/register", "/auth/refresh"];
+
+let refreshPromise: Promise<string> | null = null;
+
+export function refreshSession(): Promise<string> {
+  if (!refreshPromise) {
+    refreshPromise = performRefresh().finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
+}
+
+async function performRefresh(): Promise<string> {
+  const run = async (): Promise<string> => {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) {
+      throw new Error("No refresh token available");
+    }
+
+    const response = await fetch(new URL("/auth/refresh", API_BASE_URL), {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept-Language": getCurrentLocale(),
+      },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Refresh failed");
+    }
+
+    const tokens: { accessToken: string; refreshToken: string } = await response.json();
+    setRefreshToken(tokens.refreshToken);
+    useAuthStore.getState().setAccessToken(tokens.accessToken);
+    return tokens.accessToken;
+  };
+
+  if (typeof navigator !== "undefined" && "locks" in navigator) {
+    return navigator.locks.request("secretspots-refresh-token", run);
+  }
+  return run();
+}
+
+async function doFetch(path: string, options: RequestInit = {}, isRetry = false): Promise<Response> {
   if (!API_BASE_URL) {
     throw new Error("NEXT_PUBLIC_API_URL is not set");
   }
 
   const isFormData = options.body instanceof FormData;
+  const accessToken = useAuthStore.getState().accessToken;
 
   const response = await fetch(new URL(path, API_BASE_URL), {
     ...options,
     credentials: "include",
     headers: {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
+      "Accept-Language": getCurrentLocale(),
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       ...options.headers,
     },
   });
+
+  if (
+    response.status === 401 &&
+    accessToken &&
+    !isRetry &&
+    !AUTH_ENDPOINTS_EXEMPT_FROM_REFRESH.includes(path)
+  ) {
+    try {
+      await refreshSession();
+    } catch {
+      useAuthStore.getState().clearSession();
+      clearRefreshToken();
+      const problem: ProblemDetails = await response.json().catch(() => ({}));
+      throw new ApiError(response.status, problem);
+    }
+    return doFetch(path, options, true);
+  }
 
   if (!response.ok) {
     const problem: ProblemDetails = await response.json().catch(() => ({}));
@@ -43,15 +120,11 @@ async function doFetch(path: string, options: RequestInit = {}): Promise<Respons
   return response;
 }
 
-// For endpoints that always return a JSON body (200/201 with content).
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const response = await doFetch(path, options);
   return response.json() as Promise<T>;
 }
 
-// For endpoints that return no body (e.g. 204 No Content on delete) — kept
-// separate from apiFetch<T> so the return type never has to lie about a T
-// that isn't actually there.
 export async function apiFetchVoid(path: string, options: RequestInit = {}): Promise<void> {
   await doFetch(path, options);
 }
