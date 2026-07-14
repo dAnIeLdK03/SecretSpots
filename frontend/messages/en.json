@@ -6,5 +6,24 @@
     "title": "SecretSpots",
     "backendStatus": "Backend status",
     "unknownError": "Unknown error"
+  },
+  "Auth": {
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "loginTitle": "Log in",
+    "loginButton": "Log in",
+    "loginSubmitting": "Logging in...",
+    "noAccountYet": "Don't have an account?",
+    "registerLink": "Register",
+    "registerTitle": "Register",
+    "registerButton": "Register",
+    "registerSubmitting": "Registering...",
+    "displayNameLabel": "Display name",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginLink": "Log in",
+    "accountTitle": "My account",
+    "crystalBalanceLabel": "Crystals",
+    "logoutButton": "Log out",
+    "unknownError": "Something went wrong. Please try again."
   }
 }

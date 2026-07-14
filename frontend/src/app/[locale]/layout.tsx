@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { NextIntlClientProvider, useTranslations } from "next-intl";
+import { NextIntlClientProvider } from "next-intl";
 import { Geist, Geist_Mono } from "next/font/google";
 import { routing } from "@/i18n/routing";
+import { AuthProvider } from "@/components/AuthProvider";
+import { Header } from "@/components/Header";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -19,15 +21,6 @@ export const metadata: Metadata = {
   title: "SecretSpots",
   description: "Локален гид за скрити съкровища",
 };
-
-function Header() {
-  const t = useTranslations("Layout");
-  return (
-    <header className="border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
-      <span className="text-lg font-semibold">{t("appName")}</span>
-    </header>
-  );
-}
 
 export default async function LocaleLayout({
   children,
@@ -49,8 +42,10 @@ export default async function LocaleLayout({
     >
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider>
-          <Header />
-          <main className="flex flex-1 flex-col">{children}</main>
+          <AuthProvider>
+            <Header />
+            <main className="flex flex-1 flex-col">{children}</main>
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -36,6 +36,15 @@ public static class AuthEndpoints
             .ProducesProblem(StatusCodes.Status500InternalServerError)
             .Accepts<RefreshAccessToken.Command>("application/json");
 
+        group.MapPost("/logout", async (Logout.Command command, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(command, cancellationToken);
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
+            })
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .Accepts<Logout.Command>("application/json");
+
         group.MapGet("/me", async (ISender sender, CancellationToken cancellationToken) =>
                 (await sender.Send(new GetCurrentUser.Query(), cancellationToken)).ToOkOrProblem())
             .RequireAuthorization()
