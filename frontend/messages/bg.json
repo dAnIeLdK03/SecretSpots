@@ -2,11 +2,6 @@
   "Layout": {
     "appName": "SecretSpots"
   },
-  "HomePage": {
-    "title": "SecretSpots",
-    "backendStatus": "Статус на бекенда",
-    "unknownError": "Неизвестна грешка"
-  },
   "Auth": {
     "emailLabel": "Имейл",
     "passwordLabel": "Парола",
@@ -25,5 +20,31 @@
     "crystalBalanceLabel": "Кристали",
     "logoutButton": "Изход",
     "unknownError": "Възникна грешка. Опитайте отново."
+  },
+  "Spots": {
+    "category": {
+      "Nature": "Природа",
+      "Viewpoint": "Гледна точка",
+      "Cafe": "Кафене",
+      "Abandoned": "Изоставено място"
+    },
+    "createTitle": "Ново място",
+    "nameLabel": "Име",
+    "descriptionLabel": "Описание",
+    "categoryLabel": "Категория",
+    "photoUrlLabel": "URL на снимка",
+    "locationLabel": "Локация",
+    "cancelButton": "Отказ",
+    "creating": "Създаване...",
+    "createButton": "Създай",
+    "unknownError": "Възникна грешка. Опитайте отново.",
+    "radiusLabel": "Радиус",
+    "useMyLocation": "Използвай текущата ми локация",
+    "searchThisArea": "Търси в тази област",
+    "addAtMyLocation": "Добави място тук",
+    "loginRequiredToCreate": "Трябва да сте логнати, за да добавите място.",
+    "loadError": "Неуспешно зареждане на близките места.",
+    "geolocationUnavailable": "Геолокацията не се поддържа от този браузър.",
+    "geolocationDenied": "Достъпът до локацията е отказан."
   }
 }

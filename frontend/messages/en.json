@@ -2,11 +2,6 @@
   "Layout": {
     "appName": "SecretSpots"
   },
-  "HomePage": {
-    "title": "SecretSpots",
-    "backendStatus": "Backend status",
-    "unknownError": "Unknown error"
-  },
   "Auth": {
     "emailLabel": "Email",
     "passwordLabel": "Password",
@@ -25,5 +20,31 @@
     "crystalBalanceLabel": "Crystals",
     "logoutButton": "Log out",
     "unknownError": "Something went wrong. Please try again."
+  },
+  "Spots": {
+    "category": {
+      "Nature": "Nature",
+      "Viewpoint": "Viewpoint",
+      "Cafe": "Cafe",
+      "Abandoned": "Abandoned place"
+    },
+    "createTitle": "New spot",
+    "nameLabel": "Name",
+    "descriptionLabel": "Description",
+    "categoryLabel": "Category",
+    "photoUrlLabel": "Photo URL",
+    "locationLabel": "Location",
+    "cancelButton": "Cancel",
+    "creating": "Creating...",
+    "createButton": "Create",
+    "unknownError": "Something went wrong. Please try again.",
+    "radiusLabel": "Radius",
+    "useMyLocation": "Use my location",
+    "searchThisArea": "Search this area",
+    "addAtMyLocation": "Add spot here",
+    "loginRequiredToCreate": "You must be logged in to add a spot.",
+    "loadError": "Failed to load nearby spots.",
+    "geolocationUnavailable": "Geolocation is not supported by this browser.",
+    "geolocationDenied": "Location access was denied."
   }
 }
