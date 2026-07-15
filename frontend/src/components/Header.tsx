@@ -3,8 +3,10 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useNotificationsStore } from "@/store/useNotificationsStore";
 import { getRefreshToken, clearRefreshToken } from "@/lib/refreshTokenStorage";
 import { logout } from "@/lib/authApi";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export function Header() {
   const t = useTranslations("Layout");
@@ -12,11 +14,13 @@ export function Header() {
   const status = useAuthStore((state) => state.status);
   const user = useAuthStore((state) => state.user);
   const clearSession = useAuthStore((state) => state.clearSession);
+  const resetNotifications = useNotificationsStore((state) => state.reset);
 
   function handleLogout() {
     const refreshToken = getRefreshToken();
     clearRefreshToken();
     clearSession();
+    resetNotifications();
     if (refreshToken) {
       logout(refreshToken).catch(() => {});
     }
@@ -30,6 +34,7 @@ export function Header() {
       <nav className="flex items-center gap-4 text-sm">
         {status === "authenticated" && user ? (
           <>
+            <NotificationBell />
             <Link href="/account" className="text-zinc-600 dark:text-zinc-400">
               {user.displayName} ({user.crystalBalance} {tAuth("crystalBalanceLabel")})
             </Link>

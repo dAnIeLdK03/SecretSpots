@@ -46,5 +46,12 @@
     "loadError": "Failed to load nearby spots.",
     "geolocationUnavailable": "Geolocation is not supported by this browser.",
     "geolocationDenied": "Location access was denied."
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "empty": "You have no notifications.",
+    "loading": "Loading...",
+    "loadMore": "Load more",
+    "loadingMore": "Loading..."
   }
 }
