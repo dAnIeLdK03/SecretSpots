@@ -52,6 +52,10 @@
     "authorLabel": "Added by",
     "createdAtLabel": "Added"
   },
+  "PhotoUpload": {
+    "uploading": "Uploading...",
+    "uploadError": "Failed to upload photo. Please try again."
+  },
   "Notifications": {
     "title": "Notifications",
     "empty": "You have no notifications.",

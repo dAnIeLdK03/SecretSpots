@@ -52,6 +52,10 @@
     "authorLabel": "Добавено от",
     "createdAtLabel": "Добавено"
   },
+  "PhotoUpload": {
+    "uploading": "Качване...",
+    "uploadError": "Неуспешно качване на снимка. Опитайте отново."
+  },
   "Notifications": {
     "title": "Известия",
     "empty": "Нямате известия.",
