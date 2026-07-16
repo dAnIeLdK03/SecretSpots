@@ -12,4 +12,5 @@ public static class SpotsMessageKeys
     public const string PhotoUrlInvalid = "Spots.PhotoUrlInvalid";
     public const string InvalidCategory = "Spots.InvalidCategory";
     public const string RadiusOutOfRange = "Spots.RadiusOutOfRange";
+    public const string NotFound = "Spots.NotFound";
 }

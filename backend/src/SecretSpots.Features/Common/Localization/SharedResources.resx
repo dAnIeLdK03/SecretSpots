@@ -90,6 +90,9 @@
   <data name="Spots.RadiusOutOfRange" xml:space="preserve">
     <value>Radius must be between 0 and 100 km.</value>
   </data>
+  <data name="Spots.NotFound" xml:space="preserve">
+    <value>This spot no longer exists.</value>
+  </data>
   <data name="CheckIns.SpotNotFound" xml:space="preserve">
     <value>This spot no longer exists.</value>
   </data>

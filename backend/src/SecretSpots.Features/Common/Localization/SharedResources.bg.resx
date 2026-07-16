@@ -90,6 +90,9 @@
   <data name="Spots.RadiusOutOfRange" xml:space="preserve">
     <value>Радиусът трябва да е между 0 и 100 км.</value>
   </data>
+  <data name="Spots.NotFound" xml:space="preserve">
+    <value>Това място вече не съществува.</value>
+  </data>
   <data name="CheckIns.SpotNotFound" xml:space="preserve">
     <value>Това място вече не съществува.</value>
   </data>
