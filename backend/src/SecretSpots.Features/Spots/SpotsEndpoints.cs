@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using SecretSpots.Features.Common.Mediator;
+using SecretSpots.Features.Common.Results;
 
 namespace SecretSpots.Features.Spots;
 
@@ -22,6 +23,15 @@ public static class SpotsEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status500InternalServerError)
             .Accepts<CreateSpot.Command>("application/json");
+
+        group.MapGet("/{id:guid}", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new GetSpot.Query(id), cancellationToken);
+                return result.ToOkOrProblem();
+            })
+            .Produces<SpotResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
 
         group.MapGet("/nearby", async (
                 double lat, double lng, double radiusKm, ISender sender, CancellationToken cancellationToken) =>
