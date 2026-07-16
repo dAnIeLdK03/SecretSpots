@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { createSpot, SPOT_CATEGORIES } from "@/lib/spotsApi";
 import type { SpotCategory, SpotResponse } from "@/lib/spotsApi";
 import { getErrorMessage } from "@/lib/apiClient";
-import { PhotoUrlInput } from "@/components/PhotoUrlInput";
+import { PhotoUpload } from "@/components/PhotoUpload";
 
 interface CreateSpotModalProps {
   latitude: number;
@@ -78,7 +78,7 @@ export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: Cre
               ))}
             </select>
           </label>
-          <PhotoUrlInput label={t("photoUrlLabel")} value={photoUrl} onChange={setPhotoUrl} />
+          <PhotoUpload label={t("photoUrlLabel")} value={photoUrl} onChange={setPhotoUrl} />
           <p className="text-xs text-zinc-500">
             {t("locationLabel")}: {latitude.toFixed(5)}, {longitude.toFixed(5)}
           </p>
