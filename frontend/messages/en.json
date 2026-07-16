@@ -45,7 +45,12 @@
     "loginRequiredToCreate": "You must be logged in to add a spot.",
     "loadError": "Failed to load nearby spots.",
     "geolocationUnavailable": "Geolocation is not supported by this browser.",
-    "geolocationDenied": "Location access was denied."
+    "geolocationDenied": "Location access was denied.",
+    "loading": "Loading...",
+    "notFoundTitle": "Spot not found",
+    "notFoundMessage": "This spot doesn't exist or was removed.",
+    "authorLabel": "Added by",
+    "createdAtLabel": "Added"
   },
   "Notifications": {
     "title": "Notifications",

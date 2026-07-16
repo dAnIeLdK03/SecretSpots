@@ -57,3 +57,7 @@ export function createSpot(command: CreateSpotCommand): Promise<SpotResponse> {
     body: JSON.stringify(command),
   });
 }
+
+export function getSpot(id: string, signal?: AbortSignal): Promise<SpotResponse> {
+  return apiFetch<SpotResponse>(`/spots/${id}`, { signal });
+}
