@@ -45,7 +45,12 @@
     "loginRequiredToCreate": "Трябва да сте логнати, за да добавите място.",
     "loadError": "Неуспешно зареждане на близките места.",
     "geolocationUnavailable": "Геолокацията не се поддържа от този браузър.",
-    "geolocationDenied": "Достъпът до локацията е отказан."
+    "geolocationDenied": "Достъпът до локацията е отказан.",
+    "loading": "Зареждане...",
+    "notFoundTitle": "Мястото не е намерено",
+    "notFoundMessage": "Това място не съществува или е премахнато.",
+    "authorLabel": "Добавено от",
+    "createdAtLabel": "Добавено"
   },
   "Notifications": {
     "title": "Известия",
