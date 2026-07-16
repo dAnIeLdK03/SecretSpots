@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useNotificationsStore } from "@/store/useNotificationsStore";
 import { NotificationItem } from "@/components/NotificationItem";
 
-export function NotificationDropdown() {
+export function NotificationDropdown({ onNavigate }: { onNavigate: () => void }) {
   const t = useTranslations("Notifications");
   const items = useNotificationsStore((state) => state.items);
   const status = useNotificationsStore((state) => state.status);
@@ -27,7 +27,7 @@ export function NotificationDropdown() {
         <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
           {items.map((notification) => (
             <li key={notification.id}>
-              <NotificationItem notification={notification} />
+              <NotificationItem notification={notification} onNavigate={onNavigate} />
             </li>
           ))}
         </ul>
