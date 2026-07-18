@@ -17,7 +17,7 @@ public class R2PhotoStorage : IPhotoStorage, IDisposable
 
         var config = new AmazonS3Config
         {
-            ServiceURL = $"https://{_options.AccountId}.r2.cloudflarestorage.com",
+            ServiceURL = _options.ServiceUrlOverride ?? $"https://{_options.AccountId}.r2.cloudflarestorage.com",
             ForcePathStyle = true,
         };
 
