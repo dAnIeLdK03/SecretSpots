@@ -8,4 +8,6 @@ public static class CheckInsMessageKeys
     public const string TooFarFromSpot = "CheckIns.TooFarFromSpot";
     public const string PhotoUrlRequired = "CheckIns.PhotoUrlRequired";
     public const string PhotoUrlInvalid = "CheckIns.PhotoUrlInvalid";
+    public const string PageOutOfRange = "CheckIns.PageOutOfRange";
+    public const string PageSizeOutOfRange = "CheckIns.PageSizeOutOfRange";
 }

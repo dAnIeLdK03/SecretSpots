@@ -105,6 +105,12 @@
   <data name="CheckIns.PhotoUrlInvalid" xml:space="preserve">
     <value>Enter a valid photo URL.</value>
   </data>
+  <data name="CheckIns.PageOutOfRange" xml:space="preserve">
+    <value>Page must be 1 or greater.</value>
+  </data>
+  <data name="CheckIns.PageSizeOutOfRange" xml:space="preserve">
+    <value>Page size must be between 1 and 100.</value>
+  </data>
   <data name="Photos.FileRequired" xml:space="preserve">
     <value>A photo file is required.</value>
   </data>
