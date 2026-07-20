@@ -1,7 +1,6 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
 import { formatRelativeTime } from "@/lib/relativeTime";
 import { useNotificationsStore } from "@/store/useNotificationsStore";
 import type { NotificationResponse, NotificationType } from "@/lib/notificationsApi";
@@ -11,27 +10,13 @@ const TYPE_ICONS: Record<NotificationType, string> = {
   NewSpotNearby: "📍",
 };
 
-interface NotificationItemProps {
-  notification: NotificationResponse;
-  onNavigate: () => void;
-}
-
-export function NotificationItem({ notification, onNavigate }: NotificationItemProps) {
+export function NotificationItem({ notification }: { notification: NotificationResponse }) {
   const locale = useLocale();
-  const router = useRouter();
   const markAsRead = useNotificationsStore((state) => state.markAsRead);
-
-  function handleClick() {
-    markAsRead(notification.id);
-    if (notification.relatedSpotId) {
-      router.push(`/spots/${notification.relatedSpotId}`);
-      onNavigate();
-    }
-  }
 
   return (
     <button
-      onClick={handleClick}
+      onClick={() => markAsRead(notification.id)}
       className={`flex w-full items-start gap-3 px-4 py-3 text-left text-sm ${
         notification.isRead
           ? "text-zinc-600 dark:text-zinc-400"
