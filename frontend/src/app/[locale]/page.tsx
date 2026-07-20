@@ -52,6 +52,7 @@ export default function Home() {
 
   useEffect(() => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch on mount, no user event to attach to
       void search({ lat: SOFIA_CENTER.latitude, lng: SOFIA_CENTER.longitude }, radiusKm);
       return;
     }
