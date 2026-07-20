@@ -105,6 +105,12 @@
   <data name="CheckIns.PhotoUrlInvalid" xml:space="preserve">
     <value>Въведете валиден адрес на снимка.</value>
   </data>
+  <data name="CheckIns.PageOutOfRange" xml:space="preserve">
+    <value>Страницата трябва да е 1 или по-голяма.</value>
+  </data>
+  <data name="CheckIns.PageSizeOutOfRange" xml:space="preserve">
+    <value>Размерът на страницата трябва да е между 1 и 100.</value>
+  </data>
   <data name="Photos.FileRequired" xml:space="preserve">
     <value>Файл със снимка е задължителен.</value>
   </data>

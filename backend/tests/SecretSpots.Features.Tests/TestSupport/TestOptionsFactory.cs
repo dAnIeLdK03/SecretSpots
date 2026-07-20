@@ -18,8 +18,14 @@ internal static class TestOptionsFactory
     public static IOptions<CrystalsOptions> Crystals(int startingBalance = 0, int checkInReward = 10) =>
         Options.Create(new CrystalsOptions { StartingBalance = startingBalance, CheckInReward = checkInReward });
 
-    public static IOptions<CheckInOptions> CheckIn(double maxDistanceMeters = 75) =>
-        Options.Create(new CheckInOptions { MaxDistanceMeters = maxDistanceMeters });
+    public static IOptions<CheckInOptions> CheckIn(
+        double maxDistanceMeters = 75, int defaultPageSize = 20, int maxPageSize = 100) =>
+        Options.Create(new CheckInOptions
+        {
+            MaxDistanceMeters = maxDistanceMeters,
+            DefaultPageSize = defaultPageSize,
+            MaxPageSize = maxPageSize,
+        });
 
     public static IOptions<PhotoOptions> Photo(
         long maxFileSizeBytes = 10 * 1024 * 1024, int maxDimensionPixels = 1920, int webpQuality = 80) =>
