@@ -47,7 +47,7 @@ export function NotificationBell() {
           </span>
         )}
       </button>
-      {isOpen && <NotificationDropdown onNavigate={() => setIsOpen(false)} />}
+      {isOpen && <NotificationDropdown />}
     </div>
   );
 }

@@ -56,23 +56,6 @@
     "uploading": "Uploading...",
     "uploadError": "Failed to upload photo. Please try again."
   },
-  "CheckIns": {
-    "checkInButton": "Check in",
-    "loginRequiredToCheckIn": "You must be logged in to check in.",
-    "modalTitle": "Check in",
-    "photoLabel": "Proof photo",
-    "cancelButton": "Cancel",
-    "submitButton": "Check in",
-    "submitting": "Checking in...",
-    "successTitle": "Checked in!",
-    "crystalsAwardedMessage": "You earned {count} crystals.",
-    "newBalanceLabel": "Your balance",
-    "closeButton": "Close",
-    "geolocationUnavailable": "Geolocation is not supported by this browser.",
-    "geolocationDenied": "Location access was denied.",
-    "tooFarFromSpot": "You're too far from this spot to check in.",
-    "unknownError": "Something went wrong. Please try again."
-  },
   "Notifications": {
     "title": "Notifications",
     "empty": "You have no notifications.",
