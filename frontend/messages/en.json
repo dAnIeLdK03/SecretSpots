@@ -62,5 +62,13 @@
     "loading": "Loading...",
     "loadMore": "Load more",
     "loadingMore": "Loading..."
+  },
+  "CheckInsHistory": {
+    "title": "Check-in history",
+    "empty": "You have no check-ins yet.",
+    "loading": "Loading...",
+    "loadMore": "Load more",
+    "loadingMore": "Loading...",
+    "crystalsUnit": "crystals"
   }
 }
