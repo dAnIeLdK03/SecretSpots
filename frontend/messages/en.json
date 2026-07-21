@@ -1,6 +1,7 @@
 {
   "Layout": {
-    "appName": "SecretSpots"
+    "appName": "SecretSpots",
+    "menuLabel": "Menu"
   },
   "Auth": {
     "emailLabel": "Email",
