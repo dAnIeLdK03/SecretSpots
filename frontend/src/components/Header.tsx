@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNotificationsStore } from "@/store/useNotificationsStore";
+import { useCheckInsHistoryStore } from "@/store/useCheckInsHistoryStore";
 import { getRefreshToken, clearRefreshToken } from "@/lib/refreshTokenStorage";
 import { logout } from "@/lib/authApi";
 import { NotificationBell } from "@/components/NotificationBell";
@@ -15,12 +16,14 @@ export function Header() {
   const user = useAuthStore((state) => state.user);
   const clearSession = useAuthStore((state) => state.clearSession);
   const resetNotifications = useNotificationsStore((state) => state.reset);
+  const resetCheckInsHistory = useCheckInsHistoryStore((state) => state.reset);
 
   function handleLogout() {
     const refreshToken = getRefreshToken();
     clearRefreshToken();
     clearSession();
     resetNotifications();
+    resetCheckInsHistory();
     if (refreshToken) {
       logout(refreshToken).catch(() => {});
     }

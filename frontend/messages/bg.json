@@ -62,5 +62,13 @@
     "loading": "Зареждане...",
     "loadMore": "Зареди още",
     "loadingMore": "Зареждане..."
+  },
+  "CheckInsHistory": {
+    "title": "История на посещенията",
+    "empty": "Все още нямате посещения.",
+    "loading": "Зареждане...",
+    "loadMore": "Зареди още",
+    "loadingMore": "Зареждане...",
+    "crystalsUnit": "кристала"
   }
 }

@@ -21,3 +21,24 @@ export function createCheckIn(spotId: string, command: CreateCheckInCommand): Pr
     body: JSON.stringify(command),
   });
 }
+
+export interface MyCheckInResponse {
+  id: string;
+  spotId: string;
+  spotName: string;
+  photoUrl: string;
+  crystalsAwarded: number;
+  createdAt: string;
+}
+
+export interface CheckInsPageResponse {
+  items: MyCheckInResponse[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+}
+
+export function fetchMyCheckIns(page: number, pageSize: number): Promise<CheckInsPageResponse> {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  return apiFetch<CheckInsPageResponse>(`/checkins/me?${params.toString()}`);
+}
