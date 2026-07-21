@@ -43,6 +43,34 @@ public static class SpotsEndpoints
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
+        group.MapPut("/{id:guid}", async (
+                Guid id, UpdateSpot.RequestBody body, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var command = new UpdateSpot.Command(id, body.Name, body.Description, body.Category, body.PhotoUrl);
+                var result = await sender.Send(command, cancellationToken);
+                return result.ToOkOrProblem();
+            })
+            .RequireAuthorization()
+            .Produces<SpotResponse>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status500InternalServerError)
+            .Accepts<UpdateSpot.RequestBody>("application/json");
+
+        group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new DeleteSpot.Command(id), cancellationToken);
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
+            })
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+
         return app;
     }
 }
