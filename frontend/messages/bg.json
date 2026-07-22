@@ -57,6 +57,23 @@
     "uploading": "Качване...",
     "uploadError": "Неуспешно качване на снимка. Опитайте отново."
   },
+  "CheckIns": {
+    "checkInButton": "Регистрирай посещение",
+    "loginRequiredToCheckIn": "Трябва да сте логнати, за да регистрирате посещение.",
+    "modalTitle": "Регистриране на посещение",
+    "photoLabel": "Снимка-доказателство",
+    "cancelButton": "Отказ",
+    "submitButton": "Регистрирай",
+    "submitting": "Регистриране...",
+    "successTitle": "Посещението е регистрирано!",
+    "crystalsAwardedMessage": "Спечелихте {count} кристала.",
+    "newBalanceLabel": "Вашият баланс",
+    "closeButton": "Затвори",
+    "geolocationUnavailable": "Геолокацията не се поддържа от този браузър.",
+    "geolocationDenied": "Достъпът до локацията е отказан.",
+    "tooFarFromSpot": "Твърде далеч сте от това място, за да регистрирате посещение.",
+    "unknownError": "Възникна грешка. Опитайте отново."
+  },
   "Notifications": {
     "title": "Известия",
     "empty": "Нямате известия.",

@@ -7,6 +7,9 @@ import { getSpot } from "@/lib/spotsApi";
 import type { SpotResponse } from "@/lib/spotsApi";
 import { ApiError, getErrorMessage } from "@/lib/apiClient";
 import { formatRelativeTime } from "@/lib/relativeTime";
+import { useAuthStore } from "@/store/useAuthStore";
+import { CheckInModal } from "@/components/CheckInModal";
+import { Link } from "@/i18n/navigation";
 
 type LoadState =
   | { status: "loading" }
@@ -16,8 +19,13 @@ type LoadState =
 
 function SpotDetailContent({ id }: { id: string }) {
   const t = useTranslations("Spots");
+  const tCheckIns = useTranslations("CheckIns");
+  const tAuth = useTranslations("Auth");
   const locale = useLocale();
+  const authStatus = useAuthStore((state) => state.status);
   const [state, setState] = useState<LoadState>({ status: "loading" });
+  const [showCheckInModal, setShowCheckInModal] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -63,6 +71,15 @@ function SpotDetailContent({ id }: { id: string }) {
 
   const { spot } = state;
 
+  function handleCheckInClick() {
+    if (authStatus !== "authenticated") {
+      setShowLoginPrompt(true);
+      return;
+    }
+    setShowLoginPrompt(false);
+    setShowCheckInModal(true);
+  }
+
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 p-8">
       <img src={spot.photoUrl} alt={spot.name} className="h-64 w-full rounded-lg object-cover" />
@@ -76,6 +93,25 @@ function SpotDetailContent({ id }: { id: string }) {
         <dt className="text-zinc-600 dark:text-zinc-400">{t("createdAtLabel")}</dt>
         <dd>{formatRelativeTime(spot.createdAt, locale)}</dd>
       </dl>
+
+      <div>
+        <button
+          onClick={handleCheckInClick}
+          className="rounded bg-zinc-900 px-4 py-2 text-sm text-white dark:bg-zinc-100 dark:text-zinc-900"
+        >
+          {tCheckIns("checkInButton")}
+        </button>
+        {showLoginPrompt ? (
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+            {tCheckIns("loginRequiredToCheckIn")}{" "}
+            <Link href="/login" className="underline">
+              {tAuth("loginTitle")}
+            </Link>
+          </p>
+        ) : null}
+      </div>
+
+      {showCheckInModal ? <CheckInModal spotId={spot.id} onClose={() => setShowCheckInModal(false)} /> : null}
     </div>
   );
 }
