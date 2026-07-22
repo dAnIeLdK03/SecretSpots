@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { randomUUID } from "node:crypto";
 import path from "node:path";
 
 const API_BASE_URL = process.env.PLAYWRIGHT_API_URL ?? "http://localhost:5193";
@@ -12,7 +13,10 @@ test("register, log in, create a spot, check in, and see the crystals notificati
   request,
 }) => {
   const email = `e2e-${Date.now()}@example.com`;
-  const password = "E2eTest#Passw0rd";
+  // Generated per run, not a fixed literal, so nothing resembling a real
+  // credential ever lands in git history (still satisfies the backend's
+  // upper/lower/digit/length rules).
+  const password = `Aa1!${randomUUID()}`;
 
   // Register
   await page.goto("/bg/register");
