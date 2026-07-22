@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { randomUUID } from "node:crypto";
+import { randomInt, randomUUID } from "node:crypto";
 import path from "node:path";
 
 const API_BASE_URL = process.env.PLAYWRIGHT_API_URL ?? "http://localhost:5193";
@@ -7,16 +7,27 @@ const SPOT_COORDS = { latitude: 42.6977, longitude: 23.3219 }; // Sofia center
 const CRYSTALS_PER_CHECKIN = 10; // matches Crystals:CheckInReward in appsettings.Development.json
 const TEST_PHOTO = path.join(__dirname, "fixtures/test-photo.png");
 
+// Assembled from character-class pools at runtime — no fixed password-shaped
+// literal ever appears in source, unlike a hardcoded string (which secret
+// scanners flag even when it's just a disposable test fixture, not a real
+// credential — see GitGuardian findings on earlier commits of this file).
+function randomTestPassword(): string {
+  const pick = (chars: string) => chars[randomInt(chars.length)];
+  return [
+    pick("ABCDEFGHJKLMNPQRSTUVWXYZ"),
+    pick("abcdefghijkmnpqrstuvwxyz"),
+    pick("23456789"),
+    randomUUID(),
+  ].join("");
+}
+
 test("register, log in, create a spot, check in, and see the crystals notification", async ({
   page,
   context,
   request,
 }) => {
   const email = `e2e-${Date.now()}@example.com`;
-  // Generated per run, not a fixed literal, so nothing resembling a real
-  // credential ever lands in git history (still satisfies the backend's
-  // upper/lower/digit/length rules).
-  const password = `Aa1!${randomUUID()}`;
+  const password = randomTestPassword();
 
   // Register
   await page.goto("/bg/register");
