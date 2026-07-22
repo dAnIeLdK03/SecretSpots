@@ -133,7 +133,14 @@ jobs:
           dotnet tool restore
           dotnet ef database update --project src/SecretSpots.Features --startup-project src/SecretSpots.Api
         env:
+          # dotnet-ef builds the Api project's full DI container to discover the DbContext at
+          # design time, so Program.cs's startup checks (Jwt secret, R2 credentials) run here too
+          # — same values as the "Start backend" step below, not just the connection string.
+          ASPNETCORE_ENVIRONMENT: Development
           ConnectionStrings__Postgres: "Host=localhost;Port=5432;Database=secretspots_e2e;Username=${{ secrets.CI_DB_USER }};Password=${{ secrets.CI_DB_PASSWORD }}"
+          Jwt__Secret: "e2e-only-jwt-signing-secret-not-used-anywhere-else"
+          R2__AccessKeyId: ${{ env.MINIO_ROOT_USER }}
+          R2__SecretAccessKey: ${{ env.MINIO_ROOT_PASSWORD }}
 
       - name: Start backend
         working-directory: backend
