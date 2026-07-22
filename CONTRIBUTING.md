@@ -63,3 +63,18 @@ dotnet test
 ```
 
 И двете трябва да минават чисто, преди да отвориш PR.
+
+## E2E тестове (Playwright)
+
+Покриват основния цикъл (register → login → create spot → check-in → известие за кристали) срещу реално вдигнати backend + Postgres + MinIO + frontend. Пускат се автоматично в CI (`e2e` job), но може и локално:
+
+```bash
+docker compose up -d
+cd backend && dotnet ef database update --project src/SecretSpots.Features --startup-project src/SecretSpots.Api
+dotnet run --project src/SecretSpots.Api &
+cd ../frontend && npm run dev &
+npx playwright install chromium   # еднократно
+npm run test:e2e
+```
+
+Изисква вече конфигурирани локални тайни (виж по-горе) и MinIO bucket `secretspots-photos` (създава се еднократно през http://localhost:9001).
