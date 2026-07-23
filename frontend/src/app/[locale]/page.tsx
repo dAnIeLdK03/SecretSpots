@@ -10,6 +10,7 @@ import type { NearbySpot, SpotResponse } from "@/lib/spotsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Link } from "@/i18n/navigation";
+import { GEOLOCATION_OPTIONS } from "@/lib/geolocationOptions";
 
 const SOFIA_CENTER: MapViewState = { longitude: 23.3219, latitude: 42.6977, zoom: 12 };
 const RADIUS_OPTIONS = [1, 5, 20, 50] as const;
@@ -35,6 +36,7 @@ export default function Home() {
   const [createModalCoords, setCreateModalCoords] = useState<LatLng | null>(null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [placingSpot, setPlacingSpot] = useState(false);
 
   const search = useCallback(
     async (center: LatLng, radius: number) => {
@@ -70,6 +72,7 @@ export default function Home() {
         setLocating(false);
         void search({ lat: SOFIA_CENTER.latitude, lng: SOFIA_CENTER.longitude }, radiusKm);
       },
+      GEOLOCATION_OPTIONS,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -104,38 +107,23 @@ export default function Home() {
         setLocating(false);
         setLoadError(t("geolocationDenied"));
       },
+      GEOLOCATION_OPTIONS,
     );
   }
 
-  function requireAuthThen(coords: LatLng) {
+  function handleMapClick(lat: number, lng: number) {
+    if (!placingSpot) return;
+    setPlacingSpot(false);
+    setCreateModalCoords({ lat, lng });
+  }
+
+  function handleToggleAddSpot() {
     if (authStatus !== "authenticated") {
       setShowLoginPrompt(true);
       return;
     }
     setShowLoginPrompt(false);
-    setCreateModalCoords(coords);
-  }
-
-  function handleMapClick(lat: number, lng: number) {
-    requireAuthThen({ lat, lng });
-  }
-
-  function handleAddAtMyLocation() {
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setLoadError(t("geolocationUnavailable"));
-      return;
-    }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocating(false);
-        requireAuthThen({ lat: position.coords.latitude, lng: position.coords.longitude });
-      },
-      () => {
-        setLocating(false);
-        setLoadError(t("geolocationDenied"));
-      },
-    );
+    setPlacingSpot((wasPlacing) => !wasPlacing);
   }
 
   function handleSpotCreated(spot: SpotResponse) {
@@ -179,11 +167,15 @@ export default function Home() {
       ) : null}
 
       <button
-        onClick={handleAddAtMyLocation}
-        disabled={locating}
-        className="absolute right-6 bottom-6 z-10 rounded-full bg-zinc-900 px-4 py-3 text-sm text-white shadow-lg disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+        onClick={handleToggleAddSpot}
+        aria-pressed={placingSpot}
+        className={
+          placingSpot
+            ? "absolute right-6 bottom-6 z-10 rounded-full bg-blue-600 px-4 py-3 text-sm text-white shadow-lg ring-4 ring-blue-300 dark:ring-blue-800"
+            : "absolute right-6 bottom-6 z-10 rounded-full bg-zinc-900 px-4 py-3 text-sm text-white shadow-lg dark:bg-zinc-100 dark:text-zinc-900"
+        }
       >
-        {locating ? t("locating") : t("addAtMyLocation")}
+        {placingSpot ? t("tapMapToPlace") : t("addAtMyLocation")}
       </button>
 
       {showLoginPrompt ? (

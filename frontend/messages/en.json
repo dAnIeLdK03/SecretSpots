@@ -1,7 +1,8 @@
 {
   "Layout": {
     "appName": "SecretSpots",
-    "menuLabel": "Menu"
+    "menuLabel": "Menu",
+    "languageLabel": "Language"
   },
   "Auth": {
     "emailLabel": "Email",
@@ -44,6 +45,7 @@
     "locating": "Locating you...",
     "searchThisArea": "Search this area",
     "addAtMyLocation": "Add spot here",
+    "tapMapToPlace": "Tap the map to place it",
     "loginRequiredToCreate": "You must be logged in to add a spot.",
     "loadError": "Failed to load nearby spots.",
     "geolocationUnavailable": "Geolocation is not supported by this browser.",
@@ -52,6 +54,7 @@
     "notFoundTitle": "Spot not found",
     "notFoundMessage": "This spot doesn't exist or was removed.",
     "authorLabel": "Added by",
+    "viewDetails": "View details",
     "createdAtLabel": "Added",
     "editTitle": "Edit spot",
     "editButton": "Edit",

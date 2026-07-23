@@ -3,6 +3,7 @@
 import { Map, Marker, Popup } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import type { NearbySpot } from "@/lib/spotsApi";
 
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
@@ -77,6 +78,9 @@ export function SpotsMap({
                 className="mt-1 max-h-32 rounded object-cover"
               />
               <span className="text-zinc-500">{selectedSpot.distanceKm.toFixed(1)} km</span>
+              <Link href={`/spots/${selectedSpot.id}`} className="mt-1 font-medium underline">
+                {t("viewDetails")}
+              </Link>
             </div>
           </Popup>
         ) : null}

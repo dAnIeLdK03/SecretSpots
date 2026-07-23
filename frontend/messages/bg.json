@@ -1,7 +1,8 @@
 {
   "Layout": {
     "appName": "SecretSpots",
-    "menuLabel": "Меню"
+    "menuLabel": "Меню",
+    "languageLabel": "Език"
   },
   "Auth": {
     "emailLabel": "Имейл",
@@ -44,6 +45,7 @@
     "locating": "Определяне на локацията...",
     "searchThisArea": "Търси в тази област",
     "addAtMyLocation": "Добави място тук",
+    "tapMapToPlace": "Натисни картата, за да го добавиш",
     "loginRequiredToCreate": "Трябва да сте логнати, за да добавите място.",
     "loadError": "Неуспешно зареждане на близките места.",
     "geolocationUnavailable": "Геолокацията не се поддържа от този браузър.",
@@ -52,6 +54,7 @@
     "notFoundTitle": "Мястото не е намерено",
     "notFoundMessage": "Това място не съществува или е премахнато.",
     "authorLabel": "Добавено от",
+    "viewDetails": "Виж повече",
     "createdAtLabel": "Добавено",
     "editTitle": "Редакция на място",
     "editButton": "Редактирай",

@@ -7,6 +7,7 @@ import { createCheckIn } from "@/lib/checkInsApi";
 import type { CheckInResponse } from "@/lib/checkInsApi";
 import { ApiError, getErrorMessage } from "@/lib/apiClient";
 import { PhotoUpload } from "@/components/PhotoUpload";
+import { CHECKIN_GEOLOCATION_OPTIONS } from "@/lib/geolocationOptions";
 
 interface CheckInModalProps {
   spotId: string;
@@ -38,6 +39,7 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
         setError(t("geolocationDenied"));
         setSubmitting(false);
       },
+      CHECKIN_GEOLOCATION_OPTIONS,
     );
   }
 
