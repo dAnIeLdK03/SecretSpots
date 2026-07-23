@@ -1,8 +1,11 @@
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NetTopologySuite.Geometries;
 using SecretSpots.Domain;
+using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -48,7 +51,8 @@ public static class CreateSpot
         }
     }
 
-    public class Handler(IAppDbContext db, IUserContext userContext, ILogger<Handler> logger)
+    public class Handler(
+        IAppDbContext db, IUserContext userContext, IOptions<NotificationsOptions> notificationsOptions, ILogger<Handler> logger)
         : IRequestHandler<Command, SpotResponse>
     {
         public async Task<SpotResponse> Handle(Command command, CancellationToken cancellationToken)
@@ -66,10 +70,40 @@ public static class CreateSpot
                 CreatedByUserId = userContext.UserId,
             };
 
+            // Queried before the new spot is added to the context, so it can't match itself —
+            // there's no persisted "user location" (see #NN discussion), so "nearby" is a proxy:
+            // anyone who already created a spot or checked in within range of this one.
+            var radiusMeters = notificationsOptions.Value.NewSpotRadiusKm * 1000;
+
+            var creatorsNearby = db.Spots
+                .Where(s => s.Location.IsWithinDistance(location, radiusMeters) && s.CreatedByUserId != userContext.UserId)
+                .Select(s => s.CreatedByUserId);
+
+            var checkedInUsersNearby =
+                from checkIn in db.CheckIns
+                join checkedInSpot in db.Spots on checkIn.SpotId equals checkedInSpot.Id
+                where checkedInSpot.Location.IsWithinDistance(location, radiusMeters) && checkIn.UserId != userContext.UserId
+                select checkIn.UserId;
+
+            var nearbyUserIds = await creatorsNearby.Union(checkedInUsersNearby).ToListAsync(cancellationToken);
+
             db.Spots.Add(spot);
+
+            foreach (var userId in nearbyUserIds)
+            {
+                db.Notifications.Add(new Notification
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    Type = NotificationType.NewSpotNearby,
+                    RelatedSpotId = spot.Id,
+                });
+            }
+
             await db.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(SpotsLogMessages.SpotCreated, spot.Id, spot.Category, spot.CreatedByUserId);
+            logger.LogInformation(SpotsLogMessages.NearbyUsersNotified, nearbyUserIds.Count, spot.Id);
 
             return new SpotResponse(
                 spot.Id,
