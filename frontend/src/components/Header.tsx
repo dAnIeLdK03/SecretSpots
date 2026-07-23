@@ -9,6 +9,7 @@ import { useCheckInsHistoryStore } from "@/store/useCheckInsHistoryStore";
 import { getRefreshToken, clearRefreshToken } from "@/lib/refreshTokenStorage";
 import { logout } from "@/lib/authApi";
 import { NotificationBell } from "@/components/NotificationBell";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 
 export function Header() {
   const t = useTranslations("Layout");
@@ -83,6 +84,8 @@ export function Header() {
         {t("appName")}
       </Link>
       <div className="flex items-center gap-2">
+        <LocaleSwitcher />
+
         {status === "authenticated" && user && <NotificationBell />}
 
         <nav className="hidden items-center gap-4 text-sm sm:flex">{navLinks}</nav>
