@@ -27,12 +27,22 @@ public static class GetNotifications
         }
     }
 
-    public class Handler(IAppDbContext db, IUserContext userContext, IStringLocalizer<SharedResources> localizer)
+    public class Handler(
+        IAppDbContext db,
+        IUserContext userContext,
+        IOptions<NotificationsOptions> notificationsOptions,
+        IStringLocalizer<SharedResources> localizer)
         : IRequestHandler<Query, NotificationsPageResponse>
     {
         public async Task<NotificationsPageResponse> Handle(Query query, CancellationToken cancellationToken)
         {
-            var baseQuery = db.Notifications.Where(n => n.UserId == userContext.UserId);
+            // Read notifications age out of the default listing after ReadRetentionHours —
+            // unread ones are always included regardless of how old they are. The row is never
+            // deleted, so this only affects what shows up here.
+            var readCutoff = DateTimeOffset.UtcNow.AddHours(-notificationsOptions.Value.ReadRetentionHours);
+
+            var baseQuery = db.Notifications
+                .Where(n => n.UserId == userContext.UserId && (!n.IsRead || n.ReadAt >= readCutoff));
 
             var totalCount = await baseQuery.CountAsync(cancellationToken);
 

@@ -9,4 +9,9 @@ public class NotificationsOptions
     // a NewSpotNearby notification for it. Matches the default radius offered in the frontend's
     // nearby-search picker (page.tsx: RADIUS_OPTIONS default of 5km) for a consistent sense of "nearby".
     public double NewSpotRadiusKm { get; set; } = 5;
+
+    // How long a read notification stays in the list before GetNotifications stops returning
+    // it. Unread notifications are never hidden this way, regardless of age. The row itself is
+    // never deleted — this only affects what the default listing shows.
+    public int ReadRetentionHours { get; set; } = 24;
 }

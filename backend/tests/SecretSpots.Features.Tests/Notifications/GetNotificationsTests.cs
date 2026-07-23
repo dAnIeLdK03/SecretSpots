@@ -38,7 +38,7 @@ public class GetNotificationsValidatorTests
 public class GetNotificationsHandlerTests
 {
     private static async Task<Notification> SeedAsync(
-        IAppDbContext db, Guid userId, int? crystalsAwarded = 10)
+        IAppDbContext db, Guid userId, int? crystalsAwarded = 10, bool isRead = false, DateTimeOffset? readAt = null)
     {
         var notification = new Notification
         {
@@ -46,6 +46,8 @@ public class GetNotificationsHandlerTests
             UserId = userId,
             Type = NotificationType.CrystalsEarned,
             CrystalsAwarded = crystalsAwarded,
+            IsRead = isRead,
+            ReadAt = readAt,
         };
 
         db.Notifications.Add(notification);
@@ -54,8 +56,8 @@ public class GetNotificationsHandlerTests
         return notification;
     }
 
-    private static GetNotifications.Handler CreateHandler(IAppDbContext db, Guid userId) =>
-        new(db, new FakeUserContext(userId), TestLocalizerFactory.Create());
+    private static GetNotifications.Handler CreateHandler(IAppDbContext db, Guid userId, int readRetentionHours = 24) =>
+        new(db, new FakeUserContext(userId), TestOptionsFactory.Notifications(readRetentionHours: readRetentionHours), TestLocalizerFactory.Create());
 
     [Fact]
     public async Task Returns_only_the_current_users_notifications_newest_first()
@@ -111,5 +113,45 @@ public class GetNotificationsHandlerTests
         var result = await handler.Handle(new GetNotifications.Query(1, 20), CancellationToken.None);
 
         Assert.Contains("15", result.Items[0].Message);
+    }
+
+    [Fact]
+    public async Task Excludes_a_read_notification_older_than_the_retention_window()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var userId = Guid.NewGuid();
+        var oldRead = await SeedAsync(db, userId, isRead: true, readAt: DateTimeOffset.UtcNow.AddHours(-25));
+
+        var handler = CreateHandler(db, userId, readRetentionHours: 24);
+        var result = await handler.Handle(new GetNotifications.Query(1, 20), CancellationToken.None);
+
+        Assert.DoesNotContain(result.Items, i => i.Id == oldRead.Id);
+        Assert.Equal(0, result.TotalCount);
+    }
+
+    [Fact]
+    public async Task Includes_a_read_notification_still_within_the_retention_window()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var userId = Guid.NewGuid();
+        var recentRead = await SeedAsync(db, userId, isRead: true, readAt: DateTimeOffset.UtcNow.AddHours(-1));
+
+        var handler = CreateHandler(db, userId, readRetentionHours: 24);
+        var result = await handler.Handle(new GetNotifications.Query(1, 20), CancellationToken.None);
+
+        Assert.Contains(result.Items, i => i.Id == recentRead.Id);
+    }
+
+    [Fact]
+    public async Task Includes_an_unread_notification_regardless_of_age()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var userId = Guid.NewGuid();
+        var oldUnread = await SeedAsync(db, userId, isRead: false);
+
+        var handler = CreateHandler(db, userId, readRetentionHours: 24);
+        var result = await handler.Handle(new GetNotifications.Query(1, 20), CancellationToken.None);
+
+        Assert.Contains(result.Items, i => i.Id == oldUnread.Id);
     }
 }
