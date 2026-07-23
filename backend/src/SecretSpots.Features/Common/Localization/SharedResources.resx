@@ -78,6 +78,9 @@
   <data name="Spots.PhotoUrlInvalid" xml:space="preserve">
     <value>Enter a valid photo URL.</value>
   </data>
+  <data name="Spots.PhotoUrlsTooMany" xml:space="preserve">
+    <value>You can add up to 5 photos.</value>
+  </data>
   <data name="Spots.InvalidCategory" xml:space="preserve">
     <value>Choose a valid category.</value>
   </data>

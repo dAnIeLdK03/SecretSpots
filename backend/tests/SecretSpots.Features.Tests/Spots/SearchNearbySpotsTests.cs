@@ -59,7 +59,7 @@ public class SearchNearbySpotsHandlerTests
             Name = name,
             Description = "test",
             Category = SpotCategory.Nature,
-            PhotoUrl = "https://example.com/photo.jpg",
+            PhotoUrls = ["https://example.com/photo.jpg"],
             Location = new Point(longitude, latitude) { SRID = 4326 },
             CreatedByUserId = Guid.NewGuid(),
         };

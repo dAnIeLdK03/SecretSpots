@@ -78,6 +78,9 @@
   <data name="Spots.PhotoUrlInvalid" xml:space="preserve">
     <value>Въведете валиден адрес на снимка.</value>
   </data>
+  <data name="Spots.PhotoUrlsTooMany" xml:space="preserve">
+    <value>Можете да добавите до 5 снимки.</value>
+  </data>
   <data name="Spots.InvalidCategory" xml:space="preserve">
     <value>Изберете валидна категория.</value>
   </data>

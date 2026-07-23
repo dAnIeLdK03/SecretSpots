@@ -31,7 +31,7 @@ public static class GetSpot
                 spot.Name,
                 spot.Description,
                 spot.Category,
-                spot.PhotoUrl,
+                spot.PhotoUrls,
                 spot.Location.Y,
                 spot.Location.X,
                 spot.CreatedByUserId,

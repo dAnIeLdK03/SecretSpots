@@ -127,7 +127,8 @@ export default function Home() {
   }
 
   function handleSpotCreated(spot: SpotResponse) {
-    setSpots((prev) => [{ ...spot, distanceKm: 0 }, ...prev]);
+    const { photoUrls, ...rest } = spot;
+    setSpots((prev) => [{ ...rest, photoUrl: photoUrls[0], distanceKm: 0 }, ...prev]);
     setCreateModalCoords(null);
   }
 

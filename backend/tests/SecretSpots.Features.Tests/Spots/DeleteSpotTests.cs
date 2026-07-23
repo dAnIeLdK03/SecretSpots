@@ -19,7 +19,7 @@ public class DeleteSpotTests
             Name = "Name",
             Description = "Description",
             Category = SpotCategory.Nature,
-            PhotoUrl = "https://example.com/a.jpg",
+            PhotoUrls = ["https://example.com/a.jpg"],
             Location = new Point(23.3219, 42.6977) { SRID = 4326 },
             CreatedByUserId = createdByUserId,
         };

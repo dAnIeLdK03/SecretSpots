@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { SPOT_CATEGORIES, updateSpot } from "@/lib/spotsApi";
 import type { SpotCategory, SpotResponse } from "@/lib/spotsApi";
 import { getErrorMessage } from "@/lib/apiClient";
-import { PhotoUpload } from "@/components/PhotoUpload";
+import { MultiPhotoUpload } from "@/components/MultiPhotoUpload";
 
 interface EditSpotModalProps {
     spot: SpotResponse;
@@ -19,7 +19,7 @@ export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
     const [name, setName] = useState(spot.name);
     const [description, setDescription] = useState(spot.description);
     const [category, setCategory] = useState<SpotCategory>(spot.category);
-    const [photoUrl, setPhotoUrl] = useState(spot.photoUrl);
+    const [photoUrls, setPhotoUrls] = useState<string[]>(spot.photoUrls);
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
@@ -28,7 +28,7 @@ export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
         setError(null);
         setSubmitting(true);
         try {
-            const updated = await updateSpot(spot.id, { name, description, category, photoUrl });
+            const updated = await updateSpot(spot.id, { name, description, category, photoUrls });
             onUpdate(updated);
         } catch (err) {
             setError(getErrorMessage(err, t("unknownError")));
@@ -77,7 +77,7 @@ export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
                             ))}
                         </select>
                     </label>
-                    <PhotoUpload label={t("photoUrlLabel")} value={photoUrl} onChange={setPhotoUrl} />
+                    <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} />
                     {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}
                     <div className="flex justify-end gap-2">
                         <button type="button" onClick={onClose} className="rounded px-4 py-2 text-zinc-600 dark:text-zinc-400">
@@ -85,7 +85,7 @@ export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
                         </button>
                         <button
                             type="submit"
-                            disabled={submitting}
+                            disabled={submitting || photoUrls.length === 0}
                             className="rounded bg-zinc-900 px-4 py-2 text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
                         >
                             {submitting ? t("saving") : t("saveButton")}

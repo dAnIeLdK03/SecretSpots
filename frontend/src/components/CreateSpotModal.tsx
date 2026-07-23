@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { createSpot, SPOT_CATEGORIES } from "@/lib/spotsApi";
 import type { SpotCategory, SpotResponse } from "@/lib/spotsApi";
 import { getErrorMessage } from "@/lib/apiClient";
-import { PhotoUpload } from "@/components/PhotoUpload";
+import { MultiPhotoUpload } from "@/components/MultiPhotoUpload";
 
 interface CreateSpotModalProps {
   latitude: number;
@@ -20,7 +20,7 @@ export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: Cre
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<SpotCategory>(SPOT_CATEGORIES[0]);
-  const [photoUrl, setPhotoUrl] = useState("");
+  const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -29,7 +29,7 @@ export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: Cre
     setError(null);
     setSubmitting(true);
     try {
-      const spot = await createSpot({ name, description, category, photoUrl, latitude, longitude });
+      const spot = await createSpot({ name, description, category, photoUrls, latitude, longitude });
       onCreated(spot);
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
@@ -78,7 +78,7 @@ export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: Cre
               ))}
             </select>
           </label>
-          <PhotoUpload label={t("photoUrlLabel")} value={photoUrl} onChange={setPhotoUrl} />
+          <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} />
           <p className="text-xs text-zinc-500">
             {t("locationLabel")}: {latitude.toFixed(5)}, {longitude.toFixed(5)}
           </p>
@@ -89,7 +89,7 @@ export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: Cre
             </button>
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || photoUrls.length === 0}
               className="rounded bg-zinc-900 px-4 py-2 text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
             >
               {submitting ? t("creating") : t("createButton")}
