@@ -41,6 +41,7 @@
     "unknownError": "Something went wrong. Please try again.",
     "radiusLabel": "Radius",
     "useMyLocation": "Use my location",
+    "locating": "Locating you...",
     "searchThisArea": "Search this area",
     "addAtMyLocation": "Add spot here",
     "loginRequiredToCreate": "You must be logged in to add a spot.",

@@ -34,6 +34,7 @@ export default function Home() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [createModalCoords, setCreateModalCoords] = useState<LatLng | null>(null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [locating, setLocating] = useState(false);
 
   const search = useCallback(
     async (center: LatLng, radius: number) => {
@@ -57,13 +58,16 @@ export default function Home() {
       return;
     }
 
+    setLocating(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const center = { lat: position.coords.latitude, lng: position.coords.longitude };
         setViewState({ longitude: center.lng, latitude: center.lat, zoom: 13 });
+        setLocating(false);
         void search(center, radiusKm);
       },
       () => {
+        setLocating(false);
         void search({ lat: SOFIA_CENTER.latitude, lng: SOFIA_CENTER.longitude }, radiusKm);
       },
     );
@@ -88,13 +92,16 @@ export default function Home() {
       setLoadError(t("geolocationUnavailable"));
       return;
     }
+    setLocating(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const center = { lat: position.coords.latitude, lng: position.coords.longitude };
         setViewState({ longitude: center.lng, latitude: center.lat, zoom: 13 });
+        setLocating(false);
         void search(center, radiusKm);
       },
       () => {
+        setLocating(false);
         setLoadError(t("geolocationDenied"));
       },
     );
@@ -118,11 +125,14 @@ export default function Home() {
       setLoadError(t("geolocationUnavailable"));
       return;
     }
+    setLocating(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        setLocating(false);
         requireAuthThen({ lat: position.coords.latitude, lng: position.coords.longitude });
       },
       () => {
+        setLocating(false);
         setLoadError(t("geolocationDenied"));
       },
     );
@@ -152,9 +162,10 @@ export default function Home() {
         </label>
         <button
           onClick={handleUseMyLocation}
-          className="rounded bg-white px-3 py-2 text-left text-sm shadow dark:bg-zinc-900"
+          disabled={locating}
+          className="rounded bg-white px-3 py-2 text-left text-sm shadow disabled:opacity-50 dark:bg-zinc-900"
         >
-          {t("useMyLocation")}
+          {locating ? t("locating") : t("useMyLocation")}
         </button>
       </div>
 
@@ -169,9 +180,10 @@ export default function Home() {
 
       <button
         onClick={handleAddAtMyLocation}
-        className="absolute right-6 bottom-6 z-10 rounded-full bg-zinc-900 px-4 py-3 text-sm text-white shadow-lg dark:bg-zinc-100 dark:text-zinc-900"
+        disabled={locating}
+        className="absolute right-6 bottom-6 z-10 rounded-full bg-zinc-900 px-4 py-3 text-sm text-white shadow-lg disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
       >
-        {t("addAtMyLocation")}
+        {locating ? t("locating") : t("addAtMyLocation")}
       </button>
 
       {showLoginPrompt ? (
