@@ -35,6 +35,7 @@ public static class MarkNotificationAsRead
             }
 
             notification.IsRead = true;
+            notification.ReadAt = DateTimeOffset.UtcNow;
             await db.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(NotificationsLogMessages.NotificationMarkedAsRead, notification.Id, userContext.UserId);

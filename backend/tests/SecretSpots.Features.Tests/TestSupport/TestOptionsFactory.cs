@@ -37,11 +37,12 @@ internal static class TestOptionsFactory
         });
 
     public static IOptions<NotificationsOptions> Notifications(
-        int defaultPageSize = 20, int maxPageSize = 100, double newSpotRadiusKm = 5) =>
+        int defaultPageSize = 20, int maxPageSize = 100, double newSpotRadiusKm = 5, int readRetentionHours = 24) =>
         Options.Create(new NotificationsOptions
         {
             DefaultPageSize = defaultPageSize,
             MaxPageSize = maxPageSize,
             NewSpotRadiusKm = newSpotRadiusKm,
+            ReadRetentionHours = readRetentionHours,
         });
 }

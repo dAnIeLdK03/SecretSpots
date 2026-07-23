@@ -8,5 +8,6 @@ public class Notification : IHasCreatedAt
     public Guid? RelatedSpotId { get; set; }
     public int? CrystalsAwarded { get; set; }
     public bool IsRead { get; set; }
+    public DateTimeOffset? ReadAt { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }

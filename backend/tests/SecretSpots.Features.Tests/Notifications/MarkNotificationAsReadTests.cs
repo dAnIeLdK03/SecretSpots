@@ -44,6 +44,7 @@ public class MarkNotificationAsReadTests
 
         var saved = await db.Notifications.SingleAsync(n => n.Id == notification.Id);
         Assert.True(saved.IsRead);
+        Assert.NotNull(saved.ReadAt);
     }
 
     [Fact]
