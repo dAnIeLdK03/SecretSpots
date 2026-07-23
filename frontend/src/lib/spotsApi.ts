@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/apiClient";
+import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
 
 export const SPOT_CATEGORIES = ["Nature", "Viewpoint", "Cafe", "Abandoned"] as const;
 export type SpotCategory = (typeof SPOT_CATEGORIES)[number];
@@ -37,6 +37,13 @@ export interface CreateSpotCommand {
   longitude: number;
 }
 
+export interface UpdateSpotCommand {
+  name: string;
+  description: string;
+  category: SpotCategory;
+  photoUrl: string;
+}
+
 export function getNearbySpots(
   lat: number,
   lng: number,
@@ -56,6 +63,17 @@ export function createSpot(command: CreateSpotCommand): Promise<SpotResponse> {
     method: "POST",
     body: JSON.stringify(command),
   });
+}
+
+export function updateSpot(id: string, command: UpdateSpotCommand): Promise<SpotResponse> {
+  return apiFetch<SpotResponse>(`/spots/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(command),
+  });
+}
+
+export function deleteSpot(id: string): Promise<void> {
+  return apiFetchVoid(`/spots/${id}`, { method: "DELETE" });
 }
 
 export function getSpot(id: string, signal?: AbortSignal): Promise<SpotResponse> {

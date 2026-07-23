@@ -51,7 +51,14 @@
     "notFoundTitle": "Мястото не е намерено",
     "notFoundMessage": "Това място не съществува или е премахнато.",
     "authorLabel": "Добавено от",
-    "createdAtLabel": "Добавено"
+    "createdAtLabel": "Добавено",
+    "editTitle": "Редакция на място",
+    "editButton": "Редактирай",
+    "saveButton": "Запази",
+    "saving": "Запазване...",
+    "deleteButton": "Изтрий",
+    "deleteConfirm": "Да изтрия ли това място? Действието е необратимо.",
+    "notYourSpot": "Можеш да редактираш или триеш само места, които си добавил/а."
   },
   "PhotoUpload": {
     "uploading": "Качване...",
