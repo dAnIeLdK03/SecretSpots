@@ -30,7 +30,7 @@
       "Cafe": "Cafe",
       "Abandoned": "Abandoned place"
     },
-    "createTitle": "New spot",
+    "createTitle": "Add Your Secret Spot",
     "nameLabel": "Name",
     "descriptionLabel": "Description",
     "categoryLabel": "Category",
@@ -106,5 +106,29 @@
     "loadMore": "Load more",
     "loadingMore": "Loading...",
     "crystalsUnit": "crystals"
+  },
+  "Home": {
+    "exploreNav": "Explore",
+    "mapNav": "Map",
+    "collectionsNav": "Collections",
+    "aboutNav": "About",
+    "addASpot": "Add a Spot",
+    "heroTitlePrefix": "Find places worth ",
+    "heroTitleAccent": "discovering.",
+    "heroSubtitle": "SecretSpots helps you uncover the most interesting and unique places around you – curated by real explorers, not algorithms.",
+    "searchPlaceholder": "Search for places, regions, or vibes...",
+    "popularSearchesLabel": "Popular searches",
+    "popularSearchTag1": "Hidden waterfalls",
+    "popularSearchTag2": "Sunset views",
+    "popularSearchTag3": "Old ruins",
+    "popularSearchTag4": "Local eats",
+    "allSpotsFilter": "All Spots",
+    "featuredTitle": "Featured spots",
+    "featuredSubtitle": "Handpicked places that deserve a spot on your list.",
+    "exploreMapButton": "Explore the map",
+    "loadMoreSpots": "Load more spots",
+    "noSpotsYet": "No spots yet — be the first to add one!",
+    "ctaTitle": "Know a place others should see?",
+    "ctaSubtitle": "Share your secret spot with the community."
   }
 }

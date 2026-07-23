@@ -88,7 +88,7 @@ function SpotDetailContent({ id }: { id: string }) {
     setError(null);
     try {
       await deleteSpot(spot.id);
-      router.push("/");
+      router.push("/map");
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
       setDeleting(false);

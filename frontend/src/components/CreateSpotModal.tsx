@@ -15,6 +15,9 @@ interface CreateSpotModalProps {
   onCreated: (spot: SpotResponse) => void;
 }
 
+const FIELD_CLASSES =
+  "rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-white placeholder:text-zinc-500 focus:border-emerald-400 focus:outline-none";
+
 export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: CreateSpotModalProps) {
   const t = useTranslations("Spots");
   const [name, setName] = useState("");
@@ -38,59 +41,70 @@ export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: Cre
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-sm rounded-lg bg-white p-6 dark:bg-zinc-900">
-        <h2 className="mb-4 text-lg font-semibold">{t("createTitle")}</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div className="relative max-h-[90vh] w-full max-w-sm overflow-y-auto rounded-2xl border border-white/10 bg-zinc-900 p-6 text-white">
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label={t("cancelButton")}
+          className="absolute top-4 right-4 text-zinc-400 hover:text-white"
+        >
+          ✕
+        </button>
+        <h2 className="mb-5 text-xl font-bold">{t("createTitle")}</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <label className="flex flex-col gap-1">
-            <span className="text-sm text-zinc-600 dark:text-zinc-400">{t("nameLabel")}</span>
+            <span className="text-sm text-zinc-300">{t("nameLabel")}</span>
             <input
               type="text"
               required
               maxLength={100}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+              className={FIELD_CLASSES}
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm text-zinc-600 dark:text-zinc-400">{t("descriptionLabel")}</span>
+            <span className="text-sm text-zinc-300">{t("descriptionLabel")}</span>
             <textarea
               required
               maxLength={2000}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+              className={FIELD_CLASSES}
             />
           </label>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-zinc-300">{t("locationLabel")}</span>
+            <p className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-zinc-400">
+              📍 {latitude.toFixed(5)}, {longitude.toFixed(5)}
+            </p>
+          </div>
           <label className="flex flex-col gap-1">
-            <span className="text-sm text-zinc-600 dark:text-zinc-400">{t("categoryLabel")}</span>
+            <span className="text-sm text-zinc-300">{t("categoryLabel")}</span>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as SpotCategory)}
-              className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+              className={FIELD_CLASSES}
             >
               {SPOT_CATEGORIES.map((c) => (
-                <option key={c} value={c}>
+                <option key={c} value={c} className="text-zinc-900">
                   {t(`category.${c}`)}
                 </option>
               ))}
             </select>
           </label>
-          <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} />
-          <p className="text-xs text-zinc-500">
-            {t("locationLabel")}: {latitude.toFixed(5)}, {longitude.toFixed(5)}
-          </p>
-          {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}
-          <div className="flex justify-end gap-2">
-            <button type="button" onClick={onClose} className="rounded px-4 py-2 text-zinc-600 dark:text-zinc-400">
+          <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} dark />
+          {error ? <p className="text-sm text-red-400">{error}</p> : null}
+          <div className="mt-2 flex justify-end gap-2">
+            <button type="button" onClick={onClose} className="rounded-full px-4 py-2 text-sm text-zinc-300 hover:text-white">
               {t("cancelButton")}
             </button>
             <button
               type="submit"
               disabled={submitting || photoUrls.length === 0}
-              className="rounded bg-zinc-900 px-4 py-2 text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+              className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-medium text-white hover:bg-emerald-400 disabled:opacity-50"
             >
               {submitting ? t("creating") : t("createButton")}
             </button>
