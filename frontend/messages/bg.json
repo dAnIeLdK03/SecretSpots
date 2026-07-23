@@ -34,7 +34,7 @@
     "nameLabel": "Име",
     "descriptionLabel": "Описание",
     "categoryLabel": "Категория",
-    "photoUrlLabel": "URL на снимка",
+    "photoUrlLabel": "Снимки",
     "locationLabel": "Локация",
     "cancelButton": "Отказ",
     "creating": "Създаване...",
@@ -56,6 +56,9 @@
     "authorLabel": "Добавено от",
     "viewDetails": "Виж повече",
     "createdAtLabel": "Добавено",
+    "previousPhoto": "Предишна снимка",
+    "nextPhoto": "Следваща снимка",
+    "goToPhoto": "Към снимка",
     "editTitle": "Редакция на място",
     "editButton": "Редактирай",
     "saveButton": "Запази",
@@ -66,7 +69,11 @@
   },
   "PhotoUpload": {
     "uploading": "Качване...",
-    "uploadError": "Неуспешно качване на снимка. Опитайте отново."
+    "uploadError": "Неуспешно качване на снимка. Опитайте отново.",
+    "remove": "Премахни",
+    "moveLeft": "Премести по-рано",
+    "moveRight": "Премести по-късно",
+    "maxPhotosReached": "Достигнахте лимита от 5 снимки."
   },
   "CheckIns": {
     "checkInButton": "Регистрирай посещение",

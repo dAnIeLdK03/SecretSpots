@@ -18,7 +18,7 @@ public class UpdateSpotValidatorTests
     public void Name_is_required()
     {
         var result = _validator.TestValidate(
-            new UpdateSpot.Command(Guid.NewGuid(), "", "Desc", SpotCategory.Nature, "https://example.com/a.jpg"));
+            new UpdateSpot.Command(Guid.NewGuid(), "", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"]));
         result.ShouldHaveValidationErrorFor(c => c.Name);
     }
 
@@ -26,7 +26,7 @@ public class UpdateSpotValidatorTests
     public void Description_is_required()
     {
         var result = _validator.TestValidate(
-            new UpdateSpot.Command(Guid.NewGuid(), "Name", "", SpotCategory.Nature, "https://example.com/a.jpg"));
+            new UpdateSpot.Command(Guid.NewGuid(), "Name", "", SpotCategory.Nature, ["https://example.com/a.jpg"]));
         result.ShouldHaveValidationErrorFor(c => c.Description);
     }
 
@@ -37,15 +37,15 @@ public class UpdateSpotValidatorTests
     public void PhotoUrl_is_invalid(string photoUrl)
     {
         var result = _validator.TestValidate(
-            new UpdateSpot.Command(Guid.NewGuid(), "Name", "Desc", SpotCategory.Nature, photoUrl));
-        result.ShouldHaveValidationErrorFor(c => c.PhotoUrl);
+            new UpdateSpot.Command(Guid.NewGuid(), "Name", "Desc", SpotCategory.Nature, [photoUrl]));
+        result.ShouldHaveValidationErrorFor(c => c.PhotoUrls);
     }
 
     [Fact]
     public void Valid_command_has_no_errors()
     {
         var result = _validator.TestValidate(
-            new UpdateSpot.Command(Guid.NewGuid(), "Name", "Desc", SpotCategory.Nature, "https://example.com/a.jpg"));
+            new UpdateSpot.Command(Guid.NewGuid(), "Name", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"]));
         result.ShouldNotHaveAnyValidationErrors();
     }
 }
@@ -60,7 +60,7 @@ public class UpdateSpotHandlerTests
             Name = "Original name",
             Description = "Original description",
             Category = SpotCategory.Nature,
-            PhotoUrl = "https://example.com/original.jpg",
+            PhotoUrls = ["https://example.com/original.jpg"],
             Location = new Point(23.3219, 42.6977) { SRID = 4326 },
             CreatedByUserId = createdByUserId,
         };
@@ -83,7 +83,7 @@ public class UpdateSpotHandlerTests
 
         var handler = CreateHandler(db, creatorId);
         var result = await handler.Handle(
-            new UpdateSpot.Command(spot.Id, "New name", "New description", SpotCategory.Viewpoint, "https://example.com/new.jpg"),
+            new UpdateSpot.Command(spot.Id, "New name", "New description", SpotCategory.Viewpoint, ["https://example.com/new.jpg"]),
             CancellationToken.None);
 
         Assert.True(result.IsSuccess);
@@ -94,7 +94,7 @@ public class UpdateSpotHandlerTests
         Assert.Equal("New name", saved.Name);
         Assert.Equal("New description", saved.Description);
         Assert.Equal(SpotCategory.Viewpoint, saved.Category);
-        Assert.Equal("https://example.com/new.jpg", saved.PhotoUrl);
+        Assert.Equal("https://example.com/new.jpg", saved.PhotoUrls[0]);
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class UpdateSpotHandlerTests
 
         var handler = CreateHandler(db, creatorId);
         var result = await handler.Handle(
-            new UpdateSpot.Command(spot.Id, "New name", "New description", SpotCategory.Viewpoint, "https://example.com/new.jpg"),
+            new UpdateSpot.Command(spot.Id, "New name", "New description", SpotCategory.Viewpoint, ["https://example.com/new.jpg"]),
             CancellationToken.None);
 
         Assert.True(result.IsSuccess);
@@ -123,7 +123,7 @@ public class UpdateSpotHandlerTests
         var handler = CreateHandler(db, Guid.NewGuid());
 
         var result = await handler.Handle(
-            new UpdateSpot.Command(Guid.NewGuid(), "Name", "Desc", SpotCategory.Nature, "https://example.com/a.jpg"),
+            new UpdateSpot.Command(Guid.NewGuid(), "Name", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"]),
             CancellationToken.None);
 
         Assert.False(result.IsSuccess);
@@ -140,7 +140,7 @@ public class UpdateSpotHandlerTests
 
         var handler = CreateHandler(db, Guid.NewGuid());
         var result = await handler.Handle(
-            new UpdateSpot.Command(spot.Id, "Name", "Desc", SpotCategory.Nature, "https://example.com/a.jpg"),
+            new UpdateSpot.Command(spot.Id, "Name", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"]),
             CancellationToken.None);
 
         Assert.False(result.IsSuccess);

@@ -21,7 +21,7 @@ export interface SpotResponse {
   name: string;
   description: string;
   category: SpotCategory;
-  photoUrl: string;
+  photoUrls: string[];
   latitude: number;
   longitude: number;
   createdByUserId: string;
@@ -32,7 +32,7 @@ export interface CreateSpotCommand {
   name: string;
   description: string;
   category: SpotCategory;
-  photoUrl: string;
+  photoUrls: string[];
   latitude: number;
   longitude: number;
 }
@@ -41,7 +41,7 @@ export interface UpdateSpotCommand {
   name: string;
   description: string;
   category: SpotCategory;
-  photoUrl: string;
+  photoUrls: string[];
 }
 
 export function getNearbySpots(

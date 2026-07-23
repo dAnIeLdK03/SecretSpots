@@ -73,7 +73,7 @@ public class CreateCheckInHandlerTests
             Name = $"Spot-{Guid.NewGuid():N}",
             Description = "test",
             Category = SpotCategory.Nature,
-            PhotoUrl = "https://example.com/photo.jpg",
+            PhotoUrls = ["https://example.com/photo.jpg"],
             Location = new Point(SofiaLongitude, SofiaLatitude) { SRID = 4326 },
             CreatedByUserId = Guid.NewGuid(),
         };

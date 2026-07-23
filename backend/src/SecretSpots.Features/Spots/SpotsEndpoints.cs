@@ -46,7 +46,7 @@ public static class SpotsEndpoints
         group.MapPut("/{id:guid}", async (
                 Guid id, UpdateSpot.RequestBody body, ISender sender, CancellationToken cancellationToken) =>
             {
-                var command = new UpdateSpot.Command(id, body.Name, body.Description, body.Category, body.PhotoUrl);
+                var command = new UpdateSpot.Command(id, body.Name, body.Description, body.Category, body.PhotoUrls);
                 var result = await sender.Send(command, cancellationToken);
                 return result.ToOkOrProblem();
             })

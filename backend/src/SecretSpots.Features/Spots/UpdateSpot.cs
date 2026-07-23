@@ -19,14 +19,14 @@ public static class UpdateSpot
     // record so the endpoint can bind RequestBody from JSON and Command from both.
     // Coordinates are intentionally not editable here — changing them would break
     // the distance check against check-ins already recorded against this spot.
-    public record RequestBody(string Name, string Description, SpotCategory Category, string PhotoUrl);
+    public record RequestBody(string Name, string Description, SpotCategory Category, IReadOnlyList<string> PhotoUrls);
 
     public record Command(
         Guid SpotId,
         string Name,
         string Description,
         SpotCategory Category,
-        string PhotoUrl) : IRequest<Result<SpotResponse>>;
+        IReadOnlyList<string> PhotoUrls) : IRequest<Result<SpotResponse>>;
 
     public class Validator : AbstractValidator<Command>
     {
@@ -40,8 +40,11 @@ public static class UpdateSpot
                 .NotEmpty().WithMessage(localizer[SpotsMessageKeys.DescriptionRequired].Value)
                 .MaximumLength(2000).WithMessage(localizer[SpotsMessageKeys.DescriptionTooLong].Value);
 
-            RuleFor(c => c.PhotoUrl)
+            RuleFor(c => c.PhotoUrls)
                 .NotEmpty().WithMessage(localizer[SpotsMessageKeys.PhotoUrlRequired].Value)
+                .Must(urls => urls.Count <= CreateSpot.MaxPhotoCount).WithMessage(localizer[SpotsMessageKeys.PhotoUrlsTooMany].Value);
+
+            RuleForEach(c => c.PhotoUrls)
                 .Must(UrlValidation.IsHttpUrl).WithMessage(localizer[SpotsMessageKeys.PhotoUrlInvalid].Value);
 
             RuleFor(c => c.Category)
@@ -74,7 +77,7 @@ public static class UpdateSpot
             spot.Name = command.Name.Trim();
             spot.Description = command.Description.Trim();
             spot.Category = command.Category;
-            spot.PhotoUrl = command.PhotoUrl;
+            spot.PhotoUrls = command.PhotoUrls.ToList();
 
             await db.SaveChangesAsync(cancellationToken);
 
@@ -85,7 +88,7 @@ public static class UpdateSpot
                 spot.Name,
                 spot.Description,
                 spot.Category,
-                spot.PhotoUrl,
+                spot.PhotoUrls,
                 spot.Location.Y,
                 spot.Location.X,
                 spot.CreatedByUserId,

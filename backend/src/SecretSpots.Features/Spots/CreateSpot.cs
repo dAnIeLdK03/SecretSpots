@@ -16,11 +16,13 @@ namespace SecretSpots.Features.Spots;
 
 public static class CreateSpot
 {
+    public const int MaxPhotoCount = 5;
+
     public record Command(
         string Name,
         string Description,
         SpotCategory Category,
-        string PhotoUrl,
+        IReadOnlyList<string> PhotoUrls,
         double Latitude,
         double Longitude) : IRequest<SpotResponse>;
 
@@ -36,8 +38,11 @@ public static class CreateSpot
                 .NotEmpty().WithMessage(localizer[SpotsMessageKeys.DescriptionRequired].Value)
                 .MaximumLength(2000).WithMessage(localizer[SpotsMessageKeys.DescriptionTooLong].Value);
 
-            RuleFor(c => c.PhotoUrl)
+            RuleFor(c => c.PhotoUrls)
                 .NotEmpty().WithMessage(localizer[SpotsMessageKeys.PhotoUrlRequired].Value)
+                .Must(urls => urls.Count <= MaxPhotoCount).WithMessage(localizer[SpotsMessageKeys.PhotoUrlsTooMany].Value);
+
+            RuleForEach(c => c.PhotoUrls)
                 .Must(UrlValidation.IsHttpUrl).WithMessage(localizer[SpotsMessageKeys.PhotoUrlInvalid].Value);
 
             RuleFor(c => c.Category)
@@ -65,7 +70,7 @@ public static class CreateSpot
                 Name = command.Name.Trim(),
                 Description = command.Description.Trim(),
                 Category = command.Category,
-                PhotoUrl = command.PhotoUrl,
+                PhotoUrls = command.PhotoUrls.ToList(),
                 Location = location,
                 CreatedByUserId = userContext.UserId,
             };
@@ -110,7 +115,7 @@ public static class CreateSpot
                 spot.Name,
                 spot.Description,
                 spot.Category,
-                spot.PhotoUrl,
+                spot.PhotoUrls,
                 location.Y,
                 location.X,
                 spot.CreatedByUserId,

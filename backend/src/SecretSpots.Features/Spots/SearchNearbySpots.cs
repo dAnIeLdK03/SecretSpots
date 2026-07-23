@@ -55,7 +55,7 @@ public static class SearchNearbySpots
                 x.Spot.Name,
                 x.Spot.Description,
                 x.Spot.Category,
-                x.Spot.PhotoUrl,
+                x.Spot.PhotoUrls[0],
                 x.Spot.Location.Y,
                 x.Spot.Location.X,
                 x.Spot.CreatedByUserId,

@@ -17,7 +17,7 @@ public class CreateSpotValidatorTests
     public void Name_is_required()
     {
         var result = _validator.TestValidate(
-            new CreateSpot.Command("", "Desc", SpotCategory.Nature, "https://example.com/a.jpg", 42.6977, 23.3219));
+            new CreateSpot.Command("", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], 42.6977, 23.3219));
         result.ShouldHaveValidationErrorFor(c => c.Name);
     }
 
@@ -25,7 +25,7 @@ public class CreateSpotValidatorTests
     public void Description_is_required()
     {
         var result = _validator.TestValidate(
-            new CreateSpot.Command("Name", "", SpotCategory.Nature, "https://example.com/a.jpg", 42.6977, 23.3219));
+            new CreateSpot.Command("Name", "", SpotCategory.Nature, ["https://example.com/a.jpg"], 42.6977, 23.3219));
         result.ShouldHaveValidationErrorFor(c => c.Description);
     }
 
@@ -36,8 +36,8 @@ public class CreateSpotValidatorTests
     public void PhotoUrl_is_invalid(string photoUrl)
     {
         var result = _validator.TestValidate(
-            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, photoUrl, 42.6977, 23.3219));
-        result.ShouldHaveValidationErrorFor(c => c.PhotoUrl);
+            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, [photoUrl], 42.6977, 23.3219));
+        result.ShouldHaveValidationErrorFor(c => c.PhotoUrls);
     }
 
     [Theory]
@@ -46,7 +46,7 @@ public class CreateSpotValidatorTests
     public void Latitude_out_of_range(double latitude)
     {
         var result = _validator.TestValidate(
-            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, "https://example.com/a.jpg", latitude, 23.3219));
+            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], latitude, 23.3219));
         result.ShouldHaveValidationErrorFor(c => c.Latitude);
     }
 
@@ -56,7 +56,7 @@ public class CreateSpotValidatorTests
     public void Longitude_out_of_range(double longitude)
     {
         var result = _validator.TestValidate(
-            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, "https://example.com/a.jpg", 42.6977, longitude));
+            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], 42.6977, longitude));
         result.ShouldHaveValidationErrorFor(c => c.Longitude);
     }
 
@@ -64,7 +64,7 @@ public class CreateSpotValidatorTests
     public void Valid_command_has_no_errors()
     {
         var result = _validator.TestValidate(
-            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, "https://example.com/a.jpg", 42.6977, 23.3219));
+            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], 42.6977, 23.3219));
         result.ShouldNotHaveAnyValidationErrors();
     }
 }
@@ -94,7 +94,7 @@ public class CreateSpotHandlerTests
             Name = $"Spot-{Guid.NewGuid():N}",
             Description = "test",
             Category = SpotCategory.Nature,
-            PhotoUrl = "https://example.com/photo.jpg",
+            PhotoUrls = ["https://example.com/photo.jpg"],
             Location = new Point(longitude, latitude) { SRID = 4326 },
             CreatedByUserId = createdByUserId,
         };
@@ -116,7 +116,7 @@ public class CreateSpotHandlerTests
             "Боянски водопад",
             "Скрит водопад във Витоша",
             SpotCategory.Nature,
-            "https://example.com/photo.jpg",
+            ["https://example.com/photo.jpg"],
             42.6461,
             23.2445);
 
@@ -141,7 +141,7 @@ public class CreateSpotHandlerTests
 
         var handler = CreateHandler(db, authorId);
         var command = new CreateSpot.Command(
-            "New spot", "Desc", SpotCategory.Nature, "https://example.com/a.jpg", SofiaLatitude, SofiaLongitude);
+            "New spot", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], SofiaLatitude, SofiaLongitude);
         var response = await handler.Handle(command, CancellationToken.None);
 
         var notification = await db.Notifications.SingleAsync(n => n.UserId == nearbyCreatorId);
@@ -167,7 +167,7 @@ public class CreateSpotHandlerTests
 
         var handler = CreateHandler(db, authorId);
         var command = new CreateSpot.Command(
-            "New spot", "Desc", SpotCategory.Nature, "https://example.com/a.jpg", SofiaLatitude, SofiaLongitude);
+            "New spot", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], SofiaLatitude, SofiaLongitude);
         var response = await handler.Handle(command, CancellationToken.None);
 
         var notification = await db.Notifications.SingleAsync(n => n.UserId == checkedInUserId);
@@ -184,7 +184,7 @@ public class CreateSpotHandlerTests
 
         var handler = CreateHandler(db, authorId);
         var command = new CreateSpot.Command(
-            "New spot", "Desc", SpotCategory.Nature, "https://example.com/a.jpg", SofiaLatitude, SofiaLongitude);
+            "New spot", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], SofiaLatitude, SofiaLongitude);
         await handler.Handle(command, CancellationToken.None);
 
         Assert.False(await db.Notifications.AnyAsync(n => n.UserId == authorId));
@@ -200,7 +200,7 @@ public class CreateSpotHandlerTests
 
         var handler = CreateHandler(db, authorId);
         var command = new CreateSpot.Command(
-            "New spot", "Desc", SpotCategory.Nature, "https://example.com/a.jpg", SofiaLatitude, SofiaLongitude);
+            "New spot", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], SofiaLatitude, SofiaLongitude);
         await handler.Handle(command, CancellationToken.None);
 
         Assert.False(await db.Notifications.AnyAsync(n => n.UserId == farUserId));
@@ -224,7 +224,7 @@ public class CreateSpotHandlerTests
 
         var handler = CreateHandler(db, authorId);
         var command = new CreateSpot.Command(
-            "New spot", "Desc", SpotCategory.Nature, "https://example.com/a.jpg", SofiaLatitude, SofiaLongitude);
+            "New spot", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], SofiaLatitude, SofiaLongitude);
         await handler.Handle(command, CancellationToken.None);
 
         Assert.Equal(1, await db.Notifications.CountAsync(n => n.UserId == bothId));

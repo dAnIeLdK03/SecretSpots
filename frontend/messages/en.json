@@ -34,7 +34,7 @@
     "nameLabel": "Name",
     "descriptionLabel": "Description",
     "categoryLabel": "Category",
-    "photoUrlLabel": "Photo URL",
+    "photoUrlLabel": "Photos",
     "locationLabel": "Location",
     "cancelButton": "Cancel",
     "creating": "Creating...",
@@ -56,6 +56,9 @@
     "authorLabel": "Added by",
     "viewDetails": "View details",
     "createdAtLabel": "Added",
+    "previousPhoto": "Previous photo",
+    "nextPhoto": "Next photo",
+    "goToPhoto": "Go to photo",
     "editTitle": "Edit spot",
     "editButton": "Edit",
     "saveButton": "Save",
@@ -66,7 +69,11 @@
   },
   "PhotoUpload": {
     "uploading": "Uploading...",
-    "uploadError": "Failed to upload photo. Please try again."
+    "uploadError": "Failed to upload photo. Please try again.",
+    "remove": "Remove",
+    "moveLeft": "Move earlier",
+    "moveRight": "Move later",
+    "maxPhotosReached": "You've reached the 5-photo limit."
   },
   "CheckIns": {
     "checkInButton": "Check in",

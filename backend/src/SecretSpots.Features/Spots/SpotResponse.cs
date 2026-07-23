@@ -7,7 +7,7 @@ public record SpotResponse(
     string Name,
     string Description,
     SpotCategory Category,
-    string PhotoUrl,
+    IReadOnlyList<string> PhotoUrls,
     double Latitude,
     double Longitude,
     Guid CreatedByUserId,
