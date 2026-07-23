@@ -41,6 +41,7 @@
     "unknownError": "Възникна грешка. Опитайте отново.",
     "radiusLabel": "Радиус",
     "useMyLocation": "Използвай текущата ми локация",
+    "locating": "Определяне на локацията...",
     "searchThisArea": "Търси в тази област",
     "addAtMyLocation": "Добави място тук",
     "loginRequiredToCreate": "Трябва да сте логнати, за да добавите място.",
