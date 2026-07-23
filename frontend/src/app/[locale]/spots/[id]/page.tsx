@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { getSpot } from "@/lib/spotsApi";
+import { deleteSpot, getSpot } from "@/lib/spotsApi";
 import type { SpotResponse } from "@/lib/spotsApi";
 import { ApiError, getErrorMessage } from "@/lib/apiClient";
 import { formatRelativeTime } from "@/lib/relativeTime";
 import { useAuthStore } from "@/store/useAuthStore";
 import { CheckInModal } from "@/components/CheckInModal";
-import { Link } from "@/i18n/navigation";
+import { EditSpotModal } from "@/components/EditSpotModal";
+import { Link, useRouter } from "@/i18n/navigation";
 
 type LoadState =
   | { status: "loading" }
@@ -22,10 +23,15 @@ function SpotDetailContent({ id }: { id: string }) {
   const tCheckIns = useTranslations("CheckIns");
   const tAuth = useTranslations("Auth");
   const locale = useLocale();
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
   const authStatus = useAuthStore((state) => state.status);
   const [state, setState] = useState<LoadState>({ status: "loading" });
   const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -70,6 +76,23 @@ function SpotDetailContent({ id }: { id: string }) {
   }
 
   const { spot } = state;
+  const isOwner = authStatus === "authenticated" && user?.id === spot.createdByUserId;
+
+  async function handleDeleteClick() {
+    if (!window.confirm(t("deleteConfirm"))) {
+      return;
+    }
+
+    setDeleting(true);
+    setError(null);
+    try {
+      await deleteSpot(spot.id);
+      router.push("/");
+    } catch (err) {
+      setError(getErrorMessage(err, t("unknownError")));
+      setDeleting(false);
+    }
+  }
 
   function handleCheckInClick() {
     if (authStatus !== "authenticated") {
@@ -101,6 +124,24 @@ function SpotDetailContent({ id }: { id: string }) {
         >
           {tCheckIns("checkInButton")}
         </button>
+        {isOwner && (
+          <>
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="ml-2 rounded border border-zinc-300 px-4 py-2 text-sm dark:border-zinc-700"
+            >
+              {t("editButton")}
+            </button>
+            <button
+              onClick={handleDeleteClick}
+              disabled={deleting}
+              className="ml-2 rounded border border-red-300 px-4 py-2 text-sm text-red-600 disabled:opacity-50 dark:border-red-900 dark:text-red-400"
+            >
+              {t("deleteButton")}
+            </button>
+          </>
+        )}
+        {error ? <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p> : null}
         {showLoginPrompt ? (
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
             {tCheckIns("loginRequiredToCheckIn")}{" "}
@@ -112,6 +153,16 @@ function SpotDetailContent({ id }: { id: string }) {
       </div>
 
       {showCheckInModal ? <CheckInModal spotId={spot.id} onClose={() => setShowCheckInModal(false)} /> : null}
+      {showEditModal ? (
+        <EditSpotModal
+          spot={spot}
+          onClose={() => setShowEditModal(false)}
+          onUpdate={(updated) => {
+            setState({ status: "success", spot: updated });
+            setShowEditModal(false);
+          }}
+        />
+      ) : null}
     </div>
   );
 }
