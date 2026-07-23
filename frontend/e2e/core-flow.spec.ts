@@ -67,7 +67,12 @@ test("register, log in, create a spot, check in, and see the crystals notificati
   const createSpotResponsePromise = page.waitForResponse(
     (response) => response.url().endsWith("/spots/") && response.request().method() === "POST",
   );
+  // "Добави място тук" only arms placing mode now — the modal opens on the
+  // subsequent map click, at whatever coordinates were clicked. The map is
+  // already centered on SPOT_COORDS (via the mocked geolocation above), so
+  // clicking dead-center of the canvas places the spot there.
   await page.getByRole("button", { name: "Добави място тук" }).click();
+  await page.locator(".maplibregl-canvas").click();
   await page.getByLabel("Име").fill("E2E тестово място");
   await page.getByLabel("Описание").fill("Място, създадено от автоматизиран тест.");
 
