@@ -52,7 +52,14 @@
     "notFoundTitle": "Spot not found",
     "notFoundMessage": "This spot doesn't exist or was removed.",
     "authorLabel": "Added by",
-    "createdAtLabel": "Added"
+    "createdAtLabel": "Added",
+    "editTitle": "Edit spot",
+    "editButton": "Edit",
+    "saveButton": "Save",
+    "saving": "Saving...",
+    "deleteButton": "Delete",
+    "deleteConfirm": "Delete this spot? This cannot be undone.",
+    "notYourSpot": "You can only edit or delete spots you added."
   },
   "PhotoUpload": {
     "uploading": "Uploading...",
