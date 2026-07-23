@@ -36,6 +36,12 @@ internal static class TestOptionsFactory
             WebpQuality = webpQuality,
         });
 
-    public static IOptions<NotificationsOptions> Notifications(int defaultPageSize = 20, int maxPageSize = 100) =>
-        Options.Create(new NotificationsOptions { DefaultPageSize = defaultPageSize, MaxPageSize = maxPageSize });
+    public static IOptions<NotificationsOptions> Notifications(
+        int defaultPageSize = 20, int maxPageSize = 100, double newSpotRadiusKm = 5) =>
+        Options.Create(new NotificationsOptions
+        {
+            DefaultPageSize = defaultPageSize,
+            MaxPageSize = maxPageSize,
+            NewSpotRadiusKm = newSpotRadiusKm,
+        });
 }
