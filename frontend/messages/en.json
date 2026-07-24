@@ -129,6 +129,10 @@
     "loadMoreSpots": "Load more spots",
     "noSpotsYet": "No spots yet — be the first to add one!",
     "ctaTitle": "Know a place others should see?",
-    "ctaSubtitle": "Share your secret spot with the community."
+    "ctaSubtitle": "Share your secret spot with the community.",
+    "searchButtonLabel": "Search",
+    "searchResultsTitle": "Results for \"{term}\"",
+    "searchResultsSubtitle": "Places matching your search.",
+    "noSearchResults": "No spots match your search."
   }
 }

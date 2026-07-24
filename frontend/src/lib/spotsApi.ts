@@ -16,6 +16,18 @@ export interface NearbySpot {
   distanceKm: number;
 }
 
+export interface SpotSearchResult {
+  id: string;
+  name: string;
+  description: string;
+  category: SpotCategory;
+  photoUrl: string;
+  latitude: number;
+  longitude: number;
+  createdByUserId: string;
+  createdAt: string;
+}
+
 export interface SpotResponse {
   id: string;
   name: string;
@@ -78,4 +90,15 @@ export function deleteSpot(id: string): Promise<void> {
 
 export function getSpot(id: string, signal?: AbortSignal): Promise<SpotResponse> {
   return apiFetch<SpotResponse>(`/spots/${id}`, { signal });
+}
+
+export function searchSpots(
+  params: {q?: string; category?: SpotCategory},
+  signal?: AbortSignal,
+) : Promise<SpotSearchResult[]> {
+  const searchParams = new URLSearchParams();
+  if(params.q) searchParams.set("q", params.q);
+  if(params.category) searchParams.set("category", params.category);
+
+  return apiFetch<SpotSearchResult[]>(`/spots/search?${searchParams.toString()}`, {signal});
 }

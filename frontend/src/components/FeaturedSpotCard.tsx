@@ -3,9 +3,21 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatRelativeTime } from "@/lib/relativeTime";
-import type { NearbySpot } from "@/lib/spotsApi";
+import type { SpotCategory } from "@/lib/spotsApi";
 
-export function FeaturedSpotCard({ spot }: { spot: NearbySpot }) {
+interface FeaturedSpotCardProps {
+  spot: {
+    id: string;
+    name: string;
+    description: string;
+    category: SpotCategory;
+    photoUrl: string;
+    createdAt: string;
+    distanceKm?: number;
+  }
+}
+
+export function FeaturedSpotCard({ spot }: FeaturedSpotCardProps) {
   const t = useTranslations("Spots");
   const locale = useLocale();
 
@@ -25,7 +37,9 @@ export function FeaturedSpotCard({ spot }: { spot: NearbySpot }) {
         <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">{spot.name}</h3>
         <p className="text-xs text-zinc-500">{formatRelativeTime(spot.createdAt, locale)}</p>
         <p className="mt-1 line-clamp-2 flex-1 text-sm text-zinc-600 dark:text-zinc-400">{spot.description}</p>
-        <p className="mt-2 text-xs text-zinc-500">{spot.distanceKm.toFixed(1)} km</p>
+        {spot.distanceKm !== undefined ? (
+          <p className="mt-2 text-xs text-zinc-500">{spot.distanceKm.toFixed(1)} km</p>
+        ) : null}
       </div>
     </Link>
   );

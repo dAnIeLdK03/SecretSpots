@@ -6,12 +6,24 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { NotificationBell } from "@/components/NotificationBell";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { HeroMap } from "@/components/HeroMap";
+import { useEffect, useState } from "react";
 
-export function LandingHero() {
+interface LandingHeroProps {
+  onSearch: (term: string) => void;
+}
+
+export function LandingHero({ onSearch }: LandingHeroProps) {
   const t = useTranslations("Home");
   const tAuth = useTranslations("Auth");
   const status = useAuthStore((state) => state.status);
   const user = useAuthStore((state) => state.user);
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => onSearch(searchTerm), 400);
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, onSearch]);
 
   return (
     <div className="relative overflow-hidden bg-gradient-to-br from-zinc-900 via-emerald-950 to-zinc-950 text-white">
@@ -75,28 +87,36 @@ export function LandingHero() {
           </h1>
           <p className="mt-4 max-w-md text-zinc-300">{t("heroSubtitle")}</p>
 
-          <div className="mt-6 flex items-center gap-2">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              onSearch(searchTerm);
+            }}
+            className="mt-6 flex items-center gap-2"
+          >
             <input
               type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={t("searchPlaceholder")}
               className="w-full rounded-full bg-white px-4 py-3 text-sm text-zinc-900 placeholder:text-zinc-500"
             />
-            <Link
-              href="/map"
-              aria-label={t("mapNav")}
+            <button
+              type="submit"
+              aria-label={t("searchButtonLabel")}
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white"
             >
-              📍
-            </Link>
-          </div>
+              🔍
+            </button>
+          </form>
 
           <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-zinc-400">
             <span>{t("popularSearchesLabel")}:</span>
             {[t("popularSearchTag1"), t("popularSearchTag2"), t("popularSearchTag3"), t("popularSearchTag4")].map(
               (tag) => (
-                <span key={tag} className="rounded-full border border-white/20 px-3 py-1">
+                <button key={tag} type="button" onClick={() => onSearch(tag)} className="rounded-full border border-white/20 px-3 py-1">
                   {tag}
-                </span>
+                </button>
               ),
             )}
           </div>
