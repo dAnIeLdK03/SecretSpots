@@ -2,216 +2,147 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { SpotsMap } from "@/components/SpotsMap";
-import type { MapViewState } from "@/components/SpotsMap";
-import { CreateSpotModal } from "@/components/CreateSpotModal";
-import { getNearbySpots } from "@/lib/spotsApi";
-import type { NearbySpot, SpotResponse } from "@/lib/spotsApi";
-import { getErrorMessage } from "@/lib/apiClient";
-import { useAuthStore } from "@/store/useAuthStore";
 import { Link } from "@/i18n/navigation";
-import { GEOLOCATION_OPTIONS } from "@/lib/geolocationOptions";
+import { LandingHero } from "@/components/LandingHero";
+import { FeaturedSpotCard } from "@/components/FeaturedSpotCard";
+import { getNearbySpots, searchSpots, SPOT_CATEGORIES } from "@/lib/spotsApi";
+import type { NearbySpot, SpotCategory, SpotSearchResult } from "@/lib/spotsApi";
 
-const SOFIA_CENTER: MapViewState = { longitude: 23.3219, latitude: 42.6977, zoom: 12 };
-const RADIUS_OPTIONS = [1, 5, 20, 50] as const;
-const MOVE_THRESHOLD_DEGREES = 0.005;
+const SOFIA_CENTER = { lat: 42.6977, lng: 23.3219 };
+const PAGE_SIZE = 4;
 
-interface LatLng {
-  lat: number;
-  lng: number;
-}
-
-export default function Home() {
-  const t = useTranslations("Spots");
-  const tAuth = useTranslations("Auth");
-  const authStatus = useAuthStore((state) => state.status);
-
-  const [viewState, setViewState] = useState<MapViewState>(SOFIA_CENTER);
-  const [radiusKm, setRadiusKm] = useState<number>(5);
+export default function LandingPage() {
+  const t = useTranslations("Home");
+  const tSpots = useTranslations("Spots");
   const [spots, setSpots] = useState<NearbySpot[]>([]);
-  const [selectedSpot, setSelectedSpot] = useState<NearbySpot | null>(null);
-  const [lastSearchedCenter, setLastSearchedCenter] = useState<LatLng | null>(null);
-  const [showSearchHere, setShowSearchHere] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [createModalCoords, setCreateModalCoords] = useState<LatLng | null>(null);
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [locating, setLocating] = useState(false);
-  const [placingSpot, setPlacingSpot] = useState(false);
-
-  const search = useCallback(
-    async (center: LatLng, radius: number) => {
-      setLoadError(null);
-      try {
-        const results = await getNearbySpots(center.lat, center.lng, radius);
-        setSpots(results);
-        setLastSearchedCenter(center);
-        setShowSearchHere(false);
-      } catch (err) {
-        setLoadError(getErrorMessage(err, t("loadError")));
-      }
-    },
-    [t],
-  );
+  const [categoryFilter, setCategoryFilter] = useState<SpotCategory | "All">("All");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [searchResults, setSearchResults] = useState<SpotSearchResult[] | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch on mount, no user event to attach to
-      void search({ lat: SOFIA_CENTER.latitude, lng: SOFIA_CENTER.longitude }, radiusKm);
-      return;
-    }
-
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const center = { lat: position.coords.latitude, lng: position.coords.longitude };
-        setViewState({ longitude: center.lng, latitude: center.lat, zoom: 13 });
-        setLocating(false);
-        void search(center, radiusKm);
-      },
-      () => {
-        setLocating(false);
-        void search({ lat: SOFIA_CENTER.latitude, lng: SOFIA_CENTER.longitude }, radiusKm);
-      },
-      GEOLOCATION_OPTIONS,
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    getNearbySpots(SOFIA_CENTER.lat, SOFIA_CENTER.lng, 50)
+      .then(setSpots)
+      .catch(() => { });
   }, []);
 
-  function handleRadiusChange(newRadius: number) {
-    setRadiusKm(newRadius);
-    void search({ lat: viewState.latitude, lng: viewState.longitude }, newRadius);
+  function handleCategoryChange(category: SpotCategory | "All") {
+    setCategoryFilter(category);
+    setVisibleCount(PAGE_SIZE);
+    setSearchResults(null);
+    setSearchTerm(null);
   }
 
-  function handleMoveEnd() {
-    if (!lastSearchedCenter) return;
-    const movedEnough =
-      Math.abs(viewState.latitude - lastSearchedCenter.lat) > MOVE_THRESHOLD_DEGREES ||
-      Math.abs(viewState.longitude - lastSearchedCenter.lng) > MOVE_THRESHOLD_DEGREES;
-    setShowSearchHere(movedEnough);
-  }
-
-  function handleUseMyLocation() {
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setLoadError(t("geolocationUnavailable"));
+  const handleSearch = useCallback((term: string) => {
+    const trimmed = term.trim();
+    if (!trimmed){
+      setSearchResults(null);
+      setSearchTerm(null);
       return;
     }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const center = { lat: position.coords.latitude, lng: position.coords.longitude };
-        setViewState({ longitude: center.lng, latitude: center.lat, zoom: 13 });
-        setLocating(false);
-        void search(center, radiusKm);
-      },
-      () => {
-        setLocating(false);
-        setLoadError(t("geolocationDenied"));
-      },
-      GEOLOCATION_OPTIONS,
+
+    const matchedCategory = SPOT_CATEGORIES.find(
+      (category) => tSpots(`category.${category}`).toLowerCase() === trimmed.toLowerCase(),
     );
-  }
 
-  function handleMapClick(lat: number, lng: number) {
-    if (!placingSpot) return;
-    setPlacingSpot(false);
-    setCreateModalCoords({ lat, lng });
-  }
-
-  function handleToggleAddSpot() {
-    if (authStatus !== "authenticated") {
-      setShowLoginPrompt(true);
+    if (matchedCategory) {
+      handleCategoryChange(matchedCategory);
       return;
     }
-    setShowLoginPrompt(false);
-    setPlacingSpot((wasPlacing) => !wasPlacing);
-  }
 
-  function handleSpotCreated(spot: SpotResponse) {
-    const { photoUrls, ...rest } = spot;
-    setSpots((prev) => [{ ...rest, photoUrl: photoUrls[0], distanceKm: 0 }, ...prev]);
-    setCreateModalCoords(null);
-  }
+    setSearchTerm(trimmed);
+    searchSpots({ q: trimmed })
+      .then(setSearchResults)
+      .catch(() => setSearchResults([]));
+  },
+  [tSpots]
+);
+
+  const filteredSpots = categoryFilter === "All" ? spots : spots.filter((s) => s.category === categoryFilter);
+  const displayedSpots = searchResults !== null ? searchResults : filteredSpots;
+  const visibleSpots = displayedSpots.slice(0, visibleCount);
 
   return (
-    <div className="relative flex-1">
-      <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-        <label className="flex items-center gap-2 rounded bg-white px-3 py-2 text-sm shadow dark:bg-zinc-900">
-          <span>{t("radiusLabel")}</span>
-          <select
-            value={radiusKm}
-            onChange={(e) => handleRadiusChange(Number(e.target.value))}
-            className="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700 dark:bg-zinc-900"
+    <div className="flex-1">
+      <LandingHero onSearch={handleSearch} />
+
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => handleCategoryChange("All")}
+            className={`rounded-full px-4 py-2 text-sm ${categoryFilter === "All"
+              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+              : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+              }`}
           >
-            {RADIUS_OPTIONS.map((r) => (
-              <option key={r} value={r}>
-                {r} km
-              </option>
-            ))}
-          </select>
-        </label>
-        <button
-          onClick={handleUseMyLocation}
-          disabled={locating}
-          className="rounded bg-white px-3 py-2 text-left text-sm shadow disabled:opacity-50 dark:bg-zinc-900"
-        >
-          {locating ? t("locating") : t("useMyLocation")}
-        </button>
-      </div>
+            {t("allSpotsFilter")}
+          </button>
+          {SPOT_CATEGORIES.map((category) => (
+            <button
+              key={category}
+              onClick={() => handleCategoryChange(category)}
+              className={`rounded-full px-4 py-2 text-sm ${categoryFilter === category
+                ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+                : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                }`}
+            >
+              {tSpots(`category.${category}`)}
+            </button>
+          ))}
+        </div>
 
-      {showSearchHere ? (
-        <button
-          onClick={() => void search({ lat: viewState.latitude, lng: viewState.longitude }, radiusKm)}
-          className="absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded bg-zinc-900 px-4 py-2 text-sm text-white shadow dark:bg-zinc-100 dark:text-zinc-900"
-        >
-          {t("searchThisArea")}
-        </button>
-      ) : null}
-
-      <button
-        onClick={handleToggleAddSpot}
-        aria-pressed={placingSpot}
-        className={
-          placingSpot
-            ? "absolute right-6 bottom-6 z-10 rounded-full bg-blue-600 px-4 py-3 text-sm text-white shadow-lg ring-4 ring-blue-300 dark:ring-blue-800"
-            : "absolute right-6 bottom-6 z-10 rounded-full bg-zinc-900 px-4 py-3 text-sm text-white shadow-lg dark:bg-zinc-100 dark:text-zinc-900"
-        }
-      >
-        {placingSpot ? t("tapMapToPlace") : t("addAtMyLocation")}
-      </button>
-
-      {showLoginPrompt ? (
-        <div className="absolute bottom-6 left-6 z-10 rounded bg-white px-4 py-3 text-sm shadow dark:bg-zinc-900">
-          {t("loginRequiredToCreate")}{" "}
-          <Link href="/login" className="underline">
-            {tAuth("loginTitle")}
+        <div className="mt-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+              {searchResults !== null ? t("searchResultsTitle", { term: searchTerm ?? "" }) : t("featuredTitle")}
+            </h2>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              {searchResults !== null ? t("searchResultsSubtitle") : t("featuredSubtitle")}
+            </p>
+          </div>
+          <Link
+            href="/map"
+            className="rounded bg-zinc-900 px-4 py-2 text-sm text-white dark:bg-zinc-100 dark:text-zinc-900"
+          >
+            {t("exploreMapButton")}
           </Link>
         </div>
-      ) : null}
 
-      {loadError ? (
-        <div className="absolute top-20 left-4 z-10 rounded bg-red-50 px-3 py-2 text-sm text-red-700 shadow dark:bg-red-950 dark:text-red-300">
-          {loadError}
+        {visibleSpots.length === 0 ? (
+          <p className="mt-8 text-sm text-zinc-500">
+            {searchResults !== null ? t("noSearchResults") : t("noSpotsYet")}
+          </p>
+        ) : (
+          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {visibleSpots.map((spot) => (
+              <FeaturedSpotCard key={spot.id} spot={spot} />
+            ))}
+          </div>
+        )}
+
+        {visibleCount < displayedSpots.length ? (
+          <div className="mt-8 flex justify-center">
+            <button
+              onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
+              className="rounded border border-zinc-300 px-4 py-2 text-sm dark:border-zinc-700"
+            >
+              {t("loadMoreSpots")}
+            </button>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="bg-zinc-900 px-6 py-10 text-white dark:bg-black">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
+          <div className="text-center sm:text-left">
+            <h3 className="text-lg font-semibold">{t("ctaTitle")}</h3>
+            <p className="text-sm text-zinc-400">{t("ctaSubtitle")}</p>
+          </div>
+          <Link href="/map" className="rounded-full bg-emerald-500 px-5 py-3 text-sm font-medium whitespace-nowrap">
+            {t("addASpot")}
+          </Link>
         </div>
-      ) : null}
-
-      <SpotsMap
-        viewState={viewState}
-        onViewStateChange={setViewState}
-        onMoveEnd={handleMoveEnd}
-        spots={spots}
-        onMapClick={handleMapClick}
-        selectedSpot={selectedSpot}
-        onSelectSpot={setSelectedSpot}
-      />
-
-      {createModalCoords ? (
-        <CreateSpotModal
-          latitude={createModalCoords.lat}
-          longitude={createModalCoords.lng}
-          onClose={() => setCreateModalCoords(null)}
-          onCreated={handleSpotCreated}
-        />
-      ) : null}
+      </div>
     </div>
   );
 }

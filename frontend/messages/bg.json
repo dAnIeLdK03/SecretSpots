@@ -30,7 +30,7 @@
       "Cafe": "Кафене",
       "Abandoned": "Изоставено място"
     },
-    "createTitle": "Ново място",
+    "createTitle": "Добави своето тайно място",
     "nameLabel": "Име",
     "descriptionLabel": "Описание",
     "categoryLabel": "Категория",
@@ -106,5 +106,33 @@
     "loadMore": "Зареди още",
     "loadingMore": "Зареждане...",
     "crystalsUnit": "кристала"
+  },
+  "Home": {
+    "exploreNav": "Разгледай",
+    "mapNav": "Карта",
+    "collectionsNav": "Колекции",
+    "aboutNav": "За нас",
+    "addASpot": "Добави място",
+    "heroTitlePrefix": "Открий места, които си заслужава да ",
+    "heroTitleAccent": "откриеш.",
+    "heroSubtitle": "SecretSpots ти помага да откриваш най-интересните и уникални места около теб — подбрани от истински изследователи, не от алгоритми.",
+    "searchPlaceholder": "Търси места, региони или усещания...",
+    "popularSearchesLabel": "Популярни търсения",
+    "popularSearchTag1": "Скрити водопади",
+    "popularSearchTag2": "Гледки при залез",
+    "popularSearchTag3": "Стари руини",
+    "popularSearchTag4": "Локални хапки",
+    "allSpotsFilter": "Всички места",
+    "featuredTitle": "Препоръчани места",
+    "featuredSubtitle": "Внимателно подбрани места, които заслужават място в списъка ти.",
+    "exploreMapButton": "Разгледай картата",
+    "loadMoreSpots": "Зареди още места",
+    "noSpotsYet": "Все още няма места — бъди първият, който ще добави!",
+    "ctaTitle": "Знаеш ли място, което другите трябва да видят?",
+    "ctaSubtitle": "Сподели тайното си място с общността.",
+    "searchButtonLabel": "Търси",
+    "searchResultsTitle": "Резултати за „{term}“",
+    "searchResultsSubtitle": "Места, отговарящи на търсенето.",
+    "noSearchResults": "Няма места, отговарящи на търсенето."
   }
 }

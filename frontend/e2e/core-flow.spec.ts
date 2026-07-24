@@ -57,7 +57,7 @@ test("register, log in, create a spot, check in, and see the crystals notificati
   // check trivially within range regardless of CheckIn:MaxDistanceMeters).
   await context.grantPermissions(["geolocation"]);
   await context.setGeolocation(SPOT_COORDS);
-  await page.goto("/bg");
+  await page.goto("/bg/map");
 
   // The auth session rehydrates asynchronously from the refresh token on
   // every fresh navigation — wait for it, or "Add spot here" sees a stale

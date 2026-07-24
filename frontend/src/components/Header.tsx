@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNotificationsStore } from "@/store/useNotificationsStore";
 import { useCheckInsHistoryStore } from "@/store/useCheckInsHistoryStore";
@@ -14,6 +14,7 @@ import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 export function Header() {
   const t = useTranslations("Layout");
   const tAuth = useTranslations("Auth");
+  const pathname = usePathname();
   const status = useAuthStore((state) => state.status);
   const user = useAuthStore((state) => state.user);
   const clearSession = useAuthStore((state) => state.clearSession);
@@ -77,6 +78,11 @@ export function Header() {
         </Link>
       </>
     );
+
+  // The landing page renders its own hero header (LandingHero) instead of this one.
+  if (pathname === "/") {
+    return null;
+  }
 
   return (
     <header className="flex items-center justify-between border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">

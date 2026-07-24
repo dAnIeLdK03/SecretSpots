@@ -34,6 +34,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresExtension("postgis");
+        modelBuilder.HasPostgresExtension("pg_trgm");
 
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
@@ -53,6 +54,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<Notification>()
             .HasIndex(n => new { n.UserId, n.CreatedAt });
+
+        modelBuilder.Entity<Spot>()
+            .HasIndex(s => s.Name)
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
+
+        modelBuilder.Entity<Spot>()
+            .HasIndex(s => s.Description)
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
 
         base.OnModelCreating(modelBuilder);
     }
