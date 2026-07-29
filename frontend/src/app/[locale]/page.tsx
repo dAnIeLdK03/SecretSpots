@@ -5,25 +5,27 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { LandingHero } from "@/components/LandingHero";
 import { FeaturedSpotCard } from "@/components/FeaturedSpotCard";
-import { getNearbySpots, searchSpots, SPOT_CATEGORIES } from "@/lib/spotsApi";
-import type { NearbySpot, SpotCategory, SpotSearchResult } from "@/lib/spotsApi";
+import { searchSpots, SPOT_CATEGORIES } from "@/lib/spotsApi";
+import type { SpotCategory, SpotSearchResult } from "@/lib/spotsApi";
 
-const SOFIA_CENTER = { lat: 42.6977, lng: 23.3219 };
 const PAGE_SIZE = 4;
 
 export default function LandingPage() {
   const t = useTranslations("Home");
   const tSpots = useTranslations("Spots");
-  const [spots, setSpots] = useState<NearbySpot[]>([]);
+  const [spots, setSpots] = useState<SpotSearchResult[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<SpotCategory | "All">("All");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [searchResults, setSearchResults] = useState<SpotSearchResult[] | null>(null);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
   useEffect(() => {
-    getNearbySpots(SOFIA_CENTER.lat, SOFIA_CENTER.lng, 50)
+    // No location filter — "Featured spots" is a country-wide browse, not a
+    // "near you" search (that's what /map is for), so spots anywhere in
+    // Bulgaria should show up here, not just within some radius of Sofia.
+    searchSpots({})
       .then(setSpots)
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   function handleCategoryChange(category: SpotCategory | "All") {
@@ -62,6 +64,18 @@ export default function LandingPage() {
   const displayedSpots = searchResults !== null ? searchResults : filteredSpots;
   const visibleSpots = displayedSpots.slice(0, visibleCount);
 
+  // Fuzzy/word-level matching on the backend means a result can show up without
+  // literally containing the search term — call that out so it doesn't read as a bug.
+  const hasExactMatch =
+    searchResults === null ||
+    searchResults.length === 0 ||
+    !searchTerm ||
+    searchResults.some(
+      (s) =>
+        s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.description.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+
   return (
     <div className="flex-1">
       <LandingHero onSearch={handleSearch} />
@@ -97,7 +111,11 @@ export default function LandingPage() {
               {searchResults !== null ? t("searchResultsTitle", { term: searchTerm ?? "" }) : t("featuredTitle")}
             </h2>
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              {searchResults !== null ? t("searchResultsSubtitle") : t("featuredSubtitle")}
+              {searchResults !== null
+                ? hasExactMatch
+                  ? t("searchResultsSubtitle")
+                  : t("approximateResultsSubtitle", { term: searchTerm ?? "" })
+                : t("featuredSubtitle")}
             </p>
           </div>
           <Link
