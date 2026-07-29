@@ -133,6 +133,7 @@
     "searchButtonLabel": "Търси",
     "searchResultsTitle": "Резултати за „{term}“",
     "searchResultsSubtitle": "Места, отговарящи на търсенето.",
+    "approximateResultsSubtitle": "Няма точни съвпадения за „{term}“ — показваме най-близките намерени места.",
     "noSearchResults": "Няма места, отговарящи на търсенето."
   }
 }

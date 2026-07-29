@@ -133,6 +133,7 @@
     "searchButtonLabel": "Search",
     "searchResultsTitle": "Results for \"{term}\"",
     "searchResultsSubtitle": "Places matching your search.",
+    "approximateResultsSubtitle": "No exact matches for \"{term}\" — showing the closest spots we found.",
     "noSearchResults": "No spots match your search."
   }
 }

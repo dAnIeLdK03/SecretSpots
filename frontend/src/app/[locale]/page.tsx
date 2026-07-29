@@ -64,6 +64,18 @@ export default function LandingPage() {
   const displayedSpots = searchResults !== null ? searchResults : filteredSpots;
   const visibleSpots = displayedSpots.slice(0, visibleCount);
 
+  // Fuzzy/word-level matching on the backend means a result can show up without
+  // literally containing the search term — call that out so it doesn't read as a bug.
+  const hasExactMatch =
+    searchResults === null ||
+    searchResults.length === 0 ||
+    !searchTerm ||
+    searchResults.some(
+      (s) =>
+        s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.description.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+
   return (
     <div className="flex-1">
       <LandingHero onSearch={handleSearch} />
@@ -99,7 +111,11 @@ export default function LandingPage() {
               {searchResults !== null ? t("searchResultsTitle", { term: searchTerm ?? "" }) : t("featuredTitle")}
             </h2>
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              {searchResults !== null ? t("searchResultsSubtitle") : t("featuredSubtitle")}
+              {searchResults !== null
+                ? hasExactMatch
+                  ? t("searchResultsSubtitle")
+                  : t("approximateResultsSubtitle", { term: searchTerm ?? "" })
+                : t("featuredSubtitle")}
             </p>
           </div>
           <Link
