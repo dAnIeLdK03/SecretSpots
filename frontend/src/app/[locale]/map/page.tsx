@@ -135,12 +135,16 @@ export default function MapPage() {
   return (
     <div className="relative flex-1">
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-        <label className="flex items-center gap-2 rounded bg-white px-3 py-2 text-sm shadow dark:bg-zinc-900">
+        <label
+          className="flex items-center gap-2 rounded px-3 py-2 text-sm shadow"
+          style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+        >
           <span>{t("radiusLabel")}</span>
           <select
             value={radiusKm}
             onChange={(e) => handleRadiusChange(Number(e.target.value))}
-            className="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700 dark:bg-zinc-900"
+            className="rounded border px-2 py-1"
+            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
           >
             {RADIUS_OPTIONS.map((r) => (
               <option key={r} value={r}>
@@ -152,7 +156,8 @@ export default function MapPage() {
         <button
           onClick={handleUseMyLocation}
           disabled={locating}
-          className="rounded bg-white px-3 py-2 text-left text-sm shadow disabled:opacity-50 dark:bg-zinc-900"
+          className="rounded px-3 py-2 text-left text-sm shadow disabled:opacity-50"
+          style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
         >
           {locating ? t("locating") : t("useMyLocation")}
         </button>
@@ -161,7 +166,8 @@ export default function MapPage() {
       {showSearchHere ? (
         <button
           onClick={() => void search({ lat: viewState.latitude, lng: viewState.longitude }, radiusKm)}
-          className="absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded bg-zinc-900 px-4 py-2 text-sm text-white shadow dark:bg-zinc-100 dark:text-zinc-900"
+          className="absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded px-4 py-2 text-sm shadow"
+          style={{ backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }}
         >
           {t("searchThisArea")}
         </button>
@@ -170,17 +176,21 @@ export default function MapPage() {
       <button
         onClick={handleToggleAddSpot}
         aria-pressed={placingSpot}
-        className={
+        className="absolute right-6 bottom-6 z-10 rounded-full px-4 py-3 text-sm shadow-lg"
+        style={
           placingSpot
-            ? "absolute right-6 bottom-6 z-10 rounded-full bg-blue-600 px-4 py-3 text-sm text-white shadow-lg ring-4 ring-blue-300 dark:ring-blue-800"
-            : "absolute right-6 bottom-6 z-10 rounded-full bg-zinc-900 px-4 py-3 text-sm text-white shadow-lg dark:bg-zinc-100 dark:text-zinc-900"
+            ? { backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)", boxShadow: "0 0 0 4px rgba(181,74,36,0.25)" }
+            : { backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }
         }
       >
         {placingSpot ? t("tapMapToPlace") : t("addAtMyLocation")}
       </button>
 
       {showLoginPrompt ? (
-        <div className="absolute bottom-6 left-6 z-10 rounded bg-white px-4 py-3 text-sm shadow dark:bg-zinc-900">
+        <div
+          className="absolute bottom-6 left-6 z-10 rounded px-4 py-3 text-sm shadow"
+          style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+        >
           {t("loginRequiredToCreate")}{" "}
           <Link href="/login" className="underline">
             {tAuth("loginTitle")}
@@ -189,7 +199,7 @@ export default function MapPage() {
       ) : null}
 
       {loadError ? (
-        <div className="absolute top-20 left-4 z-10 rounded bg-red-50 px-3 py-2 text-sm text-red-700 shadow dark:bg-red-950 dark:text-red-300">
+        <div className="absolute top-20 left-4 z-10 rounded bg-red-50 px-3 py-2 text-sm text-red-700 shadow">
           {loadError}
         </div>
       ) : null}

@@ -15,9 +15,11 @@ export function CheckInHistoryItem({ checkIn }: { checkIn: MyCheckInResponse }) 
         <Link href={`/spots/${checkIn.spotId}`} className="font-medium underline">
           {checkIn.spotName}
         </Link>
-        <span className="text-xs text-zinc-500">{formatRelativeTime(checkIn.createdAt, locale)}</span>
+        <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+          {formatRelativeTime(checkIn.createdAt, locale)}
+        </span>
       </span>
-      <span className="whitespace-nowrap text-zinc-600 dark:text-zinc-400">
+      <span className="whitespace-nowrap" style={{ color: "var(--fieldmap-dim)" }}>
         +{checkIn.crystalsAwarded} {t("crystalsUnit")}
       </span>
     </li>

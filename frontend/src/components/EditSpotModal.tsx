@@ -38,37 +38,43 @@ export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="w-full max-w-sm rounded-lg bg-white p-6 dark:bg-zinc-900">
+            <div
+                className="w-full max-w-sm rounded-lg p-6"
+                style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+            >
                 <h2 className="mb-4 text-lg font-semibold">{t("editTitle")}</h2>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <label className="flex flex-col gap-1">
-                        <span className="text-sm text-zinc-600 dark:text-zinc-400">{t("nameLabel")}</span>
+                        <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>{t("nameLabel")}</span>
                         <input
                             type="text"
                             required
                             maxLength={100}
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+                            className="rounded border px-3 py-2"
+                            style={{ borderColor: "var(--fieldmap-contour)" }}
                         />
                     </label>
                     <label className="flex flex-col gap-1">
-                        <span className="text-sm text-zinc-600 dark:text-zinc-400">{t("descriptionLabel")}</span>
+                        <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>{t("descriptionLabel")}</span>
                         <textarea
                             required
                             maxLength={2000}
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
-                            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+                            className="rounded border px-3 py-2"
+                            style={{ borderColor: "var(--fieldmap-contour)" }}
                         />
                     </label>
                     <label className="flex flex-col gap-1">
-                        <span className="text-sm text-zinc-600 dark:text-zinc-400">{t("categoryLabel")}</span>
+                        <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>{t("categoryLabel")}</span>
                         <select
                             value={category}
                             onChange={(e) => setCategory(e.target.value as SpotCategory)}
-                            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+                            className="rounded border px-3 py-2"
+                            style={{ borderColor: "var(--fieldmap-contour)" }}
                         >
                             {SPOT_CATEGORIES.map((c) => (
                                 <option key={c} value={c}>
@@ -78,15 +84,16 @@ export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
                         </select>
                     </label>
                     <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} />
-                    {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}
+                    {error ? <p className="text-sm text-red-700">{error}</p> : null}
                     <div className="flex justify-end gap-2">
-                        <button type="button" onClick={onClose} className="rounded px-4 py-2 text-zinc-600 dark:text-zinc-400">
+                        <button type="button" onClick={onClose} className="rounded px-4 py-2" style={{ color: "var(--fieldmap-dim)" }}>
                             {t("cancelButton")}
                         </button>
                         <button
                             type="submit"
                             disabled={submitting || photoUrls.length === 0}
-                            className="rounded bg-zinc-900 px-4 py-2 text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+                            className="rounded px-4 py-2 disabled:opacity-50"
+                            style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
                         >
                             {submitting ? t("saving") : t("saveButton")}
                         </button>

@@ -35,46 +35,56 @@ export default function RegisterPage() {
       <h1 className="text-2xl font-semibold">{t("registerTitle")}</h1>
       <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-zinc-600 dark:text-zinc-400">{t("displayNameLabel")}</span>
+          <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+            {t("displayNameLabel")}
+          </span>
           <input
             type="text"
             required
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            className="rounded border px-3 py-2"
+            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-zinc-600 dark:text-zinc-400">{t("emailLabel")}</span>
+          <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+            {t("emailLabel")}
+          </span>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            className="rounded border px-3 py-2"
+            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-zinc-600 dark:text-zinc-400">{t("passwordLabel")}</span>
+          <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+            {t("passwordLabel")}
+          </span>
           <input
             type="password"
             required
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
+            className="rounded border px-3 py-2"
+            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
           />
         </label>
-        {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}
+        {error ? <p className="text-sm text-red-700">{error}</p> : null}
         <button
           type="submit"
           disabled={submitting}
-          className="rounded bg-zinc-900 px-4 py-2 text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+          className="rounded px-4 py-2 disabled:opacity-50"
+          style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
         >
           {submitting ? t("registerSubmitting") : t("registerButton")}
         </button>
       </form>
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
         {t("alreadyHaveAccount")}{" "}
         <Link href="/login" className="underline">
           {t("loginLink")}
