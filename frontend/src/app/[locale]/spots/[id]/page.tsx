@@ -54,7 +54,9 @@ function SpotDetailContent({ id }: { id: string }) {
   if (state.status === "loading") {
     return (
       <div className="flex flex-1 items-center justify-center p-8">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">{t("loading")}</p>
+        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+          {t("loading")}
+        </p>
       </div>
     );
   }
@@ -63,7 +65,9 @@ function SpotDetailContent({ id }: { id: string }) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">
         <h1 className="text-xl font-semibold">{t("notFoundTitle")}</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">{t("notFoundMessage")}</p>
+        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+          {t("notFoundMessage")}
+        </p>
       </div>
     );
   }
@@ -71,7 +75,7 @@ function SpotDetailContent({ id }: { id: string }) {
   if (state.status === "error") {
     return (
       <div className="flex flex-1 items-center justify-center p-8">
-        <p className="text-sm text-red-600 dark:text-red-400">{state.message}</p>
+        <p className="text-sm text-red-700">{state.message}</p>
       </div>
     );
   }
@@ -108,20 +112,23 @@ function SpotDetailContent({ id }: { id: string }) {
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 p-8">
       <PhotoSlider photos={spot.photoUrls} alt={spot.name} />
       <h1 className="text-2xl font-semibold">{spot.name}</h1>
-      <p className="text-sm text-zinc-700 dark:text-zinc-300">{spot.description}</p>
+      <p className="text-sm" style={{ color: "var(--fieldmap-ink)" }}>
+        {spot.description}
+      </p>
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-        <dt className="text-zinc-600 dark:text-zinc-400">{t("categoryLabel")}</dt>
+        <dt style={{ color: "var(--fieldmap-dim)" }}>{t("categoryLabel")}</dt>
         <dd>{t(`category.${spot.category}`)}</dd>
-        <dt className="text-zinc-600 dark:text-zinc-400">{t("authorLabel")}</dt>
+        <dt style={{ color: "var(--fieldmap-dim)" }}>{t("authorLabel")}</dt>
         <dd>{spot.createdByUserId}</dd>
-        <dt className="text-zinc-600 dark:text-zinc-400">{t("createdAtLabel")}</dt>
+        <dt style={{ color: "var(--fieldmap-dim)" }}>{t("createdAtLabel")}</dt>
         <dd>{formatRelativeTime(spot.createdAt, locale)}</dd>
       </dl>
 
       <div>
         <button
           onClick={handleCheckInClick}
-          className="rounded bg-zinc-900 px-4 py-2 text-sm text-white dark:bg-zinc-100 dark:text-zinc-900"
+          className="rounded px-4 py-2 text-sm"
+          style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
         >
           {tCheckIns("checkInButton")}
         </button>
@@ -129,22 +136,23 @@ function SpotDetailContent({ id }: { id: string }) {
           <>
             <button
               onClick={() => setShowEditModal(true)}
-              className="ml-2 rounded border border-zinc-300 px-4 py-2 text-sm dark:border-zinc-700"
+              className="ml-2 rounded border px-4 py-2 text-sm"
+              style={{ borderColor: "var(--fieldmap-contour)" }}
             >
               {t("editButton")}
             </button>
             <button
               onClick={handleDeleteClick}
               disabled={deleting}
-              className="ml-2 rounded border border-red-300 px-4 py-2 text-sm text-red-600 disabled:opacity-50 dark:border-red-900 dark:text-red-400"
+              className="ml-2 rounded border border-red-300 px-4 py-2 text-sm text-red-700 disabled:opacity-50"
             >
               {t("deleteButton")}
             </button>
           </>
         )}
-        {error ? <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p> : null}
+        {error ? <p className="mt-2 text-sm text-red-700">{error}</p> : null}
         {showLoginPrompt ? (
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mt-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
             {tCheckIns("loginRequiredToCheckIn")}{" "}
             <Link href="/login" className="underline">
               {tAuth("loginTitle")}

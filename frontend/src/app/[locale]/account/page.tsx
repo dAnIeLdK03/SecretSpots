@@ -35,23 +35,27 @@ export default function AccountPage() {
     <div className="flex flex-1 flex-col items-center gap-4 p-8">
       <h1 className="text-2xl font-semibold">{t("accountTitle")}</h1>
       <dl className="grid w-full max-w-sm grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-        <dt className="text-zinc-600 dark:text-zinc-400">{t("displayNameLabel")}</dt>
+        <dt style={{ color: "var(--fieldmap-dim)" }}>{t("displayNameLabel")}</dt>
         <dd>{user.displayName}</dd>
-        <dt className="text-zinc-600 dark:text-zinc-400">{t("emailLabel")}</dt>
+        <dt style={{ color: "var(--fieldmap-dim)" }}>{t("emailLabel")}</dt>
         <dd>{user.email}</dd>
-        <dt className="text-zinc-600 dark:text-zinc-400">{t("crystalBalanceLabel")}</dt>
+        <dt style={{ color: "var(--fieldmap-dim)" }}>{t("crystalBalanceLabel")}</dt>
         <dd>{user.crystalBalance}</dd>
       </dl>
 
       <div className="w-full max-w-sm">
         <h2 className="mb-2 text-sm font-semibold">{tHistory("title")}</h2>
-        <div className="rounded-md border border-zinc-200 dark:border-zinc-800">
+        <div className="rounded-md border" style={{ borderColor: "var(--fieldmap-contour)" }}>
           {status === "loading" ? (
-            <p className="px-4 py-6 text-center text-sm text-zinc-500">{tHistory("loading")}</p>
+            <p className="px-4 py-6 text-center text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+              {tHistory("loading")}
+            </p>
           ) : items.length === 0 ? (
-            <p className="px-4 py-6 text-center text-sm text-zinc-500">{tHistory("empty")}</p>
+            <p className="px-4 py-6 text-center text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+              {tHistory("empty")}
+            </p>
           ) : (
-            <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
+            <ul className="divide-y divide-[var(--fieldmap-contour)]">
               {items.map((checkIn) => (
                 <CheckInHistoryItem key={checkIn.id} checkIn={checkIn} />
               ))}
@@ -62,7 +66,8 @@ export default function AccountPage() {
             <button
               onClick={() => loadMore()}
               disabled={status === "loadingMore"}
-              className="w-full border-t border-zinc-200 px-4 py-2 text-center text-sm text-zinc-600 disabled:opacity-50 dark:border-zinc-800 dark:text-zinc-400"
+              className="w-full border-t px-4 py-2 text-center text-sm disabled:opacity-50"
+              style={{ borderColor: "var(--fieldmap-contour)", color: "var(--fieldmap-dim)" }}
             >
               {status === "loadingMore" ? tHistory("loadingMore") : tHistory("loadMore")}
             </button>

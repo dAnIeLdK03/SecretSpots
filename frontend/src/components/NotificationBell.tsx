@@ -38,7 +38,8 @@ export function NotificationBell() {
       <button
         onClick={toggleOpen}
         aria-label={t("title")}
-        className="relative rounded-full p-2 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+        className="relative rounded-full p-2 hover:bg-black/5"
+        style={{ color: "var(--fieldmap-dim)" }}
       >
         🔔
         {unreadCount > 0 && (

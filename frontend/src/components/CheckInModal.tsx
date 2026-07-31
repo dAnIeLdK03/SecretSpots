@@ -59,19 +59,23 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-sm rounded-lg bg-white p-6 dark:bg-zinc-900">
+      <div
+        className="w-full max-w-sm rounded-lg p-6"
+        style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+      >
         {result ? (
           <div className="flex flex-col gap-4">
             <h2 className="text-lg font-semibold">{t("successTitle")}</h2>
             <p>{t("crystalsAwardedMessage", { count: result.crystalsAwarded })}</p>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
               {t("newBalanceLabel")}: {result.newCrystalBalance}
             </p>
             <div className="flex justify-end">
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded bg-zinc-900 px-4 py-2 text-white dark:bg-zinc-100 dark:text-zinc-900"
+                className="rounded px-4 py-2"
+                style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
               >
                 {t("closeButton")}
               </button>
@@ -81,15 +85,21 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <h2 className="text-lg font-semibold">{t("modalTitle")}</h2>
             <PhotoUpload label={t("photoLabel")} value={photoUrl} onChange={setPhotoUrl} />
-            {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}
+            {error ? <p className="text-sm text-red-700">{error}</p> : null}
             <div className="flex justify-end gap-2">
-              <button type="button" onClick={onClose} className="rounded px-4 py-2 text-zinc-600 dark:text-zinc-400">
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded px-4 py-2"
+                style={{ color: "var(--fieldmap-dim)" }}
+              >
                 {t("cancelButton")}
               </button>
               <button
                 type="submit"
                 disabled={submitting || !photoUrl}
-                className="rounded bg-zinc-900 px-4 py-2 text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+                className="rounded px-4 py-2 disabled:opacity-50"
+                style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
               >
                 {submitting ? t("submitting") : t("submitButton")}
               </button>

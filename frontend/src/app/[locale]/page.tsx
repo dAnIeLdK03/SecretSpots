@@ -77,17 +77,19 @@ export default function LandingPage() {
     );
 
   return (
-    <div className="flex-1">
+    <div className="flex-1" style={{ backgroundColor: "var(--fieldmap-paper)", color: "var(--fieldmap-ink)" }}>
       <LandingHero onSearch={handleSearch} />
 
       <div className="mx-auto max-w-6xl px-6 py-10">
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => handleCategoryChange("All")}
-            className={`rounded-full px-4 py-2 text-sm ${categoryFilter === "All"
-              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-              : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-              }`}
+            className="rounded-full px-4 py-2 text-sm font-medium"
+            style={
+              categoryFilter === "All"
+                ? { backgroundColor: "var(--fieldmap-trail)", color: "#f1eddc" }
+                : { backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-ink)" }
+            }
           >
             {t("allSpotsFilter")}
           </button>
@@ -95,10 +97,12 @@ export default function LandingPage() {
             <button
               key={category}
               onClick={() => handleCategoryChange(category)}
-              className={`rounded-full px-4 py-2 text-sm ${categoryFilter === category
-                ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                }`}
+              className="rounded-full px-4 py-2 text-sm font-medium"
+              style={
+                categoryFilter === category
+                  ? { backgroundColor: "var(--fieldmap-trail)", color: "#f1eddc" }
+                  : { backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-ink)" }
+              }
             >
               {tSpots(`category.${category}`)}
             </button>
@@ -107,10 +111,10 @@ export default function LandingPage() {
 
         <div className="mt-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+            <h2 className="text-2xl font-semibold">
               {searchResults !== null ? t("searchResultsTitle", { term: searchTerm ?? "" }) : t("featuredTitle")}
             </h2>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+            <p className="mt-1 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
               {searchResults !== null
                 ? hasExactMatch
                   ? t("searchResultsSubtitle")
@@ -120,14 +124,15 @@ export default function LandingPage() {
           </div>
           <Link
             href="/map"
-            className="rounded bg-zinc-900 px-4 py-2 text-sm text-white dark:bg-zinc-100 dark:text-zinc-900"
+            className="rounded px-4 py-2 text-sm font-medium"
+            style={{ backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper)" }}
           >
             {t("exploreMapButton")}
           </Link>
         </div>
 
         {visibleSpots.length === 0 ? (
-          <p className="mt-8 text-sm text-zinc-500">
+          <p className="mt-8 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
             {searchResults !== null ? t("noSearchResults") : t("noSpotsYet")}
           </p>
         ) : (
@@ -142,7 +147,8 @@ export default function LandingPage() {
           <div className="mt-8 flex justify-center">
             <button
               onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
-              className="rounded border border-zinc-300 px-4 py-2 text-sm dark:border-zinc-700"
+              className="rounded border px-4 py-2 text-sm"
+              style={{ borderColor: "var(--fieldmap-contour)" }}
             >
               {t("loadMoreSpots")}
             </button>
@@ -150,13 +156,17 @@ export default function LandingPage() {
         ) : null}
       </div>
 
-      <div className="bg-zinc-900 px-6 py-10 text-white dark:bg-black">
+      <div className="px-6 py-10" style={{ backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper)" }}>
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="text-center sm:text-left">
             <h3 className="text-lg font-semibold">{t("ctaTitle")}</h3>
-            <p className="text-sm text-zinc-400">{t("ctaSubtitle")}</p>
+            <p className="text-sm opacity-70">{t("ctaSubtitle")}</p>
           </div>
-          <Link href="/map" className="rounded-full bg-emerald-500 px-5 py-3 text-sm font-medium whitespace-nowrap">
+          <Link
+            href="/map"
+            className="rounded-full px-5 py-3 text-sm font-medium whitespace-nowrap"
+            style={{ backgroundColor: "var(--fieldmap-trail)", color: "#f1eddc" }}
+          >
             {t("addASpot")}
           </Link>
         </div>

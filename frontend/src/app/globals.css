@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
+/* "Field Map" palette — the whole app reads as a trail map rather than a
+   generic gradient. Fixed regardless of OS light/dark preference, the same
+   way a paper map doesn't invert at night. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --fieldmap-paper: #ded9c6;
+  --fieldmap-paper-light: #f1eddc;
+  --fieldmap-ink: #2b2a23;
+  --fieldmap-contour: #a9a588;
+  --fieldmap-trail: #b54a24;
+  --fieldmap-dim: #8b7355;
+  --fieldmap-card: #d3cdb6;
+
+  --background: var(--fieldmap-paper);
+  --foreground: var(--fieldmap-ink);
 }
 
 @theme inline {
@@ -10,13 +21,6 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {

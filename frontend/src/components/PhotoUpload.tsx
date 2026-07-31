@@ -46,7 +46,9 @@ export function PhotoUpload({ label, value, onChange, required = true }: PhotoUp
 
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-sm text-zinc-600 dark:text-zinc-400">{label}</span>
+      <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+        {label}
+      </span>
       {previewSrc ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={previewSrc} alt="" className="h-32 w-full rounded object-cover" />
@@ -56,10 +58,15 @@ export function PhotoUpload({ label, value, onChange, required = true }: PhotoUp
         accept="image/*"
         required={required && !value}
         onChange={(e) => void handleFileChange(e)}
-        className="rounded border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+        className="rounded border px-3 py-2 text-sm"
+        style={{ borderColor: "var(--fieldmap-contour)" }}
       />
-      {uploading ? <p className="text-sm text-zinc-600 dark:text-zinc-400">{t("uploading")}</p> : null}
-      {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}
+      {uploading ? (
+        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+          {t("uploading")}
+        </p>
+      ) : null}
+      {error ? <p className="text-sm text-red-700">{error}</p> : null}
     </div>
   );
 }

@@ -55,7 +55,7 @@ export function Header() {
   const navLinks =
     status === "authenticated" && user ? (
       <>
-        <Link href="/account" onClick={closeMenu} className="text-zinc-600 dark:text-zinc-400">
+        <Link href="/account" onClick={closeMenu} style={{ color: "var(--fieldmap-dim)" }}>
           {user.displayName} ({user.crystalBalance} {tAuth("crystalBalanceLabel")})
         </Link>
         <button
@@ -85,7 +85,10 @@ export function Header() {
   }
 
   return (
-    <header className="flex items-center justify-between border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
+    <header
+      className="flex items-center justify-between border-b px-6 py-4"
+      style={{ borderColor: "var(--fieldmap-contour)" }}
+    >
       <Link href="/" className="text-lg font-semibold">
         {t("appName")}
       </Link>
@@ -100,12 +103,16 @@ export function Header() {
           <button
             onClick={() => setIsMenuOpen((open) => !open)}
             aria-label={t("menuLabel")}
-            className="rounded-full p-2 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            className="rounded-full p-2 hover:bg-black/5"
+            style={{ color: "var(--fieldmap-dim)" }}
           >
             ☰
           </button>
           {isMenuOpen && (
-            <div className="absolute right-0 top-full z-10 mt-2 w-48 rounded-md border border-zinc-200 bg-white p-3 shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
+            <div
+              className="absolute right-0 top-full z-10 mt-2 w-48 rounded-md border p-3 shadow-lg"
+              style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
+            >
               <nav className="flex flex-col gap-3 text-sm">{navLinks}</nav>
             </div>
           )}
