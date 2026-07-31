@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { NotificationBell } from "@/components/NotificationBell";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { HeroMap } from "@/components/HeroMap";
+import { SPOT_CATEGORIES } from "@/lib/spotsApi";
 import { useEffect, useState } from "react";
 
 interface LandingHeroProps {
@@ -15,6 +16,7 @@ interface LandingHeroProps {
 export function LandingHero({ onSearch }: LandingHeroProps) {
   const t = useTranslations("Home");
   const tAuth = useTranslations("Auth");
+  const tSpots = useTranslations("Spots");
   const status = useAuthStore((state) => state.status);
   const user = useAuthStore((state) => state.user);
 
@@ -112,13 +114,14 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
 
           <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-zinc-400">
             <span>{t("popularSearchesLabel")}:</span>
-            {[t("popularSearchTag1"), t("popularSearchTag2"), t("popularSearchTag3"), t("popularSearchTag4")].map(
-              (tag) => (
-                <button key={tag} type="button" onClick={() => onSearch(tag)} className="rounded-full border border-white/20 px-3 py-1">
-                  {tag}
+            {SPOT_CATEGORIES.map((category) => {
+              const label = tSpots(`category.${category}`);
+              return (
+                <button key={category} type="button" onClick={() => onSearch(label)} className="rounded-full border border-white/20 px-3 py-1">
+                  {label}
                 </button>
-              ),
-            )}
+              );
+            })}
           </div>
         </div>
 
