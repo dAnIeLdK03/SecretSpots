@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { register, establishSession } from "@/lib/authApi";
 import { getErrorMessage } from "@/lib/apiClient";
+import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 
 export default function RegisterPage() {
   const t = useTranslations("Auth");
@@ -31,8 +32,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-6 p-8">
-      <h1 className="text-2xl font-semibold">{t("registerTitle")}</h1>
+    <AuthSplitLayout title={t("registerWelcomeTitle")} subtitle={t("registerWelcomeSubtitle")}>
+      <h2 className="text-2xl font-semibold">{t("registerTitle")}</h2>
       <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
         <label className="flex flex-col gap-1">
           <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
@@ -90,6 +91,6 @@ export default function RegisterPage() {
           {t("loginLink")}
         </Link>
       </p>
-    </div>
+    </AuthSplitLayout>
   );
 }

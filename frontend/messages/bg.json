@@ -21,7 +21,11 @@
     "accountTitle": "Моят акаунт",
     "crystalBalanceLabel": "Кристали",
     "logoutButton": "Изход",
-    "unknownError": "Възникна грешка. Опитайте отново."
+    "unknownError": "Възникна грешка. Опитайте отново.",
+    "loginWelcomeTitle": "Добре дошъл отново, изследователю.",
+    "loginWelcomeSubtitle": "Продължи по пътеката оттам, откъдето спря.",
+    "registerWelcomeTitle": "Начертай своята карта.",
+    "registerWelcomeSubtitle": "Всеки изследовател започва с едно място."
   },
   "Spots": {
     "category": {
