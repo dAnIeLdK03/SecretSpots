@@ -7,7 +7,6 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { HeroMap } from "@/components/HeroMap";
 import { HeroContourBackground } from "@/components/HeroContourBackground";
-import { SPOT_CATEGORIES } from "@/lib/spotsApi";
 import { useEffect, useState } from "react";
 
 interface LandingHeroProps {
@@ -17,7 +16,6 @@ interface LandingHeroProps {
 export function LandingHero({ onSearch }: LandingHeroProps) {
   const t = useTranslations("Home");
   const tAuth = useTranslations("Auth");
-  const tSpots = useTranslations("Spots");
   const status = useAuthStore((state) => state.status);
   const user = useAuthStore((state) => state.user);
 
@@ -125,29 +123,6 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
                 →
               </button>
             </form>
-
-            <div className="mt-4 flex flex-wrap items-center gap-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-              <span>{t("popularSearchesLabel")}:</span>
-              {SPOT_CATEGORIES.map((category) => {
-                const label = tSpots(`category.${category}`);
-                return (
-                  <button
-                    key={category}
-                    type="button"
-                    onClick={() => onSearch(label)}
-                    className="flex items-center gap-1.5 rounded-full border px-3 py-1 font-medium hover:bg-black/5"
-                    style={{ borderColor: "var(--fieldmap-ink)", color: "var(--fieldmap-ink)" }}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="h-1.5 w-1.5 rotate-45 border"
-                      style={{ borderColor: "var(--fieldmap-trail)" }}
-                    />
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
           </div>
         </div>
 
