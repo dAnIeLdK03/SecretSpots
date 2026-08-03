@@ -21,7 +21,11 @@
     "accountTitle": "My account",
     "crystalBalanceLabel": "Crystals",
     "logoutButton": "Log out",
-    "unknownError": "Something went wrong. Please try again."
+    "unknownError": "Something went wrong. Please try again.",
+    "loginWelcomeTitle": "Welcome back, explorer.",
+    "loginWelcomeSubtitle": "Pick up the trail where you left it.",
+    "registerWelcomeTitle": "Start your map.",
+    "registerWelcomeSubtitle": "Every explorer starts with one pin."
   },
   "Spots": {
     "category": {

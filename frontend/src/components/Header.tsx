@@ -79,8 +79,9 @@ export function Header() {
       </>
     );
 
-  // The landing page renders its own hero header (LandingHero) instead of this one.
-  if (pathname === "/") {
+  // The landing page renders its own hero header (LandingHero), and the auth
+  // pages render a full-height split screen with no room for a navbar.
+  if (pathname === "/" || pathname === "/login" || pathname === "/register") {
     return null;
   }
 
