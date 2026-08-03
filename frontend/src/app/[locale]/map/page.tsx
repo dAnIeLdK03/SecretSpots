@@ -9,6 +9,7 @@ import { getNearbySpots } from "@/lib/spotsApi";
 import type { NearbySpot, SpotResponse } from "@/lib/spotsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useGeolocationStore } from "@/store/useGeolocationStore";
 import { Link } from "@/i18n/navigation";
 import { GEOLOCATION_OPTIONS } from "@/lib/geolocationOptions";
 
@@ -25,6 +26,8 @@ export default function MapPage() {
   const t = useTranslations("Spots");
   const tAuth = useTranslations("Auth");
   const authStatus = useAuthStore((state) => state.status);
+  const geoStatus = useGeolocationStore((state) => state.status);
+  const geoCoords = useGeolocationStore((state) => state.coords);
 
   const [viewState, setViewState] = useState<MapViewState>(SOFIA_CENTER);
   const [radiusKm, setRadiusKm] = useState<number>(5);
@@ -54,28 +57,30 @@ export default function MapPage() {
   );
 
   useEffect(() => {
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch on mount, no user event to attach to
-      void search({ lat: SOFIA_CENTER.latitude, lng: SOFIA_CENTER.longitude }, radiusKm);
+    // Normally already resolved by now — the request was kicked off as soon as
+    // the app mounted (see AuthProvider), not when this page did. This just
+    // reacts to whatever state that request is in, and requests it defensively
+    // if for some reason it never started.
+    if (geoStatus === "idle") {
+      useGeolocationStore.getState().requestLocation();
       return;
     }
 
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const center = { lat: position.coords.latitude, lng: position.coords.longitude };
-        setViewState({ longitude: center.lng, latitude: center.lat, zoom: 13 });
-        setLocating(false);
-        void search(center, radiusKm);
-      },
-      () => {
-        setLocating(false);
-        void search({ lat: SOFIA_CENTER.latitude, lng: SOFIA_CENTER.longitude }, radiusKm);
-      },
-      GEOLOCATION_OPTIONS,
-    );
+    if (geoStatus === "locating") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reflecting store status, no user event to attach to
+      setLocating(true);
+      return;
+    }
+
+    setLocating(false);
+    if (geoStatus === "success" && geoCoords) {
+      setViewState({ longitude: geoCoords.lng, latitude: geoCoords.lat, zoom: 13 });
+      void search(geoCoords, radiusKm);
+    } else {
+      void search({ lat: SOFIA_CENTER.latitude, lng: SOFIA_CENTER.longitude }, radiusKm);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [geoStatus]);
 
   function handleRadiusChange(newRadius: number) {
     setRadiusKm(newRadius);

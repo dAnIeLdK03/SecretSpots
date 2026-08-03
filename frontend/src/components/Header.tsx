@@ -13,6 +13,7 @@ import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 
 export function Header() {
   const t = useTranslations("Layout");
+  const tHome = useTranslations("Home");
   const tAuth = useTranslations("Auth");
   const pathname = usePathname();
   const status = useAuthStore((state) => state.status);
@@ -93,6 +94,26 @@ export function Header() {
       <Link href="/" className="text-lg font-semibold">
         {t("appName")}
       </Link>
+
+      <nav className="hidden items-center gap-6 text-sm sm:flex">
+        <Link
+          href="/"
+          className={pathname === "/" ? "border-b-2 pb-1" : "opacity-70 hover:opacity-100"}
+          style={pathname === "/" ? { borderColor: "var(--fieldmap-trail)" } : undefined}
+        >
+          {tHome("exploreNav")}
+        </Link>
+        <Link
+          href="/map"
+          className={pathname === "/map" ? "border-b-2 pb-1" : "opacity-70 hover:opacity-100"}
+          style={pathname === "/map" ? { borderColor: "var(--fieldmap-trail)" } : undefined}
+        >
+          {tHome("mapNav")}
+        </Link>
+        <span className="cursor-default opacity-40">{tHome("collectionsNav")}</span>
+        <span className="cursor-default opacity-40">{tHome("aboutNav")}</span>
+      </nav>
+
       <div className="flex items-center gap-2">
         <LocaleSwitcher />
 
