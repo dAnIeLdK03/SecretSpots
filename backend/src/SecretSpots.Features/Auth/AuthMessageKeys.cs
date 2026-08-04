@@ -20,4 +20,5 @@ public static class AuthMessageKeys
     public const string PasswordRequiresSpecial = "Auth.PasswordRequiresSpecial";
     public const string PasswordIsCommon = "Auth.PasswordIsCommon";
     public const string UserNotFound = "Auth.UserNotFound";
+    public const string ExternalAuthCodeInvalidOrExpired = "Auth.ExternalAuthCodeInvalidOrExpired";
 }

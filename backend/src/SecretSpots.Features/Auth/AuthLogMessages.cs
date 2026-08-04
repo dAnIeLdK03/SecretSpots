@@ -8,4 +8,8 @@ internal static class AuthLogMessages
     public const string FailedLoginAttempt = "Failed login attempt for email {Email}.";
     public const string UserLoggedIn = "User {UserId} logged in successfully.";
     public const string UserProfileRetrieved = "User {UserId} retrieved their profile.";
+    public const string ExternalAuthDenied = "External auth with {Provider} was denied or cancelled by the user.";
+    public const string ExternalAuthInvalidState = "External auth callback for {Provider} had an invalid or expired state.";
+    public const string ExternalAuthProviderExchangeFailed = "External auth code exchange with {Provider} failed.";
+    public const string ExternalAuthCompleted = "User {UserId} completed external auth with {Provider}.";
 }
