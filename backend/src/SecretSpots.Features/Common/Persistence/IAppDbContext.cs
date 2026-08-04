@@ -14,6 +14,8 @@ public interface IAppDbContext
     DbSet<Reward> Rewards { get; }
     DbSet<RewardRedemption> RewardRedemptions { get; }
     DbSet<Notification> Notifications { get; }
+    DbSet<ExternalLogin> ExternalLogins { get; }
+    DbSet<ExternalAuthTransaction> ExternalAuthTransactions { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
