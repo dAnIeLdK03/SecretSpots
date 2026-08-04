@@ -12,6 +12,7 @@ using SecretSpots.Features.Businesses;
 using SecretSpots.Features.CheckIns;
 using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.ExceptionHandling;
+using SecretSpots.Features.Common.ExternalAuth;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Security;
@@ -77,6 +78,11 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddSingleton<IPhotoStorage, R2PhotoStorage>();
+
+builder.Services.AddHttpClient<GoogleAuthProvider>();
+builder.Services.AddHttpClient<FacebookAuthProvider>();
+builder.Services.AddScoped<IExternalAuthProvider>(sp => sp.GetRequiredService<GoogleAuthProvider>());
+builder.Services.AddScoped<IExternalAuthProvider>(sp => sp.GetRequiredService<FacebookAuthProvider>());
 
 // Kestrel's own default MaxRequestBodySize (~28.6MB) is looser than our actual photo size
 // limit — without this, an oversized-but-under-Kestrel's-cap upload would be fully received
