@@ -60,6 +60,9 @@
   <data name="Auth.UserNotFound" xml:space="preserve">
     <value>Потребителят не е намерен.</value>
   </data>
+  <data name="Auth.ExternalAuthCodeInvalidOrExpired" xml:space="preserve">
+    <value>Тази връзка за вход е невалидна или е изтекла. Опитайте отново.</value>
+  </data>
   <data name="Spots.NameRequired" xml:space="preserve">
     <value>Името е задължително.</value>
   </data>
