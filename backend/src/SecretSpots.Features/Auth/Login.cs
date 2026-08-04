@@ -57,7 +57,7 @@ public static class Login
 
             // Same error for "no such user" and "wrong password" — do not let an attacker
             // learn which emails are registered.
-            if (user is null || !BCrypt.Net.BCrypt.Verify(command.Password, user.PasswordHash))
+            if (user is null || user.PasswordHash is null || !BCrypt.Net.BCrypt.Verify(command.Password, user.PasswordHash))
             {
                 logger.LogWarning(AuthLogMessages.FailedLoginAttempt, normalizedEmail);
                 return Result<AuthResult>.Failure(new Error(
