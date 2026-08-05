@@ -24,6 +24,13 @@ interface SpotsMapProps {
   onSelectSpot: (spot: NearbySpot | null) => void;
 }
 
+function formatDistance(distanceKm: number, t: ReturnType<typeof useTranslations>): string {
+  if (distanceKm < 1) {
+    return t("distanceMeters", { value: Math.round(distanceKm * 1000) });
+  }
+  return t("distanceKm", { value: distanceKm.toFixed(1) });
+}
+
 export function SpotsMap({
   viewState,
   onViewStateChange,
@@ -66,21 +73,28 @@ export function SpotsMap({
             onClose={() => onSelectSpot(null)}
             closeOnClick={false}
             anchor="bottom"
+            maxWidth="280px"
           >
-            <div className="flex max-w-[220px] flex-col gap-1 text-sm text-zinc-900">
-              <span className="font-semibold">{selectedSpot.name}</span>
-              <span className="text-zinc-600">{t(`category.${selectedSpot.category}`)}</span>
-              <span>{selectedSpot.description}</span>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={selectedSpot.photoUrl}
-                alt={selectedSpot.name}
-                className="mt-1 max-h-32 rounded object-cover"
-              />
-              <span className="text-zinc-500">{selectedSpot.distanceKm.toFixed(1)} km</span>
-              <Link href={`/spots/${selectedSpot.id}`} className="mt-1 font-medium underline">
-                {t("viewDetails")}
-              </Link>
+            <div className="flex w-64 flex-col gap-1.5 text-sm text-zinc-900">
+              <span className="pr-4 font-semibold">{selectedSpot.name}</span>
+              <span className="w-fit rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">
+                {t(`category.${selectedSpot.category}`)}
+              </span>
+              <p className="line-clamp-2 text-zinc-700">{selectedSpot.description}</p>
+              <div className="mt-0.5 aspect-video w-full overflow-hidden rounded-lg">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={selectedSpot.photoUrl}
+                  alt={selectedSpot.name}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="mt-0.5 flex items-center justify-between">
+                <span className="text-xs text-zinc-500">{formatDistance(selectedSpot.distanceKm, t)}</span>
+                <Link href={`/spots/${selectedSpot.id}`} className="font-medium underline">
+                  {t("viewDetails")}
+                </Link>
+              </div>
             </div>
           </Popup>
         ) : null}
