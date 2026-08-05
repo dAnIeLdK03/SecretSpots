@@ -14,6 +14,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -23,7 +24,7 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       const result = await login(email, password);
-      await establishSession(result);
+      await establishSession(result, rememberMe);
       router.push("/account");
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
@@ -60,6 +61,14 @@ export default function LoginPage() {
             className="rounded border px-3 py-2"
             style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
           />
+        </label>
+        <label className="flex items-center gap-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
+          {t("rememberMeLabel")}
         </label>
         {error ? <p className="text-sm text-red-700">{error}</p> : null}
         <button

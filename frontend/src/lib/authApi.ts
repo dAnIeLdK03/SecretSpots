@@ -41,8 +41,8 @@ export function logout(refreshToken: string): Promise<void> {
   });
 }
 
-export async function establishSession(result: AuthResult): Promise<void> {
-  setRefreshToken(result.refreshToken);
+export async function establishSession(result: AuthResult, rememberMe = true): Promise<void> {
+  setRefreshToken(result.refreshToken, rememberMe);
   useAuthStore.getState().setAccessToken(result.accessToken);
   const user = await getCurrentUser();
   useAuthStore.getState().setSession(result.accessToken, user);
