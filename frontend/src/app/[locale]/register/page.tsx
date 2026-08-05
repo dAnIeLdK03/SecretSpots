@@ -7,6 +7,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { register, establishSession } from "@/lib/authApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
+import { ExternalAuthButtons } from "@/components/ExternalAuthButtons";
 
 export default function RegisterPage() {
   const t = useTranslations("Auth");
@@ -85,6 +86,7 @@ export default function RegisterPage() {
           {submitting ? t("registerSubmitting") : t("registerButton")}
         </button>
       </form>
+      <ExternalAuthButtons />
       <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
         {t("alreadyHaveAccount")}{" "}
         <Link href="/login" className="underline">

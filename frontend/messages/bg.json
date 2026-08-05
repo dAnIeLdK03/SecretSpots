@@ -25,7 +25,15 @@
     "loginWelcomeTitle": "Добре дошъл отново, изследователю.",
     "loginWelcomeSubtitle": "Продължи по пътеката оттам, откъдето спря.",
     "registerWelcomeTitle": "Начертай своята карта.",
-    "registerWelcomeSubtitle": "Всеки изследовател започва с едно място."
+    "registerWelcomeSubtitle": "Всеки изследовател започва с едно място.",
+    "continueWithGoogle": "Продължи с Google",
+    "continueWithFacebook": "Продължи с Facebook",
+    "completingSignIn": "Завършване на входа...",
+    "externalAuthErrors": {
+      "cancelled": "Входът беше отказан.",
+      "invalid_state": "Тази връзка за вход е невалидна или е изтекла. Опитайте отново.",
+      "provider_error": "Възникна грешка при входа. Опитайте отново."
+    }
   },
   "Spots": {
     "category": {

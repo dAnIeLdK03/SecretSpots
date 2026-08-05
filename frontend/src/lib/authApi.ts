@@ -23,6 +23,13 @@ export function login(email: string, password: string): Promise<AuthResult> {
   });
 }
 
+export function exchangeExternalAuthCode(code: string): Promise<AuthResult> {
+  return apiFetch<AuthResult>("/auth/external/exchange", {
+    method: "POST",
+    body: JSON.stringify({ code }),
+  });
+}
+
 export function getCurrentUser(): Promise<AuthUser> {
   return apiFetch<AuthUser>("/auth/me");
 }
