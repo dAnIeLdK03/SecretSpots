@@ -28,3 +28,31 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Spot preview popup on the map — the MapLibre defaults (near-invisible
+   shadow, tiny unstyled × button) read as broken against the cream map
+   tiles, so give it real elevation and a legible close button. */
+.maplibregl-popup-content {
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow:
+    0 12px 28px rgba(43, 42, 35, 0.22),
+    0 2px 6px rgba(43, 42, 35, 0.12);
+}
+
+.maplibregl-popup-close-button {
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--fieldmap-dim);
+  transition: background-color 0.15s ease;
+}
+
+.maplibregl-popup-close-button:hover {
+  background-color: var(--fieldmap-paper);
+  color: var(--fieldmap-ink);
+}

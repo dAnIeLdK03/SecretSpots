@@ -79,7 +79,9 @@
     "saving": "Saving...",
     "deleteButton": "Delete",
     "deleteConfirm": "Delete this spot? This cannot be undone.",
-    "notYourSpot": "You can only edit or delete spots you added."
+    "notYourSpot": "You can only edit or delete spots you added.",
+    "distanceKm": "{value} km",
+    "distanceMeters": "{value} m"
   },
   "PhotoUpload": {
     "uploading": "Uploading...",
