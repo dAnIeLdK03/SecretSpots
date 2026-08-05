@@ -28,7 +28,7 @@ export function getErrorMessage(err: unknown, fallback: string): string {
   return fallback;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 const AUTH_ENDPOINTS_EXEMPT_FROM_REFRESH = ["/auth/login", "/auth/register", "/auth/refresh"];
 
