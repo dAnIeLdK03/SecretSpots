@@ -45,8 +45,13 @@ export function CommentsSection({ spotId }: { spotId: string }) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">{t("title")}</h2>
+    <div className="flex flex-col gap-3 rounded-lg p-4" style={{ backgroundColor: "var(--fieldmap-card)" }}>
+      <h2
+        className="border-b pb-2 text-lg font-semibold"
+        style={{ borderColor: "var(--fieldmap-contour)" }}
+      >
+        {t("title")}
+      </h2>
 
       {authStatus === "authenticated" ? (
         <form onSubmit={handleSubmit} className="flex flex-col gap-2">
@@ -56,7 +61,7 @@ export function CommentsSection({ spotId }: { spotId: string }) {
             placeholder={t("placeholder")}
             rows={2}
             className="w-full rounded border p-2 text-sm"
-            style={{ borderColor: "var(--fieldmap-contour)" }}
+            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
           />
           {error ? <p className="text-sm text-red-700">{error}</p> : null}
           <div className="flex justify-end">
@@ -88,7 +93,7 @@ export function CommentsSection({ spotId }: { spotId: string }) {
           {t("empty")}
         </p>
       ) : (
-        <ul className="divide-y" style={{ borderColor: "var(--fieldmap-contour)" }}>
+        <ul className="flex flex-col gap-2">
           {items.map((comment) => (
             <CommentListItem key={comment.id} comment={comment} />
           ))}

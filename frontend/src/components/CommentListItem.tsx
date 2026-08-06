@@ -53,14 +53,14 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
 
   if (editing) {
     return (
-      <li className="px-4 py-3 text-sm">
+      <li className="rounded p-3 text-sm" style={{ backgroundColor: "var(--fieldmap-paper-light)" }}>
         <form onSubmit={handleSaveEdit} className="flex flex-col gap-2">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={2}
             className="w-full rounded border p-2 text-sm"
-            style={{ borderColor: "var(--fieldmap-contour)" }}
+            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
           />
           {error ? <p className="text-sm text-red-700">{error}</p> : null}
           <div className="flex justify-end gap-2">
@@ -90,9 +90,14 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
   }
 
   return (
-    <li className="flex items-start justify-between gap-3 px-4 py-3 text-sm">
+    <li
+      className="flex items-start justify-between gap-3 rounded p-3 text-sm"
+      style={{ backgroundColor: "var(--fieldmap-paper-light)" }}
+    >
       <div className="flex flex-col gap-1">
-        <span className="font-medium">{comment.authorDisplayName}</span>
+        <span className="font-medium" style={{ color: "var(--fieldmap-trail)" }}>
+          {comment.authorDisplayName}
+        </span>
         <p style={{ color: "var(--fieldmap-ink)" }}>{comment.text}</p>
         <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
           {formatRelativeTime(comment.createdAt, locale)}

@@ -37,6 +37,7 @@ export interface SpotResponse {
   latitude: number;
   longitude: number;
   createdByUserId: string;
+  createdByDisplayName: string;
   averageRating: number;
   ratingsCount: number;
   createdAt: string;

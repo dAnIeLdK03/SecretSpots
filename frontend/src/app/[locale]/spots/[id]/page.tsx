@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
+import { Clock, Tag } from "lucide-react";
 import { deleteSpot, getSpot } from "@/lib/spotsApi";
 import type { SpotResponse } from "@/lib/spotsApi";
 import { ApiError, getErrorMessage } from "@/lib/apiClient";
 import { formatRelativeTime } from "@/lib/relativeTime";
 import { useAuthStore } from "@/store/useAuthStore";
+import { Avatar } from "@/components/Avatar";
 import { CheckInModal } from "@/components/CheckInModal";
 import { CommentsSection } from "@/components/CommentsSection";
 import { EditSpotModal } from "@/components/EditSpotModal";
@@ -112,63 +114,94 @@ function SpotDetailContent({ id }: { id: string }) {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 p-8">
-      <PhotoSlider photos={spot.photoUrls} alt={spot.name} />
-      <h1 className="text-2xl font-semibold">{spot.name}</h1>
-      <SpotRatingSummary averageRating={spot.averageRating} ratingsCount={spot.ratingsCount} />
-      <p className="text-sm" style={{ color: "var(--fieldmap-ink)" }}>
-        {spot.description}
-      </p>
-      <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-        <dt style={{ color: "var(--fieldmap-dim)" }}>{t("categoryLabel")}</dt>
-        <dd>{t(`category.${spot.category}`)}</dd>
-        <dt style={{ color: "var(--fieldmap-dim)" }}>{t("authorLabel")}</dt>
-        <dd>{spot.createdByUserId}</dd>
-        <dt style={{ color: "var(--fieldmap-dim)" }}>{t("createdAtLabel")}</dt>
-        <dd>{formatRelativeTime(spot.createdAt, locale)}</dd>
-      </dl>
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-4 p-8">
+      <div
+        className="flex flex-col gap-4 rounded-2xl p-4 shadow-sm md:flex-row"
+        style={{ backgroundColor: "var(--fieldmap-card)" }}
+      >
+        <div className="md:w-96 md:flex-shrink-0">
+          <PhotoSlider photos={spot.photoUrls} alt={spot.name} />
+        </div>
 
-      <div>
-        <button
-          onClick={handleCheckInClick}
-          className="rounded px-4 py-2 text-sm"
-          style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
-        >
-          {tCheckIns("checkInButton")}
-        </button>
-        {isOwner && (
-          <>
-            <button
-              onClick={() => setShowEditModal(true)}
-              className="ml-2 rounded border px-4 py-2 text-sm"
-              style={{ borderColor: "var(--fieldmap-contour)" }}
-            >
-              {t("editButton")}
-            </button>
-            <button
-              onClick={handleDeleteClick}
-              disabled={deleting}
-              className="ml-2 rounded border border-red-300 px-4 py-2 text-sm text-red-700 disabled:opacity-50"
-            >
-              {t("deleteButton")}
-            </button>
-          </>
-        )}
-        {error ? <p className="mt-2 text-sm text-red-700">{error}</p> : null}
-        {showLoginPrompt ? (
-          <p className="mt-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-            {tCheckIns("loginRequiredToCheckIn")}{" "}
-            <Link href="/login" className="underline">
-              {tAuth("loginTitle")}
-            </Link>
-          </p>
-        ) : null}
+        <div className="flex flex-1 flex-col gap-3">
+          <h1 className="text-2xl font-semibold">{spot.name}</h1>
+          <SpotRatingSummary averageRating={spot.averageRating} ratingsCount={spot.ratingsCount} />
 
-        <SpotRatingInput
-          spotId={spot.id}
-          onRated={(stats) => setState({ status: "success", spot: { ...spot, ...stats } })}
-        />
+          <div>
+            <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--fieldmap-dim)" }}>
+              {t("descriptionLabel")}
+            </h2>
+            <p className="text-sm" style={{ color: "var(--fieldmap-ink)" }}>
+              {spot.description}
+            </p>
+          </div>
+
+          <dl
+            className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2 border-t pt-3 text-sm"
+            style={{ borderColor: "var(--fieldmap-contour)" }}
+          >
+            <dt className="flex items-center gap-2" style={{ color: "var(--fieldmap-dim)" }}>
+              <Tag size={16} />
+              {t("categoryLabel")}
+            </dt>
+            <dd>{t(`category.${spot.category}`)}</dd>
+
+            <dt className="flex items-center gap-2" style={{ color: "var(--fieldmap-dim)" }}>
+              <Avatar name={spot.createdByDisplayName} size={20} />
+              {t("authorLabel")}
+            </dt>
+            <dd>@{spot.createdByDisplayName}</dd>
+
+            <dt className="flex items-center gap-2" style={{ color: "var(--fieldmap-dim)" }}>
+              <Clock size={16} />
+              {t("createdAtLabel")}
+            </dt>
+            <dd>{formatRelativeTime(spot.createdAt, locale)}</dd>
+          </dl>
+
+          <div>
+            <button
+              onClick={handleCheckInClick}
+              className="rounded px-4 py-2 text-sm"
+              style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
+            >
+              {tCheckIns("checkInButton")}
+            </button>
+            {isOwner && (
+              <>
+                <button
+                  onClick={() => setShowEditModal(true)}
+                  className="ml-2 rounded border px-4 py-2 text-sm"
+                  style={{ borderColor: "var(--fieldmap-contour)" }}
+                >
+                  {t("editButton")}
+                </button>
+                <button
+                  onClick={handleDeleteClick}
+                  disabled={deleting}
+                  className="ml-2 rounded border border-red-300 px-4 py-2 text-sm text-red-700 disabled:opacity-50"
+                >
+                  {t("deleteButton")}
+                </button>
+              </>
+            )}
+            {error ? <p className="mt-2 text-sm text-red-700">{error}</p> : null}
+            {showLoginPrompt ? (
+              <p className="mt-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+                {tCheckIns("loginRequiredToCheckIn")}{" "}
+                <Link href="/login" className="underline">
+                  {tAuth("loginTitle")}
+                </Link>
+              </p>
+            ) : null}
+          </div>
+        </div>
       </div>
+
+      <SpotRatingInput
+        spotId={spot.id}
+        onRated={(stats) => setState({ status: "success", spot: { ...spot, ...stats } })}
+      />
 
       <CommentsSection spotId={spot.id} />
 
