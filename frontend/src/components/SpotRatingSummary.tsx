@@ -1,5 +1,6 @@
 "use client";
 
+import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 const STAR_VALUES = [1, 2, 3, 4, 5];
@@ -15,14 +16,14 @@ export function SpotRatingSummary({ averageRating, ratingsCount }: SpotRatingSum
 
   return (
     <div className="flex items-center gap-2">
-      <div aria-hidden="true">
+      <div className="flex" aria-hidden="true">
         {STAR_VALUES.map((value) => (
-          <span
+          <Star
             key={value}
-            style={{ color: value <= roundedAverage ? "var(--fieldmap-trail)" : "var(--fieldmap-contour)" }}
-          >
-            ★
-          </span>
+            size={18}
+            style={{ color: "var(--fieldmap-gold)" }}
+            fill={value <= roundedAverage ? "var(--fieldmap-gold)" : "none"}
+          />
         ))}
       </div>
       <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>

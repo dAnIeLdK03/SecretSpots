@@ -148,6 +148,8 @@
     "rateWithStars": "Оцени с {count} звезди",
     "yourRating": "Твоята оценка: {value}/5",
     "rateThisSpotLabel": "Оцени това място",
+    "submitButton": "Изпрати",
+    "submitting": "Изпращане...",
     "loginRequiredToRate": "Трябва да си влязъл/а, за да оцениш това място.",
     "unknownError": "Нещо се обърка. Опитайте отново."
   },

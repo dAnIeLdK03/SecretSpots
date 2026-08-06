@@ -11,6 +11,7 @@
   --fieldmap-trail: #b54a24;
   --fieldmap-dim: #8b7355;
   --fieldmap-card: #d3cdb6;
+  --fieldmap-gold: #c99a3b;
 
   --background: var(--fieldmap-paper);
   --foreground: var(--fieldmap-ink);

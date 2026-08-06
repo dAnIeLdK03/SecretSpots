@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/store/useAuthStore";
 import { rateSpot, fetchMyRating } from "@/lib/ratingsApi";
@@ -19,6 +20,7 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
   const tAuth = useTranslations("Auth");
   const authStatus = useAuthStore((state) => state.status);
   const [myRating, setMyRating] = useState<number | null>(null);
+  const [selected, setSelected] = useState<number | null>(null);
   const [hoverValue, setHoverValue] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,19 +32,22 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
 
     const controller = new AbortController();
     fetchMyRating(spotId, controller.signal)
-      .then((result) => setMyRating(result.value))
+      .then((result) => {
+        setMyRating(result.value);
+        setSelected(result.value);
+      })
       .catch(() => {});
 
     return () => controller.abort();
   }, [spotId, authStatus]);
 
-  async function handleRate(value: number) {
-    if (submitting) return;
+  async function handleSubmit() {
+    if (selected === null || submitting) return;
 
     setSubmitting(true);
     setError(null);
     try {
-      const result = await rateSpot(spotId, value);
+      const result = await rateSpot(spotId, selected);
       setMyRating(result.value);
       onRated({ averageRating: result.averageRating, ratingsCount: result.ratingsCount });
     } catch (err) {
@@ -52,54 +57,66 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
     }
   }
 
-  if (authStatus !== "authenticated") {
-    return (
-      <div
-        className="mt-3 flex w-fit flex-wrap items-center gap-1 rounded border px-3 py-2 text-sm"
-        style={{ borderColor: "var(--fieldmap-contour)", color: "var(--fieldmap-dim)" }}
-      >
-        <span>{t("loginRequiredToRate")}</span>
-        <Link href="/login" className="underline">
-          {tAuth("loginTitle")}
-        </Link>
-      </div>
-    );
-  }
-
-  const displayValue = hoverValue ?? myRating ?? 0;
+  const displayValue = hoverValue ?? selected ?? 0;
 
   return (
-    <div
-      className="mt-3 flex w-fit flex-col gap-1 rounded border px-3 py-2"
-      style={{ borderColor: "var(--fieldmap-contour)" }}
-    >
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-medium uppercase tracking-wide" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("rateThisSpotLabel")}
-        </span>
-        {myRating ? (
-          <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-            {t("yourRating", { value: myRating })}
-          </span>
-        ) : null}
-      </div>
-      <div onMouseLeave={() => setHoverValue(null)}>
-        {STAR_VALUES.map((value) => (
-          <button
-            key={value}
-            type="button"
-            disabled={submitting}
-            onMouseEnter={() => setHoverValue(value)}
-            onClick={() => handleRate(value)}
-            aria-label={t("rateWithStars", { count: value })}
-            className="text-2xl leading-none disabled:opacity-50"
-            style={{ color: value <= displayValue ? "var(--fieldmap-trail)" : "var(--fieldmap-contour)" }}
-          >
-            ★
-          </button>
-        ))}
-      </div>
-      {error ? <p className="text-sm text-red-700">{error}</p> : null}
+    <div className="flex flex-col gap-2 rounded-2xl p-5 shadow-sm" style={{ backgroundColor: "var(--fieldmap-card)" }}>
+      <span
+        className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide"
+        style={{ color: "var(--fieldmap-dim)" }}
+      >
+        <Star size={14} style={{ color: "var(--fieldmap-gold)" }} fill="var(--fieldmap-gold)" />
+        {t("rateThisSpotLabel")}
+      </span>
+
+      {authStatus === "authenticated" ? (
+        <>
+          <div className="flex gap-1" onMouseLeave={() => setHoverValue(null)}>
+            {STAR_VALUES.map((value) => (
+              <button
+                key={value}
+                type="button"
+                disabled={submitting}
+                onMouseEnter={() => setHoverValue(value)}
+                onClick={() => setSelected(value)}
+                aria-label={t("rateWithStars", { count: value })}
+                className="disabled:opacity-50"
+              >
+                <Star
+                  size={28}
+                  style={{ color: "var(--fieldmap-gold)" }}
+                  fill={value <= displayValue ? "var(--fieldmap-gold)" : "none"}
+                />
+              </button>
+            ))}
+          </div>
+
+          {selected ? (
+            <div className="flex items-center gap-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+              <span>{t("yourRating", { value: selected })}</span>
+              {selected !== myRating ? (
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="underline disabled:opacity-50"
+                  style={{ color: "var(--fieldmap-trail)" }}
+                >
+                  {submitting ? t("submitting") : t("submitButton")}
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+        </>
+      ) : (
+        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+          {t("loginRequiredToRate")}{" "}
+          <Link href="/login" className="underline">
+            {tAuth("loginTitle")}
+          </Link>
+        </p>
+      )}
     </div>
   );
 }

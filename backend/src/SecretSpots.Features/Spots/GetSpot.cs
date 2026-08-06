@@ -26,6 +26,11 @@ public static class GetSpot
                     StatusCodes.Status404NotFound));
             }
 
+            var creatorDisplayName = await db.Users
+                .Where(u => u.Id == spot.CreatedByUserId)
+                .Select(u => u.DisplayName)
+                .SingleOrDefaultAsync(cancellationToken) ?? string.Empty;
+
             return Result<SpotResponse>.Success(new SpotResponse(
                 spot.Id,
                 spot.Name,
@@ -35,6 +40,7 @@ public static class GetSpot
                 spot.Location.Y,
                 spot.Location.X,
                 spot.CreatedByUserId,
+                creatorDisplayName,
                 spot.AverageRating,
                 spot.RatingsCount,
                 spot.CreatedAt));

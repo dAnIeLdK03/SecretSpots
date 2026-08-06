@@ -148,6 +148,8 @@
     "rateWithStars": "Rate {count} stars",
     "yourRating": "Your rating: {value}/5",
     "rateThisSpotLabel": "Rate this spot",
+    "submitButton": "Submit",
+    "submitting": "Submitting...",
     "loginRequiredToRate": "You must be logged in to rate this spot.",
     "unknownError": "Something went wrong. Please try again."
   },
