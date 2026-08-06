@@ -147,6 +147,8 @@
     "noRatingsYet": "No ratings yet",
     "rateWithStars": "Rate {count} stars",
     "yourRating": "Your rating: {value}/5",
+    "rateThisSpotLabel": "Rate this spot",
+    "loginRequiredToRate": "You must be logged in to rate this spot.",
     "unknownError": "Something went wrong. Please try again."
   },
   "Home": {
