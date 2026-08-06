@@ -142,6 +142,13 @@
     "deleteConfirm": "Сигурен/на ли си, че искаш да изтриеш този коментар?",
     "unknownError": "Нещо се обърка. Опитайте отново."
   },
+  "Ratings": {
+    "summary": "{average} · {count} оценки",
+    "noRatingsYet": "Все още няма оценки",
+    "rateWithStars": "Оцени с {count} звезди",
+    "yourRating": "Твоята оценка: {value}/5",
+    "unknownError": "Нещо се обърка. Опитайте отново."
+  },
   "Home": {
     "exploreNav": "Разгледай",
     "mapNav": "Карта",

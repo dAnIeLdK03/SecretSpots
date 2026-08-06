@@ -35,6 +35,8 @@ public static class GetSpot
                 spot.Location.Y,
                 spot.Location.X,
                 spot.CreatedByUserId,
+                spot.AverageRating,
+                spot.RatingsCount,
                 spot.CreatedAt));
         }
     }

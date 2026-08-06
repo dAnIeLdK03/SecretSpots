@@ -119,6 +119,8 @@ public static class CreateSpot
                 location.Y,
                 location.X,
                 spot.CreatedByUserId,
+                spot.AverageRating,
+                spot.RatingsCount,
                 spot.CreatedAt);
         }
     }

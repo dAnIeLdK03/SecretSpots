@@ -141,6 +141,12 @@
   <data name="Comments.PageSizeOutOfRange" xml:space="preserve">
     <value>Размерът на страницата трябва да е между 1 и 100.</value>
   </data>
+  <data name="Ratings.SpotNotFound" xml:space="preserve">
+    <value>Това място вече не съществува.</value>
+  </data>
+  <data name="Ratings.ValueOutOfRange" xml:space="preserve">
+    <value>Оценката трябва да е между 1 и 5.</value>
+  </data>
   <data name="Photos.FileRequired" xml:space="preserve">
     <value>Файл със снимка е задължителен.</value>
   </data>

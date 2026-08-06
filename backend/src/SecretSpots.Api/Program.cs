@@ -20,6 +20,7 @@ using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Storage;
 using SecretSpots.Features.Notifications;
 using SecretSpots.Features.Photos;
+using SecretSpots.Features.Ratings;
 using SecretSpots.Features.Rewards;
 using SecretSpots.Features.Spots;
 
@@ -167,6 +168,7 @@ app.MapAuthEndpoints();
 app.MapSpotsEndpoints();
 app.MapCheckInsEndpoints();
 app.MapCommentsEndpoints();
+app.MapRatingsEndpoints();
 app.MapPhotosEndpoints();
 app.MapBusinessesEndpoints();
 app.MapRewardsEndpoints();

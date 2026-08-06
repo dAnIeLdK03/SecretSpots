@@ -142,6 +142,13 @@
     "deleteConfirm": "Are you sure you want to delete this comment?",
     "unknownError": "Something went wrong. Please try again."
   },
+  "Ratings": {
+    "summary": "{average} · {count} ratings",
+    "noRatingsYet": "No ratings yet",
+    "rateWithStars": "Rate {count} stars",
+    "yourRating": "Your rating: {value}/5",
+    "unknownError": "Something went wrong. Please try again."
+  },
   "Home": {
     "exploreNav": "Explore",
     "mapNav": "Map",
