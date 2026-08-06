@@ -14,6 +14,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Reward> Rewards => Set<Reward>();
     public DbSet<RewardRedemption> RewardRedemptions => Set<RewardRedemption>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<Comment> Comments => Set<Comment>();
     public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
     public DbSet<ExternalAuthTransaction> ExternalAuthTransactions => Set<ExternalAuthTransaction>();
 
@@ -56,6 +57,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<Notification>()
             .HasIndex(n => new { n.UserId, n.CreatedAt });
+
+        modelBuilder.Entity<Comment>()
+            .HasIndex(c => new { c.SpotId, c.CreatedAt });
 
         modelBuilder.Entity<Spot>()
             .HasIndex(s => s.Name)

@@ -120,6 +120,27 @@
   <data name="CheckIns.PageSizeOutOfRange" xml:space="preserve">
     <value>Размерът на страницата трябва да е между 1 и 100.</value>
   </data>
+  <data name="Comments.SpotNotFound" xml:space="preserve">
+    <value>Това място вече не съществува.</value>
+  </data>
+  <data name="Comments.TextRequired" xml:space="preserve">
+    <value>Текстът на коментара е задължителен.</value>
+  </data>
+  <data name="Comments.TextTooLong" xml:space="preserve">
+    <value>Коментарът е твърде дълъг.</value>
+  </data>
+  <data name="Comments.NotFound" xml:space="preserve">
+    <value>Този коментар вече не съществува.</value>
+  </data>
+  <data name="Comments.NotYourComment" xml:space="preserve">
+    <value>Можеш да редактираш или триеш само коментари, които си написал/а.</value>
+  </data>
+  <data name="Comments.PageOutOfRange" xml:space="preserve">
+    <value>Страницата трябва да е 1 или по-голяма.</value>
+  </data>
+  <data name="Comments.PageSizeOutOfRange" xml:space="preserve">
+    <value>Размерът на страницата трябва да е между 1 и 100.</value>
+  </data>
   <data name="Photos.FileRequired" xml:space="preserve">
     <value>Файл със снимка е задължителен.</value>
   </data>

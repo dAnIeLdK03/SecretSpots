@@ -123,6 +123,25 @@
     "loadingMore": "Loading...",
     "crystalsUnit": "crystals"
   },
+  "Comments": {
+    "title": "Comments",
+    "placeholder": "Share your thoughts about this spot...",
+    "submitButton": "Post comment",
+    "submitting": "Posting...",
+    "loginRequiredToComment": "You must be logged in to comment.",
+    "loading": "Loading...",
+    "empty": "No comments yet. Be the first to share your thoughts!",
+    "loadMore": "Load more",
+    "loadingMore": "Loading...",
+    "editButton": "Edit",
+    "deleteButton": "Delete",
+    "saveButton": "Save",
+    "saving": "Saving...",
+    "cancelButton": "Cancel",
+    "editedLabel": "edited",
+    "deleteConfirm": "Are you sure you want to delete this comment?",
+    "unknownError": "Something went wrong. Please try again."
+  },
   "Home": {
     "exploreNav": "Explore",
     "mapNav": "Map",

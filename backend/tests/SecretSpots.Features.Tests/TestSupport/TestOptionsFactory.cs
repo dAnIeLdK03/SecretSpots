@@ -36,6 +36,15 @@ internal static class TestOptionsFactory
             WebpQuality = webpQuality,
         });
 
+    public static IOptions<CommentOptions> Comment(
+        int maxTextLength = 1000, int defaultPageSize = 20, int maxPageSize = 100) =>
+        Options.Create(new CommentOptions
+        {
+            MaxTextLength = maxTextLength,
+            DefaultPageSize = defaultPageSize,
+            MaxPageSize = maxPageSize,
+        });
+
     public static IOptions<NotificationsOptions> Notifications(
         int defaultPageSize = 20, int maxPageSize = 100, double newSpotRadiusKm = 5, int readRetentionHours = 24) =>
         Options.Create(new NotificationsOptions

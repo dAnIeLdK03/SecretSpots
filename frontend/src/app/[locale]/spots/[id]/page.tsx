@@ -9,6 +9,7 @@ import { ApiError, getErrorMessage } from "@/lib/apiClient";
 import { formatRelativeTime } from "@/lib/relativeTime";
 import { useAuthStore } from "@/store/useAuthStore";
 import { CheckInModal } from "@/components/CheckInModal";
+import { CommentsSection } from "@/components/CommentsSection";
 import { EditSpotModal } from "@/components/EditSpotModal";
 import { PhotoSlider } from "@/components/PhotoSlider";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -160,6 +161,8 @@ function SpotDetailContent({ id }: { id: string }) {
           </p>
         ) : null}
       </div>
+
+      <CommentsSection spotId={spot.id} />
 
       {showCheckInModal ? <CheckInModal spotId={spot.id} onClose={() => setShowCheckInModal(false)} /> : null}
       {showEditModal ? (

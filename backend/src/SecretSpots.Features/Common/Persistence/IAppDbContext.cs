@@ -14,6 +14,7 @@ public interface IAppDbContext
     DbSet<Reward> Rewards { get; }
     DbSet<RewardRedemption> RewardRedemptions { get; }
     DbSet<Notification> Notifications { get; }
+    DbSet<Comment> Comments { get; }
     DbSet<ExternalLogin> ExternalLogins { get; }
     DbSet<ExternalAuthTransaction> ExternalAuthTransactions { get; }
 
