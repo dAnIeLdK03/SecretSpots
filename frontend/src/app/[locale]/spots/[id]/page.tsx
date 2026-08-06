@@ -12,6 +12,8 @@ import { CheckInModal } from "@/components/CheckInModal";
 import { CommentsSection } from "@/components/CommentsSection";
 import { EditSpotModal } from "@/components/EditSpotModal";
 import { PhotoSlider } from "@/components/PhotoSlider";
+import { SpotRatingInput } from "@/components/SpotRatingInput";
+import { SpotRatingSummary } from "@/components/SpotRatingSummary";
 import { Link, useRouter } from "@/i18n/navigation";
 
 type LoadState =
@@ -113,6 +115,7 @@ function SpotDetailContent({ id }: { id: string }) {
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 p-8">
       <PhotoSlider photos={spot.photoUrls} alt={spot.name} />
       <h1 className="text-2xl font-semibold">{spot.name}</h1>
+      <SpotRatingSummary averageRating={spot.averageRating} ratingsCount={spot.ratingsCount} />
       <p className="text-sm" style={{ color: "var(--fieldmap-ink)" }}>
         {spot.description}
       </p>
@@ -160,6 +163,11 @@ function SpotDetailContent({ id }: { id: string }) {
             </Link>
           </p>
         ) : null}
+
+        <SpotRatingInput
+          spotId={spot.id}
+          onRated={(stats) => setState({ status: "success", spot: { ...spot, ...stats } })}
+        />
       </div>
 
       <CommentsSection spotId={spot.id} />

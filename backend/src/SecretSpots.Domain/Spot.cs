@@ -11,5 +11,7 @@ public class Spot : IHasCreatedAt
     public required Point Location { get; set; }
     public required List<string> PhotoUrls { get; set; }
     public Guid CreatedByUserId { get; set; }
+    public double AverageRating { get; set; }
+    public int RatingsCount { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }

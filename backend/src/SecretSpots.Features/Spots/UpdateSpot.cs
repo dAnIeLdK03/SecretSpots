@@ -92,6 +92,8 @@ public static class UpdateSpot
                 spot.Location.Y,
                 spot.Location.X,
                 spot.CreatedByUserId,
+                spot.AverageRating,
+                spot.RatingsCount,
                 spot.CreatedAt));
         }
     }

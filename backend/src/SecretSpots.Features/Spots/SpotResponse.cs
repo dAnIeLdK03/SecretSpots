@@ -11,4 +11,6 @@ public record SpotResponse(
     double Latitude,
     double Longitude,
     Guid CreatedByUserId,
+    double AverageRating,
+    int RatingsCount,
     DateTimeOffset CreatedAt);

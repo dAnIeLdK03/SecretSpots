@@ -141,6 +141,12 @@
   <data name="Comments.PageSizeOutOfRange" xml:space="preserve">
     <value>Page size must be between 1 and 100.</value>
   </data>
+  <data name="Ratings.SpotNotFound" xml:space="preserve">
+    <value>This spot no longer exists.</value>
+  </data>
+  <data name="Ratings.ValueOutOfRange" xml:space="preserve">
+    <value>Rating must be between 1 and 5.</value>
+  </data>
   <data name="Photos.FileRequired" xml:space="preserve">
     <value>A photo file is required.</value>
   </data>
