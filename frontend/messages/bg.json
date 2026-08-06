@@ -123,6 +123,25 @@
     "loadingMore": "Зареждане...",
     "crystalsUnit": "кристала"
   },
+  "Comments": {
+    "title": "Коментари",
+    "placeholder": "Сподели мнението си за това място...",
+    "submitButton": "Публикувай коментар",
+    "submitting": "Публикуване...",
+    "loginRequiredToComment": "Трябва да си влязъл/а, за да коментираш.",
+    "loading": "Зареждане...",
+    "empty": "Все още няма коментари. Бъди първият, който ще сподели мнение!",
+    "loadMore": "Зареди още",
+    "loadingMore": "Зареждане...",
+    "editButton": "Редактирай",
+    "deleteButton": "Изтрий",
+    "saveButton": "Запази",
+    "saving": "Запазване...",
+    "cancelButton": "Отказ",
+    "editedLabel": "редактиран",
+    "deleteConfirm": "Сигурен/на ли си, че искаш да изтриеш този коментар?",
+    "unknownError": "Нещо се обърка. Опитайте отново."
+  },
   "Home": {
     "exploreNav": "Разгледай",
     "mapNav": "Карта",

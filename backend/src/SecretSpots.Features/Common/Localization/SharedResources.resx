@@ -120,6 +120,27 @@
   <data name="CheckIns.PageSizeOutOfRange" xml:space="preserve">
     <value>Page size must be between 1 and 100.</value>
   </data>
+  <data name="Comments.SpotNotFound" xml:space="preserve">
+    <value>This spot no longer exists.</value>
+  </data>
+  <data name="Comments.TextRequired" xml:space="preserve">
+    <value>Comment text is required.</value>
+  </data>
+  <data name="Comments.TextTooLong" xml:space="preserve">
+    <value>Comment is too long.</value>
+  </data>
+  <data name="Comments.NotFound" xml:space="preserve">
+    <value>This comment no longer exists.</value>
+  </data>
+  <data name="Comments.NotYourComment" xml:space="preserve">
+    <value>You can only edit or delete comments you added.</value>
+  </data>
+  <data name="Comments.PageOutOfRange" xml:space="preserve">
+    <value>Page must be 1 or greater.</value>
+  </data>
+  <data name="Comments.PageSizeOutOfRange" xml:space="preserve">
+    <value>Page size must be between 1 and 100.</value>
+  </data>
   <data name="Photos.FileRequired" xml:space="preserve">
     <value>A photo file is required.</value>
   </data>
