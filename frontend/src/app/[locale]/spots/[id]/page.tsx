@@ -161,32 +161,35 @@ function SpotDetailContent({ id }: { id: string }) {
           </dl>
 
           <div>
-            <button
-              onClick={handleCheckInClick}
-              className="rounded px-4 py-2 text-sm"
-              style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
-            >
-              {tCheckIns("checkInButton")}
-            </button>
-            <SaveSpotButton spotId={spot.id} />
-            {isOwner && (
-              <>
-                <button
-                  onClick={() => setShowEditModal(true)}
-                  className="ml-2 rounded border px-4 py-2 text-sm"
-                  style={{ borderColor: "var(--fieldmap-contour)" }}
-                >
-                  {t("editButton")}
-                </button>
-                <button
-                  onClick={handleDeleteClick}
-                  disabled={deleting}
-                  className="ml-2 rounded border border-red-300 px-4 py-2 text-sm text-red-700 disabled:opacity-50"
-                >
-                  {t("deleteButton")}
-                </button>
-              </>
-            )}
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={handleCheckInClick}
+                className="rounded px-4 py-2 text-sm"
+                style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
+              >
+                {tCheckIns("checkInButton")}
+              </button>
+              <SaveSpotButton spotId={spot.id} />
+
+              {isOwner && (
+                <div className="ml-auto flex items-center gap-2">
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    className="rounded border px-4 py-2 text-sm"
+                    style={{ borderColor: "var(--fieldmap-contour)" }}
+                  >
+                    {t("editButton")}
+                  </button>
+                  <button
+                    onClick={handleDeleteClick}
+                    disabled={deleting}
+                    className="rounded border border-red-300 px-4 py-2 text-sm text-red-700 disabled:opacity-50"
+                  >
+                    {t("deleteButton")}
+                  </button>
+                </div>
+              )}
+            </div>
             {error ? <p className="mt-2 text-sm text-red-700">{error}</p> : null}
             {showLoginPrompt ? (
               <p className="mt-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
