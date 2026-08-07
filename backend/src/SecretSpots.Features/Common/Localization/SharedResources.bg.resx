@@ -147,6 +147,15 @@
   <data name="Ratings.ValueOutOfRange" xml:space="preserve">
     <value>Оценката трябва да е между 1 и 5.</value>
   </data>
+  <data name="SavedSpots.SpotNotFound" xml:space="preserve">
+    <value>Това място вече не съществува.</value>
+  </data>
+  <data name="SavedSpots.PageOutOfRange" xml:space="preserve">
+    <value>Страницата трябва да е 1 или по-голяма.</value>
+  </data>
+  <data name="SavedSpots.PageSizeOutOfRange" xml:space="preserve">
+    <value>Размерът на страницата трябва да е между 1 и 100.</value>
+  </data>
   <data name="Photos.FileRequired" xml:space="preserve">
     <value>Файл със снимка е задължителен.</value>
   </data>

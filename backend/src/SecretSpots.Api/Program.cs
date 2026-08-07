@@ -22,6 +22,7 @@ using SecretSpots.Features.Notifications;
 using SecretSpots.Features.Photos;
 using SecretSpots.Features.Ratings;
 using SecretSpots.Features.Rewards;
+using SecretSpots.Features.SavedSpots;
 using SecretSpots.Features.Spots;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -72,6 +73,7 @@ builder.Services.Configure<CommentOptions>(builder.Configuration.GetSection("Com
 builder.Services.Configure<R2Options>(builder.Configuration.GetSection("R2"));
 builder.Services.Configure<PhotoOptions>(builder.Configuration.GetSection("Photos"));
 builder.Services.Configure<NotificationsOptions>(builder.Configuration.GetSection("Notifications"));
+builder.Services.Configure<SavedSpotsOptions>(builder.Configuration.GetSection("SavedSpots"));
 
 builder.Services.Configure<GoogleAuthOptions>(builder.Configuration.GetSection("GoogleAuth"));
 builder.Services.Configure<FacebookAuthOptions>(builder.Configuration.GetSection("FacebookAuth"));
@@ -169,6 +171,7 @@ app.MapSpotsEndpoints();
 app.MapCheckInsEndpoints();
 app.MapCommentsEndpoints();
 app.MapRatingsEndpoints();
+app.MapSavedSpotsEndpoints();
 app.MapPhotosEndpoints();
 app.MapBusinessesEndpoints();
 app.MapRewardsEndpoints();

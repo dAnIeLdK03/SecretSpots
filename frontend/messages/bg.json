@@ -153,6 +153,15 @@
     "loginRequiredToRate": "Трябва да си влязъл/а, за да оцениш това място.",
     "unknownError": "Нещо се обърка. Опитайте отново."
   },
+  "SavedSpots": {
+    "pageTitle": "Запазени места",
+    "saveButton": "Запази",
+    "savedButton": "Запазено",
+    "loading": "Зареждане...",
+    "empty": "Все още нямаш запазени места.",
+    "loadMore": "Зареди още",
+    "loadingMore": "Зареждане..."
+  },
   "Home": {
     "exploreNav": "Разгледай",
     "mapNav": "Карта",

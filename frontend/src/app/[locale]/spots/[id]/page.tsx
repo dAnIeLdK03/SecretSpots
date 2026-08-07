@@ -14,6 +14,7 @@ import { CheckInModal } from "@/components/CheckInModal";
 import { CommentsSection } from "@/components/CommentsSection";
 import { EditSpotModal } from "@/components/EditSpotModal";
 import { PhotoSlider } from "@/components/PhotoSlider";
+import { SaveSpotButton } from "@/components/SaveSpotButton";
 import { SpotRatingInput } from "@/components/SpotRatingInput";
 import { SpotRatingSummary } from "@/components/SpotRatingSummary";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -167,6 +168,7 @@ function SpotDetailContent({ id }: { id: string }) {
             >
               {tCheckIns("checkInButton")}
             </button>
+            <SaveSpotButton spotId={spot.id} />
             {isOwner && (
               <>
                 <button

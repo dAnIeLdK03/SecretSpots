@@ -43,7 +43,9 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
           <Link href="/map" className="opacity-70 hover:opacity-100">
             {t("mapNav")}
           </Link>
-          <span className="cursor-default opacity-40">{t("collectionsNav")}</span>
+          <Link href="/saved" className="opacity-70 hover:opacity-100">
+            {t("collectionsNav")}
+          </Link>
           <span className="cursor-default opacity-40">{t("aboutNav")}</span>
         </nav>
 

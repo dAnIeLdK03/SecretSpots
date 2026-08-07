@@ -153,6 +153,15 @@
     "loginRequiredToRate": "You must be logged in to rate this spot.",
     "unknownError": "Something went wrong. Please try again."
   },
+  "SavedSpots": {
+    "pageTitle": "Saved spots",
+    "saveButton": "Save",
+    "savedButton": "Saved",
+    "loading": "Loading...",
+    "empty": "You haven't saved any spots yet.",
+    "loadMore": "Load more",
+    "loadingMore": "Loading..."
+  },
   "Home": {
     "exploreNav": "Explore",
     "mapNav": "Map",
