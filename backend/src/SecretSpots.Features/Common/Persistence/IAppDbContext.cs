@@ -16,6 +16,7 @@ public interface IAppDbContext
     DbSet<Notification> Notifications { get; }
     DbSet<Comment> Comments { get; }
     DbSet<Rating> Ratings { get; }
+    DbSet<SavedSpot> SavedSpots { get; }
     DbSet<ExternalLogin> ExternalLogins { get; }
     DbSet<ExternalAuthTransaction> ExternalAuthTransactions { get; }
 
