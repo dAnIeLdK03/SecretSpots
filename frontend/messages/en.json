@@ -185,5 +185,18 @@
     "searchResultsSubtitle": "Places matching your search.",
     "approximateResultsSubtitle": "No exact matches for \"{term}\" — showing the closest spots we found.",
     "noSearchResults": "No spots match your search."
+  },
+  "About": {
+    "title": "About SecretSpots",
+    "intro": "SecretSpots is a local guide to hidden treasures — waterfalls, viewpoints, hidden cafes, and forgotten corners you won't find on a typical map, shared by the people who actually found them.",
+    "step1Title": "Discover",
+    "step1Description": "Browse spots shared by real explorers near you, or search for something specific.",
+    "step2Title": "Check in",
+    "step2Description": "Visit a spot and check in with a proof photo to confirm you were really there.",
+    "step3Title": "Earn crystals",
+    "step3Description": "Every check-in earns you crystals — a small reward for exploring the real world.",
+    "missionTitle": "Why we built this",
+    "missionBody": "Search engines are great at finding what everyone already knows about. SecretSpots is for everything else — the places worth a detour that only get passed around by word of mouth. No algorithm curates this list; the community does.",
+    "ctaButton": "Explore the map"
   }
 }
