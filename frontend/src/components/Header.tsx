@@ -117,7 +117,13 @@ export function Header() {
         >
           {tHome("collectionsNav")}
         </Link>
-        <span className="cursor-default opacity-40">{tHome("aboutNav")}</span>
+        <Link
+          href="/about"
+          className={pathname === "/about" ? "border-b-2 pb-1" : "opacity-70 hover:opacity-100"}
+          style={pathname === "/about" ? { borderColor: "var(--fieldmap-trail)" } : undefined}
+        >
+          {tHome("aboutNav")}
+        </Link>
       </nav>
 
       <div className="flex items-center gap-2">
