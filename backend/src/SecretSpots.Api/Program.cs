@@ -27,6 +27,15 @@ using SecretSpots.Features.Spots;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// No-ops when Sentry:Dsn is unset (e.g. local dev), so this is safe to leave wired up everywhere.
+// Registered before everything else so it can also capture startup failures.
+builder.WebHost.UseSentry(options =>
+{
+    options.Dsn = builder.Configuration["Sentry:Dsn"];
+    options.Environment = builder.Environment.EnvironmentName;
+    options.SendDefaultPii = false;
+});
+
 var featuresAssembly = Assembly.Load("SecretSpots.Features");
 
 builder.Services.ConfigureHttpJsonOptions(options =>
