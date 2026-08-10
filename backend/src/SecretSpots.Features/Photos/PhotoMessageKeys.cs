@@ -7,4 +7,5 @@ public static class PhotoMessageKeys
     public const string FileRequired = "Photos.FileRequired";
     public const string FileTooLarge = "Photos.FileTooLarge";
     public const string InvalidImage = "Photos.InvalidImage";
+    public const string ImageDimensionsTooLarge = "Photos.ImageDimensionsTooLarge";
 }
