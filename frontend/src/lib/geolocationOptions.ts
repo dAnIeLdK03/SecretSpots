@@ -4,7 +4,10 @@
 // needs to for this app's accuracy needs (finding spots "near" you, not turn-by-turn).
 export const GEOLOCATION_OPTIONS: PositionOptions = {
   enableHighAccuracy: false,
-  timeout: 10_000,
+  // 15s rather than 10s — network-based positioning (no GPS, e.g. a desktop
+  // without a location service configured) can genuinely take this long, and
+  // timing out here reads to the user as "denied" rather than "still trying".
+  timeout: 15_000,
   maximumAge: 60_000,
 };
 

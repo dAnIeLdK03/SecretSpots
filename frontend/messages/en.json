@@ -64,6 +64,7 @@
     "loadError": "Failed to load nearby spots.",
     "geolocationUnavailable": "Geolocation is not supported by this browser.",
     "geolocationDenied": "Location access was denied.",
+    "geolocationTimeout": "Couldn't find your location in time. Showing Sofia instead — try \"Use my location\" again.",
     "loading": "Loading...",
     "notFoundTitle": "Spot not found",
     "notFoundMessage": "This spot doesn't exist or was removed.",

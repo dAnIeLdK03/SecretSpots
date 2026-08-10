@@ -11,7 +11,6 @@ import { getErrorMessage } from "@/lib/apiClient";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useGeolocationStore } from "@/store/useGeolocationStore";
 import { Link } from "@/i18n/navigation";
-import { GEOLOCATION_OPTIONS } from "@/lib/geolocationOptions";
 
 const SOFIA_CENTER: MapViewState = { longitude: 23.3219, latitude: 42.6977, zoom: 12 };
 const RADIUS_OPTIONS = [1, 5, 20, 50] as const;
@@ -28,6 +27,7 @@ export default function MapPage() {
   const authStatus = useAuthStore((state) => state.status);
   const geoStatus = useGeolocationStore((state) => state.status);
   const geoCoords = useGeolocationStore((state) => state.coords);
+  const geoErrorReason = useGeolocationStore((state) => state.errorReason);
 
   const [viewState, setViewState] = useState<MapViewState>(SOFIA_CENTER);
   const [radiusKm, setRadiusKm] = useState<number>(5);
@@ -38,8 +38,9 @@ export default function MapPage() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [createModalCoords, setCreateModalCoords] = useState<LatLng | null>(null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [locating, setLocating] = useState(false);
   const [placingSpot, setPlacingSpot] = useState(false);
+
+  const locating = geoStatus === "locating";
 
   const search = useCallback(
     async (center: LatLng, radius: number) => {
@@ -60,24 +61,33 @@ export default function MapPage() {
     // Normally already resolved by now — the request was kicked off as soon as
     // the app mounted (see AuthProvider), not when this page did. This just
     // reacts to whatever state that request is in, and requests it defensively
-    // if for some reason it never started.
+    // if for some reason it never started. requestLocation/refreshLocation on
+    // the store guarantee only one browser geolocation request is ever in
+    // flight at a time, however many places (this effect, the button below)
+    // ask for it.
     if (geoStatus === "idle") {
       useGeolocationStore.getState().requestLocation();
       return;
     }
 
     if (geoStatus === "locating") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- reflecting store status, no user event to attach to
-      setLocating(true);
       return;
     }
 
-    setLocating(false);
     if (geoStatus === "success" && geoCoords) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reflecting store status, no user event to attach to
       setViewState({ longitude: geoCoords.lng, latitude: geoCoords.lat, zoom: 13 });
       void search(geoCoords, radiusKm);
     } else {
+      // search() clears loadError as soon as it starts, so set the geolocation
+      // error only after kicking it off — otherwise it would be wiped out
+      // immediately by search()'s own setLoadError(null).
       void search({ lat: SOFIA_CENTER.latitude, lng: SOFIA_CENTER.longitude }, radiusKm);
+      if (geoStatus === "error") {
+        setLoadError(geoErrorReason === "timeout" ? t("geolocationTimeout") : t("geolocationDenied"));
+      } else if (geoStatus === "unsupported") {
+        setLoadError(t("geolocationUnavailable"));
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geoStatus]);
@@ -96,24 +106,8 @@ export default function MapPage() {
   }
 
   function handleUseMyLocation() {
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setLoadError(t("geolocationUnavailable"));
-      return;
-    }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const center = { lat: position.coords.latitude, lng: position.coords.longitude };
-        setViewState({ longitude: center.lng, latitude: center.lat, zoom: 13 });
-        setLocating(false);
-        void search(center, radiusKm);
-      },
-      () => {
-        setLocating(false);
-        setLoadError(t("geolocationDenied"));
-      },
-      GEOLOCATION_OPTIONS,
-    );
+    setLoadError(null);
+    useGeolocationStore.getState().refreshLocation();
   }
 
   function handleMapClick(lat: number, lng: number) {
@@ -166,6 +160,10 @@ export default function MapPage() {
         >
           {locating ? t("locating") : t("useMyLocation")}
         </button>
+
+        {loadError ? (
+          <div className="rounded bg-red-50 px-3 py-2 text-sm text-red-700 shadow">{loadError}</div>
+        ) : null}
       </div>
 
       {showSearchHere ? (
@@ -200,12 +198,6 @@ export default function MapPage() {
           <Link href="/login" className="underline">
             {tAuth("loginTitle")}
           </Link>
-        </div>
-      ) : null}
-
-      {loadError ? (
-        <div className="absolute top-20 left-4 z-10 rounded bg-red-50 px-3 py-2 text-sm text-red-700 shadow">
-          {loadError}
         </div>
       ) : null}
 
