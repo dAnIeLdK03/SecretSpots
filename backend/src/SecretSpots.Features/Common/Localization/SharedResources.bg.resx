@@ -165,6 +165,9 @@
   <data name="Photos.InvalidImage" xml:space="preserve">
     <value>Файлът не е валидно изображение.</value>
   </data>
+  <data name="Photos.ImageDimensionsTooLarge" xml:space="preserve">
+    <value>Изображението има твърде голяма резолюция.</value>
+  </data>
   <data name="Businesses.NameRequired" xml:space="preserve">
     <value>Името е задължително.</value>
   </data>
