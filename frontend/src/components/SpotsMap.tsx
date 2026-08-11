@@ -8,6 +8,14 @@ import type { NearbySpot } from "@/lib/spotsApi";
 
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 
+// Keeps the map framed on Bulgaria — the whole app is scoped to Bulgarian spots, so panning or
+// zooming out to see the rest of the world/Sofia-scale-only tiles isn't useful. Bounds are
+// Bulgaria's bbox with a small buffer so border-area spots aren't clipped.
+const BULGARIA_BOUNDS: [[number, number], [number, number]] = [
+  [22.3, 41.2],
+  [28.65, 44.25],
+];
+
 export interface MapViewState {
   longitude: number;
   latitude: number;
@@ -50,6 +58,7 @@ export function SpotsMap({
         onMoveEnd={onMoveEnd}
         onClick={(evt) => onMapClick(evt.lngLat.lat, evt.lngLat.lng)}
         mapStyle={MAP_STYLE}
+        maxBounds={BULGARIA_BOUNDS}
         style={{ width: "100%", height: "100%" }}
       >
         {spots.map((spot) => (
