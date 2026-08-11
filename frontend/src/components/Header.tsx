@@ -4,12 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useNotificationsStore } from "@/store/useNotificationsStore";
-import { useCheckInsHistoryStore } from "@/store/useCheckInsHistoryStore";
-import { getRefreshToken, clearRefreshToken } from "@/lib/refreshTokenStorage";
-import { logout } from "@/lib/authApi";
-import { NotificationBell } from "@/components/NotificationBell";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { AccountMenu } from "@/components/AccountMenu";
 
 export function Header() {
   const t = useTranslations("Layout");
@@ -18,9 +14,6 @@ export function Header() {
   const pathname = usePathname();
   const status = useAuthStore((state) => state.status);
   const user = useAuthStore((state) => state.user);
-  const clearSession = useAuthStore((state) => state.clearSession);
-  const resetNotifications = useNotificationsStore((state) => state.reset);
-  const resetCheckInsHistory = useCheckInsHistoryStore((state) => state.reset);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -38,47 +31,16 @@ export function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMenuOpen]);
 
-  function handleLogout() {
-    const refreshToken = getRefreshToken();
-    clearRefreshToken();
-    clearSession();
-    resetNotifications();
-    resetCheckInsHistory();
-    if (refreshToken) {
-      logout(refreshToken).catch(() => {});
-    }
-  }
-
   function closeMenu() {
     setIsMenuOpen(false);
   }
 
-  const navLinks =
-    status === "authenticated" && user ? (
-      <>
-        <Link href="/account" onClick={closeMenu} style={{ color: "var(--fieldmap-dim)" }}>
-          {user.displayName} ({user.crystalBalance} {tAuth("crystalBalanceLabel")})
-        </Link>
-        <button
-          onClick={() => {
-            handleLogout();
-            closeMenu();
-          }}
-          className="text-left underline"
-        >
-          {tAuth("logoutButton")}
-        </button>
-      </>
-    ) : (
-      <>
-        <Link href="/login" onClick={closeMenu}>
-          {tAuth("loginTitle")}
-        </Link>
-        <Link href="/register" onClick={closeMenu}>
-          {tAuth("registerTitle")}
-        </Link>
-      </>
-    );
+  const navItems = [
+    { href: "/", label: tHome("exploreNav") },
+    { href: "/map", label: tHome("mapNav") },
+    { href: "/saved", label: tHome("collectionsNav") },
+    { href: "/about", label: tHome("aboutNav") },
+  ];
 
   // The landing page renders its own hero header (LandingHero), and the auth
   // pages render a full-height split screen with no room for a navbar.
@@ -96,61 +58,57 @@ export function Header() {
       </Link>
 
       <nav className="hidden items-center gap-6 text-sm sm:flex">
-        <Link
-          href="/"
-          className={pathname === "/" ? "border-b-2 pb-1" : "opacity-70 hover:opacity-100"}
-          style={pathname === "/" ? { borderColor: "var(--fieldmap-trail)" } : undefined}
-        >
-          {tHome("exploreNav")}
-        </Link>
-        <Link
-          href="/map"
-          className={pathname === "/map" ? "border-b-2 pb-1" : "opacity-70 hover:opacity-100"}
-          style={pathname === "/map" ? { borderColor: "var(--fieldmap-trail)" } : undefined}
-        >
-          {tHome("mapNav")}
-        </Link>
-        <Link
-          href="/saved"
-          className={pathname === "/saved" ? "border-b-2 pb-1" : "opacity-70 hover:opacity-100"}
-          style={pathname === "/saved" ? { borderColor: "var(--fieldmap-trail)" } : undefined}
-        >
-          {tHome("collectionsNav")}
-        </Link>
-        <Link
-          href="/about"
-          className={pathname === "/about" ? "border-b-2 pb-1" : "opacity-70 hover:opacity-100"}
-          style={pathname === "/about" ? { borderColor: "var(--fieldmap-trail)" } : undefined}
-        >
-          {tHome("aboutNav")}
-        </Link>
+        {navItems.map(({ href, label }) => (
+          <Link
+            key={href}
+            href={href}
+            className={pathname === href ? "border-b-2 pb-1" : "opacity-70 hover:opacity-100"}
+            style={pathname === href ? { borderColor: "var(--fieldmap-trail)" } : undefined}
+          >
+            {label}
+          </Link>
+        ))}
       </nav>
 
       <div className="flex items-center gap-2">
-        <LocaleSwitcher />
+        {status === "authenticated" && user ? (
+          <AccountMenu displayName={user.displayName} crystalBalance={user.crystalBalance} mobileNavItems={navItems} />
+        ) : (
+          <>
+            <LocaleSwitcher />
 
-        {status === "authenticated" && user && <NotificationBell />}
+            <nav className="hidden items-center gap-4 text-sm sm:flex">
+              <Link href="/login">{tAuth("loginTitle")}</Link>
+              <Link href="/register">{tAuth("registerTitle")}</Link>
+            </nav>
 
-        <nav className="hidden items-center gap-4 text-sm sm:flex">{navLinks}</nav>
-
-        <div ref={menuRef} className="relative sm:hidden">
-          <button
-            onClick={() => setIsMenuOpen((open) => !open)}
-            aria-label={t("menuLabel")}
-            className="rounded-full p-2 hover:bg-black/5"
-            style={{ color: "var(--fieldmap-dim)" }}
-          >
-            ☰
-          </button>
-          {isMenuOpen && (
-            <div
-              className="absolute right-0 top-full z-10 mt-2 w-48 rounded-md border p-3 shadow-lg"
-              style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
-            >
-              <nav className="flex flex-col gap-3 text-sm">{navLinks}</nav>
+            <div ref={menuRef} className="relative sm:hidden">
+              <button
+                onClick={() => setIsMenuOpen((open) => !open)}
+                aria-label={t("menuLabel")}
+                className="rounded-full p-2 hover:bg-black/5"
+                style={{ color: "var(--fieldmap-dim)" }}
+              >
+                ☰
+              </button>
+              {isMenuOpen && (
+                <div
+                  className="absolute right-0 top-full z-10 mt-2 w-48 rounded-md border p-3 shadow-lg"
+                  style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
+                >
+                  <nav className="flex flex-col gap-3 text-sm">
+                    <Link href="/login" onClick={closeMenu}>
+                      {tAuth("loginTitle")}
+                    </Link>
+                    <Link href="/register" onClick={closeMenu}>
+                      {tAuth("registerTitle")}
+                    </Link>
+                  </nav>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </header>
   );
