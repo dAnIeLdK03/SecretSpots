@@ -8,7 +8,8 @@ import { NotificationDropdown } from "@/components/NotificationDropdown";
 export function NotificationBell() {
   const t = useTranslations("Notifications");
   const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const unreadCount = useNotificationsStore((state) => state.unreadCount());
   const loadFirstPage = useNotificationsStore((state) => state.loadFirstPage);
 
@@ -16,14 +17,30 @@ export function NotificationBell() {
     if (!isOpen) return;
 
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+      const target = event.target as Node;
+      if (buttonRef.current?.contains(target) || dropdownRef.current?.contains(target)) {
+        return;
       }
+      setIsOpen(false);
     }
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
+
+  useEffect(() => {
+    loadFirstPage();
+  }, [loadFirstPage]);
+
+  useEffect(() => {
+    // Polls for new notifications while the dropdown is closed, so the badge reflects reality
+    // without the user having to open it. Paused while open so it doesn't reset the list/scroll
+    // position out from under someone browsing or paginating it.
+    if (isOpen) return;
+
+    const intervalId = setInterval(() => loadFirstPage(), 30_000);
+    return () => clearInterval(intervalId);
+  }, [isOpen, loadFirstPage]);
 
   function toggleOpen() {
     const nextIsOpen = !isOpen;
@@ -34,8 +51,9 @@ export function NotificationBell() {
   }
 
   return (
-    <div ref={containerRef} className="relative">
+    <div className="relative">
       <button
+        ref={buttonRef}
         onClick={toggleOpen}
         aria-label={t("title")}
         className="relative rounded-full p-2 hover:bg-black/5"
@@ -48,7 +66,9 @@ export function NotificationBell() {
           </span>
         )}
       </button>
-      {isOpen && <NotificationDropdown onNavigate={() => setIsOpen(false)} />}
+      {isOpen && (
+        <NotificationDropdown ref={dropdownRef} anchorRef={buttonRef} onNavigate={() => setIsOpen(false)} />
+      )}
     </div>
   );
 }
