@@ -39,6 +39,7 @@ test("register, log in, create a spot, check in, and see the crystals notificati
 
   // Log out, then log back in through the login form — exercises the login
   // path independently rather than relying on the session register() established.
+  await page.getByRole("button", { name: "Меню" }).click();
   await page.getByRole("button", { name: "Изход" }).click();
   await page.goto("/bg/login");
 
@@ -62,7 +63,7 @@ test("register, log in, create a spot, check in, and see the crystals notificati
   // The auth session rehydrates asynchronously from the refresh token on
   // every fresh navigation — wait for it, or "Add spot here" sees a stale
   // unauthenticated state and shows the login prompt instead of the modal.
-  await expect(page.getByRole("button", { name: "Изход" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Меню" })).toBeVisible();
 
   const createSpotResponsePromise = page.waitForResponse(
     (response) => response.url().endsWith("/spots/") && response.request().method() === "POST",
@@ -98,8 +99,8 @@ test("register, log in, create a spot, check in, and see the crystals notificati
   });
   expect(checkInResponse.ok()).toBe(true);
 
-  // See the crystals-earned notification — the bell fetches fresh on open,
+  // See the crystals-earned notification — the menu fetches fresh on open,
   // no reload needed even though the check-in happened outside the page.
-  await page.getByRole("button", { name: "Известия" }).click();
+  await page.getByRole("button", { name: "Меню" }).click();
   await expect(page.getByText(`Спечели ${CRYSTALS_PER_CHECKIN} кристала.`)).toBeVisible();
 });

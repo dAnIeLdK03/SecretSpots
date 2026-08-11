@@ -3,8 +3,8 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import { NotificationBell } from "@/components/NotificationBell";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { AccountMenu } from "@/components/AccountMenu";
 import { HeroMap } from "@/components/HeroMap";
 import { HeroContourBackground } from "@/components/HeroContourBackground";
 import { useEffect, useState } from "react";
@@ -52,28 +52,20 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
         </nav>
 
         <div className="flex items-center gap-3">
-          <LocaleSwitcher />
           {status === "authenticated" && user ? (
-            <>
-              <NotificationBell />
-              <Link
-                href="/map"
-                className="rounded-full border px-4 py-2 text-sm whitespace-nowrap hover:bg-black/5"
-                style={{ borderColor: "var(--fieldmap-ink)" }}
-              >
-                {t("addASpot")}
-              </Link>
-              <Link
-                href="/account"
-                aria-label={user.displayName}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold"
-                style={{ backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper)" }}
-              >
-                {user.displayName.charAt(0).toUpperCase()}
-              </Link>
-            </>
+            <AccountMenu
+              displayName={user.displayName}
+              crystalBalance={user.crystalBalance}
+              mobileNavItems={[
+                { href: "/", label: t("exploreNav") },
+                { href: "/map", label: t("mapNav") },
+                { href: "/saved", label: t("collectionsNav") },
+                { href: "/about", label: t("aboutNav") },
+              ]}
+            />
           ) : (
             <>
+              <LocaleSwitcher />
               <Link href="/login" className="text-sm opacity-70 hover:opacity-100">
                 {tAuth("loginTitle")}
               </Link>

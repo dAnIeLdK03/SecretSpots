@@ -2,7 +2,8 @@
   "Layout": {
     "appName": "SecretSpots",
     "menuLabel": "Меню",
-    "languageLabel": "Език"
+    "languageLabel": "Език",
+    "settingsLabel": "Настройки"
   },
   "Auth": {
     "emailLabel": "Имейл",
