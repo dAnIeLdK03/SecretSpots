@@ -99,8 +99,8 @@ test("register, log in, create a spot, check in, and see the crystals notificati
   });
   expect(checkInResponse.ok()).toBe(true);
 
-  // See the crystals-earned notification — the menu fetches fresh on open,
+  // See the crystals-earned notification — the bell fetches fresh on open,
   // no reload needed even though the check-in happened outside the page.
-  await page.getByRole("button", { name: "Меню" }).click();
+  await page.getByRole("button", { name: "Известия" }).click();
   await expect(page.getByText(`Спечели ${CRYSTALS_PER_CHECKIN} кристала.`)).toBeVisible();
 });

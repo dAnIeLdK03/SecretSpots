@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { NotificationBell } from "@/components/NotificationBell";
 import { AccountMenu } from "@/components/AccountMenu";
 import { HeroMap } from "@/components/HeroMap";
 import { HeroContourBackground } from "@/components/HeroContourBackground";
@@ -53,16 +54,18 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
 
         <div className="flex items-center gap-3">
           {status === "authenticated" && user ? (
-            <AccountMenu
-              displayName={user.displayName}
-              crystalBalance={user.crystalBalance}
-              mobileNavItems={[
-                { href: "/", label: t("exploreNav") },
-                { href: "/map", label: t("mapNav") },
-                { href: "/saved", label: t("collectionsNav") },
-                { href: "/about", label: t("aboutNav") },
-              ]}
-            />
+            <>
+              <NotificationBell />
+              <AccountMenu
+                displayName={user.displayName}
+                mobileNavItems={[
+                  { href: "/", label: t("exploreNav") },
+                  { href: "/map", label: t("mapNav") },
+                  { href: "/saved", label: t("collectionsNav") },
+                  { href: "/about", label: t("aboutNav") },
+                ]}
+              />
+            </>
           ) : (
             <>
               <LocaleSwitcher />

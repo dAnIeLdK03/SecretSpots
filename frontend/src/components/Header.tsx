@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { NotificationBell } from "@/components/NotificationBell";
 import { AccountMenu } from "@/components/AccountMenu";
 
 export function Header() {
@@ -72,7 +73,10 @@ export function Header() {
 
       <div className="flex items-center gap-2">
         {status === "authenticated" && user ? (
-          <AccountMenu displayName={user.displayName} crystalBalance={user.crystalBalance} mobileNavItems={navItems} />
+          <>
+            <NotificationBell />
+            <AccountMenu displayName={user.displayName} mobileNavItems={navItems} />
+          </>
         ) : (
           <>
             <LocaleSwitcher />
