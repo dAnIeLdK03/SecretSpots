@@ -44,7 +44,17 @@
       "Nature": "Nature",
       "Viewpoint": "Viewpoint",
       "Cafe": "Cafe",
-      "Abandoned": "Abandoned place"
+      "Abandoned": "Abandoned place",
+      "Waterfall": "Waterfall",
+      "Cave": "Cave",
+      "Landmark": "Landmark",
+      "BeachOrLake": "Beach or lake",
+      "Spring": "Spring",
+      "MonasteryOrChurch": "Monastery or church",
+      "CampingSpot": "Camping spot",
+      "RockFormation": "Rock formation",
+      "RailwayTunnel": "Abandoned railway or tunnel",
+      "FortressRuins": "Fortress ruins"
     },
     "createTitle": "Add Your Secret Spot",
     "nameLabel": "Name",

@@ -1,6 +1,21 @@
 import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
 
-export const SPOT_CATEGORIES = ["Nature", "Viewpoint", "Cafe", "Abandoned"] as const;
+export const SPOT_CATEGORIES = [
+  "Nature",
+  "Viewpoint",
+  "Cafe",
+  "Abandoned",
+  "Waterfall",
+  "Cave",
+  "Landmark",
+  "BeachOrLake",
+  "Spring",
+  "MonasteryOrChurch",
+  "CampingSpot",
+  "RockFormation",
+  "RailwayTunnel",
+  "FortressRuins",
+] as const;
 export type SpotCategory = (typeof SPOT_CATEGORIES)[number];
 
 export interface NearbySpot {
