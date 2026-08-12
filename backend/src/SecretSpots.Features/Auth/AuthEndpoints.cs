@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using SecretSpots.Domain;
+using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Results;
 
@@ -15,6 +17,7 @@ public static class AuthEndpoints
 
         group.MapPost("/register", async (Register.Command command, ISender sender, CancellationToken cancellationToken) =>
                 (await sender.Send(command, cancellationToken)).ToOkOrProblem())
+            .RequireRateLimiting(RateLimitPolicies.Auth)
             .Produces<AuthResult>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status409Conflict)
@@ -23,6 +26,7 @@ public static class AuthEndpoints
 
         group.MapPost("/login", async (Login.Command command, ISender sender, CancellationToken cancellationToken) =>
                 (await sender.Send(command, cancellationToken)).ToOkOrProblem())
+            .RequireRateLimiting(RateLimitPolicies.Auth)
             .Produces<AuthResult>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -31,6 +35,7 @@ public static class AuthEndpoints
 
         group.MapPost("/refresh", async (RefreshAccessToken.Command command, ISender sender, CancellationToken cancellationToken) =>
                 (await sender.Send(command, cancellationToken)).ToOkOrProblem())
+            .RequireRateLimiting(RateLimitPolicies.Auth)
             .Produces<AuthResult>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -74,6 +79,7 @@ public static class AuthEndpoints
 
         group.MapPost("/external/exchange", async (ExchangeExternalAuthCode.Command command, ISender sender, CancellationToken cancellationToken) =>
                 (await sender.Send(command, cancellationToken)).ToOkOrProblem())
+            .RequireRateLimiting(RateLimitPolicies.Auth)
             .Produces<AuthResult>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .Accepts<ExchangeExternalAuthCode.Command>("application/json");
