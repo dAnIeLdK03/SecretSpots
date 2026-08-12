@@ -44,7 +44,17 @@
       "Nature": "Природа",
       "Viewpoint": "Гледна точка",
       "Cafe": "Кафене",
-      "Abandoned": "Изоставено място"
+      "Abandoned": "Изоставено място",
+      "Waterfall": "Водопад",
+      "Cave": "Пещера",
+      "Landmark": "Забележителност",
+      "BeachOrLake": "Плаж/Езеро",
+      "Spring": "Извор",
+      "MonasteryOrChurch": "Манастир/Църква",
+      "CampingSpot": "Място за къмпинг",
+      "RockFormation": "Скално образувание",
+      "RailwayTunnel": "Изоставена жп линия/тунел",
+      "FortressRuins": "Руини на крепост"
     },
     "createTitle": "Добави своето тайно място",
     "nameLabel": "Име",
