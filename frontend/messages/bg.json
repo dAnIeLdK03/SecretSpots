@@ -22,6 +22,7 @@
     "loginLink": "Влезте",
     "accountTitle": "Моят акаунт",
     "crystalBalanceLabel": "Кристали",
+    "profileLabel": "Профил",
     "logoutButton": "Изход",
     "unknownError": "Възникна грешка. Опитайте отново.",
     "loginWelcomeTitle": "Добре дошъл отново, изследователю.",
@@ -187,6 +188,10 @@
     "searchResultsSubtitle": "Места, отговарящи на търсенето.",
     "approximateResultsSubtitle": "Няма точни съвпадения за „{term}“ — показваме най-близките намерени места.",
     "noSearchResults": "Няма места, отговарящи на търсенето."
+  },
+  "Settings": {
+    "title": "Настройки",
+    "languageSectionTitle": "Език"
   },
   "About": {
     "title": "За SecretSpots",

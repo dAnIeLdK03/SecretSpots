@@ -22,6 +22,7 @@
     "loginLink": "Log in",
     "accountTitle": "My account",
     "crystalBalanceLabel": "Crystals",
+    "profileLabel": "Profile",
     "logoutButton": "Log out",
     "unknownError": "Something went wrong. Please try again.",
     "loginWelcomeTitle": "Welcome back, explorer.",
@@ -187,6 +188,10 @@
     "searchResultsSubtitle": "Places matching your search.",
     "approximateResultsSubtitle": "No exact matches for \"{term}\" — showing the closest spots we found.",
     "noSearchResults": "No spots match your search."
+  },
+  "Settings": {
+    "title": "Settings",
+    "languageSectionTitle": "Language"
   },
   "About": {
     "title": "About SecretSpots",
