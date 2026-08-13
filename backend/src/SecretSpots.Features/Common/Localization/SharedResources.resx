@@ -117,6 +117,9 @@
   <data name="CheckIns.TooFarFromSpot" xml:space="preserve">
     <value>You're too far from this spot to check in.</value>
   </data>
+  <data name="CheckIns.TooSoonSinceLastCheckIn" xml:space="preserve">
+    <value>You've already checked in here recently. Try again later.</value>
+  </data>
   <data name="CheckIns.PhotoUrlRequired" xml:space="preserve">
     <value>A proof photo is required.</value>
   </data>
