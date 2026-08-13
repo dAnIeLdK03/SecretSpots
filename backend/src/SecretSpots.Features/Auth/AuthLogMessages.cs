@@ -12,4 +12,8 @@ internal static class AuthLogMessages
     public const string ExternalAuthInvalidState = "External auth callback for {Provider} had an invalid or expired state.";
     public const string ExternalAuthProviderExchangeFailed = "External auth code exchange with {Provider} failed.";
     public const string ExternalAuthCompleted = "User {UserId} completed external auth with {Provider}.";
+    public const string PasswordResetRequested = "User {UserId} requested a password reset.";
+    public const string PasswordResetRequestedForUnknownEmail =
+        "Password reset requested for an email with no password-based account: {Email}.";
+    public const string PasswordResetCompleted = "User {UserId} completed a password reset.";
 }

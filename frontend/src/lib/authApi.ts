@@ -41,6 +41,20 @@ export function logout(refreshToken: string): Promise<void> {
   });
 }
 
+export function requestPasswordReset(email: string): Promise<void> {
+  return apiFetchVoid("/auth/password-reset/request", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
+export function resetPassword(token: string, newPassword: string): Promise<void> {
+  return apiFetchVoid("/auth/password-reset/confirm", {
+    method: "POST",
+    body: JSON.stringify({ token, newPassword }),
+  });
+}
+
 export async function establishSession(result: AuthResult, rememberMe = true): Promise<void> {
   setRefreshToken(result.refreshToken, rememberMe);
   useAuthStore.getState().setAccessToken(result.accessToken);

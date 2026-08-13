@@ -63,6 +63,15 @@
   <data name="Auth.ExternalAuthCodeInvalidOrExpired" xml:space="preserve">
     <value>This sign-in link is invalid or has expired. Please try again.</value>
   </data>
+  <data name="Auth.PasswordResetTokenInvalidOrExpired" xml:space="preserve">
+    <value>This password reset link is invalid or has expired. Please request a new one.</value>
+  </data>
+  <data name="Auth.PasswordResetEmailSubject" xml:space="preserve">
+    <value>Reset your SecretSpots password</value>
+  </data>
+  <data name="Auth.PasswordResetEmailBody" xml:space="preserve">
+    <value>&lt;p&gt;We received a request to reset your SecretSpots password.&lt;/p&gt;&lt;p&gt;&lt;a href="{0}"&gt;Click here to choose a new password&lt;/a&gt;. This link expires soon and can only be used once.&lt;/p&gt;&lt;p&gt;If you didn't request this, you can safely ignore this email.&lt;/p&gt;</value>
+  </data>
   <data name="Spots.NameRequired" xml:space="preserve">
     <value>Name is required.</value>
   </data>

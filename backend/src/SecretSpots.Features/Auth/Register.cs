@@ -1,6 +1,4 @@
 using System.Net.Mail;
-using System.Security.Cryptography;
-using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -32,36 +30,14 @@ public static class Register
             RuleFor(c => c.Password)
                 .NotEmpty().WithMessage(localizer[AuthMessageKeys.PasswordRequired].Value)
                 .MinimumLength(8).WithMessage(localizer[AuthMessageKeys.PasswordTooShort].Value)
-                .Must(ContainUpperCase).WithMessage(localizer[AuthMessageKeys.PasswordRequiresUpper].Value)
-                .Must(ContainLowerCase).WithMessage(localizer[AuthMessageKeys.PasswordRequiresLower].Value)
-                .Must(ContainDigit).WithMessage(localizer[AuthMessageKeys.PasswordRequiresDigit].Value)
-                .Must(NotBeCommonPassword).WithMessage(localizer[AuthMessageKeys.PasswordIsCommon].Value);
+                .Must(PasswordRules.ContainUpperCase).WithMessage(localizer[AuthMessageKeys.PasswordRequiresUpper].Value)
+                .Must(PasswordRules.ContainLowerCase).WithMessage(localizer[AuthMessageKeys.PasswordRequiresLower].Value)
+                .Must(PasswordRules.ContainDigit).WithMessage(localizer[AuthMessageKeys.PasswordRequiresDigit].Value)
+                .Must(PasswordRules.NotBeCommonPassword).WithMessage(localizer[AuthMessageKeys.PasswordIsCommon].Value);
 
             RuleFor(c => c.DisplayName)
                 .NotEmpty().WithMessage(localizer[AuthMessageKeys.DisplayNameRequired].Value)
                 .MaximumLength(50).WithMessage(localizer[AuthMessageKeys.DisplayNameTooLong].Value);
-        }
-
-        private bool ContainUpperCase(string password)
-        {
-            return password.Any(char.IsUpper);
-        }
-
-        private bool ContainLowerCase(string password)
-        {
-            return password.Any(char.IsLower);
-        }
-
-        private bool ContainDigit(string password)
-        {
-            return password.Any(char.IsDigit);
-        }
-
-        private bool NotBeCommonPassword(string password)
-        {
-            var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(password.ToLowerInvariant())))
-                .ToLowerInvariant();
-            return !CommonPasswordHashes.Values.Contains(hash);
         }
     }
 

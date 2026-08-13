@@ -62,14 +62,19 @@ export default function LoginPage() {
             style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
           />
         </label>
-        <label className="flex items-center gap-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          <input
-            type="checkbox"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-          />
-          {t("rememberMeLabel")}
-        </label>
+        <div className="flex items-center justify-between text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            {t("rememberMeLabel")}
+          </label>
+          <Link href="/forgot-password" className="underline">
+            {t("forgotPasswordLink")}
+          </Link>
+        </div>
         {error ? <p className="text-sm text-red-700">{error}</p> : null}
         <button
           type="submit"

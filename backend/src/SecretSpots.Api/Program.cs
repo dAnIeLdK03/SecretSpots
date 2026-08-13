@@ -14,6 +14,7 @@ using SecretSpots.Features.Businesses;
 using SecretSpots.Features.CheckIns;
 using SecretSpots.Features.Comments;
 using SecretSpots.Features.Common.Configuration;
+using SecretSpots.Features.Common.Email;
 using SecretSpots.Features.Common.ExceptionHandling;
 using SecretSpots.Features.Common.ExternalAuth;
 using SecretSpots.Features.Common.Mediator;
@@ -81,6 +82,8 @@ builder.Services.Configure<RateLimitingOptions>(builder.Configuration.GetSection
 builder.Services.Configure<GoogleAuthOptions>(builder.Configuration.GetSection("GoogleAuth"));
 builder.Services.Configure<FacebookAuthOptions>(builder.Configuration.GetSection("FacebookAuth"));
 builder.Services.Configure<ExternalAuthOptions>(builder.Configuration.GetSection("ExternalAuth"));
+builder.Services.Configure<ResendOptions>(builder.Configuration.GetSection("Resend"));
+builder.Services.Configure<PasswordResetOptions>(builder.Configuration.GetSection("PasswordReset"));
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, UserContext>();
@@ -91,6 +94,8 @@ builder.Services.AddHttpClient<GoogleAuthProvider>();
 builder.Services.AddHttpClient<FacebookAuthProvider>();
 builder.Services.AddScoped<IExternalAuthProvider>(sp => sp.GetRequiredService<GoogleAuthProvider>());
 builder.Services.AddScoped<IExternalAuthProvider>(sp => sp.GetRequiredService<FacebookAuthProvider>());
+
+builder.Services.AddHttpClient<IEmailSender, ResendEmailSender>();
 
 // Kestrel's own default MaxRequestBodySize (~28.6MB) is looser than our actual photo size
 // limit — without this, an oversized-but-under-Kestrel's-cap upload would be fully received
