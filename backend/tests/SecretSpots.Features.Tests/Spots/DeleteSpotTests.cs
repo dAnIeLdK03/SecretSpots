@@ -30,8 +30,8 @@ public class DeleteSpotTests
         return spot;
     }
 
-    private static DeleteSpot.Handler CreateHandler(IAppDbContext db, Guid userId) =>
-        new(db, new FakeUserContext(userId), TestLocalizerFactory.Create(), NullLogger<DeleteSpot.Handler>.Instance);
+    private static DeleteSpot.Handler CreateHandler(IAppDbContext db, Guid userId, FakePhotoStorage? photoStorage = null) =>
+        new(db, new FakeUserContext(userId), photoStorage ?? new FakePhotoStorage(), TestLocalizerFactory.Create(), NullLogger<DeleteSpot.Handler>.Instance);
 
     [Fact]
     public async Task Creator_can_delete_their_spot()
@@ -39,12 +39,14 @@ public class DeleteSpotTests
         await using var db = TestDbContextFactory.Create();
         var creatorId = Guid.NewGuid();
         var spot = await SeedAsync(db, creatorId);
+        var photoStorage = new FakePhotoStorage();
 
-        var handler = CreateHandler(db, creatorId);
+        var handler = CreateHandler(db, creatorId, photoStorage);
         var result = await handler.Handle(new DeleteSpot.Command(spot.Id), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
         Assert.False(await db.Spots.AnyAsync(s => s.Id == spot.Id));
+        Assert.Equal(spot.PhotoUrls, photoStorage.DeletedUrls);
     }
 
     [Fact]

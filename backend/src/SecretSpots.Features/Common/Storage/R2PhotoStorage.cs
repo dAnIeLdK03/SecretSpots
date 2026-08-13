@@ -40,6 +40,19 @@ public class R2PhotoStorage : IPhotoStorage, IDisposable
         return $"{_options.PublicBaseUrl.TrimEnd('/')}/{key}";
     }
 
+    public async Task DeleteAsync(string url, CancellationToken cancellationToken)
+    {
+        var prefix = $"{_options.PublicBaseUrl.TrimEnd('/')}/";
+        if (!url.StartsWith(prefix, StringComparison.Ordinal))
+        {
+            // Not one of ours (e.g. a placeholder/external URL from old seed data) — nothing to delete.
+            return;
+        }
+
+        var key = url[prefix.Length..];
+        await _client.DeleteObjectAsync(_options.BucketName, key, cancellationToken);
+    }
+
     public void Dispose()
     {
         _client.Dispose();
