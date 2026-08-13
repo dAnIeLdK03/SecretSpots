@@ -19,6 +19,7 @@ public interface IAppDbContext
     DbSet<SavedSpot> SavedSpots { get; }
     DbSet<ExternalLogin> ExternalLogins { get; }
     DbSet<ExternalAuthTransaction> ExternalAuthTransactions { get; }
+    DbSet<PasswordResetToken> PasswordResetTokens { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

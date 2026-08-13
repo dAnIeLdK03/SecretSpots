@@ -63,6 +63,15 @@
   <data name="Auth.ExternalAuthCodeInvalidOrExpired" xml:space="preserve">
     <value>Тази връзка за вход е невалидна или е изтекла. Опитайте отново.</value>
   </data>
+  <data name="Auth.PasswordResetTokenInvalidOrExpired" xml:space="preserve">
+    <value>Тази връзка за смяна на паролата е невалидна или е изтекла. Заявете нова.</value>
+  </data>
+  <data name="Auth.PasswordResetEmailSubject" xml:space="preserve">
+    <value>Смяна на паролата в SecretSpots</value>
+  </data>
+  <data name="Auth.PasswordResetEmailBody" xml:space="preserve">
+    <value>&lt;p&gt;Получихме заявка за смяна на паролата на твоя SecretSpots акаунт.&lt;/p&gt;&lt;p&gt;&lt;a href="{0}"&gt;Натисни тук, за да зададеш нова парола&lt;/a&gt;. Връзката изтича скоро и може да се използва само веднъж.&lt;/p&gt;&lt;p&gt;Ако не си заявявал/а това, просто игнорирай този имейл.&lt;/p&gt;</value>
+  </data>
   <data name="Spots.NameRequired" xml:space="preserve">
     <value>Името е задължително.</value>
   </data>

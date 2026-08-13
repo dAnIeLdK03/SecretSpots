@@ -84,6 +84,26 @@ public static class AuthEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .Accepts<ExchangeExternalAuthCode.Command>("application/json");
 
+        group.MapPost("/password-reset/request", async (RequestPasswordReset.Command command, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(command, cancellationToken);
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
+            })
+            .RequireRateLimiting(RateLimitPolicies.Auth)
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .Accepts<RequestPasswordReset.Command>("application/json");
+
+        group.MapPost("/password-reset/confirm", async (ResetPassword.Command command, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(command, cancellationToken);
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
+            })
+            .RequireRateLimiting(RateLimitPolicies.Auth)
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .Accepts<ResetPassword.Command>("application/json");
+
         group.MapGet("/me", async (ISender sender, CancellationToken cancellationToken) =>
                 (await sender.Send(new GetCurrentUser.Query(), cancellationToken)).ToOkOrProblem())
             .RequireAuthorization()

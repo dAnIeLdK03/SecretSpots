@@ -37,7 +37,22 @@
       "cancelled": "Входът беше отказан.",
       "invalid_state": "Тази връзка за вход е невалидна или е изтекла. Опитайте отново.",
       "provider_error": "Възникна грешка при входа. Опитайте отново."
-    }
+    },
+    "forgotPasswordLink": "Забравена парола?",
+    "forgotPasswordTitle": "Забравена парола?",
+    "forgotPasswordSubtitle": "Ще ти изпратим връзка за смяна на паролата.",
+    "forgotPasswordButton": "Изпрати връзка",
+    "forgotPasswordSubmitting": "Изпращане...",
+    "forgotPasswordSuccess": "Ако имейлът съществува в системата, ще получиш връзка за смяна на паролата.",
+    "resetPasswordTitle": "Нова парола",
+    "resetPasswordSubtitle": "Въведи новата си парола по-долу.",
+    "newPasswordLabel": "Нова парола",
+    "confirmPasswordLabel": "Потвърди паролата",
+    "resetPasswordButton": "Смени паролата",
+    "resetPasswordSubmitting": "Сменяне...",
+    "resetPasswordSuccess": "Паролата беше сменена успешно.",
+    "passwordsDoNotMatch": "Паролите не съвпадат.",
+    "backToLogin": "Обратно към входа"
   },
   "Spots": {
     "category": {

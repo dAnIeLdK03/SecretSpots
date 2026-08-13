@@ -36,6 +36,7 @@ dotnet user-secrets set "Jwt:Secret" "<произволен base64 низ, по�
 dotnet user-secrets set "ConnectionStrings:Postgres" "Host=localhost;Port=5432;Database=secretspots;Username=secretspots;Password=secretspots_local_dev"
 dotnet user-secrets set "R2:AccessKeyId" "<от Cloudflare R2 API token>"
 dotnet user-secrets set "R2:SecretAccessKey" "<от Cloudflare R2 API token>"
+dotnet user-secrets set "Resend:ApiKey" "<от Resend API Keys страницата>"
 ```
 
 ### Настройка на Cloudflare R2 bucket (еднократно, за Photos slice-а)
@@ -45,6 +46,12 @@ dotnet user-secrets set "R2:SecretAccessKey" "<от Cloudflare R2 API token>"
 3. R2 → Manage API tokens → create token с Object Read & Write права, ограничен до bucket-а → копират се Access Key ID + Secret Access Key (виж командите по-горе).
 4. Account ID се вижда в R2 overview страницата на dashboard-а.
 5. `AccountId`, `BucketName`, `PublicBaseUrl` (не са тайни) отиват в `appsettings.Development.json` под `"R2"` секцията.
+
+### Настройка на Resend (еднократно, за password reset имейлите)
+
+1. Resend акаунт (безплатен tier, 3000 имейла/месец) → **API Keys** → create key → копира се в командата по-горе.
+2. Без верифициран собствен domain, `Resend:FromEmail` трябва да е `onboarding@resend.dev` (Resend-овия sandbox sender) — вече е зададен в `appsettings.Development.json`.
+3. Без валиден `Resend:ApiKey`, заявка за password reset на регистриран имейл ще върне 500 (самата заявка все пак се записва в базата — вижте логовете за детайли).
 
 **Тестовия проект** — през environment variable (тестовете хващат реален Postgres, не InMemory — виж `TestDbContextFactory.cs`):
 ```bash
