@@ -7,6 +7,7 @@ using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
+using SecretSpots.Features.Common.Storage;
 
 namespace SecretSpots.Features.Spots;
 
@@ -14,7 +15,12 @@ public static class DeleteSpot
 {
     public record Command(Guid SpotId) : IRequest<Result<Unit>>;
 
-    public class Handler(IAppDbContext db, IUserContext userContext, IStringLocalizer<SharedResources> localizer, ILogger<Handler> logger)
+    public class Handler(
+        IAppDbContext db,
+        IUserContext userContext,
+        IPhotoStorage photoStorage,
+        IStringLocalizer<SharedResources> localizer,
+        ILogger<Handler> logger)
         : IRequestHandler<Command, Result<Unit>>
     {
         public async Task<Result<Unit>> Handle(Command command, CancellationToken cancellationToken)
@@ -38,6 +44,20 @@ public static class DeleteSpot
 
             db.Spots.Remove(spot);
             await db.SaveChangesAsync(cancellationToken);
+
+            // Best-effort — a storage hiccup shouldn't stop the user from deleting their own
+            // spot. Worst case an orphaned object lingers in R2; it doesn't block anything.
+            foreach (var photoUrl in spot.PhotoUrls)
+            {
+                try
+                {
+                    await photoStorage.DeleteAsync(photoUrl, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, SpotsLogMessages.SpotPhotoDeleteFailed, photoUrl, spot.Id);
+                }
+            }
 
             logger.LogInformation(SpotsLogMessages.SpotDeleted, spot.Id, userContext.UserId);
 
