@@ -10,4 +10,5 @@ public static class CheckInsMessageKeys
     public const string PhotoUrlInvalid = "CheckIns.PhotoUrlInvalid";
     public const string PageOutOfRange = "CheckIns.PageOutOfRange";
     public const string PageSizeOutOfRange = "CheckIns.PageSizeOutOfRange";
+    public const string TooSoonSinceLastCheckIn = "CheckIns.TooSoonSinceLastCheckIn";
 }

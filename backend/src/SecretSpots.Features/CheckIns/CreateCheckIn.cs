@@ -77,6 +77,21 @@ public static class CreateCheckIn
                     StatusCodes.Status400BadRequest));
             }
 
+            // Stops trivially farming crystals by repeatedly checking in at the same spot —
+            // one crystal-earning check-in per spot per user within the cooldown window.
+            var cooldownStart = DateTimeOffset.UtcNow.AddHours(-checkInOptions.Value.CooldownHours);
+            var checkedInRecently = await db.CheckIns.AnyAsync(
+                c => c.SpotId == command.SpotId && c.UserId == userContext.UserId && c.CreatedAt > cooldownStart,
+                cancellationToken);
+
+            if (checkedInRecently)
+            {
+                return Result<CheckInResponse>.Failure(new Error(
+                    CheckInsMessageKeys.TooSoonSinceLastCheckIn,
+                    localizer[CheckInsMessageKeys.TooSoonSinceLastCheckIn].Value,
+                    StatusCodes.Status400BadRequest));
+            }
+
             // Same "current authenticated user" edge case as GetCurrentUser — handled the
             // same way (graceful 404), not an unhandled exception, in case the JWT outlives
             // the user row (e.g. account deleted after the token was issued).
