@@ -71,8 +71,8 @@ public class UpdateSpotHandlerTests
         return spot;
     }
 
-    private static UpdateSpot.Handler CreateHandler(IAppDbContext db, Guid userId) =>
-        new(db, new FakeUserContext(userId), TestLocalizerFactory.Create(), NullLogger<UpdateSpot.Handler>.Instance);
+    private static UpdateSpot.Handler CreateHandler(IAppDbContext db, Guid userId, FakePhotoStorage? photoStorage = null) =>
+        new(db, new FakeUserContext(userId), photoStorage ?? new FakePhotoStorage(), TestLocalizerFactory.Create(), NullLogger<UpdateSpot.Handler>.Instance);
 
     [Fact]
     public async Task Creator_can_update_their_spot()
@@ -80,8 +80,9 @@ public class UpdateSpotHandlerTests
         await using var db = TestDbContextFactory.Create();
         var creatorId = Guid.NewGuid();
         var spot = await SeedAsync(db, creatorId);
+        var photoStorage = new FakePhotoStorage();
 
-        var handler = CreateHandler(db, creatorId);
+        var handler = CreateHandler(db, creatorId, photoStorage);
         var result = await handler.Handle(
             new UpdateSpot.Command(spot.Id, "New name", "New description", SpotCategory.Viewpoint, ["https://example.com/new.jpg"]),
             CancellationToken.None);
@@ -95,6 +96,7 @@ public class UpdateSpotHandlerTests
         Assert.Equal("New description", saved.Description);
         Assert.Equal(SpotCategory.Viewpoint, saved.Category);
         Assert.Equal("https://example.com/new.jpg", saved.PhotoUrls[0]);
+        Assert.Equal(["https://example.com/original.jpg"], photoStorage.DeletedUrls);
     }
 
     [Fact]
