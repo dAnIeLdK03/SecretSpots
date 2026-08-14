@@ -9,6 +9,7 @@ using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
+using SecretSpots.Features.Common.Storage;
 using SecretSpots.Features.Common.Validation;
 
 namespace SecretSpots.Features.Spots;
@@ -52,7 +53,12 @@ public static class UpdateSpot
         }
     }
 
-    public class Handler(IAppDbContext db, IUserContext userContext, IStringLocalizer<SharedResources> localizer, ILogger<Handler> logger)
+    public class Handler(
+        IAppDbContext db,
+        IUserContext userContext,
+        IPhotoStorage photoStorage,
+        IStringLocalizer<SharedResources> localizer,
+        ILogger<Handler> logger)
         : IRequestHandler<Command, Result<SpotResponse>>
     {
         public async Task<Result<SpotResponse>> Handle(Command command, CancellationToken cancellationToken)
@@ -74,12 +80,28 @@ public static class UpdateSpot
                     StatusCodes.Status403Forbidden));
             }
 
+            var removedPhotoUrls = spot.PhotoUrls.Except(command.PhotoUrls).ToList();
+
             spot.Name = command.Name.Trim();
             spot.Description = command.Description.Trim();
             spot.Category = command.Category;
             spot.PhotoUrls = command.PhotoUrls.ToList();
 
             await db.SaveChangesAsync(cancellationToken);
+
+            // Best-effort — a storage hiccup shouldn't stop the update from saving. Worst case
+            // an orphaned object lingers in R2; it doesn't block anything (same as DeleteSpot).
+            foreach (var photoUrl in removedPhotoUrls)
+            {
+                try
+                {
+                    await photoStorage.DeleteAsync(photoUrl, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, SpotsLogMessages.SpotPhotoDeleteFailed, photoUrl, spot.Id);
+                }
+            }
 
             logger.LogInformation(SpotsLogMessages.SpotUpdated, spot.Id, userContext.UserId);
 
