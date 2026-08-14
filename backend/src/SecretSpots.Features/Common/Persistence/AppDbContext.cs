@@ -46,6 +46,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasIndex(u => u.Email)
             .IsUnique();
 
+        // Guards CrystalBalance against lost updates from concurrent check-ins/redemptions —
+        // xmin is Postgres's built-in row-version system column, so this needs no migration.
+        modelBuilder.Entity<User>().UseXminAsConcurrencyToken();
+
         modelBuilder.Entity<RefreshToken>()
             .HasIndex(r => r.Token)
             .IsUnique();

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using SecretSpots.Domain;
 using SecretSpots.Features.Auth;
 using SecretSpots.Features.Common.Configuration;
+using SecretSpots.Features.Common.ExceptionHandling;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -127,7 +128,20 @@ public static class CreateCheckIn
 
             db.CheckIns.Add(checkIn);
             db.Notifications.Add(notification);
-            await db.SaveChangesAsync(cancellationToken);
+
+            try
+            {
+                await db.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // This user's balance changed concurrently (another check-in, a redemption) —
+                // reject rather than silently overwrite it with a stale value.
+                return Result<CheckInResponse>.Failure(new Error(
+                    CommonMessageKeys.ConcurrencyConflict,
+                    localizer[CommonMessageKeys.ConcurrencyConflict].Value,
+                    StatusCodes.Status409Conflict));
+            }
 
             logger.LogInformation(
                 CheckInsLogMessages.CheckInCreated, checkIn.Id, spot.Id, user.Id, reward);

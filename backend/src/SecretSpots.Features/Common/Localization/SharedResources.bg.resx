@@ -234,4 +234,7 @@
   <data name="Common.UnexpectedError" xml:space="preserve">
     <value>Възникна грешка. Опитайте отново.</value>
   </data>
+  <data name="Common.ConcurrencyConflict" xml:space="preserve">
+    <value>Заявката не мина, защото акаунтът ти беше променен едновременно от друго действие. Опитай отново.</value>
+  </data>
 </root>

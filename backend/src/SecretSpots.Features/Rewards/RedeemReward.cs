@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using SecretSpots.Domain;
 using SecretSpots.Features.Auth;
+using SecretSpots.Features.Common.ExceptionHandling;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -59,7 +60,20 @@ public static class RedeemReward
             };
 
             db.RewardRedemptions.Add(redemption);
-            await db.SaveChangesAsync(cancellationToken);
+
+            try
+            {
+                await db.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // The balance check above raced with another update to this same user (another
+                // redemption, a check-in) — reject rather than silently spend a stale balance.
+                return Result<RewardRedemptionResponse>.Failure(new Error(
+                    CommonMessageKeys.ConcurrencyConflict,
+                    localizer[CommonMessageKeys.ConcurrencyConflict].Value,
+                    StatusCodes.Status409Conflict));
+            }
 
             logger.LogInformation(RewardsLogMessages.RewardRedeemed, reward.Id, user.Id, redemption.CrystalsSpent);
 

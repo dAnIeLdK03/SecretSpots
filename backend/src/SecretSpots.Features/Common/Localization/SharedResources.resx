@@ -234,4 +234,7 @@
   <data name="Common.UnexpectedError" xml:space="preserve">
     <value>Something went wrong. Please try again.</value>
   </data>
+  <data name="Common.ConcurrencyConflict" xml:space="preserve">
+    <value>That didn't go through because something else updated your account at the same time. Please try again.</value>
+  </data>
 </root>
