@@ -72,6 +72,8 @@ builder.Services.AddSwaggerGen(options =>
 var connectionString = builder.Configuration.GetConnectionString("Postgres")
     ?? throw new InvalidOperationException(StartupMessages.MissingPostgresConnectionString);
 builder.Services.AddPersistence(connectionString);
+builder.Services.Configure<TokenCleanupOptions>(builder.Configuration.GetSection("TokenCleanup"));
+builder.Services.AddHostedService<TokenCleanupService>();
 
 builder.Services.AddMediator(featuresAssembly);
 builder.Services.AddValidatorsFromAssembly(featuresAssembly);
