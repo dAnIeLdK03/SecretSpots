@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { SavedSpotResponse } from "@/lib/savedSpotsApi";
+import { CategoryIcon } from "./CategoryIcon";
 
 export function SavedSpotCard({ spot }: { spot: SavedSpotResponse }) {
   const t = useTranslations("Spots");
@@ -19,9 +20,10 @@ export function SavedSpotCard({ spot }: { spot: SavedSpotResponse }) {
       </div>
       <div className="flex flex-1 flex-col gap-1 p-4" style={{ color: "var(--fieldmap-ink)" }}>
         <h3 className="font-semibold">{spot.spotName}</h3>
-        <p className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+        <div className="flex items-center gap-1 text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+          <CategoryIcon category={spot.category} size={12} />
           {t(`category.${spot.category}`)}
-        </p>
+        </div>
       </div>
     </Link>
   );

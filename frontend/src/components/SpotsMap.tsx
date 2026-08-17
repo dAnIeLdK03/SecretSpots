@@ -5,6 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { NearbySpot } from "@/lib/spotsApi";
+import { CategoryIcon } from "./CategoryIcon";
 
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 
@@ -86,7 +87,8 @@ export function SpotsMap({
           >
             <div className="flex w-64 flex-col gap-1.5 text-sm text-zinc-900">
               <span className="pr-4 font-semibold">{selectedSpot.name}</span>
-              <span className="w-fit rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">
+              <span className="w-fit rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 flex items-center gap-1">
+                <CategoryIcon category={selectedSpot.category} />
                 {t(`category.${selectedSpot.category}`)}
               </span>
               <p className="line-clamp-2 text-zinc-700">{selectedSpot.description}</p>

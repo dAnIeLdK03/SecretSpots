@@ -7,6 +7,7 @@ import { LandingHero } from "@/components/LandingHero";
 import { FeaturedSpotCard } from "@/components/FeaturedSpotCard";
 import { searchSpots, SPOT_CATEGORIES } from "@/lib/spotsApi";
 import type { SpotCategory, SpotSearchResult } from "@/lib/spotsApi";
+import { CategoryIcon } from "@/components/CategoryIcon";
 
 const PAGE_SIZE = 4;
 
@@ -97,13 +98,14 @@ export default function LandingPage() {
             <button
               key={category}
               onClick={() => handleCategoryChange(category)}
-              className="rounded-full px-4 py-2 text-sm font-medium"
+              className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium"
               style={
                 categoryFilter === category
                   ? { backgroundColor: "var(--fieldmap-trail)", color: "#f1eddc" }
                   : { backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-ink)" }
               }
             >
+              <CategoryIcon category={category} size={14} />
               {tSpots(`category.${category}`)}
             </button>
           ))}
