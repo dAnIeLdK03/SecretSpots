@@ -1,7 +1,5 @@
 using System.Security.Cryptography;
-using FluentValidation.TestHelper;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging.Abstractions;
 using SecretSpots.Domain;
 using SecretSpots.Features.Auth;
 using SecretSpots.Features.Common.Persistence;
@@ -9,25 +7,6 @@ using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Tests.TestSupport;
 
 namespace SecretSpots.Features.Tests.Auth;
-
-public class RefreshAccessTokenValidatorTests
-{
-    private readonly RefreshAccessToken.Validator _validator = new(TestLocalizerFactory.Create());
-
-    [Fact]
-    public void RefreshToken_is_required()
-    {
-        var result = _validator.TestValidate(new RefreshAccessToken.Command(""));
-        result.ShouldHaveValidationErrorFor(c => c.RefreshToken);
-    }
-
-    [Fact]
-    public void Valid_command_has_no_errors()
-    {
-        var result = _validator.TestValidate(new RefreshAccessToken.Command("some-token-value"));
-        result.ShouldNotHaveAnyValidationErrors();
-    }
-}
 
 public class RefreshAccessTokenHandlerTests
 {

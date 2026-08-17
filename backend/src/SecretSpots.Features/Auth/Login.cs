@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,11 @@ namespace SecretSpots.Features.Auth;
 
 public static class Login
 {
-    public record Command(string Email, string Password) : IRequest<Result<AuthResult>>;
+    public record Command(
+        string Email, 
+        string Password,
+        [property: JsonPropertyName("rememberMe")] bool RememberMe = false
+    ) : IRequest<Result<AuthResult>>;
 
     public class Validator : AbstractValidator<Command>
     {
@@ -66,7 +71,7 @@ public static class Login
                     StatusCodes.Status401Unauthorized));
             }
 
-            var authResult = await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, cancellationToken);
+            var authResult = await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, command.RememberMe, cancellationToken);
             if (!authResult.IsSuccess)
             {
                 return Result<AuthResult>.Failure(authResult.Error);

@@ -16,6 +16,7 @@ internal static class AuthTokenIssuer
         IJwtService jwtService,
         IOptions<JwtOptions> jwtOptions,
         User user,
+        bool rememberMe,
         CancellationToken cancellationToken)
     {
         var (accessToken, accessTokenExpiresAt) = jwtService.GenerateAccessToken(user);
@@ -26,11 +27,13 @@ internal static class AuthTokenIssuer
             UserId = user.Id,
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(jwtOptions.Value.RefreshTokenDays),
+            RememberMe = rememberMe,
         };
 
         db.RefreshTokens.Add(refreshToken);
         await db.SaveChangesAsync(cancellationToken);
 
-        return Result<AuthResult>.Success(new AuthResult(accessToken, refreshToken.Token, accessTokenExpiresAt));
+        return Result<AuthResult>.Success(new AuthResult(
+            accessToken, refreshToken.Token, accessTokenExpiresAt, refreshToken.ExpiresAt, rememberMe));
     }
 }

@@ -7,7 +7,6 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useGeolocationStore } from "@/store/useGeolocationStore";
 import { refreshSession } from "@/lib/apiClient";
 import { getCurrentUser } from "@/lib/authApi";
-import { getRefreshToken, clearRefreshToken } from "@/lib/refreshTokenStorage";
 import { setCurrentLocale } from "@/lib/currentLocale";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -26,16 +25,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const { setLoading, setSession, clearSession } = useAuthStore.getState();
 
-    if (!getRefreshToken()) {
-      clearSession();
-      return;
-    }
-
     setLoading();
     refreshSession()
       .then((accessToken) => getCurrentUser().then((user) => setSession(accessToken, user)))
       .catch(() => {
-        clearRefreshToken();
         clearSession();
       });
   }, []);

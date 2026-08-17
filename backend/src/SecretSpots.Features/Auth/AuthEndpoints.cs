@@ -6,6 +6,7 @@ using SecretSpots.Domain;
 using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Results;
+using SecretSpots.Features.Common.Security;
 
 namespace SecretSpots.Features.Auth;
 
@@ -15,8 +16,18 @@ public static class AuthEndpoints
     {
         RouteGroupBuilder group = app.MapGroup("/auth").WithTags("Auth");
 
-        group.MapPost("/register", async (Register.Command command, ISender sender, CancellationToken cancellationToken) =>
-                (await sender.Send(command, cancellationToken)).ToOkOrProblem())
+        group.MapPost("/register", async (Register.Command command, ISender sender, HttpContext http, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(command, cancellationToken);
+                if (result.IsSuccess)
+                {
+                    RefreshTokenCookie.Append(
+                        http.Response,
+                        result.Value.RefreshToken,
+                        result.Value.RememberMe ? result.Value.RefreshTokenExpiresAt : null);
+                }
+                return result.ToOkOrProblem();
+            })
             .RequireRateLimiting(RateLimitPolicies.Auth)
             .Produces<AuthResult>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
@@ -24,8 +35,18 @@ public static class AuthEndpoints
             .ProducesProblem(StatusCodes.Status500InternalServerError)
             .Accepts<Register.Command>("application/json");
 
-        group.MapPost("/login", async (Login.Command command, ISender sender, CancellationToken cancellationToken) =>
-                (await sender.Send(command, cancellationToken)).ToOkOrProblem())
+        group.MapPost("/login", async (Login.Command command, ISender sender, HttpContext http, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(command, cancellationToken);
+                if (result.IsSuccess)
+                {
+                    RefreshTokenCookie.Append(
+                        http.Response,
+                        result.Value.RefreshToken,
+                        result.Value.RememberMe ? result.Value.RefreshTokenExpiresAt : null);
+                }
+                return result.ToOkOrProblem();
+            })
             .RequireRateLimiting(RateLimitPolicies.Auth)
             .Produces<AuthResult>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
@@ -33,23 +54,33 @@ public static class AuthEndpoints
             .ProducesProblem(StatusCodes.Status500InternalServerError)
             .Accepts<Login.Command>("application/json");
 
-        group.MapPost("/refresh", async (RefreshAccessToken.Command command, ISender sender, CancellationToken cancellationToken) =>
-                (await sender.Send(command, cancellationToken)).ToOkOrProblem())
+        group.MapPost("/refresh", async (ISender sender, HttpContext http, CancellationToken cancellationToken) =>
+            {
+                var command = new RefreshAccessToken.Command(http.Request.Cookies[RefreshTokenCookie.Name] ?? "");
+                var result = await sender.Send(command, cancellationToken);
+                if (result.IsSuccess)
+                {
+                    RefreshTokenCookie.Append(
+                        http.Response,
+                        result.Value.RefreshToken,
+                        result.Value.RememberMe ? result.Value.RefreshTokenExpiresAt : null);
+                }
+                return result.ToOkOrProblem();
+            })
             .RequireRateLimiting(RateLimitPolicies.Auth)
             .Produces<AuthResult>(StatusCodes.Status200OK)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status500InternalServerError)
-            .Accepts<RefreshAccessToken.Command>("application/json");
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-        group.MapPost("/logout", async (Logout.Command command, ISender sender, CancellationToken cancellationToken) =>
+        group.MapPost("/logout", async (ISender sender, HttpContext http, CancellationToken cancellationToken) =>
             {
+                var command = new Logout.Command(http.Request.Cookies[RefreshTokenCookie.Name] ?? "");
                 var result = await sender.Send(command, cancellationToken);
+                RefreshTokenCookie.Delete(http.Response);
                 return result.IsSuccess ? Results.NoContent() : result.ToProblem();
             })
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .Accepts<Logout.Command>("application/json");
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapGet("/google", async (ISender sender, CancellationToken cancellationToken) =>
         {
@@ -77,8 +108,18 @@ public static class AuthEndpoints
             return result.IsSuccess ? Results.Redirect(result.Value) : result.ToProblem();
         });
 
-        group.MapPost("/external/exchange", async (ExchangeExternalAuthCode.Command command, ISender sender, CancellationToken cancellationToken) =>
-                (await sender.Send(command, cancellationToken)).ToOkOrProblem())
+        group.MapPost("/external/exchange", async (ExchangeExternalAuthCode.Command command, ISender sender, HttpContext http, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(command, cancellationToken);
+                if (result.IsSuccess)
+                {
+                    RefreshTokenCookie.Append(
+                        http.Response,
+                        result.Value.RefreshToken,
+                        result.Value.RememberMe ? result.Value.RefreshTokenExpiresAt : null);
+                }
+                return result.ToOkOrProblem();
+            })
             .RequireRateLimiting(RateLimitPolicies.Auth)
             .Produces<AuthResult>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
