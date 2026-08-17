@@ -45,6 +45,10 @@ public static class DeleteSpot
             db.Spots.Remove(spot);
             await db.SaveChangesAsync(cancellationToken);
 
+            await db.Notifications
+                .Where(n => n.RelatedSpotId == spot.Id)
+                .ExecuteUpdateAsync(n => n.SetProperty(x => x.RelatedSpotId, (Guid?)null), cancellationToken);
+
             // Best-effort — a storage hiccup shouldn't stop the user from deleting their own
             // spot. Worst case an orphaned object lingers in R2; it doesn't block anything.
             foreach (var photoUrl in spot.PhotoUrls)
