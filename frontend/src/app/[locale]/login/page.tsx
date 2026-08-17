@@ -23,8 +23,8 @@ export default function LoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      const result = await login(email, password);
-      await establishSession(result, rememberMe);
+      const result = await login(email, password, rememberMe);
+      await establishSession(result);
       router.push("/account");
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));

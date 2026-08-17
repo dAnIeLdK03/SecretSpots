@@ -1,6 +1,5 @@
 import { useAuthStore } from "@/store/useAuthStore";
 import { getCurrentLocale } from "@/lib/currentLocale";
-import { getRefreshToken, setRefreshToken, clearRefreshToken } from "@/lib/refreshTokenStorage";
 
 export interface ProblemDetails {
   type?: string;
@@ -45,11 +44,6 @@ export function refreshSession(): Promise<string> {
 
 async function performRefresh(): Promise<string> {
   const run = async (): Promise<string> => {
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) {
-      throw new Error("No refresh token available");
-    }
-
     const response = await fetch(new URL("/auth/refresh", API_BASE_URL), {
       method: "POST",
       credentials: "include",
@@ -57,15 +51,13 @@ async function performRefresh(): Promise<string> {
         "Content-Type": "application/json",
         "Accept-Language": getCurrentLocale(),
       },
-      body: JSON.stringify({ refreshToken }),
     });
 
     if (!response.ok) {
       throw new Error("Refresh failed");
     }
 
-    const tokens: { accessToken: string; refreshToken: string } = await response.json();
-    setRefreshToken(tokens.refreshToken);
+    const tokens: { accessToken: string; expiresAt: string } = await response.json();
     useAuthStore.getState().setAccessToken(tokens.accessToken);
     return tokens.accessToken;
   };
@@ -105,7 +97,6 @@ async function doFetch(path: string, options: RequestInit = {}, isRetry = false)
       await refreshSession();
     } catch {
       useAuthStore.getState().clearSession();
-      clearRefreshToken();
       const problem: ProblemDetails = await response.json().catch(() => ({}));
       throw new ApiError(response.status, problem);
     }

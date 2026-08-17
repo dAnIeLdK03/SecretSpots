@@ -15,15 +15,6 @@ public static class RefreshAccessToken
 {
     public record Command(string RefreshToken) : IRequest<Result<AuthResult>>;
 
-    public class Validator : AbstractValidator<Command>
-    {
-        public Validator(IStringLocalizer<SharedResources> localizer)
-        {
-            RuleFor(c => c.RefreshToken)
-                .NotEmpty().WithMessage(localizer[AuthMessageKeys.RefreshTokenRequired].Value);
-        }
-    }
-
     public class Handler(
         IAppDbContext db,
         IJwtService jwtService,
@@ -33,8 +24,9 @@ public static class RefreshAccessToken
     {
         public async Task<Result<AuthResult>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var existingToken = await db.RefreshTokens
-                .SingleOrDefaultAsync(t => t.Token == command.RefreshToken, cancellationToken);
+            var existingToken = string.IsNullOrEmpty(command.RefreshToken)
+                ? null
+                : await db.RefreshTokens.SingleOrDefaultAsync(t => t.Token == command.RefreshToken, cancellationToken);
 
             var isUsable = existingToken is { RevokedAt: null } && existingToken.ExpiresAt > DateTimeOffset.UtcNow;
 
@@ -51,7 +43,7 @@ public static class RefreshAccessToken
 
             existingToken!.RevokedAt = DateTimeOffset.UtcNow;
 
-            return await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, cancellationToken);
+            return await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, existingToken.RememberMe, cancellationToken);
         }
     }
 }

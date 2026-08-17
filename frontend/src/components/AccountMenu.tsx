@@ -7,7 +7,6 @@ import { Link } from "@/i18n/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNotificationsStore } from "@/store/useNotificationsStore";
 import { useCheckInsHistoryStore } from "@/store/useCheckInsHistoryStore";
-import { getRefreshToken, clearRefreshToken } from "@/lib/refreshTokenStorage";
 import { logout } from "@/lib/authApi";
 import { Avatar } from "@/components/Avatar";
 
@@ -62,14 +61,10 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
   }
 
   function handleLogout() {
-    const refreshToken = getRefreshToken();
-    clearRefreshToken();
     clearSession();
     resetNotifications();
     resetCheckInsHistory();
-    if (refreshToken) {
-      logout(refreshToken).catch(() => {});
-    }
+    logout().catch(() => {});
     closeMenu();
   }
 

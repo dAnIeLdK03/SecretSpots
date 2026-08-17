@@ -52,7 +52,7 @@ public static class ExchangeExternalAuthCode
 
             var user = await db.Users.SingleAsync(u => u.Id == transaction.UserId!.Value, cancellationToken);
 
-            return await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, cancellationToken);
+            return await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, rememberMe: true, cancellationToken);
         }
     }
 }

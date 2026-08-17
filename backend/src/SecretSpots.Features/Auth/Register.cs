@@ -100,7 +100,7 @@ public static class Register
                     StatusCodes.Status409Conflict));
             }
 
-            var issueResult = await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, cancellationToken);
+            var issueResult = await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, rememberMe: true, cancellationToken);
             if (!issueResult.IsSuccess)
             {
                 return issueResult;
