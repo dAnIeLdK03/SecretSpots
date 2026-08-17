@@ -18,6 +18,7 @@ import { SaveSpotButton } from "@/components/SaveSpotButton";
 import { SpotRatingInput } from "@/components/SpotRatingInput";
 import { SpotRatingSummary } from "@/components/SpotRatingSummary";
 import { Link, useRouter } from "@/i18n/navigation";
+import { CategoryIcon } from "@/components/CategoryIcon";
 
 type LoadState =
   | { status: "loading" }
@@ -145,7 +146,10 @@ function SpotDetailContent({ id }: { id: string }) {
               <Tag size={16} />
               {t("categoryLabel")}
             </dt>
-            <dd>{t(`category.${spot.category}`)}</dd>
+            <dd className="flex items-center gap-1.5">
+              <CategoryIcon category={spot.category} size={14} />
+              {t(`category.${spot.category}`)}
+            </dd>
 
             <dt className="flex items-center gap-2" style={{ color: "var(--fieldmap-dim)" }}>
               <Avatar name={spot.createdByDisplayName} size={20} />

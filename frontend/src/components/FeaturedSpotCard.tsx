@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatRelativeTime } from "@/lib/relativeTime";
 import type { SpotCategory } from "@/lib/spotsApi";
+import { CategoryIcon } from "./CategoryIcon";
 
 interface FeaturedSpotCardProps {
   spot: {
@@ -34,11 +35,7 @@ export function FeaturedSpotCard({ spot }: FeaturedSpotCardProps) {
           className="absolute top-2 left-2 flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold"
           style={{ backgroundColor: "rgba(241, 237, 220, 0.9)", color: "var(--fieldmap-ink)" }}
         >
-          <span
-            aria-hidden="true"
-            className="h-1.5 w-1.5 rotate-45 border-2"
-            style={{ borderColor: "var(--fieldmap-trail)" }}
-          />
+          <CategoryIcon category={spot.category} size={12} />
           {t(`category.${spot.category}`)}
         </span>
       </div>
