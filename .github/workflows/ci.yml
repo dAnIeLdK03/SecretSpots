@@ -154,6 +154,13 @@ jobs:
           Jwt__Secret: "e2e-only-jwt-signing-secret-not-used-anywhere-else"
           R2__AccessKeyId: ${{ env.MINIO_ROOT_USER }}
           R2__SecretAccessKey: ${{ env.MINIO_ROOT_PASSWORD }}
+          # appsettings.Development.json sets this to 1000/60s so local manual testing never
+          # trips it — far too high for the auth-flow e2e spec to hit within a reasonable test
+          # runtime. Lowered here, for this job only, so it 429s after a handful of requests; the
+          # short window also lets that spec wait the window out afterward so it doesn't leave
+          # other specs' login/register calls rate-limited for the rest of the run.
+          RateLimiting__AuthPermitLimit: "5"
+          RateLimiting__AuthWindowSeconds: "5"
 
       - name: Install frontend dependencies
         working-directory: frontend
