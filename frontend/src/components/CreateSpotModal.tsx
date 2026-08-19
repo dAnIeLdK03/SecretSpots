@@ -7,6 +7,7 @@ import { createSpot, SPOT_CATEGORIES } from "@/lib/spotsApi";
 import type { SpotCategory, SpotResponse } from "@/lib/spotsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { MultiPhotoUpload } from "@/components/MultiPhotoUpload";
+import { CategorySelect } from "@/components/CategorySelect";
 
 interface CreateSpotModalProps {
   latitude: number;
@@ -83,17 +84,7 @@ export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: Cre
           </div>
           <label className="flex flex-col gap-1">
             <span className="text-sm text-zinc-300">{t("categoryLabel")}</span>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value as SpotCategory)}
-              className={FIELD_CLASSES}
-            >
-              {SPOT_CATEGORIES.map((c) => (
-                <option key={c} value={c} className="text-zinc-900">
-                  {t(`category.${c}`)}
-                </option>
-              ))}
-            </select>
+            <CategorySelect value={category} onChange={setCategory} dark />
           </label>
           <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} dark />
           {error ? <p className="text-sm text-red-400">{error}</p> : null}
