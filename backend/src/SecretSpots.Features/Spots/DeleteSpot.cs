@@ -49,6 +49,14 @@ public static class DeleteSpot
                 .Where(n => n.RelatedSpotId == spot.Id)
                 .ExecuteUpdateAsync(n => n.SetProperty(x => x.RelatedSpotId, (Guid?)null), cancellationToken);
 
+            // Comment/Rating/SavedSpot/CheckIn have a required (non-nullable) SpotId, so unlike
+            // Notification.RelatedSpotId there's no "clear the link" option — the rows themselves
+            // are now meaningless and would otherwise sit as permanent DB bloat.
+            await db.Comments.Where(c => c.SpotId == spot.Id).ExecuteDeleteAsync(cancellationToken);
+            await db.Ratings.Where(r => r.SpotId == spot.Id).ExecuteDeleteAsync(cancellationToken);
+            await db.SavedSpots.Where(s => s.SpotId == spot.Id).ExecuteDeleteAsync(cancellationToken);
+            await db.CheckIns.Where(c => c.SpotId == spot.Id).ExecuteDeleteAsync(cancellationToken);
+
             // Best-effort — a storage hiccup shouldn't stop the user from deleting their own
             // spot. Worst case an orphaned object lingers in R2; it doesn't block anything.
             foreach (var photoUrl in spot.PhotoUrls)
