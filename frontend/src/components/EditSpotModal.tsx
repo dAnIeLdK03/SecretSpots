@@ -3,10 +3,11 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useTranslations } from "next-intl";
-import { SPOT_CATEGORIES, updateSpot } from "@/lib/spotsApi";
+import { updateSpot } from "@/lib/spotsApi";
 import type { SpotCategory, SpotResponse } from "@/lib/spotsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { MultiPhotoUpload } from "@/components/MultiPhotoUpload";
+import { CategorySelect } from "@/components/CategorySelect";
 
 interface EditSpotModalProps {
     spot: SpotResponse;
@@ -70,18 +71,7 @@ export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
                     </label>
                     <label className="flex flex-col gap-1">
                         <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>{t("categoryLabel")}</span>
-                        <select
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value as SpotCategory)}
-                            className="rounded border px-3 py-2"
-                            style={{ borderColor: "var(--fieldmap-contour)" }}
-                        >
-                            {SPOT_CATEGORIES.map((c) => (
-                                <option key={c} value={c}>
-                                    {t(`category.${c}`)}
-                                </option>
-                            ))}
-                        </select>
+                        <CategorySelect value={category} onChange={setCategory} />
                     </label>
                     <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} />
                     {error ? <p className="text-sm text-red-700">{error}</p> : null}
