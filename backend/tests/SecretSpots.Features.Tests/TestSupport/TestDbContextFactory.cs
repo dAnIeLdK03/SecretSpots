@@ -39,11 +39,29 @@ internal static class TestDbContextFactory
                 if (!_migrated)
                 {
                     context.Database.Migrate();
+                    ClearAllTables(context);
                     _migrated = true;
                 }
             }
         }
 
         return context;
+    }
+
+    // Nothing here ever deletes what a previous test run left behind, so the shared database
+    // quietly accumulates rows across every local `dotnet test` invocation on a given machine —
+    // enough of them, at coordinates literally reused by dozens of test files (e.g. the
+    // "Sofia center" point in SearchNearbySpotsTests), to eventually change which query plan
+    // Postgres picks, or which rows a MaxResults-limited query returns. Wiping every table once
+    // per test process, right after migrating, keeps each full suite run starting from empty.
+    private static void ClearAllTables(AppDbContext context)
+    {
+        var tableNames = context.Model.GetEntityTypes()
+            .Select(t => t.GetTableName())
+            .Where(name => name is not null)
+            .Distinct();
+
+        var quotedTableNames = string.Join(", ", tableNames.Select(name => $"\"{name}\""));
+        context.Database.ExecuteSqlRaw($"TRUNCATE TABLE {quotedTableNames} RESTART IDENTITY CASCADE");
     }
 }
