@@ -6,6 +6,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SecretSpots.Api;
@@ -106,7 +107,18 @@ builder.Services.AddHttpClient<FacebookAuthProvider>();
 builder.Services.AddScoped<IExternalAuthProvider>(sp => sp.GetRequiredService<GoogleAuthProvider>());
 builder.Services.AddScoped<IExternalAuthProvider>(sp => sp.GetRequiredService<FacebookAuthProvider>());
 
-builder.Services.AddHttpClient<IEmailSender, ResendEmailSender>();
+// In Development (local dev machines and the CI e2e job), no Resend API key is configured
+// anywhere, so forgot-password would otherwise fail outright. Capturing sent emails in memory
+// instead also lets e2e tests read back a password-reset link via /internal/test/emails below.
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSingleton<ITestEmailInbox, TestEmailInbox>();
+    builder.Services.AddSingleton<IEmailSender, InMemoryEmailSender>();
+}
+else
+{
+    builder.Services.AddHttpClient<IEmailSender, ResendEmailSender>();
+}
 
 // Kestrel's own default MaxRequestBodySize (~28.6MB) is looser than our actual photo size
 // limit — without this, an oversized-but-under-Kestrel's-cap upload would be fully received
@@ -224,5 +236,23 @@ app.MapPhotosEndpoints();
 app.MapBusinessesEndpoints();
 app.MapRewardsEndpoints();
 app.MapNotificationsEndpoints();
+
+// Lets e2e tests read back what InMemoryEmailSender captured (see registration above) instead of
+// needing a real inbox — e.g. to pull the token out of a password-reset link. Gated on
+// IsDevelopment() the same way Swagger is above, so it can never exist in Production.
+if (app.Environment.IsDevelopment())
+{
+    app.MapGet("/internal/test/emails", (string to, ITestEmailInbox inbox) =>
+    {
+        var email = inbox.GetLatest(to);
+        return email is null ? Results.NotFound() : Results.Ok(email);
+    });
+
+    // Lets e2e tests compute exactly how many requests trip the auth rate limit instead of
+    // guessing/hardcoding a number that has to be kept in sync with appsettings or a CI-only
+    // override.
+    app.MapGet("/internal/test/rate-limit-config", (IOptions<RateLimitingOptions> options) =>
+        Results.Ok(new { options.Value.AuthPermitLimit, options.Value.AuthWindowSeconds }));
+}
 
 app.Run();
