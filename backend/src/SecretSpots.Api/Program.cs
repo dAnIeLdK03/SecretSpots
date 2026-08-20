@@ -183,6 +183,15 @@ builder.Services.AddRateLimiter(options =>
                 PermitLimit = rateLimitingOptions.AuthPermitLimit,
                 Window = TimeSpan.FromSeconds(rateLimitingOptions.AuthWindowSeconds),
             }));
+
+    options.AddPolicy(RateLimitPolicies.Photos, context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = rateLimitingOptions.PhotosPermitLimit,
+                Window = TimeSpan.FromSeconds(rateLimitingOptions.PhotosWindowSeconds),
+            }));
 });
 
 var corsAllowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
