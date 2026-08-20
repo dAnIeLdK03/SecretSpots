@@ -40,6 +40,13 @@ public static class DeleteReward
             db.Rewards.Remove(reward);
             await db.SaveChangesAsync(cancellationToken);
 
+            // RewardRedemption.RewardId has no DB-level FK and nothing currently reads
+            // redemptions back for display, so nothing would visibly break by leaving these —
+            // but they'd otherwise sit as permanent DB bloat, same as the Spot-deletion cleanup.
+            await db.RewardRedemptions
+                .Where(r => r.RewardId == reward.Id)
+                .ExecuteDeleteAsync(cancellationToken);
+
             logger.LogInformation(RewardsLogMessages.RewardDeleted, reward.Id, userContext.UserId);
 
             return Result<Unit>.Success(Unit.Value);
