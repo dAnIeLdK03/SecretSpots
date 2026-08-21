@@ -10,4 +10,6 @@ public static class RewardsMessageKeys
     public const string NotFound = "Rewards.NotFound";
     public const string NotYourBusiness = "Rewards.NotYourBusiness";
     public const string InsufficientBalance = "Rewards.InsufficientBalance";
+    public const string PageOutOfRange = "Rewards.PageOutOfRange";
+    public const string PageSizeOutOfRange = "Rewards.PageSizeOutOfRange";
 }

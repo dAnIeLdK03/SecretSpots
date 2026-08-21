@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
+using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Results;
 
@@ -79,6 +81,21 @@ public static class RewardsEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+        app.MapGet("/redemptions/me", async (
+                int? page, int? pageSize, IOptions<RewardsOptions> rewardsOptions,
+                ISender sender, CancellationToken cancellationToken) =>
+            {
+                var query = new GetMyRedemptions.Query(page ?? 1, pageSize ?? rewardsOptions.Value.DefaultPageSize);
+                var result = await sender.Send(query, cancellationToken);
+                return Results.Ok(result);
+            })
+            .WithTags("Rewards")
+            .RequireAuthorization()
+            .Produces<RedemptionsPageResponse>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
         return app;
