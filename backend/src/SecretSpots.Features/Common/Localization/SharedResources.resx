@@ -192,6 +192,9 @@
   <data name="Businesses.NotFound" xml:space="preserve">
     <value>This business no longer exists.</value>
   </data>
+  <data name="Businesses.NotYourBusiness" xml:space="preserve">
+    <value>You don't own this business.</value>
+  </data>
   <data name="Rewards.TitleRequired" xml:space="preserve">
     <value>Title is required.</value>
   </data>

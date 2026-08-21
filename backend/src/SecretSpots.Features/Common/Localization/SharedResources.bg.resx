@@ -192,6 +192,9 @@
   <data name="Businesses.NotFound" xml:space="preserve">
     <value>Този бизнес вече не съществува.</value>
   </data>
+  <data name="Businesses.NotYourBusiness" xml:space="preserve">
+    <value>Не притежаваш този бизнес.</value>
+  </data>
   <data name="Rewards.TitleRequired" xml:space="preserve">
     <value>Заглавието е задължително.</value>
   </data>
