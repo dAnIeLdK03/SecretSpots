@@ -159,7 +159,15 @@ jobs:
           # runtime. Lowered here, for this job only, so it 429s after a handful of requests; the
           # short window also lets that spec wait the window out afterward so it doesn't leave
           # other specs' login/register calls rate-limited for the rest of the run.
-          RateLimiting__AuthPermitLimit: "5"
+          #
+          # 30, not 5: AuthProvider calls /auth/refresh (also under this policy) on every page
+          # mount, and Playwright's page.goto() is a full navigation each time — so a single e2e
+          # test can easily rack up 6-10 auth-limited calls (implicit refreshes plus its own
+          # register/login/refresh/password-reset calls) well before the "deliberately trip the
+          # limiter" test ever runs. 5 was tight enough that unrelated specs started 429ing each
+          # other; the rate-limit test itself reads this value at runtime either way, so raising
+          # it doesn't need any test change.
+          RateLimiting__AuthPermitLimit: "30"
           RateLimiting__AuthWindowSeconds: "5"
 
       - name: Install frontend dependencies
