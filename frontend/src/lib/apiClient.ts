@@ -50,6 +50,10 @@ async function performRefresh(): Promise<string> {
       headers: {
         "Content-Type": "application/json",
         "Accept-Language": getCurrentLocale(),
+        // Not a CORS-safelisted header — forces a preflight, which the backend's strict origin
+        // allowlist then rejects for any site but this one. /auth/refresh authenticates via an
+        // ambient cookie rather than a bearer token, so without this it'd be a plain CSRF target.
+        "X-Requested-With": "XMLHttpRequest",
       },
     });
 
@@ -82,6 +86,9 @@ async function doFetch(path: string, options: RequestInit = {}, isRetry = false)
     headers: {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
       "Accept-Language": getCurrentLocale(),
+      // See the matching comment in performRefresh above — /auth/logout is the other
+      // cookie-authenticated endpoint this protects. Harmless to send on every request.
+      "X-Requested-With": "XMLHttpRequest",
       ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       ...options.headers,
     },
