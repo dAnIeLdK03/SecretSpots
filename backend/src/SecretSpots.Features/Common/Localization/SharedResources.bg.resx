@@ -234,6 +234,9 @@
   <data name="Notifications.NewSpotNearbyMessage" xml:space="preserve">
     <value>Добавено е ново място наблизо.</value>
   </data>
+  <data name="Notifications.NewCommentOnYourSpotMessage" xml:space="preserve">
+    <value>Някой коментира твоето място.</value>
+  </data>
   <data name="Notifications.NotFound" xml:space="preserve">
     <value>Това известие вече не съществува.</value>
   </data>

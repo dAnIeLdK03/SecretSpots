@@ -14,6 +14,8 @@ internal static class NotificationResponseFactory
                 localizer[NotificationsMessageKeys.CrystalsEarnedMessage, notification.CrystalsAwarded ?? 0].Value,
             NotificationType.NewSpotNearby =>
                 localizer[NotificationsMessageKeys.NewSpotNearbyMessage].Value,
+            NotificationType.NewCommentOnYourSpot =>
+                localizer[NotificationsMessageKeys.NewCommentOnYourSpotMessage].Value,
             _ => throw new ArgumentOutOfRangeException(nameof(notification), notification.Type, null),
         };
 

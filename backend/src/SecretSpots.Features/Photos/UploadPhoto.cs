@@ -86,6 +86,14 @@ public static class UploadPhoto
 
             using (image)
             {
+                // Strips GPS/EXIF (and IPTC/XMP, which can also carry location or author data) —
+                // a phone photo's embedded GPS coordinates are often far more precise than
+                // anything this app intentionally shares, and every upload here ends up on a
+                // publicly viewable spot/check-in, so this must not leak through untouched.
+                image.Metadata.ExifProfile = null;
+                image.Metadata.IptcProfile = null;
+                image.Metadata.XmpProfile = null;
+
                 var maxDimension = photoOptions.Value.MaxDimensionPixels;
                 image.Mutate(x => x.Resize(new ResizeOptions
                 {
