@@ -5,5 +5,5 @@ namespace SecretSpots.Features.Common.Persistence;
 internal static class TokenCleanupLogMessages
 {
     public const string TokensCleanedUp =
-        "Token cleanup removed {RefreshTokenCount} expired refresh token(s) and {ResetTokenCount} expired password reset token(s).";
+        "Token cleanup removed {RefreshTokenCount} expired refresh token(s), {ResetTokenCount} expired password reset token(s), and {ExternalAuthTransactionCount} expired/consumed external auth transaction(s).";
 }
