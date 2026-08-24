@@ -51,7 +51,11 @@ test("refresh rotates the httpOnly cookie and revokes the previous token", async
   expect(originalCookie).toBeDefined();
 
   // Same browser context, so the httpOnly cookie is sent automatically — this call rotates it.
-  const refreshResponse = await context.request.post(`${API_BASE_URL}/auth/refresh`);
+  // X-Requested-With is required by CsrfProtection.RequireCsrfHeader (see Program.cs) — /auth/
+  // refresh authenticates via this ambient cookie rather than a bearer token, so a raw request
+  // without it would otherwise be indistinguishable from a cross-site CSRF attempt.
+  const csrfHeaders = { "X-Requested-With": "XMLHttpRequest" };
+  const refreshResponse = await context.request.post(`${API_BASE_URL}/auth/refresh`, { headers: csrfHeaders });
   expect(refreshResponse.ok()).toBe(true);
 
   const rotatedCookie = (await context.cookies()).find((c) => c.name === cookieName);
@@ -61,7 +65,7 @@ test("refresh rotates the httpOnly cookie and revokes the previous token", async
   // The old token was revoked by the rotation above — reusing it explicitly (bypassing the
   // context's cookie jar, which now only holds the new one) must now be rejected.
   const reuseResponse = await context.request.post(`${API_BASE_URL}/auth/refresh`, {
-    headers: { Cookie: `${cookieName}=${originalCookie?.value}` },
+    headers: { ...csrfHeaders, Cookie: `${cookieName}=${originalCookie?.value}` },
   });
   expect(reuseResponse.status()).toBe(401);
 });

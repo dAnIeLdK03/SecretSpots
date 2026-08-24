@@ -68,8 +68,10 @@ public static class AuthEndpoints
                 return result.ToOkOrProblem();
             })
             .RequireRateLimiting(RateLimitPolicies.Auth)
+            .RequireCsrfHeader()
             .Produces<AuthResult>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
         group.MapPost("/logout", async (ISender sender, HttpContext http, CancellationToken cancellationToken) =>
@@ -79,8 +81,10 @@ public static class AuthEndpoints
                 RefreshTokenCookie.Delete(http.Response);
                 return result.IsSuccess ? Results.NoContent() : result.ToProblem();
             })
+            .RequireCsrfHeader()
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status403Forbidden);
 
         group.MapGet("/google", async (ISender sender, CancellationToken cancellationToken) =>
         {
