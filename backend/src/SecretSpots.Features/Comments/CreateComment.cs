@@ -40,8 +40,8 @@ public static class CreateComment
     {
         public async Task<Result<CommentResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var spotExists = await db.Spots.AnyAsync(s => s.Id == command.SpotId, cancellationToken);
-            if (!spotExists)
+            var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
+            if (spot is null)
             {
                 return Result<CommentResponse>.Failure(new Error(
                     CommentsMessageKeys.SpotNotFound,
@@ -69,6 +69,20 @@ public static class CreateComment
             };
 
             db.Comments.Add(comment);
+
+            // Skip notifying on a self-comment — a spot's own creator commenting on their own
+            // spot shouldn't page themselves.
+            if (spot.CreatedByUserId != userContext.UserId)
+            {
+                db.Notifications.Add(new Notification
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = spot.CreatedByUserId,
+                    Type = NotificationType.NewCommentOnYourSpot,
+                    RelatedSpotId = spot.Id,
+                });
+            }
+
             await db.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(CommentsLogMessages.CommentCreated, comment.Id, comment.SpotId, user.Id);

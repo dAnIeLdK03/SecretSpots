@@ -6,6 +6,7 @@ public static class NotificationsMessageKeys
 {
     public const string CrystalsEarnedMessage = "Notifications.CrystalsEarnedMessage";
     public const string NewSpotNearbyMessage = "Notifications.NewSpotNearbyMessage";
+    public const string NewCommentOnYourSpotMessage = "Notifications.NewCommentOnYourSpotMessage";
     public const string NotFound = "Notifications.NotFound";
     public const string PageOutOfRange = "Notifications.PageOutOfRange";
     public const string PageSizeOutOfRange = "Notifications.PageSizeOutOfRange";

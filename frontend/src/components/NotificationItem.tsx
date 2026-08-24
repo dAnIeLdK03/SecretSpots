@@ -9,6 +9,7 @@ import type { NotificationResponse, NotificationType } from "@/lib/notifications
 const TYPE_ICONS: Record<NotificationType, string> = {
   CrystalsEarned: "💎",
   NewSpotNearby: "📍",
+  NewCommentOnYourSpot: "💬",
 };
 
 interface NotificationItemProps {
