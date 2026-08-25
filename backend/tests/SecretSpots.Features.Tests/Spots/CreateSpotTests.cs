@@ -11,13 +11,14 @@ namespace SecretSpots.Features.Tests.Spots;
 
 public class CreateSpotValidatorTests
 {
-    private readonly CreateSpot.Validator _validator = new(TestLocalizerFactory.Create());
+    private readonly CreateSpot.Validator _validator = new(TestLocalizerFactory.Create(), TestOptionsFactory.R2());
+    private const string ValidPhotoUrl = TestOptionsFactory.PhotoPublicBaseUrl + "/a.jpg";
 
     [Fact]
     public void Name_is_required()
     {
         var result = _validator.TestValidate(
-            new CreateSpot.Command("", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], 42.6977, 23.3219));
+            new CreateSpot.Command("", "Desc", SpotCategory.Nature, [ValidPhotoUrl], 42.6977, 23.3219));
         result.ShouldHaveValidationErrorFor(c => c.Name);
     }
 
@@ -25,7 +26,7 @@ public class CreateSpotValidatorTests
     public void Description_is_required()
     {
         var result = _validator.TestValidate(
-            new CreateSpot.Command("Name", "", SpotCategory.Nature, ["https://example.com/a.jpg"], 42.6977, 23.3219));
+            new CreateSpot.Command("Name", "", SpotCategory.Nature, [ValidPhotoUrl], 42.6977, 23.3219));
         result.ShouldHaveValidationErrorFor(c => c.Description);
     }
 
@@ -33,6 +34,7 @@ public class CreateSpotValidatorTests
     [InlineData("")]
     [InlineData("not-a-url")]
     [InlineData("ftp://example.com/a.jpg")]
+    [InlineData("https://example.com/a.jpg")] // valid http(s) URL, but not this app's own photo storage
     public void PhotoUrl_is_invalid(string photoUrl)
     {
         var result = _validator.TestValidate(
@@ -46,7 +48,7 @@ public class CreateSpotValidatorTests
     public void Latitude_out_of_range(double latitude)
     {
         var result = _validator.TestValidate(
-            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], latitude, 23.3219));
+            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, [ValidPhotoUrl], latitude, 23.3219));
         result.ShouldHaveValidationErrorFor(c => c.Latitude);
     }
 
@@ -56,7 +58,7 @@ public class CreateSpotValidatorTests
     public void Longitude_out_of_range(double longitude)
     {
         var result = _validator.TestValidate(
-            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], 42.6977, longitude));
+            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, [ValidPhotoUrl], 42.6977, longitude));
         result.ShouldHaveValidationErrorFor(c => c.Longitude);
     }
 
@@ -64,7 +66,7 @@ public class CreateSpotValidatorTests
     public void Valid_command_has_no_errors()
     {
         var result = _validator.TestValidate(
-            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], 42.6977, 23.3219));
+            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, [ValidPhotoUrl], 42.6977, 23.3219));
         result.ShouldNotHaveAnyValidationErrors();
     }
 }

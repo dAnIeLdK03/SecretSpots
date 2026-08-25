@@ -12,13 +12,14 @@ namespace SecretSpots.Features.Tests.Spots;
 
 public class UpdateSpotValidatorTests
 {
-    private readonly UpdateSpot.Validator _validator = new(TestLocalizerFactory.Create());
+    private readonly UpdateSpot.Validator _validator = new(TestLocalizerFactory.Create(), TestOptionsFactory.R2());
+    private const string ValidPhotoUrl = TestOptionsFactory.PhotoPublicBaseUrl + "/a.jpg";
 
     [Fact]
     public void Name_is_required()
     {
         var result = _validator.TestValidate(
-            new UpdateSpot.Command(Guid.NewGuid(), "", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"]));
+            new UpdateSpot.Command(Guid.NewGuid(), "", "Desc", SpotCategory.Nature, [ValidPhotoUrl]));
         result.ShouldHaveValidationErrorFor(c => c.Name);
     }
 
@@ -26,7 +27,7 @@ public class UpdateSpotValidatorTests
     public void Description_is_required()
     {
         var result = _validator.TestValidate(
-            new UpdateSpot.Command(Guid.NewGuid(), "Name", "", SpotCategory.Nature, ["https://example.com/a.jpg"]));
+            new UpdateSpot.Command(Guid.NewGuid(), "Name", "", SpotCategory.Nature, [ValidPhotoUrl]));
         result.ShouldHaveValidationErrorFor(c => c.Description);
     }
 
@@ -34,6 +35,7 @@ public class UpdateSpotValidatorTests
     [InlineData("")]
     [InlineData("not-a-url")]
     [InlineData("ftp://example.com/a.jpg")]
+    [InlineData("https://example.com/a.jpg")] // valid http(s) URL, but not this app's own photo storage
     public void PhotoUrl_is_invalid(string photoUrl)
     {
         var result = _validator.TestValidate(
@@ -45,7 +47,7 @@ public class UpdateSpotValidatorTests
     public void Valid_command_has_no_errors()
     {
         var result = _validator.TestValidate(
-            new UpdateSpot.Command(Guid.NewGuid(), "Name", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"]));
+            new UpdateSpot.Command(Guid.NewGuid(), "Name", "Desc", SpotCategory.Nature, [ValidPhotoUrl]));
         result.ShouldNotHaveAnyValidationErrors();
     }
 }

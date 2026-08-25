@@ -27,6 +27,17 @@ internal static class TestOptionsFactory
             MaxPageSize = maxPageSize,
         });
 
+    public const string PhotoPublicBaseUrl = "https://cdn.test.example/photos";
+
+    public static IOptions<R2Options> R2() => Options.Create(new R2Options
+    {
+        AccountId = "test-account",
+        BucketName = "test-bucket",
+        PublicBaseUrl = PhotoPublicBaseUrl,
+        AccessKeyId = "test-access-key",
+        SecretAccessKey = "test-secret-key",
+    });
+
     public static IOptions<PhotoOptions> Photo(
         long maxFileSizeBytes = 10 * 1024 * 1024, int maxDimensionPixels = 1920, int webpQuality = 80) =>
         Options.Create(new PhotoOptions
