@@ -23,6 +23,8 @@ export const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropd
     const status = useNotificationsStore((state) => state.status);
     const totalCount = useNotificationsStore((state) => state.totalCount);
     const loadMore = useNotificationsStore((state) => state.loadMore);
+    const markAllAsRead = useNotificationsStore((state) => state.markAllAsRead);
+    const hasUnread = items.some((n) => !n.isRead);
 
     const [position, setPosition] = useState<{ top: number; right: number } | null>(null);
 
@@ -48,8 +50,20 @@ export const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropd
           backgroundColor: "var(--fieldmap-paper-light)",
         }}
       >
-        <div className="border-b px-4 py-2 text-sm font-semibold" style={{ borderColor: "var(--fieldmap-contour)" }}>
-          {t("title")}
+        <div
+          className="flex items-center justify-between border-b px-4 py-2"
+          style={{ borderColor: "var(--fieldmap-contour)" }}
+        >
+          <span className="text-sm font-semibold">{t("title")}</span>
+          {hasUnread ? (
+            <button
+              onClick={() => markAllAsRead()}
+              className="text-xs underline"
+              style={{ color: "var(--fieldmap-dim)" }}
+            >
+              {t("markAllAsRead")}
+            </button>
+          ) : null}
         </div>
 
         {status === "loading" ? (

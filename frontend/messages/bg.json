@@ -141,7 +141,8 @@
     "empty": "Нямате известия.",
     "loading": "Зареждане...",
     "loadMore": "Зареди още",
-    "loadingMore": "Зареждане..."
+    "loadingMore": "Зареждане...",
+    "markAllAsRead": "Маркирай всички като прочетени"
   },
   "CheckInsHistory": {
     "title": "История на посещенията",

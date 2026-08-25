@@ -2,6 +2,7 @@ import { create } from "zustand";
 import {
   fetchNotifications,
   markNotificationRead,
+  markAllNotificationsRead,
   type NotificationResponse,
 } from "@/lib/notificationsApi";
 
@@ -18,6 +19,7 @@ interface NotificationsStore {
   loadFirstPage: () => Promise<void>;
   loadMore: () => Promise<void>;
   markAsRead: (id: string) => Promise<void>;
+  markAllAsRead: () => Promise<void>;
   reset: () => void;
 }
 
@@ -65,6 +67,18 @@ export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
       await markNotificationRead(id);
     } catch {
       set({ items: get().items.map((n) => (n.id === id ? { ...n, isRead: false } : n)) });
+    }
+  },
+
+  markAllAsRead: async () => {
+    const previousItems = get().items;
+    if (previousItems.every((n) => n.isRead)) return;
+
+    set({ items: previousItems.map((n) => ({ ...n, isRead: true })) });
+    try {
+      await markAllNotificationsRead();
+    } catch {
+      set({ items: previousItems });
     }
   },
 

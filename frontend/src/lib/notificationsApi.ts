@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/apiClient";
+import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
 
 export type NotificationType = "CrystalsEarned" | "NewSpotNearby" | "NewCommentOnYourSpot";
 
@@ -25,4 +25,8 @@ export function fetchNotifications(page: number, pageSize: number): Promise<Noti
 
 export function markNotificationRead(id: string): Promise<NotificationResponse> {
   return apiFetch<NotificationResponse>(`/notifications/${id}/read`, { method: "POST" });
+}
+
+export function markAllNotificationsRead(): Promise<void> {
+  return apiFetchVoid("/notifications/read-all", { method: "POST" });
 }
