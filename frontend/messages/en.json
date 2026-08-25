@@ -141,7 +141,8 @@
     "empty": "You have no notifications.",
     "loading": "Loading...",
     "loadMore": "Load more",
-    "loadingMore": "Loading..."
+    "loadingMore": "Loading...",
+    "markAllAsRead": "Mark all as read"
   },
   "CheckInsHistory": {
     "title": "Check-in history",

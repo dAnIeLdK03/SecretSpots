@@ -40,6 +40,16 @@ public static class NotificationsEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
+        group.MapPost("/read-all", async (ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new MarkAllNotificationsAsRead.Command(), cancellationToken);
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
+            })
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+
         return app;
     }
 }
