@@ -13,12 +13,14 @@ namespace SecretSpots.Features.Tests.CheckIns;
 
 public class CreateCheckInValidatorTests
 {
-    private readonly CreateCheckIn.Validator _validator = new(TestLocalizerFactory.Create());
+    private readonly CreateCheckIn.Validator _validator = new(TestLocalizerFactory.Create(), TestOptionsFactory.R2());
+    private const string ValidPhotoUrl = TestOptionsFactory.PhotoPublicBaseUrl + "/a.jpg";
 
     [Theory]
     [InlineData("")]
     [InlineData("not-a-url")]
     [InlineData("ftp://example.com/a.jpg")]
+    [InlineData("https://example.com/a.jpg")] // valid http(s) URL, but not this app's own photo storage
     public void PhotoUrl_is_invalid(string photoUrl)
     {
         var result = _validator.TestValidate(
@@ -32,7 +34,7 @@ public class CreateCheckInValidatorTests
     public void Latitude_out_of_range(double latitude)
     {
         var result = _validator.TestValidate(
-            new CreateCheckIn.Command(Guid.NewGuid(), "https://example.com/a.jpg", latitude, 23.3219));
+            new CreateCheckIn.Command(Guid.NewGuid(), ValidPhotoUrl, latitude, 23.3219));
         result.ShouldHaveValidationErrorFor(c => c.Latitude);
     }
 
@@ -42,7 +44,7 @@ public class CreateCheckInValidatorTests
     public void Longitude_out_of_range(double longitude)
     {
         var result = _validator.TestValidate(
-            new CreateCheckIn.Command(Guid.NewGuid(), "https://example.com/a.jpg", 42.6977, longitude));
+            new CreateCheckIn.Command(Guid.NewGuid(), ValidPhotoUrl, 42.6977, longitude));
         result.ShouldHaveValidationErrorFor(c => c.Longitude);
     }
 
@@ -50,7 +52,7 @@ public class CreateCheckInValidatorTests
     public void Valid_command_has_no_errors()
     {
         var result = _validator.TestValidate(
-            new CreateCheckIn.Command(Guid.NewGuid(), "https://example.com/a.jpg", 42.6977, 23.3219));
+            new CreateCheckIn.Command(Guid.NewGuid(), ValidPhotoUrl, 42.6977, 23.3219));
         result.ShouldNotHaveAnyValidationErrors();
     }
 }

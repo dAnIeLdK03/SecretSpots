@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SecretSpots.Domain;
+using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -31,7 +33,7 @@ public static class UpdateSpot
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator(IStringLocalizer<SharedResources> localizer)
+        public Validator(IStringLocalizer<SharedResources> localizer, IOptions<R2Options> r2Options)
         {
             RuleFor(c => c.Name)
                 .NotEmpty().WithMessage(localizer[SpotsMessageKeys.NameRequired].Value)
@@ -46,7 +48,8 @@ public static class UpdateSpot
                 .Must(urls => urls.Count <= CreateSpot.MaxPhotoCount).WithMessage(localizer[SpotsMessageKeys.PhotoUrlsTooMany].Value);
 
             RuleForEach(c => c.PhotoUrls)
-                .Must(UrlValidation.IsHttpUrl).WithMessage(localizer[SpotsMessageKeys.PhotoUrlInvalid].Value);
+                .Must(url => UrlValidation.IsOwnPhotoUrl(url, r2Options.Value.PublicBaseUrl))
+                .WithMessage(localizer[SpotsMessageKeys.PhotoUrlInvalid].Value);
 
             RuleFor(c => c.Category)
                 .IsInEnum().WithMessage(localizer[SpotsMessageKeys.InvalidCategory].Value);

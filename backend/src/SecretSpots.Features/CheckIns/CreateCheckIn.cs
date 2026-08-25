@@ -31,11 +31,12 @@ public static class CreateCheckIn
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator(IStringLocalizer<SharedResources> localizer)
+        public Validator(IStringLocalizer<SharedResources> localizer, IOptions<R2Options> r2Options)
         {
             RuleFor(c => c.PhotoUrl)
                 .NotEmpty().WithMessage(localizer[CheckInsMessageKeys.PhotoUrlRequired].Value)
-                .Must(UrlValidation.IsHttpUrl).WithMessage(localizer[CheckInsMessageKeys.PhotoUrlInvalid].Value);
+                .Must(url => UrlValidation.IsOwnPhotoUrl(url, r2Options.Value.PublicBaseUrl))
+                .WithMessage(localizer[CheckInsMessageKeys.PhotoUrlInvalid].Value);
 
             RuleFor(c => c.Latitude)
                 .InclusiveBetween(-90, 90).WithMessage(localizer[GeoMessageKeys.LatitudeOutOfRange].Value);
