@@ -127,6 +127,15 @@ if (string.IsNullOrWhiteSpace(jwtOptions?.Secret))
     throw new InvalidOperationException(StartupMessages.MissingJwtConfiguration);
 }
 
+// HMAC-SHA256 (see JwtService) needs at least as many bits of key material as its output —
+// 256 bits / 32 bytes (RFC 2104) — or the signature becomes brute-forceable well before the
+// algorithm's own strength is the limiting factor.
+const int minJwtSecretBytes = 32;
+if (Encoding.UTF8.GetByteCount(jwtOptions.Secret) < minJwtSecretBytes)
+{
+    throw new InvalidOperationException(StartupMessages.WeakJwtSecret);
+}
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
