@@ -36,6 +36,10 @@ export function logout(): Promise<void> {
   return apiFetchVoid("/auth/logout", { method: "POST" });
 }
 
+export function deleteAccount(): Promise<void> {
+  return apiFetchVoid("/auth/me", { method: "DELETE" });
+}
+
 export function requestPasswordReset(email: string): Promise<void> {
   return apiFetchVoid("/auth/password-reset/request", {
     method: "POST",

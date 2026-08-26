@@ -217,7 +217,11 @@
   },
   "Settings": {
     "title": "Настройки",
-    "languageSectionTitle": "Език"
+    "languageSectionTitle": "Език",
+    "dangerZoneSectionTitle": "Опасна зона",
+    "deleteAccountButton": "Изтрий акаунта",
+    "deleteAccountConfirm": "Наистина ли искаш да изтриеш акаунта си? Всичките ти места, коментари, оценки и данни ще бъдат изтрити безвъзвратно. Това действие не може да бъде отменено.",
+    "deleteAccountError": "Неуспешно изтриване на акаунта. Опитай отново."
   },
   "About": {
     "title": "За SecretSpots",

@@ -217,7 +217,11 @@
   },
   "Settings": {
     "title": "Settings",
-    "languageSectionTitle": "Language"
+    "languageSectionTitle": "Language",
+    "dangerZoneSectionTitle": "Danger zone",
+    "deleteAccountButton": "Delete account",
+    "deleteAccountConfirm": "Are you sure you want to delete your account? All your spots, comments, ratings, and data will be permanently deleted. This action cannot be undone.",
+    "deleteAccountError": "Failed to delete account. Please try again."
   },
   "About": {
     "title": "About SecretSpots",

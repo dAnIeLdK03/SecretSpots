@@ -157,6 +157,21 @@ public static class AuthEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
+        group.MapDelete("/me", async (ISender sender, HttpContext http, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new DeleteAccount.Command(), cancellationToken);
+                if (result.IsSuccess)
+                {
+                    RefreshTokenCookie.Delete(http.Response);
+                }
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
+            })
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+
         return app;
     }
 }
