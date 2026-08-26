@@ -56,6 +56,19 @@ public static class RateSpot
                     Value = command.Value,
                 };
                 db.Ratings.Add(rating);
+
+                // Only on the first rating — this is an upsert (re-rating changes Value on the
+                // same row), and re-notifying on every change would just be spam.
+                if (spot.CreatedByUserId != userContext.UserId)
+                {
+                    db.Notifications.Add(new Notification
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = spot.CreatedByUserId,
+                        Type = NotificationType.NewRatingOnYourSpot,
+                        RelatedSpotId = spot.Id,
+                    });
+                }
             }
             else
             {

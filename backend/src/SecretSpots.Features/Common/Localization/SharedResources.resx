@@ -237,6 +237,9 @@
   <data name="Notifications.NewCommentOnYourSpotMessage" xml:space="preserve">
     <value>Someone commented on your spot.</value>
   </data>
+  <data name="Notifications.NewRatingOnYourSpotMessage" xml:space="preserve">
+    <value>Someone rated your spot.</value>
+  </data>
   <data name="Notifications.NotFound" xml:space="preserve">
     <value>This notification no longer exists.</value>
   </data>
