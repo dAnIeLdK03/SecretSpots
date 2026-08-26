@@ -120,6 +120,9 @@
   <data name="CheckIns.TooSoonSinceLastCheckIn" xml:space="preserve">
     <value>You've already checked in here recently. Try again later.</value>
   </data>
+  <data name="CheckIns.CannotCheckInOwnSpot" xml:space="preserve">
+    <value>You can't check in at your own spot.</value>
+  </data>
   <data name="CheckIns.PhotoUrlRequired" xml:space="preserve">
     <value>A proof photo is required.</value>
   </data>

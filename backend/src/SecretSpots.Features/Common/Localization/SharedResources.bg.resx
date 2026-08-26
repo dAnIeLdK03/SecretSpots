@@ -120,6 +120,9 @@
   <data name="CheckIns.TooSoonSinceLastCheckIn" xml:space="preserve">
     <value>Вече си направил/а check-in тук наскоро. Опитай отново по-късно.</value>
   </data>
+  <data name="CheckIns.CannotCheckInOwnSpot" xml:space="preserve">
+    <value>Не можеш да направиш check-in на собствено място.</value>
+  </data>
   <data name="CheckIns.PhotoUrlRequired" xml:space="preserve">
     <value>Снимка като доказателство е задължителна.</value>
   </data>
