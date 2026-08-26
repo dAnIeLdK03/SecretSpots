@@ -5,4 +5,5 @@ public enum NotificationType
     CrystalsEarned,
     NewSpotNearby,
     NewCommentOnYourSpot,
+    NewRatingOnYourSpot,
 }
