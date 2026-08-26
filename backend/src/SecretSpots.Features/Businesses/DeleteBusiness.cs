@@ -36,19 +36,7 @@ public static class DeleteBusiness
                     StatusCodes.Status403Forbidden));
             }
 
-            db.Businesses.Remove(business);
-            await db.SaveChangesAsync(cancellationToken);
-
-            // Neither Reward.BusinessId nor RewardRedemption.BusinessId has a DB-level FK (same
-            // as every other Spot-adjacent table in this app), so nothing stops them existing
-            // without a business — clean them up the same way DeleteSpot/DeleteReward do.
-            await db.RewardRedemptions
-                .Where(r => r.BusinessId == business.Id)
-                .ExecuteDeleteAsync(cancellationToken);
-
-            await db.Rewards
-                .Where(r => r.BusinessId == business.Id)
-                .ExecuteDeleteAsync(cancellationToken);
+            await BusinessDeletionCleanup.DeleteAsync(db, business, cancellationToken);
 
             logger.LogInformation(BusinessesLogMessages.BusinessDeleted, business.Id, userContext.UserId);
 

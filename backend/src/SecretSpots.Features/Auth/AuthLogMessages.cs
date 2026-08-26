@@ -16,4 +16,5 @@ internal static class AuthLogMessages
     public const string PasswordResetRequestedForUnknownEmail =
         "Password reset requested for an email with no password-based account: {Email}.";
     public const string PasswordResetCompleted = "User {UserId} completed a password reset.";
+    public const string AccountDeleted = "User {UserId} deleted their account.";
 }
