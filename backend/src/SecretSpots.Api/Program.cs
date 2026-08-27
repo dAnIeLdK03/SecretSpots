@@ -225,11 +225,34 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    // Skipped in Development the same way the ASP.NET Core default template does — it sends
+    // Strict-Transport-Security, which would otherwise make a browser refuse plain http://
+    // localhost for the next year. In Production this closes the gap UseHttpsRedirection alone
+    // leaves open: a redirect only takes effect on a request the server actually receives, so a
+    // *first* plain-HTTP request (or one from a client that ignores the redirect) is still
+    // interceptable. HSTS tells the browser to never attempt http:// for this host again after
+    // the first successful https:// response.
+    app.UseHsts();
+}
 
 // Registered early so it wraps every middleware/endpoint that follows.
 app.UseValidationExceptionHandling();
 
 app.UseHttpsRedirection();
+
+// Baseline hardening headers. This is a JSON API with no HTML pages of its own outside Swagger
+// (dev-only), so clickjacking/MIME-sniffing/referrer-leak risk here is already low — but every
+// header below is a one-line no-downside addition, and defense-in-depth doesn't require the risk
+// to be high to be worth closing.
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+    await next();
+});
 
 string[] supportedCultures = ["bg", "en"];
 app.UseRequestLocalization(new RequestLocalizationOptions()
