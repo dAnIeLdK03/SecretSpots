@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
@@ -217,6 +218,25 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Must run before anything that reads the client IP or scheme — the rate limiter (partitioned
+// by RemoteIpAddress), UseHttpsRedirection, and request logging all rely on this. Without it,
+// every request behind a reverse proxy (Render/Koyeb in production always front the app with
+// one) shows up with the proxy's IP, not the caller's — collapsing the per-IP rate limits
+// (global, auth, photos) into one bucket shared by every user of the app.
+//
+// KnownNetworks/KnownProxies are cleared because PaaS platforms like Render/Koyeb don't expose
+// a fixed, enumerable proxy IP to allowlist — their edge is the only way traffic reaches this
+// app, so trusting X-Forwarded-For unconditionally is safe here. It would NOT be safe if this
+// app were ever also directly internet-reachable, bypassing that edge — a client could spoof
+// the header in that case.
+var forwardedHeadersOptions = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+};
+forwardedHeadersOptions.KnownNetworks.Clear();
+forwardedHeadersOptions.KnownProxies.Clear();
+app.UseForwardedHeaders(forwardedHeadersOptions);
 
 if (app.Environment.IsDevelopment())
 {
