@@ -46,6 +46,8 @@ public static class RateSpot
             var rating = await db.Ratings.SingleOrDefaultAsync(
                 r => r.SpotId == command.SpotId && r.UserId == userContext.UserId, cancellationToken);
 
+            Notification? notification = null;
+
             if (rating is null)
             {
                 rating = new Rating
@@ -61,13 +63,14 @@ public static class RateSpot
                 // same row), and re-notifying on every change would just be spam.
                 if (spot.CreatedByUserId != userContext.UserId)
                 {
-                    db.Notifications.Add(new Notification
+                    notification = new Notification
                     {
                         Id = Guid.NewGuid(),
                         UserId = spot.CreatedByUserId,
                         Type = NotificationType.NewRatingOnYourSpot,
                         RelatedSpotId = spot.Id,
-                    });
+                    };
+                    db.Notifications.Add(notification);
                 }
             }
             else
@@ -76,7 +79,31 @@ public static class RateSpot
                 rating.UpdatedAt = DateTimeOffset.UtcNow;
             }
 
-            await db.SaveChangesAsync(cancellationToken);
+            try
+            {
+                await db.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException)
+            {
+                // Another concurrent request (double-click, two tabs) inserted this user's first
+                // rating for this spot between the check above and this write — the unique
+                // (SpotId, UserId) index caught it. Remove()-ing an entity that's still in the
+                // Added state (never made it to the database) is EF Core's way to detach it
+                // without needing direct ChangeTracker access, which IAppDbContext doesn't
+                // expose. Fall back to updating the row the other request created, so this
+                // request's Value still takes effect, instead of just discarding it.
+                db.Ratings.Remove(rating);
+                if (notification is not null)
+                {
+                    db.Notifications.Remove(notification);
+                }
+
+                rating = await db.Ratings.SingleAsync(
+                    r => r.SpotId == command.SpotId && r.UserId == userContext.UserId, cancellationToken);
+                rating.Value = command.Value;
+                rating.UpdatedAt = DateTimeOffset.UtcNow;
+                await db.SaveChangesAsync(cancellationToken);
+            }
 
             var stats = await db.Ratings
                 .Where(r => r.SpotId == spot.Id)
