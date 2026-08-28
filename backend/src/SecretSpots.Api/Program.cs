@@ -120,7 +120,10 @@ var maxPhotoFileSizeBytes = builder.Configuration.GetValue<long?>("Photos:MaxFil
     ?? new PhotoOptions().MaxFileSizeBytes;
 const long multipartOverheadBytes = 1024 * 1024;
 builder.WebHost.ConfigureKestrel(serverOptions =>
-    serverOptions.Limits.MaxRequestBodySize = maxPhotoFileSizeBytes + multipartOverheadBytes);
+{
+    serverOptions.AddServerHeader = false;
+    serverOptions.Limits.MaxRequestBodySize = maxPhotoFileSizeBytes + multipartOverheadBytes;
+});
 
 var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
 if (string.IsNullOrWhiteSpace(jwtOptions?.Secret))
