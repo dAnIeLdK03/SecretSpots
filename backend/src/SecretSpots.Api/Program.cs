@@ -129,7 +129,10 @@ var maxPhotoFileSizeBytes = builder.Configuration.GetValue<long?>("Photos:MaxFil
     ?? new PhotoOptions().MaxFileSizeBytes;
 const long multipartOverheadBytes = 1024 * 1024;
 builder.WebHost.ConfigureKestrel(serverOptions =>
-    serverOptions.Limits.MaxRequestBodySize = maxPhotoFileSizeBytes + multipartOverheadBytes);
+{
+    serverOptions.AddServerHeader = false;
+    serverOptions.Limits.MaxRequestBodySize = maxPhotoFileSizeBytes + multipartOverheadBytes;
+});
 
 var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
 if (string.IsNullOrWhiteSpace(jwtOptions?.Secret))
@@ -217,6 +220,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddHsts(options =>
+{
+    options.MaxAge = TimeSpan.FromDays(365);
+    options.IncludeSubDomains = true;
+});
+
 var app = builder.Build();
 
 // Must run before anything that reads the client IP or scheme — the rate limiter (partitioned
@@ -269,6 +278,12 @@ app.Use(async (context, next) =>
     context.Response.Headers["X-Content-Type-Options"] = "nosniff";
     context.Response.Headers["X-Frame-Options"] = "DENY";
     context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    context.Response.Headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()";
+    if (!context.Request.Path.StartsWithSegments("/swagger"))
+    {
+        context.Response.Headers["Content-Security-Policy"] = "default-src 'none'";
+    }
+
     await next();
 });
 
