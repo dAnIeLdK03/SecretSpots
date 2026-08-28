@@ -34,6 +34,13 @@ public static class Login
         }
     }
 
+    // A precomputed BCrypt hash (work factor 12, matching Register/ResetPassword) of an arbitrary
+    // password, verified against when there's no real user/hash to check. BCrypt.Verify is what
+    // makes the password branch below take measurable time — skipping it for a nonexistent user
+    // would let an attacker distinguish "no such email" from "wrong password" purely by response
+    // time, even though both return the same InvalidCredentials error.
+    private const string DummyBCryptHash = "$2a$12$vmwNHdlV1RVBEvun3awcJu.hZl66mnaFsPigMk5mqeykfPmbSvFw.";
+
     public class Handler(
         IAppDbContext db,
         IJwtService jwtService,
@@ -60,9 +67,14 @@ public static class Login
             var user = await db.Users
                 .SingleOrDefaultAsync(u => u.Email == normalizedEmail, cancellationToken);
 
-            // Same error for "no such user" and "wrong password" — do not let an attacker
-            // learn which emails are registered.
-            if (user is null || user.PasswordHash is null || !BCrypt.Net.BCrypt.Verify(command.Password, user.PasswordHash))
+            // Same error for "no such user" and "wrong password" — do not let an attacker learn
+            // which emails are registered. BCrypt.Verify always runs (against the dummy hash when
+            // there's no real user) so the two cases also take the same amount of time.
+            var passwordMatches = user?.PasswordHash is { } hash
+                ? BCrypt.Net.BCrypt.Verify(command.Password, hash)
+                : BCrypt.Net.BCrypt.Verify(command.Password, DummyBCryptHash);
+
+            if (user is null || user.PasswordHash is null || !passwordMatches)
             {
                 logger.LogWarning(AuthLogMessages.FailedLoginAttempt, normalizedEmail);
                 return Result<AuthResult>.Failure(new Error(
