@@ -258,6 +258,11 @@ app.Use(async (context, next) =>
     context.Response.Headers["X-Frame-Options"] = "DENY";
     context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
     context.Response.Headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()";
+    if (!context.Request.Path.StartsWithSegments("/swagger"))
+    {
+        context.Response.Headers["Content-Security-Policy"] = "default-src 'none'";
+    }
+
     await next();
 });
 
