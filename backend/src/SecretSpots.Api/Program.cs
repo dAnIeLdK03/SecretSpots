@@ -199,6 +199,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddHsts(options =>
+{
+    options.MaxAge = TimeSpan.FromDays(365);
+    options.IncludeSubDomains = true;
+});
+
 var app = builder.Build();
 
 // Must run before anything that reads the client IP or scheme — the rate limiter (partitioned
