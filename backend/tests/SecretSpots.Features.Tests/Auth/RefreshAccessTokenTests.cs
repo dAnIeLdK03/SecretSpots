@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging.Abstractions;
 using SecretSpots.Domain;
 using SecretSpots.Features.Auth;
 using SecretSpots.Features.Common.Persistence;
@@ -17,7 +18,8 @@ public class RefreshAccessTokenHandlerTests
             db,
             new JwtService(jwtOptions),
             jwtOptions,
-            TestLocalizerFactory.Create());
+            TestLocalizerFactory.Create(),
+            NullLogger<RefreshAccessToken.Handler>.Instance);
     }
 
     private static async Task<(RefreshToken Entity, string RawToken)> SeedRefreshTokenAsync(

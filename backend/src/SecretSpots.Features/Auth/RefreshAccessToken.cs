@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
@@ -19,7 +20,8 @@ public static class RefreshAccessToken
         IAppDbContext db,
         IJwtService jwtService,
         IOptions<JwtOptions> jwtOptions,
-        IStringLocalizer<SharedResources> localizer)
+        IStringLocalizer<SharedResources> localizer,
+        ILogger<Handler> logger)
         : IRequestHandler<Command, Result<AuthResult>>
     {
         public async Task<Result<AuthResult>> Handle(Command command, CancellationToken cancellationToken)
@@ -28,6 +30,25 @@ public static class RefreshAccessToken
                 ? null
                 : await db.RefreshTokens.SingleOrDefaultAsync(
                     t => t.Token == OpaqueTokenHasher.Hash(command.RefreshToken), cancellationToken);
+
+            // A revoked token being presented again means it was already used (rotated) or
+            // reused elsewhere — the client that's supposed to hold the current token wouldn't
+            // send a dead one. That's the signature of a stolen refresh token, so treat it as
+            // a theft signal: kill every active session for this user rather than just
+            // rejecting the one request.
+            if (existingToken is { RevokedAt: not null })
+            {
+                var activeTokens = await db.RefreshTokens
+                    .Where(t => t.UserId == existingToken.UserId && t.RevokedAt == null)
+                    .ToListAsync(cancellationToken);
+                foreach (var activeToken in activeTokens)
+                {
+                    activeToken.RevokedAt = DateTimeOffset.UtcNow;
+                }
+
+                await db.SaveChangesAsync(cancellationToken);
+                logger.LogWarning(AuthLogMessages.RefreshTokenReuseDetected, existingToken.UserId);
+            }
 
             var isUsable = existingToken is { RevokedAt: null } && existingToken.ExpiresAt > DateTimeOffset.UtcNow;
 
