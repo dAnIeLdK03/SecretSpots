@@ -15,7 +15,12 @@ namespace SecretSpots.Features.Auth;
 
 public static class DeleteAccount
 {
-    public record Command : IRequest<Result<Unit>>;
+    // Password is required so a hijacked/leaked access token alone can't trigger this
+    // irreversible operation — the same "re-authenticate before something destructive" step
+    // GitHub/Google require. External-auth-only users (no PasswordHash) have nothing to
+    // re-enter, so the Handler skips the check for them; they're already gated behind whatever
+    // re-consent their provider's login flow requires to get a fresh access token.
+    public record Command(string? Password) : IRequest<Result<Unit>>;
 
     public class Handler(
         IAppDbContext db,
@@ -34,6 +39,15 @@ public static class DeleteAccount
                     AuthMessageKeys.UserNotFound,
                     localizer[AuthMessageKeys.UserNotFound].Value,
                     StatusCodes.Status404NotFound));
+            }
+
+            if (user.PasswordHash is not null &&
+                (string.IsNullOrEmpty(command.Password) || !BCrypt.Net.BCrypt.Verify(command.Password, user.PasswordHash)))
+            {
+                return Result<Unit>.Failure(new Error(
+                    AuthMessageKeys.InvalidCredentials,
+                    localizer[AuthMessageKeys.InvalidCredentials].Value,
+                    StatusCodes.Status401Unauthorized));
             }
 
             await using var transaction = await db.BeginTransactionAsync(cancellationToken);
