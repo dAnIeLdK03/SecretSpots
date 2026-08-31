@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using SecretSpots.Domain;
@@ -157,9 +158,9 @@ public static class AuthEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-        group.MapDelete("/me", async (ISender sender, HttpContext http, CancellationToken cancellationToken) =>
+        group.MapDelete("/me", async ([FromBody] DeleteAccount.Command command, ISender sender, HttpContext http, CancellationToken cancellationToken) =>
             {
-                var result = await sender.Send(new DeleteAccount.Command(), cancellationToken);
+                var result = await sender.Send(command, cancellationToken);
                 if (result.IsSuccess)
                 {
                     RefreshTokenCookie.Delete(http.Response);
@@ -168,9 +169,11 @@ public static class AuthEndpoints
             })
             .RequireAuthorization()
             .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status500InternalServerError);
+            .ProducesProblem(StatusCodes.Status500InternalServerError)
+            .Accepts<DeleteAccount.Command>("application/json");
 
         return app;
     }

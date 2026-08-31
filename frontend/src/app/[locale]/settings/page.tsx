@@ -25,10 +25,17 @@ export default function SettingsPage() {
       return;
     }
 
+    // Leave blank for external-auth-only accounts (Google/Facebook) — the backend only checks
+    // it for accounts that have a password set.
+    const password = window.prompt(t("deleteAccountPasswordPrompt"));
+    if (password === null) {
+      return;
+    }
+
     setError(null);
     setDeleting(true);
     try {
-      await deleteAccount();
+      await deleteAccount(password || null);
       clearSession();
       resetNotifications();
       resetCheckInsHistory();

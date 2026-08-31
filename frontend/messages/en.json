@@ -221,6 +221,7 @@
     "dangerZoneSectionTitle": "Danger zone",
     "deleteAccountButton": "Delete account",
     "deleteAccountConfirm": "Are you sure you want to delete your account? All your spots, comments, ratings, and data will be permanently deleted. This action cannot be undone.",
+    "deleteAccountPasswordPrompt": "Enter your password to confirm (leave blank if you signed in with Google/Facebook):",
     "deleteAccountError": "Failed to delete account. Please try again."
   },
   "About": {
