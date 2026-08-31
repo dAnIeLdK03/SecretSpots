@@ -7,6 +7,7 @@ using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
+using SecretSpots.Features.Common.Security;
 
 namespace SecretSpots.Features.Auth;
 
@@ -36,7 +37,7 @@ public static class ResetPassword
         public async Task<Result<Unit>> Handle(Command command, CancellationToken cancellationToken)
         {
             var token = await db.PasswordResetTokens
-                .SingleOrDefaultAsync(t => t.Token == command.Token, cancellationToken);
+                .SingleOrDefaultAsync(t => t.Token == OpaqueTokenHasher.Hash(command.Token), cancellationToken);
 
             var isUsable = token is { UsedAt: null } && token.ExpiresAt > DateTimeOffset.UtcNow;
             if (!isUsable)

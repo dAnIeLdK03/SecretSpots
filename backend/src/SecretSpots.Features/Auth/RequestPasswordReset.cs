@@ -12,6 +12,7 @@ using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
+using SecretSpots.Features.Common.Security;
 
 namespace SecretSpots.Features.Auth;
 
@@ -51,12 +52,15 @@ public static class RequestPasswordReset
                 return Result<Unit>.Success(Unit.Value);
             }
 
+            // Only the hash is persisted — the raw value is a bearer secret usable on its own, so
+            // a database leak must not hand out working reset links.
+            var rawToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))
+                .Replace('+', '-').Replace('/', '_').TrimEnd('=');
             var token = new PasswordResetToken
             {
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
-                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))
-                    .Replace('+', '-').Replace('/', '_').TrimEnd('='),
+                Token = OpaqueTokenHasher.Hash(rawToken),
                 ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(passwordResetOptions.Value.TokenExpiryMinutes),
             };
 
@@ -64,7 +68,7 @@ public static class RequestPasswordReset
             await db.SaveChangesAsync(cancellationToken);
 
             var resetLink = QueryHelpers.AddQueryString(
-                passwordResetOptions.Value.FrontendResetUrl, "token", token.Token);
+                passwordResetOptions.Value.FrontendResetUrl, "token", rawToken);
 
             await emailSender.SendAsync(
                 user.Email,

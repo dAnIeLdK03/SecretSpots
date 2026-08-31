@@ -26,7 +26,8 @@ public static class RefreshAccessToken
         {
             var existingToken = string.IsNullOrEmpty(command.RefreshToken)
                 ? null
-                : await db.RefreshTokens.SingleOrDefaultAsync(t => t.Token == command.RefreshToken, cancellationToken);
+                : await db.RefreshTokens.SingleOrDefaultAsync(
+                    t => t.Token == OpaqueTokenHasher.Hash(command.RefreshToken), cancellationToken);
 
             var isUsable = existingToken is { RevokedAt: null } && existingToken.ExpiresAt > DateTimeOffset.UtcNow;
 
