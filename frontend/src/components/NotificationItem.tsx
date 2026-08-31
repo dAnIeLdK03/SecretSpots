@@ -10,6 +10,7 @@ const TYPE_ICONS: Record<NotificationType, string> = {
   CrystalsEarned: "💎",
   NewSpotNearby: "📍",
   NewCommentOnYourSpot: "💬",
+  NewRatingOnYourSpot: "⭐",
 };
 
 interface NotificationItemProps {

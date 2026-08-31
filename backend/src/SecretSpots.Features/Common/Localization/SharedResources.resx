@@ -120,6 +120,9 @@
   <data name="CheckIns.TooSoonSinceLastCheckIn" xml:space="preserve">
     <value>You've already checked in here recently. Try again later.</value>
   </data>
+  <data name="CheckIns.CannotCheckInOwnSpot" xml:space="preserve">
+    <value>You can't check in at your own spot.</value>
+  </data>
   <data name="CheckIns.PhotoUrlRequired" xml:space="preserve">
     <value>A proof photo is required.</value>
   </data>
@@ -177,6 +180,9 @@
   <data name="Photos.InvalidImage" xml:space="preserve">
     <value>The file is not a valid image.</value>
   </data>
+  <data name="Photos.ImageDimensionsTooLarge" xml:space="preserve">
+    <value>The image dimensions are too large.</value>
+  </data>
   <data name="Businesses.NameRequired" xml:space="preserve">
     <value>Name is required.</value>
   </data>
@@ -233,6 +239,9 @@
   </data>
   <data name="Notifications.NewCommentOnYourSpotMessage" xml:space="preserve">
     <value>Someone commented on your spot.</value>
+  </data>
+  <data name="Notifications.NewRatingOnYourSpotMessage" xml:space="preserve">
+    <value>Someone rated your spot.</value>
   </data>
   <data name="Notifications.NotFound" xml:space="preserve">
     <value>This notification no longer exists.</value>

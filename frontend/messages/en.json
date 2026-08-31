@@ -141,7 +141,8 @@
     "empty": "You have no notifications.",
     "loading": "Loading...",
     "loadMore": "Load more",
-    "loadingMore": "Loading..."
+    "loadingMore": "Loading...",
+    "markAllAsRead": "Mark all as read"
   },
   "CheckInsHistory": {
     "title": "Check-in history",
@@ -216,7 +217,11 @@
   },
   "Settings": {
     "title": "Settings",
-    "languageSectionTitle": "Language"
+    "languageSectionTitle": "Language",
+    "dangerZoneSectionTitle": "Danger zone",
+    "deleteAccountButton": "Delete account",
+    "deleteAccountConfirm": "Are you sure you want to delete your account? All your spots, comments, ratings, and data will be permanently deleted. This action cannot be undone.",
+    "deleteAccountError": "Failed to delete account. Please try again."
   },
   "About": {
     "title": "About SecretSpots",

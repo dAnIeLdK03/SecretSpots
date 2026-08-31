@@ -18,4 +18,5 @@ internal static class AuthLogMessages
     public const string PasswordResetCompleted = "User {UserId} completed a password reset.";
     public const string RefreshTokenReuseDetected =
         "Refresh token reuse detected for user {UserId} — an already-revoked token was presented again. Revoking all active sessions.";
+    public const string AccountDeleted = "User {UserId} deleted their account.";
 }

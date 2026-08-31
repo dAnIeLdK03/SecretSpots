@@ -66,6 +66,18 @@ public static class CreateCheckIn
                     StatusCodes.Status404NotFound));
             }
 
+            // Otherwise a user could farm unlimited crystals for free: create a spot at their
+            // current location (trivially satisfies the distance check below since they set the
+            // coordinates themselves), check in once, repeat with a new spot. The per-spot
+            // cooldown below only stops repeat check-ins on the *same* spot, not this.
+            if (spot.CreatedByUserId == userContext.UserId)
+            {
+                return Result<CheckInResponse>.Failure(new Error(
+                    CheckInsMessageKeys.CannotCheckInOwnSpot,
+                    localizer[CheckInsMessageKeys.CannotCheckInOwnSpot].Value,
+                    StatusCodes.Status400BadRequest));
+            }
+
             // spot is a materialized entity here, so reading .Y/.X off its Location is safe —
             // unlike SearchNearbySpots, this isn't part of a SQL-translated projection.
             var distanceMeters = HaversineDistanceCalculator.CalculateMeters(

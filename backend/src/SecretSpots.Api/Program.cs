@@ -32,6 +32,15 @@ using SecretSpots.Features.Spots;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// No-ops when Sentry:Dsn is unset (e.g. local dev), so this is safe to leave wired up everywhere.
+// Registered before everything else so it can also capture startup failures.
+builder.WebHost.UseSentry(options =>
+{
+    options.Dsn = builder.Configuration["Sentry:Dsn"];
+    options.Environment = builder.Environment.EnvironmentName;
+    options.SendDefaultPii = false;
+});
+
 var featuresAssembly = Assembly.Load("SecretSpots.Features");
 
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -129,6 +138,15 @@ var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
 if (string.IsNullOrWhiteSpace(jwtOptions?.Secret))
 {
     throw new InvalidOperationException(StartupMessages.MissingJwtConfiguration);
+}
+
+// HMAC-SHA256 (see JwtService) needs at least as many bits of key material as its output —
+// 256 bits / 32 bytes (RFC 2104) — or the signature becomes brute-forceable well before the
+// algorithm's own strength is the limiting factor.
+const int minJwtSecretBytes = 32;
+if (Encoding.UTF8.GetByteCount(jwtOptions.Secret) < minJwtSecretBytes)
+{
+    throw new InvalidOperationException(StartupMessages.WeakJwtSecret);
 }
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

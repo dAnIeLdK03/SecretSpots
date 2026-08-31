@@ -39,7 +39,18 @@ public static class SaveSpot
                     SpotId = command.SpotId,
                     UserId = userContext.UserId,
                 });
-                await db.SaveChangesAsync(cancellationToken);
+
+                try
+                {
+                    await db.SaveChangesAsync(cancellationToken);
+                }
+                catch (DbUpdateException)
+                {
+                    // Another concurrent request (double-click, two tabs) already saved this
+                    // spot for this user between the check above and this write — the unique
+                    // (SpotId, UserId) index caught it. The end state is identical either way,
+                    // so this is a success, not an error.
+                }
             }
 
             return Result<Unit>.Success(Unit.Value);

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using SecretSpots.Features.Common.Localization;
+using Sentry;
 
 namespace SecretSpots.Features.Common.ExceptionHandling;
 
@@ -30,6 +31,11 @@ public static class ExceptionHandlingExtensions
 
             await Microsoft.AspNetCore.Http.Results.ValidationProblem(errors).ExecuteAsync(context);
             return;
+        }
+
+        if (error is not null)
+        {
+            SentrySdk.CaptureException(error);
         }
 
         var localizer = context.RequestServices.GetRequiredService<IStringLocalizer<SharedResources>>();

@@ -49,6 +49,28 @@ public static class UploadPhoto
             try
             {
                 await using var uploadStream = command.File.OpenReadStream();
+
+                // Identify reads only the header, not the full pixel grid, so a small-but-crafted
+                // file (e.g. a PNG claiming a huge width/height) can be dimension-checked before
+                // the memory-heavy full decode below ever runs.
+                var info = await Image.IdentifyAsync(uploadStream, cancellationToken);
+                if (info is null)
+                {
+                    return Result<UploadPhotoResponse>.Failure(new Error(
+                        PhotoMessageKeys.InvalidImage,
+                        localizer[PhotoMessageKeys.InvalidImage].Value,
+                        StatusCodes.Status400BadRequest));
+                }
+
+                if ((long)info.Width * info.Height > photoOptions.Value.MaxDecodedPixels)
+                {
+                    return Result<UploadPhotoResponse>.Failure(new Error(
+                        PhotoMessageKeys.ImageDimensionsTooLarge,
+                        localizer[PhotoMessageKeys.ImageDimensionsTooLarge].Value,
+                        StatusCodes.Status400BadRequest));
+                }
+
+                uploadStream.Position = 0;
                 image = await Image.LoadAsync(uploadStream, cancellationToken);
             }
             catch (ImageFormatException)
