@@ -21,11 +21,14 @@ internal static class AuthTokenIssuer
     {
         var (accessToken, accessTokenExpiresAt) = jwtService.GenerateAccessToken(user);
 
+        // Only the hash is persisted — the raw value is a bearer secret usable on its own, so a
+        // database leak must not hand out working refresh tokens.
+        var rawRefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         var refreshToken = new RefreshToken
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            Token = OpaqueTokenHasher.Hash(rawRefreshToken),
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(jwtOptions.Value.RefreshTokenDays),
             RememberMe = rememberMe,
         };
@@ -34,6 +37,6 @@ internal static class AuthTokenIssuer
         await db.SaveChangesAsync(cancellationToken);
 
         return Result<AuthResult>.Success(new AuthResult(
-            accessToken, refreshToken.Token, accessTokenExpiresAt, refreshToken.ExpiresAt, rememberMe));
+            accessToken, rawRefreshToken, accessTokenExpiresAt, refreshToken.ExpiresAt, rememberMe));
     }
 }

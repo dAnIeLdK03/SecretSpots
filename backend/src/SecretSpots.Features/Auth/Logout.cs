@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
+using SecretSpots.Features.Common.Security;
 
 namespace SecretSpots.Features.Auth;
 
@@ -15,7 +16,8 @@ public static class Logout
         {
             var existingToken = string.IsNullOrEmpty(command.RefreshToken)
                 ? null
-                : await db.RefreshTokens.SingleOrDefaultAsync(t => t.Token == command.RefreshToken, cancellationToken);
+                : await db.RefreshTokens.SingleOrDefaultAsync(
+                    t => t.Token == OpaqueTokenHasher.Hash(command.RefreshToken), cancellationToken);
 
             if (existingToken is { RevokedAt: null })
             {
