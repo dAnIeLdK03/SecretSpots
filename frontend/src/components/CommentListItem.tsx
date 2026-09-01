@@ -8,6 +8,9 @@ import { getErrorMessage } from "@/lib/apiClient";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useSpotCommentsStore } from "@/store/useSpotCommentsStore";
 import type { CommentResponse } from "@/lib/commentsApi";
+import { ReportModal } from "@/components/ReportModal";
+import { reportComment } from "@/lib/reportsApi";
+import type { ReportReason } from "@/lib/reportsApi";
 
 export function CommentListItem({ comment }: { comment: CommentResponse }) {
   const t = useTranslations("Comments");
@@ -21,8 +24,13 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const isAuthor = user?.id === comment.userId;
+
+  async function handleReportSubmit(reason: ReportReason, details: string) {
+    await reportComment(comment.id, reason, details);
+  }
 
   async function handleSaveEdit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -114,6 +122,15 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
             {t("deleteButton")}
           </button>
         </div>
+      ) : (
+        <div className="flex shrink-0 gap-2 text-xs">
+          <button onClick={() => setShowReportModal(true)} style={{ color: "var(--fieldmap-dim)" }}>
+            {t("reportButton")}
+          </button>
+        </div>
+      )}
+      {showReportModal ? (
+        <ReportModal onClose={() => setShowReportModal(false)} onSubmit={handleReportSubmit} />
       ) : null}
     </li>
   );

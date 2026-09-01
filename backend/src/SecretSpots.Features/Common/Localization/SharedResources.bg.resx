@@ -171,6 +171,21 @@
   <data name="Ratings.ValueOutOfRange" xml:space="preserve">
     <value>Оценката трябва да е между 1 и 5.</value>
   </data>
+  <data name="Reports.SpotNotFound" xml:space="preserve">
+    <value>Това място вече не съществува.</value>
+  </data>
+  <data name="Reports.CommentNotFound" xml:space="preserve">
+    <value>Този коментар вече не съществува.</value>
+  </data>
+  <data name="Reports.AlreadyReported" xml:space="preserve">
+    <value>Вече си докладвал/а това.</value>
+  </data>
+  <data name="Reports.ReasonRequired" xml:space="preserve">
+    <value>Избери причина за доклада.</value>
+  </data>
+  <data name="Reports.DetailsTooLong" xml:space="preserve">
+    <value>Описанието е твърде дълго.</value>
+  </data>
   <data name="SavedSpots.SpotNotFound" xml:space="preserve">
     <value>Това място вече не съществува.</value>
   </data>
