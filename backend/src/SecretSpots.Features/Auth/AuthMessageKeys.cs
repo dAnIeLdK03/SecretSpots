@@ -24,4 +24,7 @@ public static class AuthMessageKeys
     public const string PasswordResetTokenInvalidOrExpired = "Auth.PasswordResetTokenInvalidOrExpired";
     public const string PasswordResetEmailSubject = "Auth.PasswordResetEmailSubject";
     public const string PasswordResetEmailBody = "Auth.PasswordResetEmailBody";
+    public const string EmailVerificationTokenInvalidOrExpired = "Auth.EmailVerificationTokenInvalidOrExpired";
+    public const string EmailVerificationEmailSubject = "Auth.EmailVerificationEmailSubject";
+    public const string EmailVerificationEmailBody = "Auth.EmailVerificationEmailBody";
 }

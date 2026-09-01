@@ -72,6 +72,15 @@
   <data name="Auth.PasswordResetEmailBody" xml:space="preserve">
     <value>&lt;p&gt;We received a request to reset your SecretSpots password.&lt;/p&gt;&lt;p&gt;&lt;a href="{0}"&gt;Click here to choose a new password&lt;/a&gt;. This link expires soon and can only be used once.&lt;/p&gt;&lt;p&gt;If you didn't request this, you can safely ignore this email.&lt;/p&gt;</value>
   </data>
+  <data name="Auth.EmailVerificationTokenInvalidOrExpired" xml:space="preserve">
+    <value>This verification link is invalid or has expired. Request a new one.</value>
+  </data>
+  <data name="Auth.EmailVerificationEmailSubject" xml:space="preserve">
+    <value>Verify your SecretSpots email</value>
+  </data>
+  <data name="Auth.EmailVerificationEmailBody" xml:space="preserve">
+    <value>&lt;p&gt;Thanks for signing up for SecretSpots!&lt;/p&gt;&lt;p&gt;&lt;a href="{0}"&gt;Click here to verify your email address&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;If you didn't create this account, you can safely ignore this email.&lt;/p&gt;</value>
+  </data>
   <data name="Spots.NameRequired" xml:space="preserve">
     <value>Name is required.</value>
   </data>

@@ -72,6 +72,15 @@
   <data name="Auth.PasswordResetEmailBody" xml:space="preserve">
     <value>&lt;p&gt;Получихме заявка за смяна на паролата на твоя SecretSpots акаунт.&lt;/p&gt;&lt;p&gt;&lt;a href="{0}"&gt;Натисни тук, за да зададеш нова парола&lt;/a&gt;. Връзката изтича скоро и може да се използва само веднъж.&lt;/p&gt;&lt;p&gt;Ако не си заявявал/а това, просто игнорирай този имейл.&lt;/p&gt;</value>
   </data>
+  <data name="Auth.EmailVerificationTokenInvalidOrExpired" xml:space="preserve">
+    <value>Тази връзка за потвърждение е невалидна или е изтекла. Заяви нова.</value>
+  </data>
+  <data name="Auth.EmailVerificationEmailSubject" xml:space="preserve">
+    <value>Потвърди своя SecretSpots имейл</value>
+  </data>
+  <data name="Auth.EmailVerificationEmailBody" xml:space="preserve">
+    <value>&lt;p&gt;Благодарим за регистрацията в SecretSpots!&lt;/p&gt;&lt;p&gt;&lt;a href="{0}"&gt;Натисни тук, за да потвърдиш имейл адреса си&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Ако не си създавал/а този акаунт, просто игнорирай този имейл.&lt;/p&gt;</value>
+  </data>
   <data name="Spots.NameRequired" xml:space="preserve">
     <value>Името е задължително.</value>
   </data>

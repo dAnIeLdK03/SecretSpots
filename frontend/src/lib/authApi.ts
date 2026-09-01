@@ -57,6 +57,17 @@ export function resetPassword(token: string, newPassword: string): Promise<void>
   });
 }
 
+export function resendEmailVerification(): Promise<void> {
+  return apiFetchVoid("/auth/email-verification/resend", { method: "POST" });
+}
+
+export function verifyEmail(token: string): Promise<void> {
+  return apiFetchVoid("/auth/email-verification/confirm", {
+    method: "POST",
+    body: JSON.stringify({ token }),
+  });
+}
+
 export async function establishSession(result: AuthResult): Promise<void> {
   useAuthStore.getState().setAccessToken(result.accessToken);
   const user = await getCurrentUser();

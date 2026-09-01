@@ -66,6 +66,8 @@ public class RegisterHandlerTests
             new JwtService(jwtOptions),
             jwtOptions,
             TestOptionsFactory.Crystals(),
+            new FakeEmailSender(),
+            TestOptionsFactory.EmailVerification(),
             TestLocalizerFactory.Create(),
             NullLogger<Register.Handler>.Instance);
     }

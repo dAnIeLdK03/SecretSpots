@@ -20,6 +20,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
     public DbSet<ExternalAuthTransaction> ExternalAuthTransactions => Set<ExternalAuthTransaction>();
     public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
+    public DbSet<EmailVerificationToken> EmailVerificationTokens => Set<EmailVerificationToken>();
 
     public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         => await Database.BeginTransactionAsync(cancellationToken);
@@ -95,6 +96,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<PasswordResetToken>()
             .HasIndex(p => p.Token)
+            .IsUnique();
+
+        modelBuilder.Entity<EmailVerificationToken>()
+            .HasIndex(e => e.Token)
             .IsUnique();
 
         base.OnModelCreating(modelBuilder);
