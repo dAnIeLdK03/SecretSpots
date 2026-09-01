@@ -110,13 +110,22 @@ export function getSpot(id: string, signal?: AbortSignal): Promise<SpotResponse>
   return apiFetch<SpotResponse>(`/spots/${id}`, { signal });
 }
 
+export interface SpotSearchPageResponse {
+  items: SpotSearchResult[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+}
+
 export function searchSpots(
-  params: {q?: string; category?: SpotCategory},
+  params: {q?: string; category?: SpotCategory; page?: number; pageSize?: number},
   signal?: AbortSignal,
-) : Promise<SpotSearchResult[]> {
+) : Promise<SpotSearchPageResponse> {
   const searchParams = new URLSearchParams();
   if(params.q) searchParams.set("q", params.q);
   if(params.category) searchParams.set("category", params.category);
+  if(params.page) searchParams.set("page", String(params.page));
+  if(params.pageSize) searchParams.set("pageSize", String(params.pageSize));
 
-  return apiFetch<SpotSearchResult[]>(`/spots/search?${searchParams.toString()}`, {signal});
+  return apiFetch<SpotSearchPageResponse>(`/spots/search?${searchParams.toString()}`, {signal});
 }

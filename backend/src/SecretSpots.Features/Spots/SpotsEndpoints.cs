@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 using SecretSpots.Domain;
+using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Results;
 
@@ -45,13 +47,16 @@ public static class SpotsEndpoints
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
         group.MapGet("/search", async (
-            string? q, SpotCategory? category, ISender sender, CancellationToken cancellationToken
+            string? q, SpotCategory? category, int? page, int? pageSize, IOptions<SpotSearchOptions> spotSearchOptions,
+            ISender sender, CancellationToken cancellationToken
         ) =>
         {
-            var results = await sender.Send(new SearchSpots.Query(q, category), cancellationToken);
-            return Results.Ok(results);
+            var query = new SearchSpots.Query(q, category, page ?? 1, pageSize ?? spotSearchOptions.Value.DefaultPageSize);
+            var result = await sender.Send(query, cancellationToken);
+            return Results.Ok(result);
         })
-            .Produces<IReadOnlyList<SpotSearchResultResponse>>(StatusCodes.Status200OK)
+            .Produces<SpotSearchPageResponse>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
         group.MapPut("/{id:guid}", async (

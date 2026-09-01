@@ -87,6 +87,7 @@ builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.Configure<CrystalsOptions>(builder.Configuration.GetSection("Crystals"));
 builder.Services.Configure<CheckInOptions>(builder.Configuration.GetSection("CheckIn"));
 builder.Services.Configure<CommentOptions>(builder.Configuration.GetSection("Comments"));
+builder.Services.Configure<SpotSearchOptions>(builder.Configuration.GetSection("SpotSearch"));
 builder.Services.Configure<R2Options>(builder.Configuration.GetSection("R2"));
 builder.Services.Configure<PhotoOptions>(builder.Configuration.GetSection("Photos"));
 builder.Services.Configure<NotificationsOptions>(builder.Configuration.GetSection("Notifications"));
