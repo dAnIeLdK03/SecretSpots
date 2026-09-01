@@ -20,6 +20,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
     public DbSet<ExternalAuthTransaction> ExternalAuthTransactions => Set<ExternalAuthTransaction>();
     public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
+    public DbSet<Report> Reports => Set<Report>();
 
     public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         => await Database.BeginTransactionAsync(cancellationToken);
@@ -95,6 +96,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<PasswordResetToken>()
             .HasIndex(p => p.Token)
+            .IsUnique();
+
+        // One report per user per piece of content — resubmitting doesn't add signal, and this
+        // also lets the insert race (two concurrent reports from the same user) resolve as a
+        // uniqueness violation instead of a duplicate row.
+        modelBuilder.Entity<Report>()
+            .HasIndex(r => new { r.ReporterUserId, r.ContentType, r.ContentId })
             .IsUnique();
 
         base.OnModelCreating(modelBuilder);

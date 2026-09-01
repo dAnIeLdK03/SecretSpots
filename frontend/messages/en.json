@@ -108,6 +108,8 @@
     "deleteButton": "Delete",
     "deleteConfirm": "Delete this spot? This cannot be undone.",
     "notYourSpot": "You can only edit or delete spots you added.",
+    "reportButton": "Report",
+    "loginRequiredToReport": "You must be logged in to report this spot.",
     "distanceKm": "{value} km",
     "distanceMeters": "{value} m"
   },
@@ -169,6 +171,7 @@
     "cancelButton": "Cancel",
     "editedLabel": "edited",
     "deleteConfirm": "Are you sure you want to delete this comment?",
+    "reportButton": "Report",
     "unknownError": "Something went wrong. Please try again."
   },
   "Ratings": {
@@ -180,6 +183,24 @@
     "submitButton": "Submit",
     "submitting": "Submitting...",
     "loginRequiredToRate": "You must be logged in to rate this spot.",
+    "unknownError": "Something went wrong. Please try again."
+  },
+  "Reports": {
+    "modalTitle": "Report content",
+    "reasonLabel": "Reason",
+    "reason": {
+      "Spam": "Spam",
+      "Inappropriate": "Inappropriate content",
+      "Fake": "Fake or misleading",
+      "Other": "Other"
+    },
+    "detailsLabel": "Additional details (optional)",
+    "cancelButton": "Cancel",
+    "submitButton": "Submit report",
+    "submitting": "Submitting...",
+    "submittedMessage": "Thanks — we've received your report.",
+    "closeButton": "Close",
+    "alreadyReported": "You've already reported this.",
     "unknownError": "Something went wrong. Please try again."
   },
   "SavedSpots": {
