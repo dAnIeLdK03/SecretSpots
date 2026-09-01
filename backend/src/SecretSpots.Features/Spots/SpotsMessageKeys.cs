@@ -15,4 +15,6 @@ public static class SpotsMessageKeys
     public const string RadiusOutOfRange = "Spots.RadiusOutOfRange";
     public const string NotFound = "Spots.NotFound";
     public const string NotYourSpot = "Spots.NotYourSpot";
+    public const string PageOutOfRange = "Spots.PageOutOfRange";
+    public const string PageSizeOutOfRange = "Spots.PageSizeOutOfRange";
 }

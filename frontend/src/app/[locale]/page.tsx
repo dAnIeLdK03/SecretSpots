@@ -14,67 +14,83 @@ const PAGE_SIZE = 4;
 export default function LandingPage() {
   const t = useTranslations("Home");
   const tSpots = useTranslations("Spots");
-  const [spots, setSpots] = useState<SpotSearchResult[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<SpotCategory | "All">("All");
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const [searchResults, setSearchResults] = useState<SpotSearchResult[] | null>(null);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
+  const [items, setItems] = useState<SpotSearchResult[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const fetchPage = useCallback(
+    (pageNum: number, append: boolean, signal?: AbortSignal) => {
+      const category = categoryFilter === "All" ? undefined : categoryFilter;
+      const q = searchTerm ?? undefined;
+      return searchSpots({ q, category, page: pageNum, pageSize: PAGE_SIZE }, signal).then((result) => {
+        setItems((prev) => (append ? [...prev, ...result.items] : result.items));
+        setTotalCount(result.totalCount);
+        setPage(pageNum);
+      });
+    },
+    [categoryFilter, searchTerm],
+  );
 
   useEffect(() => {
-    // No location filter — "Featured spots" is a country-wide browse, not a
-    // "near you" search (that's what /map is for), so spots anywhere in
-    // Bulgaria should show up here, not just within some radius of Sofia.
-    searchSpots({})
-      .then(setSpots)
-      .catch(() => {});
-  }, []);
+    const controller = new AbortController();
+    fetchPage(1, false, controller.signal).catch(() => {
+      if (controller.signal.aborted) return;
+      setItems([]);
+      setTotalCount(0);
+    });
+    return () => controller.abort();
+  }, [fetchPage]);
 
   function handleCategoryChange(category: SpotCategory | "All") {
     setCategoryFilter(category);
-    setVisibleCount(PAGE_SIZE);
-    setSearchResults(null);
     setSearchTerm(null);
   }
 
-  const handleSearch = useCallback((term: string) => {
-    const trimmed = term.trim();
-    if (!trimmed){
-      setSearchResults(null);
-      setSearchTerm(null);
-      return;
+  const handleSearch = useCallback(
+    (term: string) => {
+      const trimmed = term.trim();
+      if (!trimmed) {
+        setSearchTerm(null);
+        return;
+      }
+
+      const matchedCategory = SPOT_CATEGORIES.find(
+        (category) => tSpots(`category.${category}`).toLowerCase() === trimmed.toLowerCase(),
+      );
+
+      if (matchedCategory) {
+        handleCategoryChange(matchedCategory);
+        return;
+      }
+
+      setSearchTerm(trimmed);
+    },
+    [tSpots],
+  );
+
+  async function handleLoadMore() {
+    setLoadingMore(true);
+    try {
+      await fetchPage(page + 1, true);
+    } finally {
+      setLoadingMore(false);
     }
+  }
 
-    const matchedCategory = SPOT_CATEGORIES.find(
-      (category) => tSpots(`category.${category}`).toLowerCase() === trimmed.toLowerCase(),
-    );
-
-    if (matchedCategory) {
-      handleCategoryChange(matchedCategory);
-      return;
-    }
-
-    setSearchTerm(trimmed);
-    searchSpots({ q: trimmed })
-      .then(setSearchResults)
-      .catch(() => setSearchResults([]));
-  },
-  [tSpots]
-);
-
-  const filteredSpots = categoryFilter === "All" ? spots : spots.filter((s) => s.category === categoryFilter);
-  const displayedSpots = searchResults !== null ? searchResults : filteredSpots;
-  const visibleSpots = displayedSpots.slice(0, visibleCount);
+  const isSearching = searchTerm !== null;
 
   // Fuzzy/word-level matching on the backend means a result can show up without
   // literally containing the search term — call that out so it doesn't read as a bug.
   const hasExactMatch =
-    searchResults === null ||
-    searchResults.length === 0 ||
-    !searchTerm ||
-    searchResults.some(
+    !isSearching ||
+    items.length === 0 ||
+    items.some(
       (s) =>
-        s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.description.toLowerCase().includes(searchTerm.toLowerCase()),
+        s.name.toLowerCase().includes(searchTerm!.toLowerCase()) ||
+        s.description.toLowerCase().includes(searchTerm!.toLowerCase()),
     );
 
   return (
@@ -114,10 +130,10 @@ export default function LandingPage() {
         <div className="mt-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 className="text-2xl font-semibold">
-              {searchResults !== null ? t("searchResultsTitle", { term: searchTerm ?? "" }) : t("featuredTitle")}
+              {isSearching ? t("searchResultsTitle", { term: searchTerm ?? "" }) : t("featuredTitle")}
             </h2>
             <p className="mt-1 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-              {searchResults !== null
+              {isSearching
                 ? hasExactMatch
                   ? t("searchResultsSubtitle")
                   : t("approximateResultsSubtitle", { term: searchTerm ?? "" })
@@ -133,23 +149,24 @@ export default function LandingPage() {
           </Link>
         </div>
 
-        {visibleSpots.length === 0 ? (
+        {items.length === 0 ? (
           <p className="mt-8 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-            {searchResults !== null ? t("noSearchResults") : t("noSpotsYet")}
+            {isSearching ? t("noSearchResults") : t("noSpotsYet")}
           </p>
         ) : (
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {visibleSpots.map((spot) => (
+            {items.map((spot) => (
               <FeaturedSpotCard key={spot.id} spot={spot} />
             ))}
           </div>
         )}
 
-        {visibleCount < displayedSpots.length ? (
+        {items.length < totalCount ? (
           <div className="mt-8 flex justify-center">
             <button
-              onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
-              className="rounded border px-4 py-2 text-sm"
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              className="rounded border px-4 py-2 text-sm disabled:opacity-50"
               style={{ borderColor: "var(--fieldmap-contour)" }}
             >
               {t("loadMoreSpots")}

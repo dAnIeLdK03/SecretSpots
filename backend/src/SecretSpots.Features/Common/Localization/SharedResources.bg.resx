@@ -120,6 +120,12 @@
   <data name="Spots.NotYourSpot" xml:space="preserve">
     <value>Можеш да редактираш или триеш само места, които си добавил/а.</value>
   </data>
+  <data name="Spots.PageOutOfRange" xml:space="preserve">
+    <value>Страницата трябва да е 1 или по-голяма.</value>
+  </data>
+  <data name="Spots.PageSizeOutOfRange" xml:space="preserve">
+    <value>Размерът на страницата трябва да е между 1 и 100.</value>
+  </data>
   <data name="CheckIns.SpotNotFound" xml:space="preserve">
     <value>Това място вече не съществува.</value>
   </data>
