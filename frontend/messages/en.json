@@ -52,7 +52,16 @@
     "resetPasswordSubmitting": "Resetting...",
     "resetPasswordSuccess": "Your password has been reset.",
     "passwordsDoNotMatch": "Passwords do not match.",
-    "backToLogin": "Back to login"
+    "backToLogin": "Back to login",
+    "backToAccount": "Back to my account",
+    "verifyEmailTitle": "Verify your email",
+    "verifyEmailSubtitle": "Just one more step.",
+    "verifyEmailVerifying": "Verifying your email...",
+    "verifyEmailSuccess": "Your email has been verified.",
+    "emailNotVerifiedBanner": "Please verify your email address.",
+    "resendVerificationButton": "Resend verification email",
+    "resendVerificationSending": "Sending...",
+    "resendVerificationSuccess": "Verification email sent — check your inbox."
   },
   "Spots": {
     "category": {

@@ -52,7 +52,16 @@
     "resetPasswordSubmitting": "Сменяне...",
     "resetPasswordSuccess": "Паролата беше сменена успешно.",
     "passwordsDoNotMatch": "Паролите не съвпадат.",
-    "backToLogin": "Обратно към входа"
+    "backToLogin": "Обратно към входа",
+    "backToAccount": "Обратно към акаунта ми",
+    "verifyEmailTitle": "Потвърди имейла си",
+    "verifyEmailSubtitle": "Само още една стъпка.",
+    "verifyEmailVerifying": "Потвърждаване на имейла...",
+    "verifyEmailSuccess": "Имейлът ти беше потвърден.",
+    "emailNotVerifiedBanner": "Моля, потвърди имейл адреса си.",
+    "resendVerificationButton": "Изпрати имейл за потвърждение отново",
+    "resendVerificationSending": "Изпращане...",
+    "resendVerificationSuccess": "Имейлът за потвърждение е изпратен — провери пощата си."
   },
   "Spots": {
     "category": {

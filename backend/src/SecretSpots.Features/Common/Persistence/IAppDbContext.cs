@@ -20,6 +20,7 @@ public interface IAppDbContext
     DbSet<ExternalLogin> ExternalLogins { get; }
     DbSet<ExternalAuthTransaction> ExternalAuthTransactions { get; }
     DbSet<PasswordResetToken> PasswordResetTokens { get; }
+    DbSet<EmailVerificationToken> EmailVerificationTokens { get; }
     DbSet<Report> Reports { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

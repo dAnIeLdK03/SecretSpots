@@ -99,6 +99,7 @@ builder.Services.Configure<FacebookAuthOptions>(builder.Configuration.GetSection
 builder.Services.Configure<ExternalAuthOptions>(builder.Configuration.GetSection("ExternalAuth"));
 builder.Services.Configure<ResendOptions>(builder.Configuration.GetSection("Resend"));
 builder.Services.Configure<PasswordResetOptions>(builder.Configuration.GetSection("PasswordReset"));
+builder.Services.Configure<EmailVerificationOptions>(builder.Configuration.GetSection("EmailVerification"));
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, UserContext>();

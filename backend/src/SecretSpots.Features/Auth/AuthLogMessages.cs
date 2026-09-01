@@ -19,4 +19,8 @@ internal static class AuthLogMessages
     public const string RefreshTokenReuseDetected =
         "Refresh token reuse detected for user {UserId} — an already-revoked token was presented again. Revoking all active sessions.";
     public const string AccountDeleted = "User {UserId} deleted their account.";
+    public const string EmailVerificationSendFailedAfterRegister =
+        "Failed to send the verification email for newly-registered user {UserId}. Registration still succeeded.";
+    public const string EmailVerificationSent = "User {UserId} requested a new verification email.";
+    public const string EmailVerificationCompleted = "User {UserId} verified their email.";
 }

@@ -56,6 +56,14 @@ internal static class TestOptionsFactory
             MaxPageSize = maxPageSize,
         });
 
+    public static IOptions<EmailVerificationOptions> EmailVerification(
+        string frontendVerifyUrl = "https://test.example/verify-email", int tokenExpiryMinutes = 1440) =>
+        Options.Create(new EmailVerificationOptions
+        {
+            FrontendVerifyUrl = frontendVerifyUrl,
+            TokenExpiryMinutes = tokenExpiryMinutes,
+        });
+
     public static IOptions<NotificationsOptions> Notifications(
         int defaultPageSize = 20, int maxPageSize = 100, double newSpotRadiusKm = 5, int readRetentionHours = 24) =>
         Options.Create(new NotificationsOptions

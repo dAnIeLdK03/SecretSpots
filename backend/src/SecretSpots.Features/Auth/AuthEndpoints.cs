@@ -150,6 +150,27 @@ public static class AuthEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .Accepts<ResetPassword.Command>("application/json");
 
+        group.MapPost("/email-verification/resend", async (ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new ResendEmailVerification.Command(), cancellationToken);
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
+            })
+            .RequireAuthorization()
+            .RequireRateLimiting(RateLimitPolicies.Auth)
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapPost("/email-verification/confirm", async (VerifyEmail.Command command, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(command, cancellationToken);
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
+            })
+            .RequireRateLimiting(RateLimitPolicies.Auth)
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .Accepts<VerifyEmail.Command>("application/json");
+
         group.MapGet("/me", async (ISender sender, CancellationToken cancellationToken) =>
                 (await sender.Send(new GetCurrentUser.Query(), cancellationToken)).ToOkOrProblem())
             .RequireAuthorization()

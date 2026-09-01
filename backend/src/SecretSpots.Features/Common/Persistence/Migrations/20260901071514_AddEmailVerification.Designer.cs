@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -13,9 +14,11 @@ using SecretSpots.Features.Common.Persistence;
 namespace SecretSpots.Features.Common.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260901071514_AddEmailVerification")]
+    partial class AddEmailVerification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -327,38 +330,6 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("RefreshTokens");
-                });
-
-            modelBuilder.Entity("SecretSpots.Domain.Report", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ContentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("ContentType")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Details")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Reason")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ReporterUserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReporterUserId", "ContentType", "ContentId")
-                        .IsUnique();
-
-                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("SecretSpots.Domain.Reward", b =>

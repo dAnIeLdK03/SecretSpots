@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SecretSpots.Domain;
 using SecretSpots.Features.Common.Configuration;
+using SecretSpots.Features.Common.Email;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -46,6 +47,8 @@ public static class Register
         IJwtService jwtService,
         IOptions<JwtOptions> jwtOptions,
         IOptions<CrystalsOptions> crystalsOptions,
+        IEmailSender emailSender,
+        IOptions<EmailVerificationOptions> emailVerificationOptions,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<AuthResult>>
@@ -109,6 +112,18 @@ public static class Register
             await transaction.CommitAsync(cancellationToken);
 
             logger.LogInformation(AuthLogMessages.UserRegistered, user.Id, user.Email);
+
+            // Best-effort — the account and tokens are already committed at this point, so a
+            // flaky email provider must not turn into a 500 on an otherwise-successful
+            // registration. The user can always ask for a resend once logged in.
+            try
+            {
+                await EmailVerificationSender.SendAsync(db, emailSender, emailVerificationOptions, localizer, user, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, AuthLogMessages.EmailVerificationSendFailedAfterRegister, user.Id);
+            }
 
             return issueResult;
         }

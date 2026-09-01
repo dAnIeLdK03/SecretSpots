@@ -96,6 +96,7 @@ public static class ExternalAuthCallback
                     Email = normalizedEmail,
                     DisplayName = userInfo.DisplayName,
                     CrystalBalance = crystalsOptions.Value.StartingBalance,
+                    IsEmailVerified = userInfo.EmailVerified,
                 };
                 db.Users.Add(user);
             }
