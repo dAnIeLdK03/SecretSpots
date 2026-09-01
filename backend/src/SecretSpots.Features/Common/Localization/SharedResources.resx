@@ -162,6 +162,21 @@
   <data name="Ratings.ValueOutOfRange" xml:space="preserve">
     <value>Rating must be between 1 and 5.</value>
   </data>
+  <data name="Reports.SpotNotFound" xml:space="preserve">
+    <value>This spot no longer exists.</value>
+  </data>
+  <data name="Reports.CommentNotFound" xml:space="preserve">
+    <value>This comment no longer exists.</value>
+  </data>
+  <data name="Reports.AlreadyReported" xml:space="preserve">
+    <value>You've already reported this.</value>
+  </data>
+  <data name="Reports.ReasonRequired" xml:space="preserve">
+    <value>Select a reason for the report.</value>
+  </data>
+  <data name="Reports.DetailsTooLong" xml:space="preserve">
+    <value>Details are too long.</value>
+  </data>
   <data name="SavedSpots.SpotNotFound" xml:space="preserve">
     <value>This spot no longer exists.</value>
   </data>

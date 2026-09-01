@@ -26,6 +26,7 @@ using SecretSpots.Features.Common.Storage;
 using SecretSpots.Features.Notifications;
 using SecretSpots.Features.Photos;
 using SecretSpots.Features.Ratings;
+using SecretSpots.Features.Reports;
 using SecretSpots.Features.Rewards;
 using SecretSpots.Features.SavedSpots;
 using SecretSpots.Features.Spots;
@@ -313,6 +314,7 @@ app.MapPhotosEndpoints();
 app.MapBusinessesEndpoints();
 app.MapRewardsEndpoints();
 app.MapNotificationsEndpoints();
+app.MapReportsEndpoints();
 
 // Lets e2e tests read back what InMemoryEmailSender captured (see registration above) instead of
 // needing a real inbox — e.g. to pull the token out of a password-reset link. Gated on

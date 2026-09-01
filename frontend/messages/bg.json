@@ -108,6 +108,8 @@
     "deleteButton": "Изтрий",
     "deleteConfirm": "Да изтрия ли това място? Действието е необратимо.",
     "notYourSpot": "Можеш да редактираш или триеш само места, които си добавил/а.",
+    "reportButton": "Докладвай",
+    "loginRequiredToReport": "Трябва да си влязъл/а, за да докладваш това място.",
     "distanceKm": "{value} км",
     "distanceMeters": "{value} м"
   },
@@ -169,6 +171,7 @@
     "cancelButton": "Отказ",
     "editedLabel": "редактиран",
     "deleteConfirm": "Сигурен/на ли си, че искаш да изтриеш този коментар?",
+    "reportButton": "Докладвай",
     "unknownError": "Нещо се обърка. Опитайте отново."
   },
   "Ratings": {
@@ -180,6 +183,24 @@
     "submitButton": "Изпрати",
     "submitting": "Изпращане...",
     "loginRequiredToRate": "Трябва да си влязъл/а, за да оцениш това място.",
+    "unknownError": "Нещо се обърка. Опитайте отново."
+  },
+  "Reports": {
+    "modalTitle": "Докладвай съдържание",
+    "reasonLabel": "Причина",
+    "reason": {
+      "Spam": "Спам",
+      "Inappropriate": "Неподходящо съдържание",
+      "Fake": "Фалшиво или подвеждащо",
+      "Other": "Друго"
+    },
+    "detailsLabel": "Допълнителни детайли (по желание)",
+    "cancelButton": "Отказ",
+    "submitButton": "Изпрати доклад",
+    "submitting": "Изпращане...",
+    "submittedMessage": "Благодарим — докладът е получен.",
+    "closeButton": "Затвори",
+    "alreadyReported": "Вече си докладвал/а това.",
     "unknownError": "Нещо се обърка. Опитайте отново."
   },
   "SavedSpots": {

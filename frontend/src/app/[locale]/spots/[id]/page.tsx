@@ -14,6 +14,9 @@ import { CheckInModal } from "@/components/CheckInModal";
 import { CommentsSection } from "@/components/CommentsSection";
 import { EditSpotModal } from "@/components/EditSpotModal";
 import { PhotoSlider } from "@/components/PhotoSlider";
+import { ReportModal } from "@/components/ReportModal";
+import { reportSpot } from "@/lib/reportsApi";
+import type { ReportReason } from "@/lib/reportsApi";
 import { SaveSpotButton } from "@/components/SaveSpotButton";
 import { SpotRatingInput } from "@/components/SpotRatingInput";
 import { SpotRatingSummary } from "@/components/SpotRatingSummary";
@@ -38,6 +41,8 @@ function SpotDetailContent({ id }: { id: string }) {
   const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [showReportLoginPrompt, setShowReportLoginPrompt] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -115,6 +120,19 @@ function SpotDetailContent({ id }: { id: string }) {
     setShowCheckInModal(true);
   }
 
+  function handleReportClick() {
+    if (authStatus !== "authenticated") {
+      setShowReportLoginPrompt(true);
+      return;
+    }
+    setShowReportLoginPrompt(false);
+    setShowReportModal(true);
+  }
+
+  async function handleReportSubmit(reason: ReportReason, details: string) {
+    await reportSpot(spot.id, reason, details);
+  }
+
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-4 p-8">
       <div
@@ -174,6 +192,15 @@ function SpotDetailContent({ id }: { id: string }) {
                 {tCheckIns("checkInButton")}
               </button>
               <SaveSpotButton spotId={spot.id} />
+              {!isOwner && (
+                <button
+                  onClick={handleReportClick}
+                  className="rounded border px-4 py-2 text-sm"
+                  style={{ borderColor: "var(--fieldmap-contour)", color: "var(--fieldmap-dim)" }}
+                >
+                  {t("reportButton")}
+                </button>
+              )}
 
               {isOwner && (
                 <div className="ml-auto flex items-center gap-2">
@@ -203,6 +230,14 @@ function SpotDetailContent({ id }: { id: string }) {
                 </Link>
               </p>
             ) : null}
+            {showReportLoginPrompt ? (
+              <p className="mt-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+                {t("loginRequiredToReport")}{" "}
+                <Link href="/login" className="underline">
+                  {tAuth("loginTitle")}
+                </Link>
+              </p>
+            ) : null}
           </div>
         </div>
       </div>
@@ -215,6 +250,9 @@ function SpotDetailContent({ id }: { id: string }) {
       <CommentsSection spotId={spot.id} />
 
       {showCheckInModal ? <CheckInModal spotId={spot.id} onClose={() => setShowCheckInModal(false)} /> : null}
+      {showReportModal ? (
+        <ReportModal onClose={() => setShowReportModal(false)} onSubmit={handleReportSubmit} />
+      ) : null}
       {showEditModal ? (
         <EditSpotModal
           spot={spot}
