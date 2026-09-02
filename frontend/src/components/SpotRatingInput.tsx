@@ -107,7 +107,7 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
               ) : null}
             </div>
           ) : null}
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
         </>
       ) : (
         <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>

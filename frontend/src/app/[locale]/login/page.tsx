@@ -75,7 +75,7 @@ export default function LoginPage() {
             {t("forgotPasswordLink")}
           </Link>
         </div>
-        {error ? <p className="text-sm text-red-700">{error}</p> : null}
+        {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
         <button
           type="submit"
           disabled={submitting}

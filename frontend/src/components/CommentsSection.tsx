@@ -63,7 +63,7 @@ export function CommentsSection({ spotId }: { spotId: string }) {
             className="w-full rounded border p-2 text-sm"
             style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
           />
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
           <div className="flex justify-end">
             <button
               type="submit"

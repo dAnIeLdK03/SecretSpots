@@ -76,7 +76,7 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
         onClick={() => setIsOpen((open) => !open)}
         aria-label={t("menuLabel")}
         aria-expanded={isOpen}
-        className="flex items-center gap-1.5 rounded-full border py-1 pr-2 pl-1 hover:bg-black/5"
+        className="flex items-center gap-1.5 rounded-full border py-1 pr-2 pl-1 hover:bg-black/5 dark:hover:bg-white/5"
         style={{ borderColor: "var(--fieldmap-contour)" }}
       >
         <Avatar name={displayName} size={28} />
@@ -104,26 +104,26 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
                 style={{ borderColor: "var(--fieldmap-contour)" }}
               >
                 {mobileNavItems.map((item) => (
-                  <Link key={item.href} href={item.href} onClick={closeMenu} className="px-4 py-2 hover:bg-black/5">
+                  <Link key={item.href} href={item.href} onClick={closeMenu} className="px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
                     {item.label}
                   </Link>
                 ))}
               </nav>
             )}
 
-            <Link href="/map" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5">
+            <Link href="/map" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
               {tHome("addASpot")}
             </Link>
-            <Link href="/settings" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5">
+            <Link href="/settings" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
               {t("settingsLabel")}
             </Link>
 
             <div className="my-2 border-b" style={{ borderColor: "var(--fieldmap-contour)" }} />
 
-            <Link href="/account" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5">
+            <Link href="/account" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
               {tAuth("profileLabel")}
             </Link>
-            <button onClick={handleLogout} className="block w-full px-4 py-2 text-left hover:bg-black/5">
+            <button onClick={handleLogout} className="block w-full px-4 py-2 text-left hover:bg-black/5 dark:hover:bg-white/5">
               {tAuth("logoutButton")}
             </button>
           </div>,

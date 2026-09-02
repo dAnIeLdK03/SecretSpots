@@ -44,7 +44,7 @@ export function CallbackClient() {
   if (error) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
-        <p className="text-sm text-red-700">{error}</p>
+        <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
         <button
           type="button"
           onClick={() => router.push("/login")}

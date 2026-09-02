@@ -57,7 +57,7 @@ export function VerifyEmailClient() {
           {t("verifyEmailSuccess")}
         </p>
       ) : (
-        <p className="text-sm text-red-700">{error ?? t("unknownError")}</p>
+        <p className="text-sm text-red-700 dark:text-red-400">{error ?? t("unknownError")}</p>
       )}
 
       <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>

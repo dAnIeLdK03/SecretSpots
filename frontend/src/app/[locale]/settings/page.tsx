@@ -81,7 +81,7 @@ export default function SettingsPage() {
             </p>
           ) : (
             <>
-              {resendError ? <p className="text-sm text-red-700">{resendError}</p> : null}
+              {resendError ? <p className="text-sm text-red-700 dark:text-red-400">{resendError}</p> : null}
               <button
                 onClick={handleResendVerification}
                 disabled={resending}
@@ -105,8 +105,8 @@ export default function SettingsPage() {
       <PushNotificationsToggle />
 
       <div className="flex flex-col gap-2 rounded-2xl border border-red-700/40 p-5" style={{ backgroundColor: "var(--fieldmap-card)" }}>
-        <h2 className="text-sm font-semibold uppercase text-red-700">{t("dangerZoneSectionTitle")}</h2>
-        {error ? <p className="text-sm text-red-700">{error}</p> : null}
+        <h2 className="text-sm font-semibold uppercase text-red-700 dark:text-red-400">{t("dangerZoneSectionTitle")}</h2>
+        {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
         <button
           onClick={handleDeleteAccount}
           disabled={deleting}

@@ -96,7 +96,7 @@ export function Header() {
               <button
                 onClick={() => setIsMenuOpen((open) => !open)}
                 aria-label={t("menuLabel")}
-                className="rounded-full p-2 hover:bg-black/5"
+                className="rounded-full p-2 hover:bg-black/5 dark:hover:bg-white/5"
                 style={{ color: "var(--fieldmap-dim)" }}
               >
                 ☰

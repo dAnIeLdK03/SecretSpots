@@ -45,7 +45,7 @@ export function ResetPasswordClient() {
       <h2 className="text-2xl font-semibold">{t("resetPasswordTitle")}</h2>
 
       {!token ? (
-        <p className="text-sm text-red-700">{t("unknownError")}</p>
+        <p className="text-sm text-red-700 dark:text-red-400">{t("unknownError")}</p>
       ) : submitted ? (
         <p className="max-w-sm text-sm" style={{ color: "var(--fieldmap-dim)" }}>
           {t("resetPasswordSuccess")}
@@ -80,7 +80,7 @@ export function ResetPasswordClient() {
               style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
             />
           </label>
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
           <button
             type="submit"
             disabled={submitting}

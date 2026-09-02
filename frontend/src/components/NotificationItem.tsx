@@ -35,7 +35,7 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
     <button
       onClick={handleClick}
       className={`flex w-full items-start gap-3 px-4 py-3 text-left text-sm ${
-        notification.isRead ? "" : "bg-blue-50 font-medium"
+        notification.isRead ? "" : "bg-blue-50 dark:bg-blue-950 font-medium"
       }`}
       style={notification.isRead ? { color: "var(--fieldmap-dim)" } : undefined}
     >

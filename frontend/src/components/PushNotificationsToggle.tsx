@@ -117,7 +117,7 @@ export function PushNotificationsToggle() {
           {status === "enabled" ? t("pushDisableButton") : t("pushEnableButton")}
         </button>
       )}
-      {error ? <p className="text-sm text-red-700">{error}</p> : null}
+      {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
     </div>
   );
 }

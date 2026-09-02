@@ -85,7 +85,7 @@ export function ReportModal({ onClose, onSubmit }: ReportModalProps) {
                   style={{ borderColor: "var(--fieldmap-contour)" }}
                 />
               </label>
-              {error ? <p className="text-sm text-red-700">{error}</p> : null}
+              {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
               <div className="flex justify-end gap-2">
                 <button type="button" onClick={onClose} style={{ color: "var(--fieldmap-dim)" }}>
                   {t("cancelButton")}

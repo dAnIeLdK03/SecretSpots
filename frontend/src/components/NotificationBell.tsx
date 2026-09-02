@@ -56,7 +56,7 @@ export function NotificationBell() {
         ref={buttonRef}
         onClick={toggleOpen}
         aria-label={t("title")}
-        className="relative rounded-full p-2 hover:bg-black/5"
+        className="relative rounded-full p-2 hover:bg-black/5 dark:hover:bg-white/5"
         style={{ color: "var(--fieldmap-dim)" }}
       >
         🔔

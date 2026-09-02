@@ -70,7 +70,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
             className="w-full rounded border p-2 text-sm"
             style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
           />
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
           <div className="flex justify-end gap-2">
             <button
               type="button"
@@ -111,14 +111,14 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
           {formatRelativeTime(comment.createdAt, locale)}
           {comment.updatedAt ? ` · ${t("editedLabel")}` : ""}
         </span>
-        {error ? <p className="text-sm text-red-700">{error}</p> : null}
+        {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
       </div>
       {isAuthor ? (
         <div className="flex shrink-0 gap-2 text-xs">
           <button onClick={() => setEditing(true)} style={{ color: "var(--fieldmap-dim)" }}>
             {t("editButton")}
           </button>
-          <button onClick={handleDelete} disabled={deleting} className="text-red-700 disabled:opacity-50">
+          <button onClick={handleDelete} disabled={deleting} className="text-red-700 dark:text-red-400 disabled:opacity-50">
             {t("deleteButton")}
           </button>
         </div>

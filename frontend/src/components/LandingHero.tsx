@@ -74,7 +74,7 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
               </Link>
               <Link
                 href="/register"
-                className="rounded-full border px-4 py-2 text-sm whitespace-nowrap hover:bg-black/5"
+                className="rounded-full border px-4 py-2 text-sm whitespace-nowrap hover:bg-black/5 dark:hover:bg-white/5"
                 style={{ borderColor: "var(--fieldmap-ink)" }}
               >
                 {tAuth("registerTitle")}
