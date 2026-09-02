@@ -3,12 +3,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SecretSpots.Domain;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
+using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
+using SecretSpots.Features.Notifications;
+using WebPush;
 
 namespace SecretSpots.Features.Ratings;
 
@@ -29,7 +33,13 @@ public static class RateSpot
         }
     }
 
-    public class Handler(IAppDbContext db, IUserContext userContext, IStringLocalizer<SharedResources> localizer, ILogger<Handler> logger)
+    public class Handler(
+        IAppDbContext db,
+        IUserContext userContext,
+        WebPushClient webPushClient,
+        IOptions<WebPushOptions> webPushOptions,
+        IStringLocalizer<SharedResources> localizer,
+        ILogger<Handler> logger)
         : IRequestHandler<Command, Result<RatingResponse>>
     {
         public async Task<Result<RatingResponse>> Handle(Command command, CancellationToken cancellationToken)
@@ -96,6 +106,7 @@ public static class RateSpot
                 if (notification is not null)
                 {
                     db.Notifications.Remove(notification);
+                    notification = null;
                 }
 
                 rating = await db.Ratings.SingleAsync(
@@ -116,6 +127,12 @@ public static class RateSpot
             await db.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(RatingsLogMessages.SpotRated, spot.Id, rating.Value, userContext.UserId);
+
+            if (notification is not null)
+            {
+                await PushNotificationSender.SendAsync(
+                    db, webPushClient, webPushOptions, localizer, logger, notification, cancellationToken);
+            }
 
             return Result<RatingResponse>.Success(new RatingResponse(spot.Id, rating.Value, spot.AverageRating, spot.RatingsCount));
         }

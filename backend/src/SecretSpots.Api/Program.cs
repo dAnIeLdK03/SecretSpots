@@ -30,6 +30,7 @@ using SecretSpots.Features.Reports;
 using SecretSpots.Features.Rewards;
 using SecretSpots.Features.SavedSpots;
 using SecretSpots.Features.Spots;
+using WebPush;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -101,6 +102,7 @@ builder.Services.Configure<ExternalAuthOptions>(builder.Configuration.GetSection
 builder.Services.Configure<ResendOptions>(builder.Configuration.GetSection("Resend"));
 builder.Services.Configure<PasswordResetOptions>(builder.Configuration.GetSection("PasswordReset"));
 builder.Services.Configure<EmailVerificationOptions>(builder.Configuration.GetSection("EmailVerification"));
+builder.Services.Configure<WebPushOptions>(builder.Configuration.GetSection("WebPush"));
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, UserContext>();
@@ -111,6 +113,8 @@ builder.Services.AddHttpClient<GoogleAuthProvider>();
 builder.Services.AddHttpClient<FacebookAuthProvider>();
 builder.Services.AddScoped<IExternalAuthProvider>(sp => sp.GetRequiredService<GoogleAuthProvider>());
 builder.Services.AddScoped<IExternalAuthProvider>(sp => sp.GetRequiredService<FacebookAuthProvider>());
+
+builder.Services.AddHttpClient<WebPushClient>();
 
 // In Development (local dev machines and the CI e2e job), no Resend API key is configured
 // anywhere, so forgot-password would otherwise fail outright. Capturing sent emails in memory

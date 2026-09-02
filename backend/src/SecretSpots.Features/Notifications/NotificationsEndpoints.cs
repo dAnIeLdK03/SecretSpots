@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using SecretSpots.Features.Common.Configuration;
@@ -49,6 +50,36 @@ public static class NotificationsEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+        group.MapPost("/push-subscriptions", async (
+                SubscribeToPush.RequestBody body, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var command = new SubscribeToPush.Command(body.Endpoint, body.P256dh, body.Auth);
+                var result = await sender.Send(command, cancellationToken);
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
+            })
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .Accepts<SubscribeToPush.RequestBody>("application/json");
+
+        group.MapDelete("/push-subscriptions", async (
+                [FromBody] UnsubscribeFromPush.RequestBody body, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new UnsubscribeFromPush.Command(body.Endpoint), cancellationToken);
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
+            })
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .Accepts<UnsubscribeFromPush.RequestBody>("application/json");
+
+        group.MapGet("/push-public-key", (IOptions<WebPushOptions> webPushOptions) =>
+                Results.Ok(new { publicKey = webPushOptions.Value.VapidPublicKey }))
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status200OK);
 
         return app;
     }

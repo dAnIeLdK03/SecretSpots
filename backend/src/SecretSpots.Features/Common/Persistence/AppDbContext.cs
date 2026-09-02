@@ -22,6 +22,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
     public DbSet<EmailVerificationToken> EmailVerificationTokens => Set<EmailVerificationToken>();
     public DbSet<Report> Reports => Set<Report>();
+    public DbSet<PushSubscription> PushSubscriptions => Set<PushSubscription>();
 
     public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         => await Database.BeginTransactionAsync(cancellationToken);
@@ -109,6 +110,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<Report>()
             .HasIndex(r => new { r.ReporterUserId, r.ContentType, r.ContentId })
             .IsUnique();
+
+        // A browser can re-subscribe the same endpoint (e.g. after clearing site data) — upsert
+        // on that instead of accumulating duplicate rows that would all get pushed to.
+        modelBuilder.Entity<PushSubscription>()
+            .HasIndex(p => p.Endpoint)
+            .IsUnique();
+
+        modelBuilder.Entity<PushSubscription>()
+            .HasIndex(p => p.UserId);
 
         base.OnModelCreating(modelBuilder);
     }

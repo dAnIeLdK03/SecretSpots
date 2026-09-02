@@ -8,6 +8,7 @@ using SecretSpots.Features.Auth;
 using SecretSpots.Features.CheckIns;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Tests.TestSupport;
+using WebPush;
 
 namespace SecretSpots.Features.Tests.CheckIns;
 
@@ -92,6 +93,8 @@ public class CreateCheckInHandlerTests
             new FakeUserContext(userId),
             TestOptionsFactory.Crystals(checkInReward: checkInReward),
             TestOptionsFactory.CheckIn(),
+            new WebPushClient(),
+            TestOptionsFactory.WebPush(),
             TestLocalizerFactory.Create(),
             NullLogger<CreateCheckIn.Handler>.Instance);
 
