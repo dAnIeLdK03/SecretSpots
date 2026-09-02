@@ -253,7 +253,13 @@
     "deleteAccountButton": "Delete account",
     "deleteAccountConfirm": "Are you sure you want to delete your account? All your spots, comments, ratings, and data will be permanently deleted. This action cannot be undone.",
     "deleteAccountPasswordPrompt": "Enter your password to confirm (leave blank if you signed in with Google/Facebook):",
-    "deleteAccountError": "Failed to delete account. Please try again."
+    "deleteAccountError": "Failed to delete account. Please try again.",
+    "pushSectionTitle": "Push notifications",
+    "pushSectionDescription": "Get notified about new spots nearby, comments, and ratings even when SecretSpots isn't open.",
+    "pushEnableButton": "Enable push notifications",
+    "pushDisableButton": "Disable push notifications",
+    "pushBlocked": "Notifications are blocked for this site in your browser settings.",
+    "pushError": "Something went wrong. Please try again."
   },
   "About": {
     "title": "About SecretSpots",

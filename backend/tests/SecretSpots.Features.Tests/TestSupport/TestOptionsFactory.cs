@@ -64,6 +64,13 @@ internal static class TestOptionsFactory
             TokenExpiryMinutes = tokenExpiryMinutes,
         });
 
+    public static IOptions<WebPushOptions> WebPush() => Options.Create(new WebPushOptions
+    {
+        VapidPublicKey = "BCmBdo7mwrywbgyaC401vZ_iPbOe7uvCl0pZ2Fk5Ffc6D9QhBhszWj3dPTuUYRaJ3w8fn_EXrv6ND50UlSp3K3U",
+        VapidPrivateKey = "QFC9GHIr6wsJlOH28RmU7SNejngRa7OVq2FVKSFEYJo",
+        VapidSubject = "mailto:test@example.com",
+    });
+
     public static IOptions<NotificationsOptions> Notifications(
         int defaultPageSize = 20, int maxPageSize = 100, double newSpotRadiusKm = 5, int readRetentionHours = 24) =>
         Options.Create(new NotificationsOptions

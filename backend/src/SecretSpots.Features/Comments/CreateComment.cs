@@ -12,6 +12,8 @@ using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
+using SecretSpots.Features.Notifications;
+using WebPush;
 
 namespace SecretSpots.Features.Comments;
 
@@ -34,6 +36,8 @@ public static class CreateComment
     public class Handler(
         IAppDbContext db,
         IUserContext userContext,
+        WebPushClient webPushClient,
+        IOptions<WebPushOptions> webPushOptions,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<CommentResponse>>
@@ -72,20 +76,28 @@ public static class CreateComment
 
             // Skip notifying on a self-comment — a spot's own creator commenting on their own
             // spot shouldn't page themselves.
+            Notification? notification = null;
             if (spot.CreatedByUserId != userContext.UserId)
             {
-                db.Notifications.Add(new Notification
+                notification = new Notification
                 {
                     Id = Guid.NewGuid(),
                     UserId = spot.CreatedByUserId,
                     Type = NotificationType.NewCommentOnYourSpot,
                     RelatedSpotId = spot.Id,
-                });
+                };
+                db.Notifications.Add(notification);
             }
 
             await db.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(CommentsLogMessages.CommentCreated, comment.Id, comment.SpotId, user.Id);
+
+            if (notification is not null)
+            {
+                await PushNotificationSender.SendAsync(
+                    db, webPushClient, webPushOptions, localizer, logger, notification, cancellationToken);
+            }
 
             return Result<CommentResponse>.Success(new CommentResponse(
                 comment.Id,

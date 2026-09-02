@@ -11,6 +11,8 @@ using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Validation;
+using SecretSpots.Features.Notifications;
+using WebPush;
 
 namespace SecretSpots.Features.Spots;
 
@@ -58,7 +60,13 @@ public static class CreateSpot
     }
 
     public class Handler(
-        IAppDbContext db, IUserContext userContext, IOptions<NotificationsOptions> notificationsOptions, ILogger<Handler> logger)
+        IAppDbContext db,
+        IUserContext userContext,
+        IOptions<NotificationsOptions> notificationsOptions,
+        WebPushClient webPushClient,
+        IOptions<WebPushOptions> webPushOptions,
+        IStringLocalizer<SharedResources> localizer,
+        ILogger<Handler> logger)
         : IRequestHandler<Command, SpotResponse>
     {
         public async Task<SpotResponse> Handle(Command command, CancellationToken cancellationToken)
@@ -95,21 +103,26 @@ public static class CreateSpot
 
             db.Spots.Add(spot);
 
-            foreach (var userId in nearbyUserIds)
+            var notifications = nearbyUserIds.Select(userId => new Notification
             {
-                db.Notifications.Add(new Notification
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = userId,
-                    Type = NotificationType.NewSpotNearby,
-                    RelatedSpotId = spot.Id,
-                });
-            }
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Type = NotificationType.NewSpotNearby,
+                RelatedSpotId = spot.Id,
+            }).ToList();
+
+            db.Notifications.AddRange(notifications);
 
             await db.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(SpotsLogMessages.SpotCreated, spot.Id, spot.Category, spot.CreatedByUserId);
             logger.LogInformation(SpotsLogMessages.NearbyUsersNotified, nearbyUserIds.Count, spot.Id);
+
+            foreach (var notification in notifications)
+            {
+                await PushNotificationSender.SendAsync(
+                    db, webPushClient, webPushOptions, localizer, logger, notification, cancellationToken);
+            }
 
             var creatorDisplayName = await db.Users
                 .Where(u => u.Id == spot.CreatedByUserId)

@@ -282,6 +282,12 @@
   <data name="Notifications.PageSizeOutOfRange" xml:space="preserve">
     <value>Page size must be between 1 and 100.</value>
   </data>
+  <data name="Notifications.PushEndpointRequired" xml:space="preserve">
+    <value>Push subscription endpoint is required.</value>
+  </data>
+  <data name="Notifications.PushKeysRequired" xml:space="preserve">
+    <value>Push subscription keys are required.</value>
+  </data>
   <data name="Common.UnexpectedError" xml:space="preserve">
     <value>Something went wrong. Please try again.</value>
   </data>

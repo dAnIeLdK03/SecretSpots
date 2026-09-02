@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { PushNotificationsToggle } from "@/components/PushNotificationsToggle";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNotificationsStore } from "@/store/useNotificationsStore";
 import { useCheckInsHistoryStore } from "@/store/useCheckInsHistoryStore";
@@ -100,6 +101,8 @@ export default function SettingsPage() {
         </h2>
         <LocaleSwitcher />
       </div>
+
+      <PushNotificationsToggle />
 
       <div className="flex flex-col gap-2 rounded-2xl border border-red-700/40 p-5" style={{ backgroundColor: "var(--fieldmap-card)" }}>
         <h2 className="text-sm font-semibold uppercase text-red-700">{t("dangerZoneSectionTitle")}</h2>
