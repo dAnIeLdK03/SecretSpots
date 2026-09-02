@@ -11,10 +11,15 @@ namespace SecretSpots.Features.Spots;
 
 public static class SearchNearbySpots
 {
-    private const int MaxResults = 50;
+    // The map has no "load more" affordance — it shows every returned spot as a marker — so this
+    // isn't a page size, it's a safety cap against a dense area returning an unbounded result set.
+    // Generous for this app's scale; TotalCount below tells the frontend when a search was
+    // actually truncated, so it can nudge the user to narrow the radius instead of silently
+    // dropping the farthest matches.
+    private const int MaxResults = 200;
 
     public record Query(double Latitude, double Longitude, double RadiusKm)
-        : IRequest<IReadOnlyList<NearbySpotResponse>>;
+        : IRequest<NearbySpotsResponse>;
 
     public class Validator : AbstractValidator<Query>
     {
@@ -31,26 +36,31 @@ public static class SearchNearbySpots
         }
     }
 
-    public class Handler(IAppDbContext db) : IRequestHandler<Query, IReadOnlyList<NearbySpotResponse>>
+    public class Handler(IAppDbContext db) : IRequestHandler<Query, NearbySpotsResponse>
     {
-        public async Task<IReadOnlyList<NearbySpotResponse>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<NearbySpotsResponse> Handle(Query query, CancellationToken cancellationToken)
         {
             var searchPoint = new Point(query.Longitude, query.Latitude) { SRID = 4326 };
             var radiusMeters = query.RadiusKm * 1000;
+
+            var withinRadius = db.Spots.Where(s => s.Location.IsWithinDistance(searchPoint, radiusMeters));
+
+            // A plain COUNT, independent of the MaxResults cap below — lets the frontend tell the
+            // user a search was truncated instead of silently dropping the farthest matches.
+            var totalCount = await withinRadius.CountAsync(cancellationToken);
 
             // IsWithinDistance (-> ST_DWithin) filters using the GIST index first, and Distance
             // is projected once per surviving row for OrderBy. The final shaping into
             // NearbySpotResponse happens in-memory, after ToListAsync — ST_Y/ST_X (which
             // Location.Y/.X translate to) only support geometry, not geography, so extracting
             // lat/lng must happen on the materialized Point, not inside the translated query.
-            var nearby = await db.Spots
-                .Where(s => s.Location.IsWithinDistance(searchPoint, radiusMeters))
+            var nearby = await withinRadius
                 .Select(s => new { Spot = s, DistanceMeters = s.Location.Distance(searchPoint) })
                 .OrderBy(x => x.DistanceMeters)
                 .Take(MaxResults)
                 .ToListAsync(cancellationToken);
 
-            return nearby.ConvertAll(x => new NearbySpotResponse(
+            var items = nearby.ConvertAll(x => new NearbySpotResponse(
                 x.Spot.Id,
                 x.Spot.Name,
                 x.Spot.Description,
@@ -61,6 +71,8 @@ public static class SearchNearbySpots
                 x.Spot.CreatedByUserId,
                 x.Spot.CreatedAt,
                 x.DistanceMeters / 1000));
+
+            return new NearbySpotsResponse(items, totalCount);
         }
     }
 }

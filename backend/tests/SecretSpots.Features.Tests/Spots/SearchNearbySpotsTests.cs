@@ -92,7 +92,7 @@ public class SearchNearbySpotsHandlerTests
         var handler = new SearchNearbySpots.Handler(db);
         var results = await handler.Handle(new SearchNearbySpots.Query(centerLat, centerLng, 10), CancellationToken.None);
 
-        var ids = results.Select(r => r.Id).ToList();
+        var ids = results.Items.Select(r => r.Id).ToList();
 
         Assert.Contains(veryClose.Id, ids);
         Assert.Contains(near.Id, ids);

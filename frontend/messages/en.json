@@ -98,6 +98,7 @@
     "tapMapToPlace": "Tap the map to place it",
     "loginRequiredToCreate": "You must be logged in to add a spot.",
     "loadError": "Failed to load nearby spots.",
+    "moreSpotsNearby": "Showing the closest {shown} of {total} spots. Narrow the radius to see the rest.",
     "geolocationUnavailable": "Geolocation is not supported by this browser.",
     "geolocationDenied": "Location access was denied.",
     "geolocationTimeout": "Couldn't find your location in time. Showing Sofia instead — try \"Use my location\" again.",

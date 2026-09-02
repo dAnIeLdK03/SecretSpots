@@ -42,7 +42,7 @@ public static class SpotsEndpoints
                 var results = await sender.Send(new SearchNearbySpots.Query(lat, lng, radiusKm), cancellationToken);
                 return Results.Ok(results);
             })
-            .Produces<IReadOnlyList<NearbySpotResponse>>(StatusCodes.Status200OK)
+            .Produces<NearbySpotsResponse>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
