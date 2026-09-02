@@ -74,7 +74,7 @@ export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
                         <CategorySelect value={category} onChange={setCategory} />
                     </label>
                     <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} />
-                    {error ? <p className="text-sm text-red-700">{error}</p> : null}
+                    {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
                     <div className="flex justify-end gap-2">
                         <button type="button" onClick={onClose} className="rounded px-4 py-2" style={{ color: "var(--fieldmap-dim)" }}>
                             {t("cancelButton")}

@@ -52,7 +52,7 @@ export function ExternalAuthButtons() {
           href={`${API_BASE_URL}/auth/google`}
           aria-label={t("continueWithGoogle")}
           title={t("continueWithGoogle")}
-          className="flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-black/5"
+          className="flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-black/5 dark:hover:bg-white/5"
         >
           <GoogleIcon />
         </a>
@@ -60,7 +60,7 @@ export function ExternalAuthButtons() {
           href={`${API_BASE_URL}/auth/facebook`}
           aria-label={t("continueWithFacebook")}
           title={t("continueWithFacebook")}
-          className="flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-black/5"
+          className="flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-black/5 dark:hover:bg-white/5"
         >
           <FacebookIcon />
         </a>

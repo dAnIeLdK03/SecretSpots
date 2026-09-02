@@ -87,7 +87,7 @@ function SpotDetailContent({ id }: { id: string }) {
   if (state.status === "error") {
     return (
       <div className="flex flex-1 items-center justify-center p-8">
-        <p className="text-sm text-red-700">{state.message}</p>
+        <p className="text-sm text-red-700 dark:text-red-400">{state.message}</p>
       </div>
     );
   }
@@ -214,14 +214,14 @@ function SpotDetailContent({ id }: { id: string }) {
                   <button
                     onClick={handleDeleteClick}
                     disabled={deleting}
-                    className="rounded border border-red-300 px-4 py-2 text-sm text-red-700 disabled:opacity-50"
+                    className="rounded border border-red-300 dark:border-red-800 px-4 py-2 text-sm text-red-700 dark:text-red-400 disabled:opacity-50"
                   >
                     {t("deleteButton")}
                   </button>
                 </div>
               )}
             </div>
-            {error ? <p className="mt-2 text-sm text-red-700">{error}</p> : null}
+            {error ? <p className="mt-2 text-sm text-red-700 dark:text-red-400">{error}</p> : null}
             {showLoginPrompt ? (
               <p className="mt-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
                 {tCheckIns("loginRequiredToCheckIn")}{" "}

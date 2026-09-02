@@ -69,7 +69,7 @@ export function MultiPhotoUpload({ label, photoUrls, onChange, maxCount = 5, dar
   const labelStyle = dark ? undefined : { color: "var(--fieldmap-dim)" };
   const moveButtonClass = dark ? "text-zinc-300" : "";
   const moveButtonStyle = dark ? undefined : { color: "var(--fieldmap-dim)" };
-  const removeButtonClass = dark ? "text-red-400" : "text-red-700";
+  const removeButtonClass = dark ? "text-red-400" : "text-red-700 dark:text-red-400";
   const fileInputClass = dark
     ? "rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white file:mr-2 file:rounded-full file:border-0 file:bg-white/10 file:px-3 file:py-1 file:text-white"
     : "rounded border px-3 py-2 text-sm";

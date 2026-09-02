@@ -85,7 +85,7 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <h2 className="text-lg font-semibold">{t("modalTitle")}</h2>
             <PhotoUpload label={t("photoLabel")} value={photoUrl} onChange={setPhotoUrl} />
-            {error ? <p className="text-sm text-red-700">{error}</p> : null}
+            {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
             <div className="flex justify-end gap-2">
               <button
                 type="button"

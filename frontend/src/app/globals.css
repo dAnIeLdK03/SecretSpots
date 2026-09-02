@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /* "Field Map" palette — the whole app reads as a trail map rather than a
-   generic gradient. Fixed regardless of OS light/dark preference, the same
-   way a paper map doesn't invert at night. */
+   generic gradient. The dark variant below is a night map, not an inverted
+   UI: same warm, low-saturation trail-map feel, just lit for the dark. */
 :root {
   --fieldmap-paper: #ded9c6;
   --fieldmap-paper-light: #f1eddc;
@@ -15,6 +15,19 @@
 
   --background: var(--fieldmap-paper);
   --foreground: var(--fieldmap-ink);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fieldmap-paper: #1a1712;
+    --fieldmap-paper-light: #252017;
+    --fieldmap-ink: #ece6d6;
+    --fieldmap-contour: #4a4534;
+    --fieldmap-trail: #e2793f;
+    --fieldmap-dim: #a89a7c;
+    --fieldmap-card: #211d15;
+    --fieldmap-gold: #d9ab52;
+  }
 }
 
 @theme inline {
@@ -41,6 +54,10 @@ body {
     0 2px 6px rgba(43, 42, 35, 0.12);
 }
 
+/* Fixed light-mode colors, not the theme vars — the popup surface itself is
+   MapLibre's plain white regardless of site theme (see SpotsMap's own
+   always-light popup content), so a dark-mode close button here would float
+   a dark circle on a white card instead of matching it. */
 .maplibregl-popup-close-button {
   top: 6px;
   right: 6px;
@@ -49,11 +66,11 @@ body {
   border-radius: 9999px;
   font-size: 18px;
   line-height: 1;
-  color: var(--fieldmap-dim);
+  color: #8b7355;
   transition: background-color 0.15s ease;
 }
 
 .maplibregl-popup-close-button:hover {
-  background-color: var(--fieldmap-paper);
-  color: var(--fieldmap-ink);
+  background-color: #ded9c6;
+  color: #2b2a23;
 }

@@ -66,7 +66,7 @@ export function PhotoUpload({ label, value, onChange, required = true }: PhotoUp
           {t("uploading")}
         </p>
       ) : null}
-      {error ? <p className="text-sm text-red-700">{error}</p> : null}
+      {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
     </div>
   );
 }

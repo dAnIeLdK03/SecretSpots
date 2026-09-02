@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
               style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
             />
           </label>
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
           <button
             type="submit"
             disabled={submitting}
