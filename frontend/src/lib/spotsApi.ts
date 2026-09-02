@@ -74,18 +74,23 @@ export interface UpdateSpotCommand {
   photoUrls: string[];
 }
 
+export interface NearbySpotsResponse {
+  items: NearbySpot[];
+  totalCount: number;
+}
+
 export function getNearbySpots(
   lat: number,
   lng: number,
   radiusKm: number,
   signal?: AbortSignal,
-): Promise<NearbySpot[]> {
+): Promise<NearbySpotsResponse> {
   const params = new URLSearchParams({
     lat: String(lat),
     lng: String(lng),
     radiusKm: String(radiusKm),
   });
-  return apiFetch<NearbySpot[]>(`/spots/nearby?${params.toString()}`, { signal });
+  return apiFetch<NearbySpotsResponse>(`/spots/nearby?${params.toString()}`, { signal });
 }
 
 export function createSpot(command: CreateSpotCommand): Promise<SpotResponse> {

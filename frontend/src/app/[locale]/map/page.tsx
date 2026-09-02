@@ -32,6 +32,7 @@ export default function MapPage() {
   const [viewState, setViewState] = useState<MapViewState>(SOFIA_CENTER);
   const [radiusKm, setRadiusKm] = useState<number>(5);
   const [spots, setSpots] = useState<NearbySpot[]>([]);
+  const [totalNearbyCount, setTotalNearbyCount] = useState(0);
   const [selectedSpot, setSelectedSpot] = useState<NearbySpot | null>(null);
   const [lastSearchedCenter, setLastSearchedCenter] = useState<LatLng | null>(null);
   const [showSearchHere, setShowSearchHere] = useState(false);
@@ -47,7 +48,8 @@ export default function MapPage() {
       setLoadError(null);
       try {
         const results = await getNearbySpots(center.lat, center.lng, radius);
-        setSpots(results);
+        setSpots(results.items);
+        setTotalNearbyCount(results.totalCount);
         setLastSearchedCenter(center);
         setShowSearchHere(false);
       } catch (err) {
@@ -128,6 +130,7 @@ export default function MapPage() {
   function handleSpotCreated(spot: SpotResponse) {
     const { photoUrls, ...rest } = spot;
     setSpots((prev) => [{ ...rest, photoUrl: photoUrls[0], distanceKm: 0 }, ...prev]);
+    setTotalNearbyCount((prev) => prev + 1);
     setCreateModalCoords(null);
   }
 
@@ -163,6 +166,15 @@ export default function MapPage() {
 
         {loadError ? (
           <div className="rounded bg-red-50 px-3 py-2 text-sm text-red-700 shadow">{loadError}</div>
+        ) : null}
+
+        {!loadError && spots.length < totalNearbyCount ? (
+          <div
+            className="rounded px-3 py-2 text-sm shadow"
+            style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-dim)" }}
+          >
+            {t("moreSpotsNearby", { shown: spots.length, total: totalNearbyCount })}
+          </div>
         ) : null}
       </div>
 

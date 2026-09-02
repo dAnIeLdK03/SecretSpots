@@ -17,7 +17,7 @@ export function HeroMap() {
 
   useEffect(() => {
     getNearbySpots(SOFIA.latitude, SOFIA.longitude, 50)
-      .then((results) => setSpots(results.slice(0, MAX_MARKERS)))
+      .then((results) => setSpots(results.items.slice(0, MAX_MARKERS)))
       .catch(() => {});
   }, []);
 
