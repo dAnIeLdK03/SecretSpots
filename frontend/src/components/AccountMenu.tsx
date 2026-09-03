@@ -26,6 +26,7 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
   const t = useTranslations("Layout");
   const tHome = useTranslations("Home");
   const tAuth = useTranslations("Auth");
+  const isAdmin = useAuthStore((state) => state.user?.isAdmin ?? false);
   const clearSession = useAuthStore((state) => state.clearSession);
   const resetNotifications = useNotificationsStore((state) => state.reset);
   const resetCheckInsHistory = useCheckInsHistoryStore((state) => state.reset);
@@ -123,6 +124,15 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
             <Link href="/account" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
               {tAuth("profileLabel")}
             </Link>
+            {isAdmin && (
+              <Link
+                href="/admin/reports"
+                onClick={closeMenu}
+                className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5"
+              >
+                {t("adminReportsLabel")}
+              </Link>
+            )}
             <button onClick={handleLogout} className="block w-full px-4 py-2 text-left hover:bg-black/5 dark:hover:bg-white/5">
               {tAuth("logoutButton")}
             </button>

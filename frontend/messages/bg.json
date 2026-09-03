@@ -3,7 +3,8 @@
     "appName": "SecretSpots",
     "menuLabel": "Меню",
     "languageLabel": "Език",
-    "settingsLabel": "Настройки"
+    "settingsLabel": "Настройки",
+    "adminReportsLabel": "Опашка от доклади"
   },
   "Auth": {
     "emailLabel": "Имейл",
@@ -211,6 +212,25 @@
     "submittedMessage": "Благодарим — докладът е получен.",
     "closeButton": "Затвори",
     "alreadyReported": "Вече си докладвал/а това.",
+    "unknownError": "Нещо се обърка. Опитайте отново."
+  },
+  "AdminReports": {
+    "title": "Опашка от доклади",
+    "includeResolvedLabel": "Покажи разгледаните",
+    "loading": "Зареждане...",
+    "loadMore": "Зареди още",
+    "loadingMore": "Зареждане...",
+    "empty": "Няма доклади.",
+    "contentTypeSpot": "Място",
+    "contentTypeComment": "Коментар",
+    "contentDeleted": "[съдържанието вече е изтрито]",
+    "reporterLabel": "Докладвано от",
+    "detailsLabel": "Детайли",
+    "resolvedLabel": "Разгледан",
+    "viewSpotLink": "Виж мястото",
+    "dismissButton": "Отхвърли",
+    "deleteContentButton": "Изтрий съдържанието",
+    "deleteContentConfirm": "Да изтрия ли това {type}? Действието е необратимо.",
     "unknownError": "Нещо се обърка. Опитайте отново."
   },
   "SavedSpots": {

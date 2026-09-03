@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using SecretSpots.Features.Common.Configuration;
@@ -21,6 +22,7 @@ public static class CommentsEndpoints
             })
             .WithTags("Comments")
             .RequireAuthorization()
+            .RequireRateLimiting(RateLimitPolicies.ContentWrites)
             .Produces<CommentResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -52,6 +54,7 @@ public static class CommentsEndpoints
             })
             .WithTags("Comments")
             .RequireAuthorization()
+            .RequireRateLimiting(RateLimitPolicies.ContentWrites)
             .Produces<CommentResponse>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -67,6 +70,7 @@ public static class CommentsEndpoints
             })
             .WithTags("Comments")
             .RequireAuthorization()
+            .RequireRateLimiting(RateLimitPolicies.ContentWrites)
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)

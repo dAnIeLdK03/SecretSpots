@@ -6,6 +6,7 @@ export interface AuthUser {
   displayName: string;
   crystalBalance: number;
   isEmailVerified: boolean;
+  isAdmin: boolean;
 }
 
 export type AuthStatus = "idle" | "loading" | "authenticated" | "unauthenticated";

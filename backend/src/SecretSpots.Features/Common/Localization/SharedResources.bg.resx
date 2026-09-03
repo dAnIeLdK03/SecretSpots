@@ -192,6 +192,15 @@
   <data name="Reports.DetailsTooLong" xml:space="preserve">
     <value>Описанието е твърде дълго.</value>
   </data>
+  <data name="Reports.NotFound" xml:space="preserve">
+    <value>Този доклад вече не съществува.</value>
+  </data>
+  <data name="Reports.PageOutOfRange" xml:space="preserve">
+    <value>Страницата трябва да е 1 или по-голяма.</value>
+  </data>
+  <data name="Reports.PageSizeOutOfRange" xml:space="preserve">
+    <value>Размерът на страницата трябва да е между 1 и 100.</value>
+  </data>
   <data name="SavedSpots.SpotNotFound" xml:space="preserve">
     <value>Това място вече не съществува.</value>
   </data>

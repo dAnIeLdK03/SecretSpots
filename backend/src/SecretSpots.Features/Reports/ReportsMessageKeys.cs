@@ -9,4 +9,7 @@ public static class ReportsMessageKeys
     public const string AlreadyReported = "Reports.AlreadyReported";
     public const string ReasonRequired = "Reports.ReasonRequired";
     public const string DetailsTooLong = "Reports.DetailsTooLong";
+    public const string NotFound = "Reports.NotFound";
+    public const string PageOutOfRange = "Reports.PageOutOfRange";
+    public const string PageSizeOutOfRange = "Reports.PageSizeOutOfRange";
 }

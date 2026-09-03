@@ -15,12 +15,17 @@ public class JwtService(IOptions<JwtOptions> options) : IJwtService
     {
         var expiresAt = DateTimeOffset.UtcNow.AddMinutes(_options.AccessTokenMinutes);
 
-        Claim[] claims =
+        List<Claim> claims =
         [
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         ];
+
+        if (user.IsAdmin)
+        {
+            claims.Add(new Claim(ClaimNames.IsAdmin, "true"));
+        }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
