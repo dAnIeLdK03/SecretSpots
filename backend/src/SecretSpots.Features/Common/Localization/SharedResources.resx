@@ -282,6 +282,9 @@
   <data name="Notifications.NewRatingOnYourSpotMessage" xml:space="preserve">
     <value>Someone rated your spot.</value>
   </data>
+  <data name="Notifications.ReportSubmittedMessage" xml:space="preserve">
+    <value>A new report needs your review.</value>
+  </data>
   <data name="Notifications.NotFound" xml:space="preserve">
     <value>This notification no longer exists.</value>
   </data>

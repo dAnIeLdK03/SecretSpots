@@ -282,6 +282,9 @@
   <data name="Notifications.NewRatingOnYourSpotMessage" xml:space="preserve">
     <value>Някой оцени твоето място.</value>
   </data>
+  <data name="Notifications.ReportSubmittedMessage" xml:space="preserve">
+    <value>Има нов сигнал, който изисква преглед.</value>
+  </data>
   <data name="Notifications.NotFound" xml:space="preserve">
     <value>Това известие вече не съществува.</value>
   </data>
