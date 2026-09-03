@@ -89,6 +89,7 @@ builder.Services.Configure<CrystalsOptions>(builder.Configuration.GetSection("Cr
 builder.Services.Configure<CheckInOptions>(builder.Configuration.GetSection("CheckIn"));
 builder.Services.Configure<CommentOptions>(builder.Configuration.GetSection("Comments"));
 builder.Services.Configure<SpotSearchOptions>(builder.Configuration.GetSection("SpotSearch"));
+builder.Services.Configure<ReportsOptions>(builder.Configuration.GetSection("Reports"));
 builder.Services.Configure<R2Options>(builder.Configuration.GetSection("R2"));
 builder.Services.Configure<PhotoOptions>(builder.Configuration.GetSection("Photos"));
 builder.Services.Configure<NotificationsOptions>(builder.Configuration.GetSection("Notifications"));
@@ -177,7 +178,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimNames.IsAdmin, "true"));
+});
 
 var rateLimitingOptions = builder.Configuration.GetSection("RateLimiting").Get<RateLimitingOptions>()
     ?? new RateLimitingOptions();
@@ -212,6 +216,15 @@ builder.Services.AddRateLimiter(options =>
             {
                 PermitLimit = rateLimitingOptions.PhotosPermitLimit,
                 Window = TimeSpan.FromSeconds(rateLimitingOptions.PhotosWindowSeconds),
+            }));
+
+    options.AddPolicy(RateLimitPolicies.ContentWrites, context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = rateLimitingOptions.ContentWritesPermitLimit,
+                Window = TimeSpan.FromSeconds(rateLimitingOptions.ContentWritesWindowSeconds),
             }));
 });
 
@@ -321,6 +334,7 @@ app.MapBusinessesEndpoints();
 app.MapRewardsEndpoints();
 app.MapNotificationsEndpoints();
 app.MapReportsEndpoints();
+app.MapAdminReportsEndpoints();
 
 // Lets e2e tests read back what InMemoryEmailSender captured (see registration above) instead of
 // needing a real inbox — e.g. to pull the token out of a password-reset link. Gated on

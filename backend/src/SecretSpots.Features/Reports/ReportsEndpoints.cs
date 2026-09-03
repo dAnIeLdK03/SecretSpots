@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
+using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Results;
 
@@ -19,6 +21,7 @@ public static class ReportsEndpoints
             })
             .WithTags("Reports")
             .RequireAuthorization()
+            .RequireRateLimiting(RateLimitPolicies.ContentWrites)
             .Produces<ReportResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -36,6 +39,7 @@ public static class ReportsEndpoints
             })
             .WithTags("Reports")
             .RequireAuthorization()
+            .RequireRateLimiting(RateLimitPolicies.ContentWrites)
             .Produces<ReportResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)

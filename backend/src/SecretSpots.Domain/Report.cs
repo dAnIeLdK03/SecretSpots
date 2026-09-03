@@ -9,4 +9,5 @@ public class Report : IHasCreatedAt
     public ReportReason Reason { get; set; }
     public string? Details { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset? ResolvedAt { get; set; }
 }

@@ -3,7 +3,8 @@
     "appName": "SecretSpots",
     "menuLabel": "Menu",
     "languageLabel": "Language",
-    "settingsLabel": "Settings"
+    "settingsLabel": "Settings",
+    "adminReportsLabel": "Report queue"
   },
   "Auth": {
     "emailLabel": "Email",
@@ -211,6 +212,25 @@
     "submittedMessage": "Thanks — we've received your report.",
     "closeButton": "Close",
     "alreadyReported": "You've already reported this.",
+    "unknownError": "Something went wrong. Please try again."
+  },
+  "AdminReports": {
+    "title": "Report queue",
+    "includeResolvedLabel": "Show resolved",
+    "loading": "Loading...",
+    "loadMore": "Load more",
+    "loadingMore": "Loading...",
+    "empty": "No reports.",
+    "contentTypeSpot": "Spot",
+    "contentTypeComment": "Comment",
+    "contentDeleted": "[content already deleted]",
+    "reporterLabel": "Reported by",
+    "detailsLabel": "Details",
+    "resolvedLabel": "Resolved",
+    "viewSpotLink": "View spot",
+    "dismissButton": "Dismiss",
+    "deleteContentButton": "Delete content",
+    "deleteContentConfirm": "Delete this {type}? This cannot be undone.",
     "unknownError": "Something went wrong. Please try again."
   },
   "SavedSpots": {

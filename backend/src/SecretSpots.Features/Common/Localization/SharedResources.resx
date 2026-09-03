@@ -192,6 +192,15 @@
   <data name="Reports.DetailsTooLong" xml:space="preserve">
     <value>Details are too long.</value>
   </data>
+  <data name="Reports.NotFound" xml:space="preserve">
+    <value>This report no longer exists.</value>
+  </data>
+  <data name="Reports.PageOutOfRange" xml:space="preserve">
+    <value>Page must be 1 or greater.</value>
+  </data>
+  <data name="Reports.PageSizeOutOfRange" xml:space="preserve">
+    <value>Page size must be between 1 and 100.</value>
+  </data>
   <data name="SavedSpots.SpotNotFound" xml:space="preserve">
     <value>This spot no longer exists.</value>
   </data>

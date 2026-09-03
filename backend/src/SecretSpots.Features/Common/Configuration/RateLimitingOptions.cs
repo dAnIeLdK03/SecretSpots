@@ -4,6 +4,7 @@ public static class RateLimitPolicies
 {
     public const string Auth = "auth";
     public const string Photos = "photos";
+    public const string ContentWrites = "content-writes";
 }
 
 public class RateLimitingOptions
@@ -19,4 +20,9 @@ public class RateLimitingOptions
     // to paid storage. Tighter than the global default so upload abuse can't hide inside it.
     public int PhotosPermitLimit { get; set; } = 20;
     public int PhotosWindowSeconds { get; set; } = 60;
+
+    // Covers comment/rating/report writes — endpoints a spammer could otherwise hammer well
+    // within the generous global limit above.
+    public int ContentWritesPermitLimit { get; set; } = 30;
+    public int ContentWritesWindowSeconds { get; set; } = 60;
 }

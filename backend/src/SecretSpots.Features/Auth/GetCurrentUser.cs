@@ -14,7 +14,7 @@ public static class GetCurrentUser
 {
     public record Query : IRequest<Result<Response>>;
 
-    public record Response(Guid Id, string Email, string DisplayName, int CrystalBalance, bool IsEmailVerified);
+    public record Response(Guid Id, string Email, string DisplayName, int CrystalBalance, bool IsEmailVerified, bool IsAdmin);
 
     public class Handler(
         IAppDbContext db,
@@ -37,7 +37,8 @@ public static class GetCurrentUser
 
             logger.LogInformation(AuthLogMessages.UserProfileRetrieved, user.Id);
 
-            return Result<Response>.Success(new Response(user.Id, user.Email, user.DisplayName, user.CrystalBalance, user.IsEmailVerified));
+            return Result<Response>.Success(
+                new Response(user.Id, user.Email, user.DisplayName, user.CrystalBalance, user.IsEmailVerified, user.IsAdmin));
         }
     }
 }
