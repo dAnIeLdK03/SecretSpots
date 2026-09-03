@@ -11,6 +11,7 @@ const TYPE_ICONS: Record<NotificationType, string> = {
   NewSpotNearby: "📍",
   NewCommentOnYourSpot: "💬",
   NewRatingOnYourSpot: "⭐",
+  ReportSubmitted: "🚩",
 };
 
 interface NotificationItemProps {
@@ -25,7 +26,10 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
 
   function handleClick() {
     markAsRead(notification.id);
-    if (notification.relatedSpotId) {
+    if (notification.type === "ReportSubmitted") {
+      router.push("/admin/reports");
+      onNavigate();
+    } else if (notification.relatedSpotId) {
       router.push(`/spots/${notification.relatedSpotId}`);
       onNavigate();
     }

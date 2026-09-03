@@ -6,4 +6,5 @@ public enum NotificationType
     NewSpotNearby,
     NewCommentOnYourSpot,
     NewRatingOnYourSpot,
+    ReportSubmitted,
 }
