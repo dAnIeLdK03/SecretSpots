@@ -8,6 +8,7 @@ import type { SpotCategory, SpotResponse } from "@/lib/spotsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { MultiPhotoUpload } from "@/components/MultiPhotoUpload";
 import { CategorySelect } from "@/components/CategorySelect";
+import { useModalDismiss } from "@/hooks/useModalDismiss";
 
 interface CreateSpotModalProps {
   latitude: number;
@@ -27,6 +28,7 @@ export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: Cre
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const { containerRef, handleOverlayClick } = useModalDismiss(onClose);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -42,8 +44,15 @@ export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: Cre
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="relative max-h-[90vh] w-full max-w-sm overflow-y-auto rounded-2xl border border-white/10 bg-zinc-900 p-6 text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={handleOverlayClick}>
+      <div
+        ref={containerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t("createTitle")}
+        tabIndex={-1}
+        className="relative max-h-[90vh] w-full max-w-sm overflow-y-auto rounded-2xl border border-white/10 bg-zinc-900 p-6 text-white outline-none"
+      >
         <button
           type="button"
           onClick={onClose}
