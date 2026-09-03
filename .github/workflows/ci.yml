@@ -160,15 +160,22 @@ jobs:
           # short window also lets that spec wait the window out afterward so it doesn't leave
           # other specs' login/register calls rate-limited for the rest of the run.
           #
-          # 30, not 5: AuthProvider calls /auth/refresh (also under this policy) on every page
+          # 30, not fewer: AuthProvider calls /auth/refresh (also under this policy) on every page
           # mount, and Playwright's page.goto() is a full navigation each time — so a single e2e
           # test can easily rack up 6-10 auth-limited calls (implicit refreshes plus its own
           # register/login/refresh/password-reset calls) well before the "deliberately trip the
           # limiter" test ever runs. 5 was tight enough that unrelated specs started 429ing each
-          # other; the rate-limit test itself reads this value at runtime either way, so raising
-          # it doesn't need any test change.
+          # other.
+          #
+          # 20 seconds, not 5: /auth/login runs BCrypt.Verify (work factor 12, deliberately slow)
+          # on every attempt, ~250-300ms each measured locally — the rate-limit spec fires 31 of
+          # them sequentially to trip the limiter, ~8-9s total, which blew past a 5s fixed window
+          # before reaching the 30th request. The window reset mid-test, the count never reached
+          # the limit, and the last request came back 401 instead of 429 (confirmed reproducing
+          # locally, fixed by widening the window — see PR discussion). The rate-limit test itself
+          # reads this value at runtime either way, so widening it doesn't need any test change.
           RateLimiting__AuthPermitLimit: "30"
-          RateLimiting__AuthWindowSeconds: "5"
+          RateLimiting__AuthWindowSeconds: "20"
 
       - name: Install frontend dependencies
         working-directory: frontend

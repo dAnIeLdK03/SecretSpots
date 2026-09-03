@@ -8,6 +8,7 @@ import type { SpotCategory, SpotResponse } from "@/lib/spotsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { MultiPhotoUpload } from "@/components/MultiPhotoUpload";
 import { CategorySelect } from "@/components/CategorySelect";
+import { useModalDismiss } from "@/hooks/useModalDismiss";
 
 interface EditSpotModalProps {
     spot: SpotResponse;
@@ -23,6 +24,7 @@ export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
     const [photoUrls, setPhotoUrls] = useState<string[]>(spot.photoUrls);
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
+    const { containerRef, handleOverlayClick } = useModalDismiss(onClose);
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -38,9 +40,14 @@ export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={handleOverlayClick}>
             <div
-                className="w-full max-w-sm rounded-lg p-6"
+                ref={containerRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label={t("editTitle")}
+                tabIndex={-1}
+                className="w-full max-w-sm rounded-lg p-6 outline-none"
                 style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
             >
                 <h2 className="mb-4 text-lg font-semibold">{t("editTitle")}</h2>

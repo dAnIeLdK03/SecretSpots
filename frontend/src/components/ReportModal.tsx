@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { getErrorMessage, ApiError } from "@/lib/apiClient";
 import { REPORT_REASONS } from "@/lib/reportsApi";
 import type { ReportReason } from "@/lib/reportsApi";
+import { useModalDismiss } from "@/hooks/useModalDismiss";
 
 const MAX_DETAILS_LENGTH = 500;
 
@@ -21,6 +22,7 @@ export function ReportModal({ onClose, onSubmit }: ReportModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const { containerRef, handleOverlayClick } = useModalDismiss(onClose);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,9 +40,14 @@ export function ReportModal({ onClose, onSubmit }: ReportModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={handleOverlayClick}>
       <div
-        className="w-full max-w-sm rounded-lg p-6"
+        ref={containerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t("modalTitle")}
+        tabIndex={-1}
+        className="w-full max-w-sm rounded-lg p-6 outline-none"
         style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
       >
         {submitted ? (
