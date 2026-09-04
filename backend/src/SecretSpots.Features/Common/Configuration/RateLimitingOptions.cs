@@ -5,6 +5,7 @@ public static class RateLimitPolicies
     public const string Auth = "auth";
     public const string Photos = "photos";
     public const string ContentWrites = "content-writes";
+    public const string Reports = "reports";
 }
 
 public class RateLimitingOptions
@@ -25,4 +26,10 @@ public class RateLimitingOptions
     // within the generous global limit above.
     public int ContentWritesPermitLimit { get; set; } = 30;
     public int ContentWritesWindowSeconds { get; set; } = 60;
+
+    // A report pages every admin (in-app + push) the moment it's created, unlike a comment or
+    // rating — so this endpoint is a more attractive target for someone trying to spam the
+    // admin queue or grief another user, and gets a much tighter limit than ContentWrites.
+    public int ReportsPermitLimit { get; set; } = 5;
+    public int ReportsWindowSeconds { get; set; } = 300;
 }
