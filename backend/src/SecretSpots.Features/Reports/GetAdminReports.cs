@@ -50,7 +50,10 @@ public static class GetAdminReports
             // batched lookups instead of a join EF Core has no way to express generically.
             var spotIds = reports.Where(r => r.ContentType == ReportedContentType.Spot).Select(r => r.ContentId).ToList();
             var commentIds = reports.Where(r => r.ContentType == ReportedContentType.Comment).Select(r => r.ContentId).ToList();
-            var reporterIds = reports.Select(r => r.ReporterUserId).Distinct().ToList();
+            var reporterIds = reports.Select(r => r.ReporterUserId)
+                .Concat(reports.Where(r => r.ResolvedByUserId.HasValue).Select(r => r.ResolvedByUserId!.Value))
+                .Distinct()
+                .ToList();
 
             var spots = await db.Spots
                 .Where(s => spotIds.Contains(s.Id))
@@ -62,7 +65,7 @@ public static class GetAdminReports
                 .Select(c => new { c.Id, c.Text, c.SpotId })
                 .ToDictionaryAsync(c => c.Id, c => (c.Text, c.SpotId), cancellationToken);
 
-            var reporters = await db.Users
+            var users = await db.Users
                 .Where(u => reporterIds.Contains(u.Id))
                 .Select(u => new { u.Id, u.DisplayName })
                 .ToDictionaryAsync(u => u.Id, u => u.DisplayName, cancellationToken);
@@ -86,11 +89,15 @@ public static class GetAdminReports
                     relatedSpotId = comment.SpotId;
                 }
 
-                var reporterDisplayName = reporters.GetValueOrDefault(r.ReporterUserId, "?");
+                var reporterDisplayName = users.GetValueOrDefault(r.ReporterUserId, "?");
+                var resolvedByDisplayName = r.ResolvedByUserId.HasValue
+                    ? users.GetValueOrDefault(r.ResolvedByUserId.Value, "?")
+                    : null;
 
                 return new AdminReportResponse(
                     r.Id, r.ContentType, r.ContentId, relatedSpotId, preview,
-                    reporterDisplayName, r.Reason, r.Details, r.CreatedAt, r.ResolvedAt);
+                    reporterDisplayName, r.Reason, r.Details, r.CreatedAt, r.ResolvedAt,
+                    resolvedByDisplayName, r.ResolutionAction);
             }).ToList();
 
             return new AdminReportsPageResponse(items, query.Page, query.PageSize, totalCount);

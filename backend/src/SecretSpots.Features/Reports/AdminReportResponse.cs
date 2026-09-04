@@ -12,4 +12,6 @@ public record AdminReportResponse(
     ReportReason Reason,
     string? Details,
     DateTimeOffset CreatedAt,
-    DateTimeOffset? ResolvedAt);
+    DateTimeOffset? ResolvedAt,
+    string? ResolvedByDisplayName,
+    ReportResolutionAction? ResolutionAction);

@@ -227,6 +227,7 @@
     "reporterLabel": "Докладвано от",
     "detailsLabel": "Детайли",
     "resolvedLabel": "Разгледан",
+    "resolvedSummary": "{action, select, Dismissed {Отхвърлен} ContentDeleted {Съдържанието е изтрито} other {Разгледан}} от {name}",
     "viewSpotLink": "Виж мястото",
     "dismissButton": "Отхвърли",
     "deleteContentButton": "Изтрий съдържанието",
