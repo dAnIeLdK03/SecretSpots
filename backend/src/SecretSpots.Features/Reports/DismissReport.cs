@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using SecretSpots.Domain;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -29,6 +30,8 @@ public static class DismissReport
             }
 
             report.ResolvedAt = DateTimeOffset.UtcNow;
+            report.ResolvedByUserId = userContext.UserId;
+            report.ResolutionAction = ReportResolutionAction.Dismissed;
             await db.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(ReportsLogMessages.ReportDismissed, report.Id, userContext.UserId);

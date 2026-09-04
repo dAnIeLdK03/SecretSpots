@@ -10,4 +10,6 @@ public class Report : IHasCreatedAt
     public string? Details { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? ResolvedAt { get; set; }
+    public Guid? ResolvedByUserId { get; set; }
+    public ReportResolutionAction? ResolutionAction { get; set; }
 }

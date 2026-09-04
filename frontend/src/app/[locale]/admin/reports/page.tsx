@@ -130,7 +130,13 @@ export default function AdminReportsPage() {
                   {report.contentType === "Spot" ? t("contentTypeSpot") : t("contentTypeComment")} ·{" "}
                   {tReports(`reason.${report.reason}`)} · {formatRelativeTime(report.createdAt, locale)}
                 </span>
-                {report.resolvedAt ? <span>{t("resolvedLabel")}</span> : null}
+                {report.resolvedAt ? (
+                  <span>
+                    {report.resolutionAction && report.resolvedByDisplayName
+                      ? t("resolvedSummary", { action: report.resolutionAction, name: report.resolvedByDisplayName })
+                      : t("resolvedLabel")}
+                  </span>
+                ) : null}
               </div>
 
               <p className="text-sm" style={{ color: "var(--fieldmap-ink)" }}>

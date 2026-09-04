@@ -62,10 +62,15 @@ public static class DeleteReportedContent
             var now = DateTimeOffset.UtcNow;
 
             // Every other still-open report about this same piece of content is moot once it's
-            // gone — resolve them all, not just the one the admin happened to click.
+            // gone — resolve them all, not just the one the admin happened to click. They're all
+            // attributed to this admin/action even though only one was clicked directly, since
+            // the content removal is what actually resolved them.
             await db.Reports
                 .Where(r => r.ContentType == report.ContentType && r.ContentId == report.ContentId && r.ResolvedAt == null)
-                .ExecuteUpdateAsync(r => r.SetProperty(x => x.ResolvedAt, now), cancellationToken);
+                .ExecuteUpdateAsync(r => r
+                    .SetProperty(x => x.ResolvedAt, now)
+                    .SetProperty(x => x.ResolvedByUserId, userContext.UserId)
+                    .SetProperty(x => x.ResolutionAction, ReportResolutionAction.ContentDeleted), cancellationToken);
 
             await db.SaveChangesAsync(cancellationToken);
 

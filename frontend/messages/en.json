@@ -227,6 +227,7 @@
     "reporterLabel": "Reported by",
     "detailsLabel": "Details",
     "resolvedLabel": "Resolved",
+    "resolvedSummary": "{action, select, Dismissed {Dismissed} ContentDeleted {Content deleted} other {Resolved}} by {name}",
     "viewSpotLink": "View spot",
     "dismissButton": "Dismiss",
     "deleteContentButton": "Delete content",
