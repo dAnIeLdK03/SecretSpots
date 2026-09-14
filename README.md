@@ -64,7 +64,8 @@ dotnet test
 dotnet run --project src/SecretSpots.Api
 
 # 4. Провери
-curl http://localhost:5080/health   # {"status":"ok"}
+curl http://localhost:5080/health         # {"status":"ok"} — liveness, процесът е жив
+curl http://localhost:5080/health/ready   # {"status":"Healthy","checks":{"AppDbContext":"Healthy"}} — readiness, реална проверка на DB connection
 ```
 
 Connection string-ът за локална разработка е в `backend/src/SecretSpots.Api/appsettings.Development.json` и съвпада с credentials-ите в `docker-compose.yml` (само за локална употреба, не са продукционни тайни).
