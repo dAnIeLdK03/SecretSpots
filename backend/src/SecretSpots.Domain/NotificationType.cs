@@ -9,4 +9,5 @@ public enum NotificationType
     NewCommentOnYourSpot,
     NewRatingOnYourSpot,
     YourContentRemoved,
+    ReportSubmitted,
 }

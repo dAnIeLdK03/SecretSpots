@@ -226,6 +226,15 @@ builder.Services.AddRateLimiter(options =>
                 PermitLimit = rateLimitingOptions.ContentWritesPermitLimit,
                 Window = TimeSpan.FromSeconds(rateLimitingOptions.ContentWritesWindowSeconds),
             }));
+
+    options.AddPolicy(RateLimitPolicies.Reports, context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = rateLimitingOptions.ReportsPermitLimit,
+                Window = TimeSpan.FromSeconds(rateLimitingOptions.ReportsWindowSeconds),
+            }));
 });
 
 var corsAllowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];

@@ -8,6 +8,7 @@ import type { CheckInResponse } from "@/lib/checkInsApi";
 import { ApiError, getErrorMessage } from "@/lib/apiClient";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { CHECKIN_GEOLOCATION_OPTIONS } from "@/lib/geolocationOptions";
+import { useModalDismiss } from "@/hooks/useModalDismiss";
 
 interface CheckInModalProps {
   spotId: string;
@@ -20,6 +21,7 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<CheckInResponse | null>(null);
+  const { containerRef, handleOverlayClick } = useModalDismiss(onClose);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -58,9 +60,14 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={handleOverlayClick}>
       <div
-        className="w-full max-w-sm rounded-lg p-6"
+        ref={containerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t("modalTitle")}
+        tabIndex={-1}
+        className="w-full max-w-sm rounded-lg p-6 outline-none"
         style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
       >
         {result ? (

@@ -9,6 +9,7 @@ public static class NotificationsMessageKeys
     public const string NewCommentOnYourSpotMessage = "Notifications.NewCommentOnYourSpotMessage";
     public const string NewRatingOnYourSpotMessage = "Notifications.NewRatingOnYourSpotMessage";
     public const string YourContentRemovedMessage = "Notifications.YourContentRemovedMessage";
+    public const string ReportSubmittedMessage = "Notifications.ReportSubmittedMessage";
     public const string NotFound = "Notifications.NotFound";
     public const string PageOutOfRange = "Notifications.PageOutOfRange";
     public const string PageSizeOutOfRange = "Notifications.PageSizeOutOfRange";

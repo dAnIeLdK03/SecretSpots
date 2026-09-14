@@ -285,6 +285,9 @@
   <data name="Notifications.YourContentRemovedMessage" xml:space="preserve">
     <value>A moderator removed one of your posts for violating community guidelines.</value>
   </data>
+  <data name="Notifications.ReportSubmittedMessage" xml:space="preserve">
+    <value>A new report needs your review.</value>
+  </data>
   <data name="Notifications.NotFound" xml:space="preserve">
     <value>This notification no longer exists.</value>
   </data>

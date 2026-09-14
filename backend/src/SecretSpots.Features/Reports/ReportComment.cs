@@ -3,12 +3,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SecretSpots.Domain;
+using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
+using WebPush;
 
 namespace SecretSpots.Features.Reports;
 
@@ -32,13 +35,19 @@ public static class ReportComment
         }
     }
 
-    public class Handler(IAppDbContext db, IUserContext userContext, IStringLocalizer<SharedResources> localizer, ILogger<Handler> logger)
+    public class Handler(
+        IAppDbContext db,
+        IUserContext userContext,
+        WebPushClient webPushClient,
+        IOptions<WebPushOptions> webPushOptions,
+        IStringLocalizer<SharedResources> localizer,
+        ILogger<Handler> logger)
         : IRequestHandler<Command, Result<ReportResponse>>
     {
         public async Task<Result<ReportResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var commentExists = await db.Comments.AnyAsync(c => c.Id == command.CommentId && !c.IsDeleted, cancellationToken);
-            if (!commentExists)
+            var comment = await db.Comments.SingleOrDefaultAsync(c => c.Id == command.CommentId && !c.IsDeleted, cancellationToken);
+            if (comment is null)
             {
                 return Result<ReportResponse>.Failure(new Error(
                     ReportsMessageKeys.CommentNotFound,
@@ -85,6 +94,8 @@ public static class ReportComment
             }
 
             logger.LogInformation(ReportsLogMessages.ContentReported, report.ContentType, report.ContentId, report.Reason, userContext.UserId);
+
+            await ReportAdminNotifier.NotifyAsync(db, webPushClient, webPushOptions, localizer, logger, comment.SpotId, cancellationToken);
 
             return Result<ReportResponse>.Success(new ReportResponse(report.Id));
         }

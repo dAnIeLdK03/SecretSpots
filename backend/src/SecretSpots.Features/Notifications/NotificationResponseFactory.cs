@@ -20,6 +20,8 @@ internal static class NotificationResponseFactory
                 localizer[NotificationsMessageKeys.NewRatingOnYourSpotMessage].Value,
             NotificationType.YourContentRemoved =>
                 localizer[NotificationsMessageKeys.YourContentRemovedMessage].Value,
+            NotificationType.ReportSubmitted =>
+                localizer[NotificationsMessageKeys.ReportSubmittedMessage].Value,
             _ => throw new ArgumentOutOfRangeException(nameof(notification), notification.Type, null),
         };
 

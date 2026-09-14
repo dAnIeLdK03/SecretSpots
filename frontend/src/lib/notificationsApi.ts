@@ -5,7 +5,8 @@ export type NotificationType =
   | "NewSpotNearby"
   | "NewCommentOnYourSpot"
   | "NewRatingOnYourSpot"
-  | "YourContentRemoved";
+  | "YourContentRemoved"
+  | "ReportSubmitted";
 
 export interface NotificationResponse {
   id: string;
