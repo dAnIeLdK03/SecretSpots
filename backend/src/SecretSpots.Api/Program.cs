@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -20,6 +21,7 @@ using SecretSpots.Features.Common.Email;
 using SecretSpots.Features.Common.ExceptionHandling;
 using SecretSpots.Features.Common.ExternalAuth;
 using SecretSpots.Features.Common.Mediator;
+using SecretSpots.Features.Common.Observability;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Storage;
@@ -42,6 +44,20 @@ builder.WebHost.UseSentry(options =>
     options.Environment = builder.Environment.EnvironmentName;
     options.SendDefaultPii = false;
 });
+
+// Structured console logs, both formats including logging scopes so the correlation id pushed by
+// UseCorrelationId (see below) actually shows up on every log line written for a request — not
+// just the one line that started it. JSON in Production because that's what an actual log
+// aggregator (Render/Koyeb capture stdout) can parse into a queryable field instead of a blob of
+// text; plain readable text in Development, where a human is tailing the console directly.
+if (builder.Environment.IsDevelopment())
+{
+    builder.Logging.AddSimpleConsole(options => options.IncludeScopes = true);
+}
+else
+{
+    builder.Logging.AddJsonConsole(options => options.IncludeScopes = true);
+}
 
 var featuresAssembly = Assembly.Load("SecretSpots.Features");
 
@@ -76,6 +92,13 @@ builder.Services.AddSwaggerGen(options =>
 var connectionString = builder.Configuration.GetConnectionString("Postgres")
     ?? throw new InvalidOperationException(StartupMessages.MissingPostgresConnectionString);
 builder.Services.AddPersistence(connectionString);
+
+// Readiness check (see /health/ready below) — actually opens a connection and runs a trivial
+// query against Postgres, unlike /health which only proves the process is alive and accepting
+// requests. A DB outage/misconfiguration then shows up as "not ready" instead of a plain 200 that
+// hides the real problem until the first real request fails.
+builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
+
 builder.Services.Configure<TokenCleanupOptions>(builder.Configuration.GetSection("TokenCleanup"));
 builder.Services.AddHostedService<TokenCleanupService>();
 
@@ -276,6 +299,11 @@ forwardedHeadersOptions.KnownNetworks.Clear();
 forwardedHeadersOptions.KnownProxies.Clear();
 app.UseForwardedHeaders(forwardedHeadersOptions);
 
+// Registered this early so the correlation id also covers the exception handler and every
+// middleware below — an unhandled exception's log line still gets tagged with the same id that
+// was echoed back to the caller.
+app.UseCorrelationId();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -331,6 +359,23 @@ app.UseAuthorization();
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
     .WithName("HealthCheck");
+
+// Liveness (/health, above) only proves the process is up — it deliberately never touches the
+// database, so a slow/unreachable DB can't make an otherwise-healthy process get killed by a
+// liveness probe. This is readiness: does a dependency check (Postgres) actually succeed right
+// now. A load balancer/orchestrator should route traffic based on this one, not /health.
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.ToDictionary(e => e.Key, e => e.Value.Status.ToString()),
+        });
+    },
+}).WithName("ReadinessCheck");
 
 app.MapAuthEndpoints();
 app.MapSpotsEndpoints();
