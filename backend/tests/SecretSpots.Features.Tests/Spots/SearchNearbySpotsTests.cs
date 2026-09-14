@@ -51,14 +51,15 @@ public class SearchNearbySpotsValidatorTests
 
 public class SearchNearbySpotsHandlerTests
 {
-    private static async Task<Spot> SeedSpotAsync(IAppDbContext db, string name, double latitude, double longitude)
+    private static async Task<Spot> SeedSpotAsync(
+        IAppDbContext db, string name, double latitude, double longitude, SpotCategory category = SpotCategory.Nature)
     {
         var spot = new Spot
         {
             Id = Guid.NewGuid(),
             Name = name,
             Description = "test",
-            Category = SpotCategory.Nature,
+            Category = category,
             PhotoUrls = ["https://example.com/photo.jpg"],
             Location = new Point(longitude, latitude) { SRID = 4326 },
             CreatedByUserId = Guid.NewGuid(),
@@ -98,5 +99,30 @@ public class SearchNearbySpotsHandlerTests
         Assert.Contains(near.Id, ids);
         Assert.DoesNotContain(far.Id, ids);
         Assert.True(ids.IndexOf(veryClose.Id) < ids.IndexOf(near.Id));
+    }
+
+    [Fact]
+    public async Task Category_filter_excludes_spots_of_other_categories()
+    {
+        await using var db = TestDbContextFactory.Create();
+
+        // See the comment above on centerLat/centerLng in the other test — same reasoning for
+        // not reusing a fixed "Sofia center" point across this shared, never-cleaned test DB.
+        var centerLat = Random.Shared.NextDouble() * 120 - 60;
+        var centerLng = Random.Shared.NextDouble() * 300 - 150;
+
+        var cafe = await SeedSpotAsync(
+            db, $"Cafe-{Guid.NewGuid():N}", centerLat + 0.0003, centerLng + 0.0006, SpotCategory.Cafe);
+        var waterfall = await SeedSpotAsync(
+            db, $"Waterfall-{Guid.NewGuid():N}", centerLat + 0.0004, centerLng + 0.0007, SpotCategory.Waterfall);
+
+        var handler = new SearchNearbySpots.Handler(db);
+        var results = await handler.Handle(
+            new SearchNearbySpots.Query(centerLat, centerLng, 10, SpotCategory.Cafe), CancellationToken.None);
+
+        var ids = results.Items.Select(r => r.Id).ToList();
+
+        Assert.Contains(cafe.Id, ids);
+        Assert.DoesNotContain(waterfall.Id, ids);
     }
 }

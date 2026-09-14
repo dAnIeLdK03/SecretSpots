@@ -83,6 +83,7 @@ export function getNearbySpots(
   lat: number,
   lng: number,
   radiusKm: number,
+  category?: SpotCategory,
   signal?: AbortSignal,
 ): Promise<NearbySpotsResponse> {
   const params = new URLSearchParams({
@@ -90,6 +91,7 @@ export function getNearbySpots(
     lng: String(lng),
     radiusKm: String(radiusKm),
   });
+  if (category) params.set("category", category);
   return apiFetch<NearbySpotsResponse>(`/spots/nearby?${params.toString()}`, { signal });
 }
 
