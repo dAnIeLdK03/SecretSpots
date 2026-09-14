@@ -1,6 +1,11 @@
 import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
 
-export type NotificationType = "CrystalsEarned" | "NewSpotNearby" | "NewCommentOnYourSpot" | "NewRatingOnYourSpot";
+export type NotificationType =
+  | "CrystalsEarned"
+  | "NewSpotNearby"
+  | "NewCommentOnYourSpot"
+  | "NewRatingOnYourSpot"
+  | "YourContentRemoved";
 
 export interface NotificationResponse {
   id: string;
