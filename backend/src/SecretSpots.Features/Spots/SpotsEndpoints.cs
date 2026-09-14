@@ -37,9 +37,10 @@ public static class SpotsEndpoints
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
         group.MapGet("/nearby", async (
-                double lat, double lng, double radiusKm, ISender sender, CancellationToken cancellationToken) =>
+                double lat, double lng, double radiusKm, SpotCategory? category,
+                ISender sender, CancellationToken cancellationToken) =>
             {
-                var results = await sender.Send(new SearchNearbySpots.Query(lat, lng, radiusKm), cancellationToken);
+                var results = await sender.Send(new SearchNearbySpots.Query(lat, lng, radiusKm, category), cancellationToken);
                 return Results.Ok(results);
             })
             .Produces<NearbySpotsResponse>(StatusCodes.Status200OK)

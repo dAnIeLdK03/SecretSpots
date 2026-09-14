@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using NetTopologySuite.Geometries;
+using SecretSpots.Domain;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -18,7 +19,9 @@ public static class SearchNearbySpots
     // dropping the farthest matches.
     private const int MaxResults = 200;
 
-    public record Query(double Latitude, double Longitude, double RadiusKm)
+    // Category defaults to null (not narrowed to a specific category) so existing callers that
+    // only care about location keep compiling without passing it.
+    public record Query(double Latitude, double Longitude, double RadiusKm, SpotCategory? Category = null)
         : IRequest<NearbySpotsResponse>;
 
     public class Validator : AbstractValidator<Query>
@@ -44,6 +47,11 @@ public static class SearchNearbySpots
             var radiusMeters = query.RadiusKm * 1000;
 
             var withinRadius = db.Spots.Where(s => s.Location.IsWithinDistance(searchPoint, radiusMeters));
+
+            if (query.Category is not null)
+            {
+                withinRadius = withinRadius.Where(s => s.Category == query.Category);
+            }
 
             // A plain COUNT, independent of the MaxResults cap below — lets the frontend tell the
             // user a search was truncated instead of silently dropping the farthest matches.

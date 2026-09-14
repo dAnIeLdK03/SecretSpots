@@ -91,6 +91,7 @@
     "creating": "Creating...",
     "createButton": "Create",
     "unknownError": "Something went wrong. Please try again.",
+    "allCategoriesFilter": "All categories",
     "radiusLabel": "Radius",
     "useMyLocation": "Use my location",
     "locating": "Locating you...",
