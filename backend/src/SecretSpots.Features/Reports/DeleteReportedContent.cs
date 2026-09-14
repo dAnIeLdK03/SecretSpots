@@ -2,14 +2,18 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SecretSpots.Domain;
+using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Storage;
+using SecretSpots.Features.Notifications;
 using SecretSpots.Features.Spots;
+using WebPush;
 
 namespace SecretSpots.Features.Reports;
 
@@ -21,6 +25,8 @@ public static class DeleteReportedContent
         IAppDbContext db,
         IUserContext userContext,
         IPhotoStorage photoStorage,
+        WebPushClient webPushClient,
+        IOptions<WebPushOptions> webPushOptions,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<Unit>>
@@ -36,6 +42,11 @@ public static class DeleteReportedContent
                     StatusCodes.Status404NotFound));
             }
 
+            // Captured before deletion so we can still notify the author afterwards — the spot
+            // row (or, for a comment, its parent spot) is gone by the time SaveChanges runs.
+            Guid? contentOwnerUserId = null;
+            Guid? relatedSpotId = null;
+
             if (report.ContentType == ReportedContentType.Spot)
             {
                 // Deliberately bypasses DeleteSpot's ownership check — an admin acting on a
@@ -45,6 +56,7 @@ public static class DeleteReportedContent
                 var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == report.ContentId, cancellationToken);
                 if (spot is not null)
                 {
+                    contentOwnerUserId = spot.CreatedByUserId;
                     await SpotDeletionCleanup.DeleteAsync(db, photoStorage, spot, logger, cancellationToken);
                 }
             }
@@ -54,6 +66,8 @@ public static class DeleteReportedContent
                     .SingleOrDefaultAsync(c => c.Id == report.ContentId && !c.IsDeleted, cancellationToken);
                 if (comment is not null)
                 {
+                    contentOwnerUserId = comment.UserId;
+                    relatedSpotId = comment.SpotId;
                     comment.IsDeleted = true;
                     comment.UpdatedAt = DateTimeOffset.UtcNow;
                 }
@@ -72,10 +86,30 @@ public static class DeleteReportedContent
                     .SetProperty(x => x.ResolvedByUserId, userContext.UserId)
                     .SetProperty(x => x.ResolutionAction, ReportResolutionAction.ContentDeleted), cancellationToken);
 
+            // Skip notifying on an admin removing their own content — no point paging yourself.
+            Notification? notification = null;
+            if (contentOwnerUserId is { } ownerId && ownerId != userContext.UserId)
+            {
+                notification = new Notification
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = ownerId,
+                    Type = NotificationType.YourContentRemoved,
+                    RelatedSpotId = relatedSpotId,
+                };
+                db.Notifications.Add(notification);
+            }
+
             await db.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(
                 ReportsLogMessages.ReportedContentDeleted, report.ContentType, report.ContentId, userContext.UserId, report.Id);
+
+            if (notification is not null)
+            {
+                await PushNotificationSender.SendAsync(
+                    db, webPushClient, webPushOptions, localizer, logger, notification, cancellationToken);
+            }
 
             return Result<Unit>.Success(Unit.Value);
         }

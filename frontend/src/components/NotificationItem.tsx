@@ -11,6 +11,7 @@ const TYPE_ICONS: Record<NotificationType, string> = {
   NewSpotNearby: "📍",
   NewCommentOnYourSpot: "💬",
   NewRatingOnYourSpot: "⭐",
+  YourContentRemoved: "🚫",
   ReportSubmitted: "🚩",
 };
 
