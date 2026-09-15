@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -212,6 +213,20 @@ builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
+    // Every policy below uses a fixed-window limiter, which populates this metadata with how
+    // long until the window resets — surface it as a real Retry-After header instead of leaving
+    // the caller (including our own frontend) to guess when it's safe to retry.
+    options.OnRejected = (context, cancellationToken) =>
+    {
+        if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+        {
+            context.HttpContext.Response.Headers["Retry-After"] =
+                ((int)retryAfter.TotalSeconds).ToString(CultureInfo.InvariantCulture);
+        }
+
+        return ValueTask.CompletedTask;
+    };
+
     // Broad per-IP safety net applied to every endpoint, on top of which the stricter named
     // policies below layer additional limits for specific endpoints.
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
@@ -268,7 +283,13 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(corsAllowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowCredentials()
+            // Retry-After isn't one of the handful of response headers a browser exposes to JS
+            // by default on a cross-origin request — without this, the frontend's fetch() would
+            // see the header arrive over the wire (visible in devtools) but get null from
+            // response.headers.get('Retry-After'), making the header useless for an actual
+            // retry/backoff UI.
+            .WithExposedHeaders("Retry-After");
     });
 });
 
