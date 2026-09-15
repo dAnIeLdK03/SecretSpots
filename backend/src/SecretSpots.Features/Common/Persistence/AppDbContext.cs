@@ -82,6 +82,26 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<SavedSpot>()
             .HasIndex(s => new { s.UserId, s.CreatedAt });
 
+        // Same per-user-history shape as Notification/SavedSpot above — backs GetMyCheckIns.
+        modelBuilder.Entity<CheckIn>()
+            .HasIndex(c => new { c.UserId, c.CreatedAt });
+
+        // Backs GetBusinessRewards, which lists a business's rewards ordered by CreatedAt.
+        modelBuilder.Entity<Reward>()
+            .HasIndex(r => new { r.BusinessId, r.CreatedAt });
+
+        // Backs GetMyRedemptions (a user's own redemption history) and GetBusinessRedemptions
+        // (a business owner's fulfillment queue) — the same table, filtered either side.
+        modelBuilder.Entity<RewardRedemption>()
+            .HasIndex(r => new { r.UserId, r.CreatedAt });
+
+        modelBuilder.Entity<RewardRedemption>()
+            .HasIndex(r => new { r.BusinessId, r.CreatedAt });
+
+        // Backs DeleteAccount's "find every business this user owns" lookup during cascade cleanup.
+        modelBuilder.Entity<Business>()
+            .HasIndex(b => b.OwnerUserId);
+
         modelBuilder.Entity<Spot>()
             .HasIndex(s => s.Name)
             .HasMethod("gin")
