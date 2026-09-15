@@ -309,7 +309,9 @@
     "notFoundTitle": "Business not found",
     "notFoundMessage": "This business doesn't exist or was removed.",
     "rewardsTitle": "Rewards",
-    "noRewardsYet": "No rewards available yet."
+    "noRewardsYet": "No rewards available yet.",
+    "loadMoreRewards": "Load more rewards",
+    "loadingMoreRewards": "Loading..."
   },
   "Rewards": {
     "crystalsUnit": "crystals",

@@ -50,11 +50,29 @@ public class GetBusinessRewardsTests
         await SeedRewardAsync(db, otherBusiness.Id, "Other business reward");
 
         var handler = new GetBusinessRewards.Handler(db, TestLocalizerFactory.Create());
-        var result = await handler.Handle(new GetBusinessRewards.Query(business.Id), CancellationToken.None);
+        var result = await handler.Handle(new GetBusinessRewards.Query(business.Id, 1, 20), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(2, result.Value.Count);
-        Assert.All(result.Value, r => Assert.Equal(business.Id, r.BusinessId));
+        Assert.Equal(2, result.Value.TotalCount);
+        Assert.Equal(2, result.Value.Items.Count);
+        Assert.All(result.Value.Items, r => Assert.Equal(business.Id, r.BusinessId));
+    }
+
+    [Fact]
+    public async Task Pagination_slices_correctly_and_reports_total_count()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var business = await SeedBusinessAsync(db);
+        await SeedRewardAsync(db, business.Id, "Reward A");
+        await SeedRewardAsync(db, business.Id, "Reward B");
+        await SeedRewardAsync(db, business.Id, "Reward C");
+
+        var handler = new GetBusinessRewards.Handler(db, TestLocalizerFactory.Create());
+        var result = await handler.Handle(new GetBusinessRewards.Query(business.Id, 1, 2), CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(3, result.Value.TotalCount);
+        Assert.Equal(2, result.Value.Items.Count);
     }
 
     [Fact]
@@ -63,7 +81,7 @@ public class GetBusinessRewardsTests
         await using var db = TestDbContextFactory.Create();
         var handler = new GetBusinessRewards.Handler(db, TestLocalizerFactory.Create());
 
-        var result = await handler.Handle(new GetBusinessRewards.Query(Guid.NewGuid()), CancellationToken.None);
+        var result = await handler.Handle(new GetBusinessRewards.Query(Guid.NewGuid(), 1, 20), CancellationToken.None);
 
         Assert.False(result.IsSuccess);
         Assert.Equal(BusinessesMessageKeys.NotFound, result.Error.Code);
