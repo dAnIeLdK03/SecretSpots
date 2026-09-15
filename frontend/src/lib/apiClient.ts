@@ -11,12 +11,19 @@ export interface ProblemDetails {
 }
 
 export class ApiError extends Error {
+  // Only ever set on a 429 — the backend's rate limiter reports how many seconds until its
+  // window resets. Requires the backend to expose this header via CORS (see
+  // WithExposedHeaders("Retry-After") in Program.cs) or it's always null on a cross-origin call.
+  public readonly retryAfterSeconds: number | null;
+
   constructor(
     public readonly status: number,
     public readonly problem: ProblemDetails,
+    retryAfterSeconds: number | null = null,
   ) {
     super(problem.detail ?? problem.title ?? `Request failed with status ${status}`);
     this.name = "ApiError";
+    this.retryAfterSeconds = retryAfterSeconds;
   }
 }
 
@@ -72,6 +79,13 @@ async function performRefresh(): Promise<string> {
   return run();
 }
 
+function parseRetryAfter(response: Response): number | null {
+  const header = response.headers.get("Retry-After");
+  if (!header) return null;
+  const seconds = Number(header);
+  return Number.isFinite(seconds) ? seconds : null;
+}
+
 async function doFetch(path: string, options: RequestInit = {}, isRetry = false): Promise<Response> {
   if (!API_BASE_URL) {
     throw new Error("NEXT_PUBLIC_API_URL is not set");
@@ -105,14 +119,14 @@ async function doFetch(path: string, options: RequestInit = {}, isRetry = false)
     } catch {
       useAuthStore.getState().clearSession();
       const problem: ProblemDetails = await response.json().catch(() => ({}));
-      throw new ApiError(response.status, problem);
+      throw new ApiError(response.status, problem, parseRetryAfter(response));
     }
     return doFetch(path, options, true);
   }
 
   if (!response.ok) {
     const problem: ProblemDetails = await response.json().catch(() => ({}));
-    throw new ApiError(response.status, problem);
+    throw new ApiError(response.status, problem, parseRetryAfter(response));
   }
 
   return response;
