@@ -18,6 +18,7 @@ interface AuthStore {
   setLoading: () => void;
   setSession: (accessToken: string, user: AuthUser) => void;
   setAccessToken: (accessToken: string) => void;
+  setCrystalBalance: (crystalBalance: number) => void;
   clearSession: () => void;
 }
 
@@ -28,5 +29,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   setLoading: () => set({ status: "loading" }),
   setSession: (accessToken, user) => set({ accessToken, user, status: "authenticated" }),
   setAccessToken: (accessToken) => set({ accessToken }),
+  setCrystalBalance: (crystalBalance) =>
+    set((state) => (state.user ? { user: { ...state.user, crystalBalance } } : {})),
   clearSession: () => set({ accessToken: null, user: null, status: "unauthenticated" }),
 }));

@@ -24,6 +24,16 @@ public static class BusinessesEndpoints
             .ProducesProblem(StatusCodes.Status500InternalServerError)
             .Accepts<CreateBusiness.Command>("application/json");
 
+        group.MapGet("/nearby", async (
+                double lat, double lng, double radiusKm, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var results = await sender.Send(new SearchNearbyBusinesses.Query(lat, lng, radiusKm), cancellationToken);
+                return Results.Ok(results);
+            })
+            .Produces<NearbyBusinessesResponse>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+
         group.MapGet("/{id:guid}", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
             {
                 var result = await sender.Send(new GetBusiness.Query(id), cancellationToken);
