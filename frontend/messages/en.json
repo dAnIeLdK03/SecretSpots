@@ -324,6 +324,16 @@
     "redeemedLabel": "Redeemed",
     "redeemButton": "Redeem",
     "redeeming": "Redeeming...",
-    "insufficientBalance": "Not enough crystals"
+    "insufficientBalance": "Not enough crystals",
+    "showCodeToStaff": "Show this code to staff to claim your reward.",
+    "fulfilledLabel": "Fulfilled",
+    "notFulfilledYetLabel": "Not claimed yet",
+    "redeemedByLabel": "Redeemed by {name}",
+    "markFulfilledButton": "Mark fulfilled",
+    "markingFulfilled": "Marking...",
+    "manageRedemptionsTitle": "Redemptions for {name}",
+    "manageRedemptionsLink": "Manage redemptions",
+    "noRedemptionsForBusinessYet": "No one has redeemed a reward yet.",
+    "notYourBusiness": "You don't own this business."
   }
 }

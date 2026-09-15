@@ -57,6 +57,7 @@ public static class RedeemReward
                 BusinessId = reward.BusinessId,
                 UserId = user.Id,
                 CrystalsSpent = reward.CrystalCost,
+                RedemptionCode = RedemptionCodeGenerator.Generate(),
             };
 
             db.RewardRedemptions.Add(redemption);
@@ -78,7 +79,8 @@ public static class RedeemReward
             logger.LogInformation(RewardsLogMessages.RewardRedeemed, reward.Id, user.Id, redemption.CrystalsSpent);
 
             return Result<RewardRedemptionResponse>.Success(new RewardRedemptionResponse(
-                redemption.Id, reward.Id, redemption.CrystalsSpent, user.CrystalBalance, redemption.CreatedAt));
+                redemption.Id, reward.Id, redemption.CrystalsSpent, user.CrystalBalance,
+                redemption.RedemptionCode, redemption.CreatedAt));
         }
     }
 }

@@ -16,21 +16,21 @@ export function RewardCard({ reward }: { reward: RewardResponse }) {
   const setCrystalBalance = useAuthStore((state) => state.setCrystalBalance);
 
   const [redeeming, setRedeeming] = useState(false);
-  const [redeemed, setRedeemed] = useState(false);
+  const [redemptionCode, setRedemptionCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const isAuthenticated = authStatus === "authenticated" && user !== null;
   const canAfford = isAuthenticated && user.crystalBalance >= reward.crystalCost;
 
   async function handleRedeem() {
-    if (redeeming || redeemed) return;
+    if (redeeming || redemptionCode) return;
 
     setRedeeming(true);
     setError(null);
     try {
       const result = await redeemReward(reward.id);
       setCrystalBalance(result.newCrystalBalance);
-      setRedeemed(true);
+      setRedemptionCode(result.redemptionCode);
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
     } finally {
@@ -68,11 +68,20 @@ export function RewardCard({ reward }: { reward: RewardResponse }) {
             {t("loginLink")}
           </Link>
         </p>
-      ) : redeemed ? (
-        <span className="inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: "var(--fieldmap-trail)" }}>
-          <Check size={16} />
-          {t("redeemedLabel")}
-        </span>
+      ) : redemptionCode ? (
+        <div className="flex flex-col gap-1.5">
+          <span className="inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: "var(--fieldmap-trail)" }}>
+            <Check size={16} />
+            {t("redeemedLabel")}
+          </span>
+          <p className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>{t("showCodeToStaff")}</p>
+          <span
+            className="self-start rounded px-3 py-1.5 font-mono text-lg font-semibold tracking-widest"
+            style={{ backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-ink)" }}
+          >
+            {redemptionCode}
+          </span>
+        </div>
       ) : (
         <button
           type="button"

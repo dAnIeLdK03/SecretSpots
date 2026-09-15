@@ -98,6 +98,38 @@ public static class RewardsEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
+        app.MapGet("/businesses/{businessId:guid}/redemptions", async (
+                Guid businessId, int? page, int? pageSize, IOptions<RewardsOptions> rewardsOptions,
+                ISender sender, CancellationToken cancellationToken) =>
+            {
+                var query = new GetBusinessRedemptions.Query(
+                    businessId, page ?? 1, pageSize ?? rewardsOptions.Value.DefaultPageSize);
+                var result = await sender.Send(query, cancellationToken);
+                return result.ToOkOrProblem();
+            })
+            .WithTags("Rewards")
+            .RequireAuthorization()
+            .Produces<BusinessRedemptionsPageResponse>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+        app.MapPost("/redemptions/{id:guid}/fulfill", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new FulfillRedemption.Command(id), cancellationToken);
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
+            })
+            .WithTags("Rewards")
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+
         return app;
     }
 }

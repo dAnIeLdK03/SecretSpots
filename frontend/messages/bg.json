@@ -324,6 +324,16 @@
     "redeemedLabel": "Разменено",
     "redeemButton": "Размени",
     "redeeming": "Размяна...",
-    "insufficientBalance": "Недостатъчно кристали"
+    "insufficientBalance": "Недостатъчно кристали",
+    "showCodeToStaff": "Покажи този код на персонала, за да получиш наградата си.",
+    "fulfilledLabel": "Осъществено",
+    "notFulfilledYetLabel": "Все още не е осъществено",
+    "redeemedByLabel": "Разменено от {name}",
+    "markFulfilledButton": "Отбележи като осъществено",
+    "markingFulfilled": "Отбелязване...",
+    "manageRedemptionsTitle": "Размени за {name}",
+    "manageRedemptionsLink": "Управлявай размените",
+    "noRedemptionsForBusinessYet": "Все още никой не е разменял награда.",
+    "notYourBusiness": "Не притежаваш този бизнес."
   }
 }

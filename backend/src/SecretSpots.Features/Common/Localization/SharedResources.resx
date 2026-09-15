@@ -273,6 +273,12 @@
   <data name="Rewards.PageSizeOutOfRange" xml:space="preserve">
     <value>Page size must be between 1 and 100.</value>
   </data>
+  <data name="Rewards.RedemptionNotFound" xml:space="preserve">
+    <value>This redemption no longer exists.</value>
+  </data>
+  <data name="Rewards.AlreadyFulfilled" xml:space="preserve">
+    <value>This redemption was already marked as fulfilled.</value>
+  </data>
   <data name="Notifications.CrystalsEarnedMessage" xml:space="preserve">
     <value>You earned {0} crystals.</value>
   </data>

@@ -53,6 +53,8 @@ public static class GetMyRedemptions
                     x.redemption.BusinessId,
                     x.Name,
                     x.redemption.CrystalsSpent,
+                    x.redemption.RedemptionCode,
+                    x.redemption.FulfilledAt != null,
                     x.redemption.CreatedAt))
                 .ToListAsync(cancellationToken);
 

@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/apiClient";
+import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
 
 export interface RewardResponse {
   id: string;
@@ -18,6 +18,7 @@ export interface RewardRedemptionResponse {
   rewardId: string;
   crystalsSpent: number;
   newCrystalBalance: number;
+  redemptionCode: string;
   createdAt: string;
 }
 
@@ -32,6 +33,8 @@ export interface MyRedemptionResponse {
   businessId: string;
   businessName: string;
   crystalsSpent: number;
+  redemptionCode: string;
+  isFulfilled: boolean;
   createdAt: string;
 }
 
@@ -45,4 +48,36 @@ export interface RedemptionsPageResponse {
 export function fetchMyRedemptions(page: number, pageSize: number): Promise<RedemptionsPageResponse> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
   return apiFetch<RedemptionsPageResponse>(`/redemptions/me?${params.toString()}`);
+}
+
+export interface BusinessRedemptionResponse {
+  redemptionId: string;
+  rewardId: string;
+  rewardTitle: string;
+  redeemedByDisplayName: string;
+  crystalsSpent: number;
+  redemptionCode: string;
+  isFulfilled: boolean;
+  fulfilledAt: string | null;
+  createdAt: string;
+}
+
+export interface BusinessRedemptionsPageResponse {
+  items: BusinessRedemptionResponse[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+}
+
+export function fetchBusinessRedemptions(
+  businessId: string,
+  page: number,
+  pageSize: number,
+): Promise<BusinessRedemptionsPageResponse> {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  return apiFetch<BusinessRedemptionsPageResponse>(`/businesses/${businessId}/redemptions?${params.toString()}`);
+}
+
+export function fulfillRedemption(redemptionId: string): Promise<void> {
+  return apiFetchVoid(`/redemptions/${redemptionId}/fulfill`, { method: "POST" });
 }

@@ -273,6 +273,12 @@
   <data name="Rewards.PageSizeOutOfRange" xml:space="preserve">
     <value>Размерът на страницата трябва да е между 1 и 100.</value>
   </data>
+  <data name="Rewards.RedemptionNotFound" xml:space="preserve">
+    <value>Тази размяна вече не съществува.</value>
+  </data>
+  <data name="Rewards.AlreadyFulfilled" xml:space="preserve">
+    <value>Тази размяна вече е отбелязана като осъществена.</value>
+  </data>
   <data name="Notifications.CrystalsEarnedMessage" xml:space="preserve">
     <value>Спечели {0} кристала.</value>
   </data>

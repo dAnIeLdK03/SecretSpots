@@ -8,7 +8,9 @@ import type { BusinessResponse } from "@/lib/businessesApi";
 import { getBusinessRewards } from "@/lib/rewardsApi";
 import type { RewardResponse } from "@/lib/rewardsApi";
 import { ApiError, getErrorMessage } from "@/lib/apiClient";
+import { useAuthStore } from "@/store/useAuthStore";
 import { RewardCard } from "@/components/RewardCard";
+import { Link } from "@/i18n/navigation";
 
 type LoadState =
   | { status: "loading" }
@@ -18,6 +20,8 @@ type LoadState =
 
 function BusinessDetailContent({ id }: { id: string }) {
   const t = useTranslations("Businesses");
+  const tRewards = useTranslations("Rewards");
+  const user = useAuthStore((state) => state.user);
   const [state, setState] = useState<LoadState>({ status: "loading" });
 
   useEffect(() => {
@@ -65,7 +69,18 @@ function BusinessDetailContent({ id }: { id: string }) {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
       <div>
-        <h1 className="text-2xl font-semibold">{business.name}</h1>
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="text-2xl font-semibold">{business.name}</h1>
+          {user?.id === business.ownerUserId ? (
+            <Link
+              href={`/businesses/${business.id}/redemptions`}
+              className="shrink-0 whitespace-nowrap rounded px-3 py-1.5 text-sm underline"
+              style={{ color: "var(--fieldmap-dim)" }}
+            >
+              {tRewards("manageRedemptionsLink")}
+            </Link>
+          ) : null}
+        </div>
         <p className="mt-2 whitespace-pre-wrap text-sm" style={{ color: "var(--fieldmap-dim)" }}>
           {business.description}
         </p>

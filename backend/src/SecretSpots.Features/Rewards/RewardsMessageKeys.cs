@@ -12,4 +12,6 @@ public static class RewardsMessageKeys
     public const string InsufficientBalance = "Rewards.InsufficientBalance";
     public const string PageOutOfRange = "Rewards.PageOutOfRange";
     public const string PageSizeOutOfRange = "Rewards.PageSizeOutOfRange";
+    public const string RedemptionNotFound = "Rewards.RedemptionNotFound";
+    public const string AlreadyFulfilled = "Rewards.AlreadyFulfilled";
 }

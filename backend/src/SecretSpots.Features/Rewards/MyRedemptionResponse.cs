@@ -7,4 +7,6 @@ public record MyRedemptionResponse(
     Guid BusinessId,
     string BusinessName,
     int CrystalsSpent,
+    string RedemptionCode,
+    bool IsFulfilled,
     DateTimeOffset CreatedAt);
