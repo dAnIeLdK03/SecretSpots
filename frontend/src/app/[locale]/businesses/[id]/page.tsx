@@ -10,21 +10,35 @@ import type { RewardResponse } from "@/lib/rewardsApi";
 import { ApiError, getErrorMessage } from "@/lib/apiClient";
 import { RewardCard } from "@/components/RewardCard";
 
+const PAGE_SIZE = 20;
+
 type LoadState =
   | { status: "loading" }
-  | { status: "success"; business: BusinessResponse; rewards: RewardResponse[] }
+  | { status: "success"; business: BusinessResponse }
   | { status: "notFound" }
   | { status: "error"; message: string };
 
 function BusinessDetailContent({ id }: { id: string }) {
   const t = useTranslations("Businesses");
   const [state, setState] = useState<LoadState>({ status: "loading" });
+  const [rewards, setRewards] = useState<RewardResponse[]>([]);
+  const [rewardsPage, setRewardsPage] = useState(1);
+  const [rewardsTotalCount, setRewardsTotalCount] = useState(0);
+  const [loadingMoreRewards, setLoadingMoreRewards] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
 
-    Promise.all([getBusiness(id, controller.signal), getBusinessRewards(id, controller.signal)])
-      .then(([business, rewards]) => setState({ status: "success", business, rewards }))
+    Promise.all([
+      getBusiness(id, controller.signal),
+      getBusinessRewards(id, 1, PAGE_SIZE, controller.signal),
+    ])
+      .then(([business, rewardsPageResult]) => {
+        setState({ status: "success", business });
+        setRewards(rewardsPageResult.items);
+        setRewardsPage(rewardsPageResult.page);
+        setRewardsTotalCount(rewardsPageResult.totalCount);
+      })
       .catch((err) => {
         if (controller.signal.aborted) return;
         if (err instanceof ApiError && err.status === 404) {
@@ -36,6 +50,18 @@ function BusinessDetailContent({ id }: { id: string }) {
 
     return () => controller.abort();
   }, [id, t]);
+
+  async function handleLoadMoreRewards() {
+    setLoadingMoreRewards(true);
+    try {
+      const result = await getBusinessRewards(id, rewardsPage + 1, PAGE_SIZE);
+      setRewards((prev) => [...prev, ...result.items]);
+      setRewardsPage(result.page);
+      setRewardsTotalCount(result.totalCount);
+    } finally {
+      setLoadingMoreRewards(false);
+    }
+  }
 
   if (state.status === "loading") {
     return (
@@ -60,7 +86,8 @@ function BusinessDetailContent({ id }: { id: string }) {
     );
   }
 
-  const { business, rewards } = state;
+  const { business } = state;
+  const hasMoreRewards = rewards.length < rewardsTotalCount;
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
@@ -78,11 +105,24 @@ function BusinessDetailContent({ id }: { id: string }) {
             {t("noRewardsYet")}
           </p>
         ) : (
-          <ul className="flex flex-col gap-3">
-            {rewards.map((reward) => (
-              <RewardCard key={reward.id} reward={reward} />
-            ))}
-          </ul>
+          <>
+            <ul className="flex flex-col gap-3">
+              {rewards.map((reward) => (
+                <RewardCard key={reward.id} reward={reward} />
+              ))}
+            </ul>
+
+            {hasMoreRewards ? (
+              <button
+                onClick={handleLoadMoreRewards}
+                disabled={loadingMoreRewards}
+                className="mt-3 w-full rounded border px-4 py-2 text-center text-sm disabled:opacity-50"
+                style={{ borderColor: "var(--fieldmap-contour)", color: "var(--fieldmap-dim)" }}
+              >
+                {loadingMoreRewards ? t("loadingMoreRewards") : t("loadMoreRewards")}
+              </button>
+            ) : null}
+          </>
         )}
       </div>
     </div>

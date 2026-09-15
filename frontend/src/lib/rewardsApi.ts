@@ -9,8 +9,21 @@ export interface RewardResponse {
   createdAt: string;
 }
 
-export function getBusinessRewards(businessId: string, signal?: AbortSignal): Promise<RewardResponse[]> {
-  return apiFetch<RewardResponse[]>(`/businesses/${businessId}/rewards`, { signal });
+export interface RewardsPageResponse {
+  items: RewardResponse[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+}
+
+export function getBusinessRewards(
+  businessId: string,
+  page: number,
+  pageSize: number,
+  signal?: AbortSignal,
+): Promise<RewardsPageResponse> {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  return apiFetch<RewardsPageResponse>(`/businesses/${businessId}/rewards?${params.toString()}`, { signal });
 }
 
 export interface RewardRedemptionResponse {

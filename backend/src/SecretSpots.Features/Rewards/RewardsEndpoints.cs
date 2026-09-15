@@ -30,13 +30,17 @@ public static class RewardsEndpoints
             .Accepts<CreateReward.RequestBody>("application/json");
 
         app.MapGet("/businesses/{businessId:guid}/rewards", async (
-                Guid businessId, ISender sender, CancellationToken cancellationToken) =>
+                Guid businessId, int? page, int? pageSize, IOptions<RewardsOptions> rewardsOptions,
+                ISender sender, CancellationToken cancellationToken) =>
             {
-                var result = await sender.Send(new GetBusinessRewards.Query(businessId), cancellationToken);
+                var query = new GetBusinessRewards.Query(
+                    businessId, page ?? 1, pageSize ?? rewardsOptions.Value.DefaultPageSize);
+                var result = await sender.Send(query, cancellationToken);
                 return result.ToOkOrProblem();
             })
             .WithTags("Rewards")
-            .Produces<IReadOnlyList<RewardResponse>>(StatusCodes.Status200OK)
+            .Produces<RewardsPageResponse>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
