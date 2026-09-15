@@ -248,6 +248,7 @@
     "exploreNav": "Explore",
     "mapNav": "Map",
     "collectionsNav": "Collections",
+    "rewardsNav": "Rewards",
     "aboutNav": "About",
     "addASpot": "Add a Spot",
     "heroTitlePrefix": "Find places worth ",
@@ -295,5 +296,34 @@
     "missionTitle": "Why we built this",
     "missionBody": "Search engines are great at finding what everyone already knows about. SecretSpots is for everything else — the places worth a detour that only get passed around by word of mouth. No algorithm curates this list; the community does.",
     "ctaButton": "Explore the map"
+  },
+  "Businesses": {
+    "title": "Nearby rewards",
+    "subtitle": "Local businesses offering perks you can redeem with your crystals.",
+    "loading": "Loading...",
+    "loadError": "Failed to load nearby businesses.",
+    "noBusinessesNearby": "No participating businesses nearby yet.",
+    "distanceKm": "{value} km",
+    "distanceMeters": "{value} m",
+    "unknownError": "Something went wrong. Please try again.",
+    "notFoundTitle": "Business not found",
+    "notFoundMessage": "This business doesn't exist or was removed.",
+    "rewardsTitle": "Rewards",
+    "noRewardsYet": "No rewards available yet."
+  },
+  "Rewards": {
+    "crystalsUnit": "crystals",
+    "myRedemptionsTitle": "My redemptions",
+    "loading": "Loading...",
+    "noRedemptionsYet": "You haven't redeemed any rewards yet.",
+    "loadMore": "Load more",
+    "loadingMore": "Loading...",
+    "unknownError": "Something went wrong. Please try again.",
+    "loginRequiredToRedeem": "You must be logged in to redeem this reward.",
+    "loginLink": "Log in",
+    "redeemedLabel": "Redeemed",
+    "redeemButton": "Redeem",
+    "redeeming": "Redeeming...",
+    "insufficientBalance": "Not enough crystals"
   }
 }

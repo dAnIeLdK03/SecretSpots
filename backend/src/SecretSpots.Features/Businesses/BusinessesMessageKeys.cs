@@ -8,4 +8,5 @@ public static class BusinessesMessageKeys
     public const string DescriptionTooLong = "Businesses.DescriptionTooLong";
     public const string NotFound = "Businesses.NotFound";
     public const string NotYourBusiness = "Businesses.NotYourBusiness";
+    public const string RadiusOutOfRange = "Businesses.RadiusOutOfRange";
 }

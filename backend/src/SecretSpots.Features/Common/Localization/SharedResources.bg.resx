@@ -240,6 +240,9 @@
   <data name="Businesses.NotYourBusiness" xml:space="preserve">
     <value>Не притежаваш този бизнес.</value>
   </data>
+  <data name="Businesses.RadiusOutOfRange" xml:space="preserve">
+    <value>Радиусът трябва да е между 0 и 100 км.</value>
+  </data>
   <data name="Rewards.TitleRequired" xml:space="preserve">
     <value>Заглавието е задължително.</value>
   </data>
