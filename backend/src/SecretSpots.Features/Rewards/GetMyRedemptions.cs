@@ -31,29 +31,25 @@ public static class GetMyRedemptions
     {
         public async Task<RedemptionsPageResponse> Handle(Query query, CancellationToken cancellationToken)
         {
-            // Safe as inner joins: DeleteReward now deletes a reward's redemptions along with it
-            // (no dangling RewardId), and businesses currently have no delete feature at all.
-            var baseQuery =
-                from redemption in db.RewardRedemptions
-                join reward in db.Rewards on redemption.RewardId equals reward.Id
-                join business in db.Businesses on redemption.BusinessId equals business.Id
-                where redemption.UserId == userContext.UserId
-                select new { redemption, reward.Title, business.Name };
+            // RewardTitle/BusinessName are denormalized onto RewardRedemption at redeem time, so
+            // this reads straight off it — no join needed, and it keeps returning correct history
+            // even after the reward or business behind a redemption has since been deleted.
+            var baseQuery = db.RewardRedemptions.Where(r => r.UserId == userContext.UserId);
 
             var totalCount = await baseQuery.CountAsync(cancellationToken);
 
             var items = await baseQuery
-                .OrderByDescending(x => x.redemption.CreatedAt)
+                .OrderByDescending(r => r.CreatedAt)
                 .Skip((query.Page - 1) * query.PageSize)
                 .Take(query.PageSize)
-                .Select(x => new MyRedemptionResponse(
-                    x.redemption.Id,
-                    x.redemption.RewardId,
-                    x.Title,
-                    x.redemption.BusinessId,
-                    x.Name,
-                    x.redemption.CrystalsSpent,
-                    x.redemption.CreatedAt))
+                .Select(r => new MyRedemptionResponse(
+                    r.Id,
+                    r.RewardId,
+                    r.RewardTitle,
+                    r.BusinessId,
+                    r.BusinessName,
+                    r.CrystalsSpent,
+                    r.CreatedAt))
                 .ToListAsync(cancellationToken);
 
             return new RedemptionsPageResponse(items, query.Page, query.PageSize, totalCount);
