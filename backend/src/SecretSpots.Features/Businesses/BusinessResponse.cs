@@ -8,4 +8,5 @@ public record BusinessResponse(
     double Longitude,
     Guid OwnerUserId,
     bool IsPromoted,
+    bool IsActive,
     DateTimeOffset CreatedAt);

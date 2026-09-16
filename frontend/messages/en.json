@@ -326,6 +326,7 @@
     "redeemedLabel": "Redeemed",
     "redeemButton": "Redeem",
     "redeeming": "Redeeming...",
-    "insufficientBalance": "Not enough crystals"
+    "insufficientBalance": "Not enough crystals",
+    "rewardUnavailable": "Currently unavailable"
   }
 }

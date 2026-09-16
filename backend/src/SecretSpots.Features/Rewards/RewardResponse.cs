@@ -6,4 +6,5 @@ public record RewardResponse(
     string Title,
     string Description,
     int CrystalCost,
+    bool IsActive,
     DateTimeOffset CreatedAt);

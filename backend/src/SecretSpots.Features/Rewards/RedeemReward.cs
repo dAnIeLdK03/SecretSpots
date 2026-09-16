@@ -31,6 +31,14 @@ public static class RedeemReward
                     StatusCodes.Status404NotFound));
             }
 
+            if (!reward.IsActive)
+            {
+                return Result<RewardRedemptionResponse>.Failure(new Error(
+                    RewardsMessageKeys.RewardInactive,
+                    localizer[RewardsMessageKeys.RewardInactive].Value,
+                    StatusCodes.Status400BadRequest));
+            }
+
             // Reward always has a valid BusinessId (CreateReward requires the business to exist,
             // and nothing lets one outlive its business — BusinessDeletionCleanup deletes rewards
             // along with it), so this is safe as a SingleAsync rather than a null-checked lookup.

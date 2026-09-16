@@ -40,7 +40,7 @@ export function RewardCard({ reward }: { reward: RewardResponse }) {
 
   return (
     <li
-      className="flex flex-col gap-2 rounded-md border p-4"
+      className={`flex flex-col gap-2 rounded-md border p-4 ${reward.isActive ? "" : "opacity-60"}`}
       style={{ borderColor: "var(--fieldmap-contour)" }}
     >
       <div className="flex items-start justify-between gap-3">
@@ -61,7 +61,11 @@ export function RewardCard({ reward }: { reward: RewardResponse }) {
 
       {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
 
-      {!isAuthenticated ? (
+      {!reward.isActive ? (
+        <span className="text-sm font-medium" style={{ color: "var(--fieldmap-dim)" }}>
+          {t("rewardUnavailable")}
+        </span>
+      ) : !isAuthenticated ? (
         <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
           {t("loginRequiredToRedeem")}{" "}
           <Link href="/login" className="underline">

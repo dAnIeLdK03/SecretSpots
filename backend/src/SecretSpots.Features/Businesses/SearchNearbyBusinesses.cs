@@ -40,7 +40,11 @@ public static class SearchNearbyBusinesses
             var searchPoint = new Point(query.Longitude, query.Latitude) { SRID = 4326 };
             var radiusMeters = query.RadiusKm * 1000;
 
-            var withinRadius = db.Businesses.Where(b => b.Location.IsWithinDistance(searchPoint, radiusMeters));
+            // Paused businesses (IsActive = false) are deliberately excluded from discovery — a
+            // direct link to one still resolves via GetBusiness, same as a paused reward is still
+            // visible (just not redeemable) on its own business page.
+            var withinRadius = db.Businesses
+                .Where(b => b.IsActive && b.Location.IsWithinDistance(searchPoint, radiusMeters));
 
             var totalCount = await withinRadius.CountAsync(cancellationToken);
 

@@ -74,6 +74,21 @@ public static class RewardsEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
+        app.MapPost("/rewards/{id:guid}/active", async (
+                Guid id, SetRewardActive.RequestBody body, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new SetRewardActive.Command(id, body.IsActive), cancellationToken);
+                return result.ToOkOrProblem();
+            })
+            .WithTags("Rewards")
+            .RequireAuthorization()
+            .Produces<RewardResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status500InternalServerError)
+            .Accepts<SetRewardActive.RequestBody>("application/json");
+
         app.MapPost("/rewards/{id:guid}/redeem", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
             {
                 var result = await sender.Send(new RedeemReward.Command(id), cancellationToken);

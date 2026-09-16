@@ -68,6 +68,7 @@ public static class CreateBusiness
                 location.X,
                 business.OwnerUserId,
                 business.IsPromoted,
+                business.IsActive,
                 business.CreatedAt);
         }
     }

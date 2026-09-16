@@ -79,7 +79,7 @@ public static class CreateReward
             logger.LogInformation(RewardsLogMessages.RewardCreated, reward.Id, business.Id, userContext.UserId);
 
             return Result<RewardResponse>.Success(new RewardResponse(
-                reward.Id, reward.BusinessId, reward.Title, reward.Description, reward.CrystalCost, reward.CreatedAt));
+                reward.Id, reward.BusinessId, reward.Title, reward.Description, reward.CrystalCost, reward.IsActive, reward.CreatedAt));
         }
     }
 }

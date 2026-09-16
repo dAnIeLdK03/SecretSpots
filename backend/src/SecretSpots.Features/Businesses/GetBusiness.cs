@@ -34,6 +34,7 @@ public static class GetBusiness
                 business.Location.X,
                 business.OwnerUserId,
                 business.IsPromoted,
+                business.IsActive,
                 business.CreatedAt));
         }
     }
