@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -207,6 +208,23 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimNames.IsAdmin, "true"));
 });
 
+// Partitions by authenticated user id rather than IP whenever one is available, so (a) an
+// attacker rotating IPs can't just dodge the limit on write endpoints that require auth, and (b)
+// legitimate users sharing one IP (an office, or mobile carrier NAT — common in BG) don't share
+// one bucket. Requires UseAuthentication to run before UseRateLimiter in the pipeline below, or
+// HttpContext.User is never populated at this point and every request falls back to IP anyway.
+// Falls back to IP for anonymous requests (e.g. login/register), where there's no user id yet.
+static string RateLimitPartitionKey(HttpContext context)
+{
+    var subClaim = context.User.Identity?.IsAuthenticated == true
+        ? context.User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+        : null;
+
+    return subClaim is not null
+        ? $"user:{subClaim}"
+        : $"ip:{context.Connection.RemoteIpAddress?.ToString() ?? "unknown"}";
+}
+
 var rateLimitingOptions = builder.Configuration.GetSection("RateLimiting").Get<RateLimitingOptions>()
     ?? new RateLimitingOptions();
 builder.Services.AddRateLimiter(options =>
@@ -231,7 +249,7 @@ builder.Services.AddRateLimiter(options =>
     // policies below layer additional limits for specific endpoints.
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
         RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            partitionKey: RateLimitPartitionKey(context),
             factory: _ => new FixedWindowRateLimiterOptions
             {
                 PermitLimit = rateLimitingOptions.GlobalPermitLimit,
@@ -240,7 +258,7 @@ builder.Services.AddRateLimiter(options =>
 
     options.AddPolicy(RateLimitPolicies.Auth, context =>
         RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            partitionKey: RateLimitPartitionKey(context),
             factory: _ => new FixedWindowRateLimiterOptions
             {
                 PermitLimit = rateLimitingOptions.AuthPermitLimit,
@@ -249,7 +267,7 @@ builder.Services.AddRateLimiter(options =>
 
     options.AddPolicy(RateLimitPolicies.Photos, context =>
         RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            partitionKey: RateLimitPartitionKey(context),
             factory: _ => new FixedWindowRateLimiterOptions
             {
                 PermitLimit = rateLimitingOptions.PhotosPermitLimit,
@@ -258,7 +276,7 @@ builder.Services.AddRateLimiter(options =>
 
     options.AddPolicy(RateLimitPolicies.ContentWrites, context =>
         RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            partitionKey: RateLimitPartitionKey(context),
             factory: _ => new FixedWindowRateLimiterOptions
             {
                 PermitLimit = rateLimitingOptions.ContentWritesPermitLimit,
@@ -267,7 +285,7 @@ builder.Services.AddRateLimiter(options =>
 
     options.AddPolicy(RateLimitPolicies.Reports, context =>
         RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            partitionKey: RateLimitPartitionKey(context),
             factory: _ => new FixedWindowRateLimiterOptions
             {
                 PermitLimit = rateLimitingOptions.ReportsPermitLimit,
@@ -373,9 +391,14 @@ app.UseRequestLocalization(new RequestLocalizationOptions()
 
 app.UseCors("Default");
 
+// Authentication (not authorization — that still runs after the limiter, since it doesn't affect
+// what bucket a request lands in) must run before UseRateLimiter so the partition key selectors
+// below can read HttpContext.User: without this, every request — logged in or not — would look
+// anonymous to the limiter and only ever fall back to the IP partition.
+app.UseAuthentication();
+
 app.UseRateLimiter();
 
-app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
