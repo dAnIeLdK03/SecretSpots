@@ -270,6 +270,9 @@
   <data name="Rewards.RewardInactive" xml:space="preserve">
     <value>This reward is currently unavailable.</value>
   </data>
+  <data name="Rewards.BusinessInactive" xml:space="preserve">
+    <value>This business is currently unavailable.</value>
+  </data>
   <data name="Rewards.PageOutOfRange" xml:space="preserve">
     <value>Page must be 1 or greater.</value>
   </data>

@@ -44,6 +44,18 @@ public static class RedeemReward
             // along with it), so this is safe as a SingleAsync rather than a null-checked lookup.
             var business = await db.Businesses.SingleAsync(b => b.Id == reward.BusinessId, cancellationToken);
 
+            // A paused business is excluded from SearchNearbyBusinesses precisely so it stops
+            // getting new business — checking only reward.IsActive above would let that be
+            // bypassed via any bookmarked/cached/linked business or reward page, producing
+            // redemptions the (deliberately unavailable) business can't actually fulfill.
+            if (!business.IsActive)
+            {
+                return Result<RewardRedemptionResponse>.Failure(new Error(
+                    RewardsMessageKeys.BusinessInactive,
+                    localizer[RewardsMessageKeys.BusinessInactive].Value,
+                    StatusCodes.Status400BadRequest));
+            }
+
             var user = await db.Users.SingleOrDefaultAsync(u => u.Id == userContext.UserId, cancellationToken);
             if (user is null)
             {

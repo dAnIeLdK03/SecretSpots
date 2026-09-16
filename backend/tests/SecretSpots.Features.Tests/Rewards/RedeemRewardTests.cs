@@ -129,4 +129,28 @@ public class RedeemRewardTests
         Assert.Equal(20, savedUser.CrystalBalance);
         Assert.False(await db.RewardRedemptions.AnyAsync(r => r.RewardId == reward.Id));
     }
+
+    [Fact]
+    public async Task Reward_under_a_paused_business_cannot_be_redeemed()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var (business, reward) = await SeedBusinessAndRewardAsync(db, crystalCost: 10);
+        business.IsActive = false;
+        await db.SaveChangesAsync();
+
+        var user = await TestUserFactory.SeedAsync(db, $"redeem-{Guid.NewGuid():N}@example.com", "Str0ng!Passw0rd1");
+        user.CrystalBalance = 20;
+        await db.SaveChangesAsync();
+
+        var handler = CreateHandler(db, user.Id);
+        var result = await handler.Handle(new RedeemReward.Command(reward.Id), CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(RewardsMessageKeys.BusinessInactive, result.Error.Code);
+        Assert.Equal(StatusCodes.Status400BadRequest, result.Error.StatusCode);
+
+        var savedUser = await db.Users.SingleAsync(u => u.Id == user.Id);
+        Assert.Equal(20, savedUser.CrystalBalance);
+        Assert.False(await db.RewardRedemptions.AnyAsync(r => r.RewardId == reward.Id));
+    }
 }
