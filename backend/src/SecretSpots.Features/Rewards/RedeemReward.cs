@@ -31,6 +31,11 @@ public static class RedeemReward
                     StatusCodes.Status404NotFound));
             }
 
+            // Reward always has a valid BusinessId (CreateReward requires the business to exist,
+            // and nothing lets one outlive its business — BusinessDeletionCleanup deletes rewards
+            // along with it), so this is safe as a SingleAsync rather than a null-checked lookup.
+            var business = await db.Businesses.SingleAsync(b => b.Id == reward.BusinessId, cancellationToken);
+
             var user = await db.Users.SingleOrDefaultAsync(u => u.Id == userContext.UserId, cancellationToken);
             if (user is null)
             {
@@ -57,6 +62,8 @@ public static class RedeemReward
                 BusinessId = reward.BusinessId,
                 UserId = user.Id,
                 CrystalsSpent = reward.CrystalCost,
+                RewardTitle = reward.Title,
+                BusinessName = business.Name,
             };
 
             db.RewardRedemptions.Add(redemption);

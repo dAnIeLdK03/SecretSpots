@@ -11,7 +11,7 @@ namespace SecretSpots.Features.Tests.Rewards;
 
 public class RedeemRewardTests
 {
-    private static async Task<Reward> SeedRewardAsync(IAppDbContext db, int crystalCost = 10)
+    private static async Task<(Business Business, Reward Reward)> SeedBusinessAndRewardAsync(IAppDbContext db, int crystalCost = 10)
     {
         var business = new Business
         {
@@ -35,8 +35,11 @@ public class RedeemRewardTests
 
         await db.SaveChangesAsync();
 
-        return reward;
+        return (business, reward);
     }
+
+    private static async Task<Reward> SeedRewardAsync(IAppDbContext db, int crystalCost = 10) =>
+        (await SeedBusinessAndRewardAsync(db, crystalCost)).Reward;
 
     private static RedeemReward.Handler CreateHandler(IAppDbContext db, Guid userId) =>
         new(db, new FakeUserContext(userId), TestLocalizerFactory.Create(), NullLogger<RedeemReward.Handler>.Instance);
@@ -45,7 +48,7 @@ public class RedeemRewardTests
     public async Task Successful_redemption_deducts_the_balance_and_persists_a_redemption_record()
     {
         await using var db = TestDbContextFactory.Create();
-        var reward = await SeedRewardAsync(db, crystalCost: 15);
+        var (business, reward) = await SeedBusinessAndRewardAsync(db, crystalCost: 15);
         var user = await TestUserFactory.SeedAsync(db, $"redeem-{Guid.NewGuid():N}@example.com", "Str0ng!Passw0rd1");
         user.CrystalBalance = 20;
         await db.SaveChangesAsync();
@@ -64,6 +67,8 @@ public class RedeemRewardTests
         Assert.Equal(user.Id, redemption.UserId);
         Assert.Equal(reward.BusinessId, redemption.BusinessId);
         Assert.Equal(15, redemption.CrystalsSpent);
+        Assert.Equal(reward.Title, redemption.RewardTitle);
+        Assert.Equal(business.Name, redemption.BusinessName);
     }
 
     [Fact]

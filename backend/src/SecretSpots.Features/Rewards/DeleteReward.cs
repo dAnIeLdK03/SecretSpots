@@ -40,13 +40,11 @@ public static class DeleteReward
             db.Rewards.Remove(reward);
             await db.SaveChangesAsync(cancellationToken);
 
-            // RewardRedemption.RewardId has no DB-level FK and nothing currently reads
-            // redemptions back for display, so nothing would visibly break by leaving these —
-            // but they'd otherwise sit as permanent DB bloat, same as the Spot-deletion cleanup.
-            await db.RewardRedemptions
-                .Where(r => r.RewardId == reward.Id)
-                .ExecuteDeleteAsync(cancellationToken);
-
+            // Redemptions are deliberately left alone — RewardTitle/BusinessName are denormalized
+            // onto RewardRedemption at redeem time precisely so a user's spend history keeps
+            // reading correctly after the reward (or its business) is gone. RewardId above is left
+            // dangling, same as every other FK-less reference in this app; nothing dereferences it
+            // after the fact.
             logger.LogInformation(RewardsLogMessages.RewardDeleted, reward.Id, userContext.UserId);
 
             return Result<Unit>.Success(Unit.Value);

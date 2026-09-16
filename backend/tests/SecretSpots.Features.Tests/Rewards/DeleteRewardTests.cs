@@ -56,6 +56,37 @@ public class DeleteRewardTests
     }
 
     [Fact]
+    public async Task Deleting_a_reward_leaves_its_redemption_history_intact()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var ownerId = Guid.NewGuid();
+        var (business, reward) = await SeedAsync(db, ownerId);
+
+        var redemption = new RewardRedemption
+        {
+            Id = Guid.NewGuid(),
+            RewardId = reward.Id,
+            BusinessId = business.Id,
+            UserId = Guid.NewGuid(),
+            CrystalsSpent = reward.CrystalCost,
+            RewardTitle = reward.Title,
+            BusinessName = business.Name,
+        };
+        db.RewardRedemptions.Add(redemption);
+        await db.SaveChangesAsync();
+
+        var handler = CreateHandler(db, ownerId);
+        var result = await handler.Handle(new DeleteReward.Command(reward.Id), CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+
+        var savedRedemption = await db.RewardRedemptions.SingleAsync(r => r.Id == redemption.Id);
+        Assert.Equal(reward.Title, savedRedemption.RewardTitle);
+        Assert.Equal(business.Name, savedRedemption.BusinessName);
+        Assert.Equal(reward.CrystalCost, savedRedemption.CrystalsSpent);
+    }
+
+    [Fact]
     public async Task Nonexistent_reward_returns_not_found()
     {
         await using var db = TestDbContextFactory.Create();
