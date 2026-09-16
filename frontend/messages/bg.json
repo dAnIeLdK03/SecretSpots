@@ -326,6 +326,7 @@
     "redeemedLabel": "Разменено",
     "redeemButton": "Размени",
     "redeeming": "Размяна...",
-    "insufficientBalance": "Недостатъчно кристали"
+    "insufficientBalance": "Недостатъчно кристали",
+    "rewardUnavailable": "В момента не е достъпна"
   }
 }

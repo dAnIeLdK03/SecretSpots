@@ -43,6 +43,20 @@ public static class BusinessesEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
+        group.MapPost("/{id:guid}/active", async (
+                Guid id, SetBusinessActive.RequestBody body, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new SetBusinessActive.Command(id, body.IsActive), cancellationToken);
+                return result.ToOkOrProblem();
+            })
+            .RequireAuthorization()
+            .Produces<BusinessResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status500InternalServerError)
+            .Accepts<SetBusinessActive.RequestBody>("application/json");
+
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
             {
                 var result = await sender.Send(new DeleteBusiness.Command(id), cancellationToken);

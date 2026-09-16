@@ -267,6 +267,9 @@
   <data name="Rewards.InsufficientBalance" xml:space="preserve">
     <value>Нямаш достатъчно кристали за тази оферта.</value>
   </data>
+  <data name="Rewards.RewardInactive" xml:space="preserve">
+    <value>Тази награда в момента не е достъпна.</value>
+  </data>
   <data name="Rewards.PageOutOfRange" xml:space="preserve">
     <value>Страницата трябва да е 1 или по-голяма.</value>
   </data>

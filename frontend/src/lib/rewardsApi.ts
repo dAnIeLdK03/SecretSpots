@@ -6,6 +6,7 @@ export interface RewardResponse {
   title: string;
   description: string;
   crystalCost: number;
+  isActive: boolean;
   createdAt: string;
 }
 

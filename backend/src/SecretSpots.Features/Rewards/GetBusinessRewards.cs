@@ -51,7 +51,7 @@ public static class GetBusinessRewards
                 .OrderBy(r => r.CreatedAt)
                 .Skip((query.Page - 1) * query.PageSize)
                 .Take(query.PageSize)
-                .Select(r => new RewardResponse(r.Id, r.BusinessId, r.Title, r.Description, r.CrystalCost, r.CreatedAt))
+                .Select(r => new RewardResponse(r.Id, r.BusinessId, r.Title, r.Description, r.CrystalCost, r.IsActive, r.CreatedAt))
                 .ToListAsync(cancellationToken);
 
             return Result<RewardsPageResponse>.Success(new RewardsPageResponse(items, query.Page, query.PageSize, totalCount));

@@ -1,4 +1,3 @@
-using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -11,34 +10,12 @@ using SecretSpots.Features.Common.Security;
 
 namespace SecretSpots.Features.Rewards;
 
-public static class UpdateReward
+public static class SetRewardActive
 {
-    // RewardId comes from the route, not the request body — kept as a separate
-    // record so the endpoint can bind RequestBody from JSON and Command from both.
-    public record RequestBody(string Title, string Description, int CrystalCost);
+    // RewardId comes from the route, not the request body — same convention as UpdateReward.
+    public record RequestBody(bool IsActive);
 
-    public record Command(
-        Guid RewardId,
-        string Title,
-        string Description,
-        int CrystalCost) : IRequest<Result<RewardResponse>>;
-
-    public class Validator : AbstractValidator<Command>
-    {
-        public Validator(IStringLocalizer<SharedResources> localizer)
-        {
-            RuleFor(c => c.Title)
-                .NotEmpty().WithMessage(localizer[RewardsMessageKeys.TitleRequired].Value)
-                .MaximumLength(100).WithMessage(localizer[RewardsMessageKeys.TitleTooLong].Value);
-
-            RuleFor(c => c.Description)
-                .NotEmpty().WithMessage(localizer[RewardsMessageKeys.DescriptionRequired].Value)
-                .MaximumLength(2000).WithMessage(localizer[RewardsMessageKeys.DescriptionTooLong].Value);
-
-            RuleFor(c => c.CrystalCost)
-                .GreaterThan(0).WithMessage(localizer[RewardsMessageKeys.CrystalCostOutOfRange].Value);
-        }
-    }
+    public record Command(Guid RewardId, bool IsActive) : IRequest<Result<RewardResponse>>;
 
     public class Handler(IAppDbContext db, IUserContext userContext, IStringLocalizer<SharedResources> localizer, ILogger<Handler> logger)
         : IRequestHandler<Command, Result<RewardResponse>>
@@ -63,13 +40,10 @@ public static class UpdateReward
                     StatusCodes.Status403Forbidden));
             }
 
-            reward.Title = command.Title.Trim();
-            reward.Description = command.Description.Trim();
-            reward.CrystalCost = command.CrystalCost;
-
+            reward.IsActive = command.IsActive;
             await db.SaveChangesAsync(cancellationToken);
 
-            logger.LogInformation(RewardsLogMessages.RewardUpdated, reward.Id, userContext.UserId);
+            logger.LogInformation(RewardsLogMessages.RewardActiveStateChanged, reward.Id, reward.IsActive, userContext.UserId);
 
             return Result<RewardResponse>.Success(new RewardResponse(
                 reward.Id, reward.BusinessId, reward.Title, reward.Description, reward.CrystalCost, reward.IsActive, reward.CreatedAt));
