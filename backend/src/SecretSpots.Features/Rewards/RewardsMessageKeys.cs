@@ -11,6 +11,7 @@ public static class RewardsMessageKeys
     public const string NotYourBusiness = "Rewards.NotYourBusiness";
     public const string InsufficientBalance = "Rewards.InsufficientBalance";
     public const string RewardInactive = "Rewards.RewardInactive";
+    public const string BusinessInactive = "Rewards.BusinessInactive";
     public const string PageOutOfRange = "Rewards.PageOutOfRange";
     public const string PageSizeOutOfRange = "Rewards.PageSizeOutOfRange";
 }
