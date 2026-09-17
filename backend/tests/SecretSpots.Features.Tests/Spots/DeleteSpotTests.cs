@@ -63,6 +63,62 @@ public class DeleteSpotTests
     }
 
     [Fact]
+    public async Task Deleting_a_spot_resolves_open_reports_against_it_and_its_comments()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var creatorId = Guid.NewGuid();
+        var spot = await SeedAsync(db, creatorId);
+
+        var comment = new Comment
+        {
+            Id = Guid.NewGuid(),
+            SpotId = spot.Id,
+            UserId = Guid.NewGuid(),
+            Text = "test comment",
+        };
+        db.Comments.Add(comment);
+
+        var spotReport = new Report
+        {
+            Id = Guid.NewGuid(),
+            ContentType = ReportedContentType.Spot,
+            ContentId = spot.Id,
+            ReporterUserId = Guid.NewGuid(),
+            Reason = ReportReason.Spam,
+        };
+        var commentReport = new Report
+        {
+            Id = Guid.NewGuid(),
+            ContentType = ReportedContentType.Comment,
+            ContentId = comment.Id,
+            ReporterUserId = Guid.NewGuid(),
+            Reason = ReportReason.Inappropriate,
+        };
+        db.Reports.AddRange(spotReport, commentReport);
+        await db.SaveChangesAsync();
+
+        var handler = CreateHandler(db, creatorId);
+        var result = await handler.Handle(new DeleteSpot.Command(spot.Id), CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+
+        // ExecuteUpdateAsync writes straight to the database, bypassing the change tracker — the
+        // Report instances seeded above are still tracked with their pre-update (null ResolvedAt)
+        // values, so a re-query without clearing would just hand back those stale tracked
+        // instances instead of hitting the database.
+        db.ChangeTracker.Clear();
+        var savedSpotReport = await db.Reports.SingleAsync(r => r.Id == spotReport.Id);
+        Assert.NotNull(savedSpotReport.ResolvedAt);
+        Assert.Equal(ReportResolutionAction.ContentDeletedByAuthor, savedSpotReport.ResolutionAction);
+        Assert.Null(savedSpotReport.ResolvedByUserId);
+
+        var savedCommentReport = await db.Reports.SingleAsync(r => r.Id == commentReport.Id);
+        Assert.NotNull(savedCommentReport.ResolvedAt);
+        Assert.Equal(ReportResolutionAction.ContentDeletedByAuthor, savedCommentReport.ResolutionAction);
+        Assert.Null(savedCommentReport.ResolvedByUserId);
+    }
+
+    [Fact]
     public async Task Non_creator_cannot_delete_the_spot()
     {
         await using var db = TestDbContextFactory.Create();

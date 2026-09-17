@@ -132,9 +132,11 @@ export default function AdminReportsPage() {
                 </span>
                 {report.resolvedAt ? (
                   <span>
-                    {report.resolutionAction && report.resolvedByDisplayName
-                      ? t("resolvedSummary", { action: report.resolutionAction, name: report.resolvedByDisplayName })
-                      : t("resolvedLabel")}
+                    {report.resolutionAction === "ContentDeletedByAuthor"
+                      ? t("resolvedByAuthorLabel")
+                      : report.resolutionAction && report.resolvedByDisplayName
+                        ? t("resolvedSummary", { action: report.resolutionAction, name: report.resolvedByDisplayName })
+                        : t("resolvedLabel")}
                   </span>
                 ) : null}
               </div>

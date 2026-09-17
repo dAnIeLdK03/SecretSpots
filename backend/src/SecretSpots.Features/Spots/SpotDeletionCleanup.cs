@@ -20,6 +20,27 @@ public static class SpotDeletionCleanup
             .Where(n => n.RelatedSpotId == spot.Id)
             .ExecuteUpdateAsync(n => n.SetProperty(x => x.RelatedSpotId, (Guid?)null), cancellationToken);
 
+        // Captured before the comments themselves are deleted below — needed to resolve reports
+        // filed against them (Report.ContentId has no FK to Comment, so nothing else would find
+        // them once the rows are gone).
+        var commentIds = await db.Comments
+            .Where(c => c.SpotId == spot.Id)
+            .Select(c => c.Id)
+            .ToListAsync(cancellationToken);
+
+        // Otherwise this spot (or a comment on it) escapes moderation entirely: unlike
+        // DeleteReportedContent's admin-initiated deletion, nothing here previously touched
+        // Reports, so a reported user could delete their way out of an open report and leave it
+        // stuck unresolved in the admin queue, pointing at content that no longer exists.
+        await db.Reports
+            .Where(r =>
+                (r.ContentType == ReportedContentType.Spot && r.ContentId == spot.Id)
+                || (r.ContentType == ReportedContentType.Comment && commentIds.Contains(r.ContentId)))
+            .Where(r => r.ResolvedAt == null)
+            .ExecuteUpdateAsync(r => r
+                .SetProperty(x => x.ResolvedAt, DateTimeOffset.UtcNow)
+                .SetProperty(x => x.ResolutionAction, ReportResolutionAction.ContentDeletedByAuthor), cancellationToken);
+
         // Comment/Rating/SavedSpot/CheckIn have a required (non-nullable) SpotId, so unlike
         // Notification.RelatedSpotId there's no "clear the link" option — the rows themselves
         // are now meaningless and would otherwise sit as permanent DB bloat.

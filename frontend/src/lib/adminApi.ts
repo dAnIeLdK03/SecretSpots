@@ -3,7 +3,7 @@ import type { ReportReason } from "@/lib/reportsApi";
 
 export type ReportedContentType = "Spot" | "Comment";
 
-export type ReportResolutionAction = "Dismissed" | "ContentDeleted";
+export type ReportResolutionAction = "Dismissed" | "ContentDeleted" | "ContentDeletedByAuthor";
 
 export interface AdminReport {
   id: string;
