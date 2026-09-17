@@ -53,6 +53,17 @@ public static class RateSpot
                     StatusCodes.Status404NotFound));
             }
 
+            // Same self-farming concern CreateCheckIn already guards against: AverageRating is a
+            // ranking/trust signal shown across the app, and Rating is a per-(Spot,User) upsert —
+            // one account is all it'd take for a creator to hand their own spot a permanent 5.
+            if (spot.CreatedByUserId == userContext.UserId)
+            {
+                return Result<RatingResponse>.Failure(new Error(
+                    RatingsMessageKeys.CannotRateOwnSpot,
+                    localizer[RatingsMessageKeys.CannotRateOwnSpot].Value,
+                    StatusCodes.Status400BadRequest));
+            }
+
             var rating = await db.Ratings.SingleOrDefaultAsync(
                 r => r.SpotId == command.SpotId && r.UserId == userContext.UserId, cancellationToken);
 
@@ -70,18 +81,16 @@ public static class RateSpot
                 db.Ratings.Add(rating);
 
                 // Only on the first rating — this is an upsert (re-rating changes Value on the
-                // same row), and re-notifying on every change would just be spam.
-                if (spot.CreatedByUserId != userContext.UserId)
+                // same row), and re-notifying on every change would just be spam. No need to
+                // guard against self-rating here — the check above already rejected that case.
+                notification = new Notification
                 {
-                    notification = new Notification
-                    {
-                        Id = Guid.NewGuid(),
-                        UserId = spot.CreatedByUserId,
-                        Type = NotificationType.NewRatingOnYourSpot,
-                        RelatedSpotId = spot.Id,
-                    };
-                    db.Notifications.Add(notification);
-                }
+                    Id = Guid.NewGuid(),
+                    UserId = spot.CreatedByUserId,
+                    Type = NotificationType.NewRatingOnYourSpot,
+                    RelatedSpotId = spot.Id,
+                };
+                db.Notifications.Add(notification);
             }
             else
             {

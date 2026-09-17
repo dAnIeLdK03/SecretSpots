@@ -242,10 +242,12 @@ function SpotDetailContent({ id }: { id: string }) {
         </div>
       </div>
 
-      <SpotRatingInput
-        spotId={spot.id}
-        onRated={(stats) => setState({ status: "success", spot: { ...spot, ...stats } })}
-      />
+      {!isOwner && (
+        <SpotRatingInput
+          spotId={spot.id}
+          onRated={(stats) => setState({ status: "success", spot: { ...spot, ...stats } })}
+        />
+      )}
 
       <CommentsSection spotId={spot.id} />
 
