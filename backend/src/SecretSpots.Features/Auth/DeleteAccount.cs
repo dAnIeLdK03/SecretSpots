@@ -94,8 +94,14 @@ public static class DeleteAccount
             // Auth-related rows tied to this account.
             await db.RefreshTokens.Where(t => t.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
             await db.PasswordResetTokens.Where(t => t.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
+            await db.EmailVerificationTokens.Where(t => t.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
             await db.ExternalLogins.Where(l => l.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
             await db.ExternalAuthTransactions.Where(t => t.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
+
+            // PushSubscription.Endpoint/P256dh/Auth are device-identifying push-encryption
+            // secrets — exactly the residual PII an account deletion is supposed to purge, and
+            // with no other code path left to remove them once the account (and its JWT) is gone.
+            await db.PushSubscriptions.Where(p => p.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
 
             db.Users.Remove(user);
             await db.SaveChangesAsync(cancellationToken);
