@@ -177,6 +177,9 @@
   <data name="Ratings.ValueOutOfRange" xml:space="preserve">
     <value>Rating must be between 1 and 5.</value>
   </data>
+  <data name="Ratings.CannotRateOwnSpot" xml:space="preserve">
+    <value>You can't rate your own spot.</value>
+  </data>
   <data name="Reports.SpotNotFound" xml:space="preserve">
     <value>This spot no longer exists.</value>
   </data>

@@ -177,6 +177,9 @@
   <data name="Ratings.ValueOutOfRange" xml:space="preserve">
     <value>Оценката трябва да е между 1 и 5.</value>
   </data>
+  <data name="Ratings.CannotRateOwnSpot" xml:space="preserve">
+    <value>Не можеш да оцениш собствено място.</value>
+  </data>
   <data name="Reports.SpotNotFound" xml:space="preserve">
     <value>Това място вече не съществува.</value>
   </data>
