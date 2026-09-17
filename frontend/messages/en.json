@@ -229,6 +229,7 @@
     "detailsLabel": "Details",
     "resolvedLabel": "Resolved",
     "resolvedSummary": "{action, select, Dismissed {Dismissed} ContentDeleted {Content deleted} other {Resolved}} by {name}",
+    "resolvedByAuthorLabel": "Content deleted by its author",
     "viewSpotLink": "View spot",
     "dismissButton": "Dismiss",
     "deleteContentButton": "Delete content",

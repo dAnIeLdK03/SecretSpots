@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using SecretSpots.Domain;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -40,6 +41,15 @@ public static class DeleteComment
             // but GetSpotComments filters IsDeleted out, so it still disappears from the UI.
             comment.IsDeleted = true;
             comment.UpdatedAt = DateTimeOffset.UtcNow;
+
+            // Otherwise a reported comment's author could delete it themselves to dodge
+            // moderation, leaving the report stuck unresolved forever — same fix as
+            // SpotDeletionCleanup applies for a deleted spot's reports.
+            await db.Reports
+                .Where(r => r.ContentType == ReportedContentType.Comment && r.ContentId == comment.Id && r.ResolvedAt == null)
+                .ExecuteUpdateAsync(r => r
+                    .SetProperty(x => x.ResolvedAt, DateTimeOffset.UtcNow)
+                    .SetProperty(x => x.ResolutionAction, ReportResolutionAction.ContentDeletedByAuthor), cancellationToken);
 
             await db.SaveChangesAsync(cancellationToken);
 
