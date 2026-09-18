@@ -12,8 +12,12 @@ namespace SecretSpots.Features.Tests.Spots;
 
 public class UpdateSpotValidatorTests
 {
-    private readonly UpdateSpot.Validator _validator = new(TestLocalizerFactory.Create(), TestOptionsFactory.R2());
-    private const string ValidPhotoUrl = TestOptionsFactory.PhotoPublicBaseUrl + "/a.jpg";
+    private static readonly Guid ValidatorUserId = Guid.NewGuid();
+
+    private readonly UpdateSpot.Validator _validator =
+        new(TestLocalizerFactory.Create(), TestOptionsFactory.R2(), new FakeUserContext(ValidatorUserId));
+
+    private static readonly string ValidPhotoUrl = $"{TestOptionsFactory.PhotoPublicBaseUrl}/{ValidatorUserId}/a.jpg";
 
     [Fact]
     public void Name_is_required()
@@ -40,6 +44,16 @@ public class UpdateSpotValidatorTests
     {
         var result = _validator.TestValidate(
             new UpdateSpot.Command(Guid.NewGuid(), "Name", "Desc", SpotCategory.Nature, [photoUrl]));
+        result.ShouldHaveValidationErrorFor(c => c.PhotoUrls);
+    }
+
+    [Fact]
+    public void PhotoUrl_belonging_to_a_different_user_is_invalid()
+    {
+        var someoneElsesPhotoUrl = $"{TestOptionsFactory.PhotoPublicBaseUrl}/{Guid.NewGuid()}/a.jpg";
+
+        var result = _validator.TestValidate(
+            new UpdateSpot.Command(Guid.NewGuid(), "Name", "Desc", SpotCategory.Nature, [someoneElsesPhotoUrl]));
         result.ShouldHaveValidationErrorFor(c => c.PhotoUrls);
     }
 

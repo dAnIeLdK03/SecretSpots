@@ -108,7 +108,10 @@ public static class UploadPhoto
                 await image.SaveAsync(outputStream, encoder, cancellationToken);
                 outputStream.Position = 0;
 
-                var key = $"{Guid.NewGuid()}.webp";
+                // Prefixed with the uploader's own id so IsOwnPhotoUrl can enforce that a photo
+                // URL submitted on a spot/check-in actually belongs to whoever is submitting it —
+                // see the comment there for what this closes off.
+                var key = $"{userContext.UserId}/{Guid.NewGuid()}.webp";
                 var url = await photoStorage.UploadAsync(outputStream, "image/webp", key, cancellationToken);
 
                 logger.LogInformation(PhotoLogMessages.PhotoUploaded, key, userContext.UserId);

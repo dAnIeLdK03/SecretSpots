@@ -20,7 +20,13 @@ public static class UrlValidation
     // "{publicBaseUrl}/../evil-bucket/x" (it does start with the prefix as text) while the browser
     // — and Uri.AbsolutePath here — resolve it to "/evil-bucket/x", escaping the intended prefix
     // entirely. Comparing the normalized form is what actually matches what gets fetched.
-    public static bool IsOwnPhotoUrl(string value, string publicBaseUrl)
+    //
+    // ownerUserId requires the key's first path segment (UploadPhoto writes every object under
+    // "{userId}/...") to match the caller — without this, any authenticated user could copy
+    // someone else's public photo URL (a fully legitimate own-bucket URL) into their own spot,
+    // then edit/delete that spot to have UpdateSpot/SpotDeletionCleanup delete the *original*
+    // owner's R2 object out from under their still-live spot/check-in.
+    public static bool IsOwnPhotoUrl(string value, string publicBaseUrl, Guid ownerUserId)
     {
         if (!Uri.TryCreate(value, UriKind.Absolute, out var uri) || !IsHttpUrl(value))
         {
@@ -34,9 +40,16 @@ public static class UrlValidation
 
         var basePathPrefix = baseUri.AbsolutePath.TrimEnd('/') + "/";
 
-        return uri.Scheme == baseUri.Scheme
-            && uri.Host == baseUri.Host
-            && uri.Port == baseUri.Port
-            && uri.AbsolutePath.StartsWith(basePathPrefix, StringComparison.Ordinal);
+        if (uri.Scheme != baseUri.Scheme
+            || uri.Host != baseUri.Host
+            || uri.Port != baseUri.Port
+            || !uri.AbsolutePath.StartsWith(basePathPrefix, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var key = uri.AbsolutePath[basePathPrefix.Length..];
+        var ownerKeyPrefix = ownerUserId.ToString() + "/";
+        return key.StartsWith(ownerKeyPrefix, StringComparison.Ordinal);
     }
 }

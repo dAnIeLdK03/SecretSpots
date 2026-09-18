@@ -14,8 +14,12 @@ namespace SecretSpots.Features.Tests.CheckIns;
 
 public class CreateCheckInValidatorTests
 {
-    private readonly CreateCheckIn.Validator _validator = new(TestLocalizerFactory.Create(), TestOptionsFactory.R2());
-    private const string ValidPhotoUrl = TestOptionsFactory.PhotoPublicBaseUrl + "/a.jpg";
+    private static readonly Guid ValidatorUserId = Guid.NewGuid();
+
+    private readonly CreateCheckIn.Validator _validator =
+        new(TestLocalizerFactory.Create(), TestOptionsFactory.R2(), new FakeUserContext(ValidatorUserId));
+
+    private static readonly string ValidPhotoUrl = $"{TestOptionsFactory.PhotoPublicBaseUrl}/{ValidatorUserId}/a.jpg";
 
     [Theory]
     [InlineData("")]
@@ -26,6 +30,16 @@ public class CreateCheckInValidatorTests
     {
         var result = _validator.TestValidate(
             new CreateCheckIn.Command(Guid.NewGuid(), photoUrl, 42.6977, 23.3219));
+        result.ShouldHaveValidationErrorFor(c => c.PhotoUrl);
+    }
+
+    [Fact]
+    public void PhotoUrl_belonging_to_a_different_user_is_invalid()
+    {
+        var someoneElsesPhotoUrl = $"{TestOptionsFactory.PhotoPublicBaseUrl}/{Guid.NewGuid()}/a.jpg";
+
+        var result = _validator.TestValidate(
+            new CreateCheckIn.Command(Guid.NewGuid(), someoneElsesPhotoUrl, 42.6977, 23.3219));
         result.ShouldHaveValidationErrorFor(c => c.PhotoUrl);
     }
 
