@@ -12,8 +12,12 @@ namespace SecretSpots.Features.Tests.Spots;
 
 public class CreateSpotValidatorTests
 {
-    private readonly CreateSpot.Validator _validator = new(TestLocalizerFactory.Create(), TestOptionsFactory.R2());
-    private const string ValidPhotoUrl = TestOptionsFactory.PhotoPublicBaseUrl + "/a.jpg";
+    private static readonly Guid ValidatorUserId = Guid.NewGuid();
+
+    private readonly CreateSpot.Validator _validator =
+        new(TestLocalizerFactory.Create(), TestOptionsFactory.R2(), new FakeUserContext(ValidatorUserId));
+
+    private static readonly string ValidPhotoUrl = $"{TestOptionsFactory.PhotoPublicBaseUrl}/{ValidatorUserId}/a.jpg";
 
     [Fact]
     public void Name_is_required()
@@ -40,6 +44,19 @@ public class CreateSpotValidatorTests
     {
         var result = _validator.TestValidate(
             new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, [photoUrl], 42.6977, 23.3219));
+        result.ShouldHaveValidationErrorFor(c => c.PhotoUrls);
+    }
+
+    [Fact]
+    public void PhotoUrl_belonging_to_a_different_user_is_invalid()
+    {
+        // A legitimate own-bucket URL — just not one this uploader actually uploaded. Without
+        // the owner-prefix check, a user could copy someone else's photo URL out of a public API
+        // response into their own spot and later delete/edit their way into deleting it from R2.
+        var someoneElsesPhotoUrl = $"{TestOptionsFactory.PhotoPublicBaseUrl}/{Guid.NewGuid()}/a.jpg";
+
+        var result = _validator.TestValidate(
+            new CreateSpot.Command("Name", "Desc", SpotCategory.Nature, [someoneElsesPhotoUrl], 42.6977, 23.3219));
         result.ShouldHaveValidationErrorFor(c => c.PhotoUrls);
     }
 

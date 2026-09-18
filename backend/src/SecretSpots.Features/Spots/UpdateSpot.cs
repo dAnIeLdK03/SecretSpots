@@ -33,7 +33,7 @@ public static class UpdateSpot
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator(IStringLocalizer<SharedResources> localizer, IOptions<R2Options> r2Options)
+        public Validator(IStringLocalizer<SharedResources> localizer, IOptions<R2Options> r2Options, IUserContext userContext)
         {
             RuleFor(c => c.Name)
                 .NotEmpty().WithMessage(localizer[SpotsMessageKeys.NameRequired].Value)
@@ -48,7 +48,7 @@ public static class UpdateSpot
                 .Must(urls => urls.Count <= CreateSpot.MaxPhotoCount).WithMessage(localizer[SpotsMessageKeys.PhotoUrlsTooMany].Value);
 
             RuleForEach(c => c.PhotoUrls)
-                .Must(url => UrlValidation.IsOwnPhotoUrl(url, r2Options.Value.PublicBaseUrl))
+                .Must(url => UrlValidation.IsOwnPhotoUrl(url, r2Options.Value.PublicBaseUrl, userContext.UserId))
                 .WithMessage(localizer[SpotsMessageKeys.PhotoUrlInvalid].Value);
 
             RuleFor(c => c.Category)
