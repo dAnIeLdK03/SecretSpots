@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { SpotsMap } from "@/components/SpotsMap";
 import type { MapViewState } from "@/components/SpotsMap";
@@ -45,21 +45,39 @@ export default function MapPage() {
 
   const locating = geoStatus === "locating";
 
+  const searchControllerRef = useRef<AbortController | null>(null);
+
   const search = useCallback(
     async (center: LatLng, radius: number, category: SpotCategory | "All") => {
+      // Only the latest search may write state — otherwise a slow earlier response
+      // (e.g. an old radius) could land after a newer one and overwrite it.
+      searchControllerRef.current?.abort();
+      const controller = new AbortController();
+      searchControllerRef.current = controller;
+
       setLoadError(null);
       try {
-        const results = await getNearbySpots(center.lat, center.lng, radius, category === "All" ? undefined : category);
+        const results = await getNearbySpots(
+          center.lat,
+          center.lng,
+          radius,
+          category === "All" ? undefined : category,
+          controller.signal,
+        );
+        if (controller.signal.aborted) return;
         setSpots(results.items);
         setTotalNearbyCount(results.totalCount);
         setLastSearchedCenter(center);
         setShowSearchHere(false);
       } catch (err) {
+        if (controller.signal.aborted) return;
         setLoadError(getErrorMessage(err, t("loadError")));
       }
     },
     [t],
   );
+
+  useEffect(() => () => searchControllerRef.current?.abort(), []);
 
   useEffect(() => {
     // Normally already resolved by now — the request was kicked off as soon as
