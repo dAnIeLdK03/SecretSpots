@@ -329,5 +329,14 @@
     "redeeming": "Redeeming...",
     "insufficientBalance": "Not enough crystals",
     "rewardUnavailable": "Currently unavailable"
+  },
+  "Errors": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. You can try again or go back to the home page.",
+    "retry": "Try again",
+    "backHome": "Back to home",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The page you are looking for doesn't exist or has been moved.",
+    "loading": "Loading..."
   }
 }
