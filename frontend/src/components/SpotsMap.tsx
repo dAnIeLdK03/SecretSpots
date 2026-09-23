@@ -72,7 +72,17 @@ export function SpotsMap({
               onSelectSpot(spot);
             }}
           >
-            <div className="h-4 w-4 cursor-pointer rounded-full border-2 border-white bg-red-600 shadow" />
+            <button
+              type="button"
+              aria-label={t("viewSpotLabel", { name: spot.name })}
+              className="h-4 w-4 cursor-pointer rounded-full border-2 border-white bg-red-600 shadow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+              // No onClick here — react-map-gl's Marker attaches its own native 'click' listener
+              // (see marker.js) to the wrapper element it creates around these children, and a
+              // native click bubbles up to it from this button whether triggered by mouse or by
+              // keyboard (Enter/Space on a <button> fires a real click event). Stopping
+              // propagation here would prevent that listener — and the onSelectSpot above —
+              // from ever firing.
+            />
           </Marker>
         ))}
 

@@ -123,7 +123,8 @@
     "reportButton": "Докладвай",
     "loginRequiredToReport": "Трябва да си влязъл/а, за да докладваш това място.",
     "distanceKm": "{value} км",
-    "distanceMeters": "{value} м"
+    "distanceMeters": "{value} м",
+    "viewSpotLabel": "Виж {name}"
   },
   "PhotoUpload": {
     "uploading": "Качване...",
