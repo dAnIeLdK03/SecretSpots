@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { ChangeEvent } from "react";
 import { useTranslations } from "next-intl";
 import { uploadPhoto } from "@/lib/photosApi";
@@ -18,6 +18,7 @@ interface MultiPhotoUploadProps {
 
 export function MultiPhotoUpload({ label, photoUrls, onChange, maxCount = 5, dark = false }: MultiPhotoUploadProps) {
   const t = useTranslations("PhotoUpload");
+  const inputId = useId();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,9 +80,9 @@ export function MultiPhotoUpload({ label, photoUrls, onChange, maxCount = 5, dar
 
   return (
     <div className="flex flex-col gap-2">
-      <span className={`text-sm ${labelClass}`} style={labelStyle}>
+      <label htmlFor={inputId} className={`text-sm ${labelClass}`} style={labelStyle}>
         {label}
-      </span>
+      </label>
 
       {photoUrls.length > 0 ? (
         <ul className="grid grid-cols-3 gap-2">
@@ -123,6 +124,7 @@ export function MultiPhotoUpload({ label, photoUrls, onChange, maxCount = 5, dar
 
       {canAddMore ? (
         <input
+          id={inputId}
           type="file"
           accept="image/*"
           multiple

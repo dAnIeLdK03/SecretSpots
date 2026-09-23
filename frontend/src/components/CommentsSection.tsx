@@ -59,6 +59,7 @@ export function CommentsSection({ spotId }: { spotId: string }) {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder={t("placeholder")}
+            aria-label={t("placeholder")}
             rows={2}
             className="w-full rounded border p-2 text-sm"
             style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}

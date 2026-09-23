@@ -110,6 +110,7 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={t("searchPlaceholder")}
+                aria-label={t("searchPlaceholder")}
                 className="w-full rounded-full px-4 py-3 text-sm placeholder:opacity-60"
                 style={{ backgroundColor: "#f1eddc", color: "var(--fieldmap-ink)" }}
               />

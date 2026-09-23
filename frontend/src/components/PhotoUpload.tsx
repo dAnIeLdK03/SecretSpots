@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { ChangeEvent } from "react";
 import { useTranslations } from "next-intl";
 import { uploadPhoto } from "@/lib/photosApi";
@@ -15,6 +15,7 @@ interface PhotoUploadProps {
 
 export function PhotoUpload({ label, value, onChange, required = true }: PhotoUploadProps) {
   const t = useTranslations("PhotoUpload");
+  const inputId = useId();
   const [preview, setPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,14 +47,15 @@ export function PhotoUpload({ label, value, onChange, required = true }: PhotoUp
 
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+      <label htmlFor={inputId} className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
         {label}
-      </span>
+      </label>
       {previewSrc ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={previewSrc} alt="" className="h-32 w-full rounded object-cover" />
       ) : null}
       <input
+        id={inputId}
         type="file"
         accept="image/*"
         required={required && !value}
