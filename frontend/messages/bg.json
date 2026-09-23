@@ -185,7 +185,8 @@
     "editedLabel": "редактиран",
     "deleteConfirm": "Сигурен/на ли си, че искаш да изтриеш този коментар?",
     "reportButton": "Докладвай",
-    "unknownError": "Нещо се обърка. Опитайте отново."
+    "unknownError": "Нещо се обърка. Опитайте отново.",
+    "editCommentLabel": "Редактирай коментар"
   },
   "Ratings": {
     "summary": "{average} · {count} оценки",

@@ -67,6 +67,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={2}
+            aria-label={t("editCommentLabel")}
             className="w-full rounded border p-2 text-sm"
             style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
           />
