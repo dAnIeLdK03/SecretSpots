@@ -1,14 +1,18 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
 import { Link } from "@/i18n/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { NotificationBell } from "@/components/NotificationBell";
 import { AccountMenu } from "@/components/AccountMenu";
-import { HeroMap } from "@/components/HeroMap";
 import { HeroContourBackground } from "@/components/HeroContourBackground";
 import { useEffect, useState } from "react";
+
+// MapLibre is a large dependency and touches window/canvas, so it's kept out of the landing
+// page's initial bundle — see the same dynamic import on the /map page for why.
+const HeroMap = dynamic(() => import("@/components/HeroMap").then((m) => m.HeroMap), { ssr: false });
 
 interface LandingHeroProps {
   onSearch: (term: string) => void;
