@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { SpotsMap } from "@/components/SpotsMap";
+import dynamic from "next/dynamic";
 import type { MapViewState } from "@/components/SpotsMap";
 import { CreateSpotModal } from "@/components/CreateSpotModal";
 import { getNearbySpots, SPOT_CATEGORIES } from "@/lib/spotsApi";
@@ -16,6 +16,11 @@ import { CategoryIcon } from "@/components/CategoryIcon";
 const SOFIA_CENTER: MapViewState = { longitude: 23.3219, latitude: 42.6977, zoom: 12 };
 const RADIUS_OPTIONS = [1, 5, 20, 50] as const;
 const MOVE_THRESHOLD_DEGREES = 0.005;
+
+// MapLibre is a large dependency and touches window/canvas, so it's excluded from SSR and kept
+// out of every route's initial bundle except this one, which is the only page that needs it
+// mounted immediately (see also HeroMap's own dynamic import on the landing page).
+const SpotsMap = dynamic(() => import("@/components/SpotsMap").then((m) => m.SpotsMap), { ssr: false });
 
 interface LatLng {
   lat: number;
