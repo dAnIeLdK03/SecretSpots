@@ -124,7 +124,10 @@
     "loginRequiredToReport": "Трябва да си влязъл/а, за да докладваш това място.",
     "distanceKm": "{value} км",
     "distanceMeters": "{value} м",
-    "viewSpotLabel": "Виж {name}"
+    "viewSpotLabel": "Виж {name}",
+    "viewOnMap": "Виж на картата",
+    "mapSearchPlaceholder": "Търси място...",
+    "mapSearchNoResults": "Няма намерени места."
   },
   "PhotoUpload": {
     "uploading": "Качване...",

@@ -1,12 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 import type { MapViewState } from "@/components/SpotsMap";
 import { CreateSpotModal } from "@/components/CreateSpotModal";
+import { MapSearchBox } from "@/components/MapSearchBox";
 import { getNearbySpots } from "@/lib/spotsApi";
-import type { NearbySpot, SpotResponse } from "@/lib/spotsApi";
+import type { NearbySpot, SpotResponse, SpotSearchResult } from "@/lib/spotsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useGeolocationStore } from "@/store/useGeolocationStore";
@@ -26,15 +28,35 @@ interface LatLng {
   lng: number;
 }
 
-export default function MapPage() {
+const TARGET_ZOOM = 15;
+
+// Set by the spot detail page's "View on map" link. Returns null for missing or out-of-range
+// values so a hand-edited URL falls back to the normal geolocation flow instead of a broken map.
+function parseTarget(params: URLSearchParams): { lat: number; lng: number; spotId: string | null } | null {
+  const lat = Number(params.get("lat"));
+  const lng = Number(params.get("lng"));
+  if (!params.has("lat") || !params.has("lng")) return null;
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+  return { lat, lng, spotId: params.get("spot") };
+}
+
+function MapPageContent() {
   const t = useTranslations("Spots");
+  const searchParams = useSearchParams();
+  const [target] = useState(() => parseTarget(searchParams));
+  const [highlight, setHighlight] = useState(target ? { lat: target.lat, lng: target.lng } : null);
+  const ignoreGeoRef = useRef(target !== null);
+  const targetAppliedRef = useRef(false);
+  const pendingSelectIdRef = useRef<string | null>(target?.spotId ?? null);
   const tAuth = useTranslations("Auth");
   const authStatus = useAuthStore((state) => state.status);
   const geoStatus = useGeolocationStore((state) => state.status);
   const geoCoords = useGeolocationStore((state) => state.coords);
   const geoErrorReason = useGeolocationStore((state) => state.errorReason);
 
-  const [viewState, setViewState] = useState<MapViewState>(SOFIA_CENTER);
+  const [viewState, setViewState] = useState<MapViewState>(
+    target ? { longitude: target.lng, latitude: target.lat, zoom: TARGET_ZOOM } : SOFIA_CENTER,
+  );
   const [radiusKm, setRadiusKm] = useState<number>(5);
   const [spots, setSpots] = useState<NearbySpot[]>([]);
   const [totalNearbyCount, setTotalNearbyCount] = useState(0);
@@ -64,6 +86,11 @@ export default function MapPage() {
         if (controller.signal.aborted) return;
         setSpots(results.items);
         setTotalNearbyCount(results.totalCount);
+        if (pendingSelectIdRef.current) {
+          const match = results.items.find((item) => item.id === pendingSelectIdRef.current);
+          if (match) setSelectedSpot(match);
+          pendingSelectIdRef.current = null;
+        }
         setLastSearchedCenter(center);
         setShowSearchHere(false);
       } catch (err) {
@@ -77,6 +104,16 @@ export default function MapPage() {
   useEffect(() => () => searchControllerRef.current?.abort(), []);
 
   useEffect(() => {
+    // Arrived via a "View on map" link — stay on that spot instead of jumping to the user's
+    // location. Geolocation is only honored again once they press "Use my location".
+    if (ignoreGeoRef.current) {
+      if (target && !targetAppliedRef.current) {
+        targetAppliedRef.current = true;
+        void search({ lat: target.lat, lng: target.lng }, radiusKm);
+      }
+      return;
+    }
+
     // Normally already resolved by now — the request was kicked off as soon as
     // the app mounted (see AuthProvider), not when this page did. This just
     // reacts to whatever state that request is in, and requests it defensively
@@ -124,7 +161,20 @@ export default function MapPage() {
     setShowSearchHere(movedEnough);
   }
 
+  function handleSearchSelect(spot: SpotSearchResult) {
+    // Same flow as arriving via a "View on map" link: stay on this spot rather than letting a
+    // late geolocation result pull the map away, then open its popup once nearby results land.
+    ignoreGeoRef.current = true;
+    setSelectedSpot(null);
+    setHighlight({ lat: spot.latitude, lng: spot.longitude });
+    pendingSelectIdRef.current = spot.id;
+    setViewState({ longitude: spot.longitude, latitude: spot.latitude, zoom: TARGET_ZOOM });
+    void search({ lat: spot.latitude, lng: spot.longitude }, radiusKm);
+  }
+
   function handleUseMyLocation() {
+    ignoreGeoRef.current = false;
+    setHighlight(null);
     setLoadError(null);
     useGeolocationStore.getState().refreshLocation();
   }
@@ -153,7 +203,8 @@ export default function MapPage() {
 
   return (
     <div className="relative flex-1">
-      <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+      <div className="absolute top-4 left-4 z-10 flex flex-col items-start gap-2">
+        <MapSearchBox onSelect={handleSearchSelect} />
         <label
           className="flex items-center gap-2 rounded px-3 py-2 text-sm shadow"
           style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
@@ -238,6 +289,7 @@ export default function MapPage() {
         onMapClick={handleMapClick}
         selectedSpot={selectedSpot}
         onSelectSpot={setSelectedSpot}
+        highlight={highlight}
       />
 
       {createModalCoords ? (
@@ -249,5 +301,13 @@ export default function MapPage() {
         />
       ) : null}
     </div>
+  );
+}
+
+export default function MapPage() {
+  return (
+    <Suspense fallback={null}>
+      <MapPageContent />
+    </Suspense>
   );
 }

@@ -124,7 +124,10 @@
     "loginRequiredToReport": "You must be logged in to report this spot.",
     "distanceKm": "{value} km",
     "distanceMeters": "{value} m",
-    "viewSpotLabel": "View {name}"
+    "viewSpotLabel": "View {name}",
+    "viewOnMap": "View on map",
+    "mapSearchPlaceholder": "Search for a spot...",
+    "mapSearchNoResults": "No spots found."
   },
   "PhotoUpload": {
     "uploading": "Uploading...",
