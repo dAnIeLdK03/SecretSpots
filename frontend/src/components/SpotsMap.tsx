@@ -1,6 +1,7 @@
 "use client";
 
 import { Map, Marker, Popup } from "react-map-gl/maplibre";
+import { MapPin } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -31,6 +32,8 @@ interface SpotsMapProps {
   onMapClick: (lat: number, lng: number) => void;
   selectedSpot: NearbySpot | null;
   onSelectSpot: (spot: NearbySpot | null) => void;
+  // Exact point to flag with a prominent pin (e.g. arriving from a spot's "View on map" link).
+  highlight?: { lat: number; lng: number } | null;
 }
 
 function formatDistance(distanceKm: number, t: ReturnType<typeof useTranslations>): string {
@@ -48,6 +51,7 @@ export function SpotsMap({
   onMapClick,
   selectedSpot,
   onSelectSpot,
+  highlight,
 }: SpotsMapProps) {
   const t = useTranslations("Spots");
 
@@ -85,6 +89,17 @@ export function SpotsMap({
             />
           </Marker>
         ))}
+
+        {highlight ? (
+          <Marker longitude={highlight.lng} latitude={highlight.lat} anchor="bottom">
+            <MapPin
+              size={40}
+              strokeWidth={1.5}
+              aria-hidden="true"
+              className="pointer-events-none fill-red-600 text-white drop-shadow-lg"
+            />
+          </Marker>
+        ) : null}
 
         {selectedSpot ? (
           <Popup

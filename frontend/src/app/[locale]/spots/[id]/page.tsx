@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { Clock, Tag } from "lucide-react";
+import { Clock, MapPin, Tag } from "lucide-react";
 import { deleteSpot, getSpot } from "@/lib/spotsApi";
 import type { SpotResponse } from "@/lib/spotsApi";
 import { ApiError, getErrorMessage } from "@/lib/apiClient";
@@ -180,6 +180,23 @@ function SpotDetailContent({ id }: { id: string }) {
               {t("createdAtLabel")}
             </dt>
             <dd>{formatRelativeTime(spot.createdAt, locale)}</dd>
+
+            <dt className="flex items-center gap-2" style={{ color: "var(--fieldmap-dim)" }}>
+              <MapPin size={16} />
+              {t("locationLabel")}
+            </dt>
+            <dd className="flex flex-wrap items-center gap-x-2">
+              <span>
+                {spot.latitude.toFixed(5)}, {spot.longitude.toFixed(5)}
+              </span>
+              <Link
+                href={`/map?lat=${spot.latitude}&lng=${spot.longitude}&spot=${spot.id}`}
+                className="underline"
+                style={{ color: "var(--fieldmap-trail)" }}
+              >
+                {t("viewOnMap")}
+              </Link>
+            </dd>
           </dl>
 
           <div>
