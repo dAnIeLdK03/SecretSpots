@@ -5,13 +5,12 @@ import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import type { MapViewState } from "@/components/SpotsMap";
 import { CreateSpotModal } from "@/components/CreateSpotModal";
-import { getNearbySpots, SPOT_CATEGORIES } from "@/lib/spotsApi";
-import type { NearbySpot, SpotCategory, SpotResponse } from "@/lib/spotsApi";
+import { getNearbySpots } from "@/lib/spotsApi";
+import type { NearbySpot, SpotResponse } from "@/lib/spotsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useGeolocationStore } from "@/store/useGeolocationStore";
 import { Link } from "@/i18n/navigation";
-import { CategoryIcon } from "@/components/CategoryIcon";
 
 const SOFIA_CENTER: MapViewState = { longitude: 23.3219, latitude: 42.6977, zoom: 12 };
 const RADIUS_OPTIONS = [1, 5, 20, 50] as const;
@@ -37,7 +36,6 @@ export default function MapPage() {
 
   const [viewState, setViewState] = useState<MapViewState>(SOFIA_CENTER);
   const [radiusKm, setRadiusKm] = useState<number>(5);
-  const [categoryFilter, setCategoryFilter] = useState<SpotCategory | "All">("All");
   const [spots, setSpots] = useState<NearbySpot[]>([]);
   const [totalNearbyCount, setTotalNearbyCount] = useState(0);
   const [selectedSpot, setSelectedSpot] = useState<NearbySpot | null>(null);
@@ -53,7 +51,7 @@ export default function MapPage() {
   const searchControllerRef = useRef<AbortController | null>(null);
 
   const search = useCallback(
-    async (center: LatLng, radius: number, category: SpotCategory | "All") => {
+    async (center: LatLng, radius: number) => {
       // Only the latest search may write state — otherwise a slow earlier response
       // (e.g. an old radius) could land after a newer one and overwrite it.
       searchControllerRef.current?.abort();
@@ -62,13 +60,7 @@ export default function MapPage() {
 
       setLoadError(null);
       try {
-        const results = await getNearbySpots(
-          center.lat,
-          center.lng,
-          radius,
-          category === "All" ? undefined : category,
-          controller.signal,
-        );
+        const results = await getNearbySpots(center.lat, center.lng, radius, undefined, controller.signal);
         if (controller.signal.aborted) return;
         setSpots(results.items);
         setTotalNearbyCount(results.totalCount);
@@ -104,12 +96,12 @@ export default function MapPage() {
     if (geoStatus === "success" && geoCoords) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- reflecting store status, no user event to attach to
       setViewState({ longitude: geoCoords.lng, latitude: geoCoords.lat, zoom: 13 });
-      void search(geoCoords, radiusKm, categoryFilter);
+      void search(geoCoords, radiusKm);
     } else {
       // search() clears loadError as soon as it starts, so set the geolocation
       // error only after kicking it off — otherwise it would be wiped out
       // immediately by search()'s own setLoadError(null).
-      void search({ lat: SOFIA_CENTER.latitude, lng: SOFIA_CENTER.longitude }, radiusKm, categoryFilter);
+      void search({ lat: SOFIA_CENTER.latitude, lng: SOFIA_CENTER.longitude }, radiusKm);
       if (geoStatus === "error") {
         setLoadError(geoErrorReason === "timeout" ? t("geolocationTimeout") : t("geolocationDenied"));
       } else if (geoStatus === "unsupported") {
@@ -121,12 +113,7 @@ export default function MapPage() {
 
   function handleRadiusChange(newRadius: number) {
     setRadiusKm(newRadius);
-    void search({ lat: viewState.latitude, lng: viewState.longitude }, newRadius, categoryFilter);
-  }
-
-  function handleCategoryChange(category: SpotCategory | "All") {
-    setCategoryFilter(category);
-    void search({ lat: viewState.latitude, lng: viewState.longitude }, radiusKm, category);
+    void search({ lat: viewState.latitude, lng: viewState.longitude }, newRadius);
   }
 
   function handleMoveEnd() {
@@ -158,12 +145,6 @@ export default function MapPage() {
   }
 
   function handleSpotCreated(spot: SpotResponse) {
-    // Only add it to the visible pins if it matches whatever category filter is active — a
-    // waterfall created while filtering to "Cafe" shouldn't suddenly show up on the map.
-    if (categoryFilter !== "All" && spot.category !== categoryFilter) {
-      setCreateModalCoords(null);
-      return;
-    }
     const { photoUrls, ...rest } = spot;
     setSpots((prev) => [{ ...rest, photoUrl: photoUrls[0], distanceKm: 0 }, ...prev]);
     setTotalNearbyCount((prev) => prev + 1);
@@ -172,36 +153,7 @@ export default function MapPage() {
 
   return (
     <div className="relative flex-1">
-      <div className="absolute top-4 inset-x-4 z-10 flex gap-2 overflow-x-auto pb-1">
-        <button
-          onClick={() => handleCategoryChange("All")}
-          className="shrink-0 rounded-full px-3 py-2 text-sm font-medium shadow"
-          style={
-            categoryFilter === "All"
-              ? { backgroundColor: "var(--fieldmap-trail)", color: "#f1eddc" }
-              : { backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }
-          }
-        >
-          {t("allCategoriesFilter")}
-        </button>
-        {SPOT_CATEGORIES.map((category) => (
-          <button
-            key={category}
-            onClick={() => handleCategoryChange(category)}
-            className="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium shadow"
-            style={
-              categoryFilter === category
-                ? { backgroundColor: "var(--fieldmap-trail)", color: "#f1eddc" }
-                : { backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }
-            }
-          >
-            <CategoryIcon category={category} size={14} />
-            {t(`category.${category}`)}
-          </button>
-        ))}
-      </div>
-
-      <div className="absolute top-16 left-4 z-10 flex flex-col gap-2">
+      <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
         <label
           className="flex items-center gap-2 rounded px-3 py-2 text-sm shadow"
           style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
@@ -245,8 +197,8 @@ export default function MapPage() {
 
       {showSearchHere ? (
         <button
-          onClick={() => void search({ lat: viewState.latitude, lng: viewState.longitude }, radiusKm, categoryFilter)}
-          className="absolute top-16 left-1/2 z-10 -translate-x-1/2 rounded px-4 py-2 text-sm shadow"
+          onClick={() => void search({ lat: viewState.latitude, lng: viewState.longitude }, radiusKm)}
+          className="absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded px-4 py-2 text-sm shadow"
           style={{ backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }}
         >
           {t("searchThisArea")}
