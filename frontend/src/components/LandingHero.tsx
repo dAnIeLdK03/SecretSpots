@@ -116,7 +116,7 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
                 placeholder={t("searchPlaceholder")}
                 aria-label={t("searchPlaceholder")}
                 className="w-full rounded-full px-4 py-3 text-sm placeholder:opacity-60"
-                style={{ backgroundColor: "#f1eddc", color: "var(--fieldmap-ink)" }}
+                style={{ backgroundColor: "#f1eddc", color: "#2b2a23" }}
               />
               <button
                 type="submit"
