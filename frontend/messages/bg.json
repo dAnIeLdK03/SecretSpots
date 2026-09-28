@@ -343,5 +343,28 @@
     "notFoundTitle": "Страницата не е намерена",
     "notFoundDescription": "Страницата, която търсите, не съществува или е преместена.",
     "loading": "Зареждане..."
+  },
+  "Trails": {
+    "addTrailButton": "Добави маршрут",
+    "tapMapToAddPoint": "Натискай картата, за да добавяш точки, после завърши",
+    "undoPoint": "Премахни последната точка",
+    "finishTrail": "Завърши",
+    "cancelTrail": "Отказ",
+    "minPointsHint": "Добави поне 2 точки",
+    "createTitle": "Добави пътеходен маршрут",
+    "nameLabel": "Име",
+    "descriptionLabel": "Описание",
+    "photoUrlLabel": "Снимки",
+    "distanceLabel": "{value} км",
+    "cancelButton": "Отказ",
+    "creating": "Създаване...",
+    "createButton": "Създай",
+    "unknownError": "Нещо се обърка. Опитай отново.",
+    "loadError": "Неуспешно зареждане на маршрутите наблизо.",
+    "deleteButton": "Изтрий",
+    "deleteConfirm": "Да се изтрие ли този маршрут? Това не може да се отмени.",
+    "notYourTrail": "Можеш да триеш само маршрути, които си добавил/а.",
+    "authorLabel": "Добавено от",
+    "loginRequiredToCreate": "Трябва да си влязъл/а, за да добавиш маршрут."
   }
 }
