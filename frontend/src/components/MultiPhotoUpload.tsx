@@ -21,10 +21,14 @@ export function MultiPhotoUpload({ label, photoUrls, onChange, maxCount = 5, dar
   const inputId = useId();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Firefox can leave a file input stuck refusing to reopen its picker after its value is
+  // reset via JS (`event.target.value = ""`) inside a handler that does async work — bumping
+  // this key forces React to swap in a fresh native <input> after every selection instead.
+  const [inputKey, setInputKey] = useState(0);
 
   async function handleFilesChange(event: ChangeEvent<HTMLInputElement>) {
     const selected = Array.from(event.target.files ?? []);
-    event.target.value = "";
+    setInputKey((k) => k + 1);
     if (selected.length === 0) return;
 
     // Silently cap at the remaining slots — the input becomes hidden at maxCount anyway,
@@ -124,6 +128,7 @@ export function MultiPhotoUpload({ label, photoUrls, onChange, maxCount = 5, dar
 
       {canAddMore ? (
         <input
+          key={inputKey}
           id={inputId}
           type="file"
           accept="image/*"

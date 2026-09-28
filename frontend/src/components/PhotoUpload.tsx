@@ -19,10 +19,14 @@ export function PhotoUpload({ label, value, onChange, required = true }: PhotoUp
   const [preview, setPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Firefox can leave a file input stuck refusing to reopen its picker after its value is
+  // reset via JS (`event.target.value = ""`) inside a handler that does async work — bumping
+  // this key forces React to swap in a fresh native <input> after every selection instead.
+  const [inputKey, setInputKey] = useState(0);
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    event.target.value = "";
+    setInputKey((k) => k + 1);
     if (!file) return;
 
     const objectUrl = URL.createObjectURL(file);
@@ -55,6 +59,7 @@ export function PhotoUpload({ label, value, onChange, required = true }: PhotoUp
         <img src={previewSrc} alt="" className="h-32 w-full rounded object-cover" />
       ) : null}
       <input
+        key={inputKey}
         id={inputId}
         type="file"
         accept="image/*"
