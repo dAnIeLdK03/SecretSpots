@@ -343,5 +343,28 @@
     "notFoundTitle": "Page not found",
     "notFoundDescription": "The page you are looking for doesn't exist or has been moved.",
     "loading": "Loading..."
+  },
+  "Trails": {
+    "addTrailButton": "Add a trail",
+    "tapMapToAddPoint": "Tap the map to add points, then finish",
+    "undoPoint": "Undo last point",
+    "finishTrail": "Finish",
+    "cancelTrail": "Cancel",
+    "minPointsHint": "Add at least 2 points",
+    "createTitle": "Add a hiking trail",
+    "nameLabel": "Name",
+    "descriptionLabel": "Description",
+    "photoUrlLabel": "Photos",
+    "distanceLabel": "{value} km",
+    "cancelButton": "Cancel",
+    "creating": "Creating...",
+    "createButton": "Create",
+    "unknownError": "Something went wrong. Please try again.",
+    "loadError": "Failed to load nearby trails.",
+    "deleteButton": "Delete",
+    "deleteConfirm": "Delete this trail? This cannot be undone.",
+    "notYourTrail": "You can only delete trails you added.",
+    "authorLabel": "Added by",
+    "loginRequiredToCreate": "You must be logged in to add a trail."
   }
 }

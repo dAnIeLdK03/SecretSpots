@@ -9,6 +9,7 @@ public interface IAppDbContext
     DbSet<User> Users { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<Spot> Spots { get; }
+    DbSet<Trail> Trails { get; }
     DbSet<CheckIn> CheckIns { get; }
     DbSet<Business> Businesses { get; }
     DbSet<Reward> Rewards { get; }
