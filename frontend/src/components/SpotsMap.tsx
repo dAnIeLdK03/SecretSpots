@@ -12,6 +12,14 @@ import { CategoryIcon } from "./CategoryIcon";
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 const TRAILS_LAYER_ID = "trails-line";
 
+// The liberty style already renders OSM footpaths/tracks (highway=path/footway/track), just as
+// thin white dashes only from zoom 14 — easy to miss against most basemap colors and too subtle
+// to actually trace a hiking route by eye. This re-highlights the same "openmaptiles"/
+// "transportation" source-layer data the style itself uses (no separate fetch/Source needed)
+// with a bold dashed line, one zoom level earlier, so a real trail is visible while placing
+// points for it.
+const HIKING_PATHS_LAYER_ID = "hiking-paths-highlight";
+
 // Keeps the map framed on Bulgaria — the whole app is scoped to Bulgarian spots, so panning or
 // zooming out to see the rest of the world/Sofia-scale-only tiles isn't useful. Bounds are
 // Bulgaria's bbox with a small buffer so border-area spots aren't clipped.
@@ -107,6 +115,21 @@ export function SpotsMap({
         maxBounds={BULGARIA_BOUNDS}
         style={{ width: "100%", height: "100%" }}
       >
+        <Layer
+          id={HIKING_PATHS_LAYER_ID}
+          type="line"
+          source="openmaptiles"
+          source-layer="transportation"
+          minzoom={13}
+          filter={["match", ["get", "class"], ["path", "track"], true, false]}
+          layout={{ "line-cap": "round", "line-join": "round" }}
+          paint={{
+            "line-color": "#b45a24",
+            "line-width": ["interpolate", ["linear"], ["zoom"], 13, 1.5, 18, 4],
+            "line-dasharray": [2, 1.5],
+          }}
+        />
+
         {trails.length > 0 ? (
           <Source id="trails" type="geojson" data={trailsToFeatureCollection(trails)}>
             <Layer
