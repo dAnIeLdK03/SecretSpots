@@ -6,14 +6,10 @@ import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import type { MapViewState } from "@/components/SpotsMap";
 import { CreateSpotModal } from "@/components/CreateSpotModal";
-import { CreateTrailModal } from "@/components/CreateTrailModal";
 import { MapSearchBox } from "@/components/MapSearchBox";
 import { getNearbySpots } from "@/lib/spotsApi";
 import type { NearbySpot, SpotResponse, SpotSearchResult } from "@/lib/spotsApi";
-import { getNearbyTrails, deleteTrail as deleteTrailRequest } from "@/lib/trailsApi";
-import type { NearbyTrail, TrailPoint, TrailResponse } from "@/lib/trailsApi";
 import { getErrorMessage } from "@/lib/apiClient";
-import { haversineMeters } from "@/lib/haversine";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useGeolocationStore } from "@/store/useGeolocationStore";
 import { Link } from "@/i18n/navigation";
@@ -46,7 +42,6 @@ function parseTarget(params: URLSearchParams): { lat: number; lng: number; spotI
 
 function MapPageContent() {
   const t = useTranslations("Spots");
-  const tTrails = useTranslations("Trails");
   const searchParams = useSearchParams();
   const [target] = useState(() => parseTarget(searchParams));
   const [highlight, setHighlight] = useState(target ? { lat: target.lat, lng: target.lng } : null);
@@ -55,7 +50,6 @@ function MapPageContent() {
   const pendingSelectIdRef = useRef<string | null>(target?.spotId ?? null);
   const tAuth = useTranslations("Auth");
   const authStatus = useAuthStore((state) => state.status);
-  const currentUserId = useAuthStore((state) => state.user?.id ?? null);
   const geoStatus = useGeolocationStore((state) => state.status);
   const geoCoords = useGeolocationStore((state) => state.coords);
   const geoErrorReason = useGeolocationStore((state) => state.errorReason);
@@ -71,15 +65,8 @@ function MapPageContent() {
   const [showSearchHere, setShowSearchHere] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [createModalCoords, setCreateModalCoords] = useState<LatLng | null>(null);
-  const [loginPromptFor, setLoginPromptFor] = useState<"spot" | "trail" | null>(null);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [placingSpot, setPlacingSpot] = useState(false);
-
-  const [trails, setTrails] = useState<NearbyTrail[]>([]);
-  const [selectedTrail, setSelectedTrail] = useState<NearbyTrail | null>(null);
-  const [drawingTrail, setDrawingTrail] = useState(false);
-  const [trailPoints, setTrailPoints] = useState<TrailPoint[]>([]);
-  const [showCreateTrailModal, setShowCreateTrailModal] = useState(false);
-  const [trailError, setTrailError] = useState<string | null>(null);
 
   const locating = geoStatus === "locating";
 
@@ -95,14 +82,10 @@ function MapPageContent() {
 
       setLoadError(null);
       try {
-        const [results, trailResults] = await Promise.all([
-          getNearbySpots(center.lat, center.lng, radius, undefined, controller.signal),
-          getNearbyTrails(center.lat, center.lng, radius, controller.signal),
-        ]);
+        const results = await getNearbySpots(center.lat, center.lng, radius, undefined, controller.signal);
         if (controller.signal.aborted) return;
         setSpots(results.items);
         setTotalNearbyCount(results.totalCount);
-        setTrails(trailResults.items);
         if (pendingSelectIdRef.current) {
           const match = results.items.find((item) => item.id === pendingSelectIdRef.current);
           if (match) setSelectedSpot(match);
@@ -197,10 +180,6 @@ function MapPageContent() {
   }
 
   function handleMapClick(lat: number, lng: number) {
-    if (drawingTrail) {
-      setTrailPoints((prev) => [...prev, { latitude: lat, longitude: lng }]);
-      return;
-    }
     if (!placingSpot) return;
     setPlacingSpot(false);
     setCreateModalCoords({ lat, lng });
@@ -208,12 +187,10 @@ function MapPageContent() {
 
   function handleToggleAddSpot() {
     if (authStatus !== "authenticated") {
-      setLoginPromptFor("spot");
+      setShowLoginPrompt(true);
       return;
     }
-    setLoginPromptFor(null);
-    setDrawingTrail(false);
-    setTrailPoints([]);
+    setShowLoginPrompt(false);
     setPlacingSpot((wasPlacing) => !wasPlacing);
   }
 
@@ -222,70 +199,6 @@ function MapPageContent() {
     setSpots((prev) => [{ ...rest, photoUrl: photoUrls[0], distanceKm: 0 }, ...prev]);
     setTotalNearbyCount((prev) => prev + 1);
     setCreateModalCoords(null);
-  }
-
-  function handleToggleAddTrail() {
-    if (authStatus !== "authenticated") {
-      setLoginPromptFor("trail");
-      return;
-    }
-    setLoginPromptFor(null);
-    setPlacingSpot(false);
-    if (drawingTrail) {
-      setDrawingTrail(false);
-      setTrailPoints([]);
-    } else {
-      setDrawingTrail(true);
-    }
-  }
-
-  function handleUndoTrailPoint() {
-    setTrailPoints((prev) => prev.slice(0, -1));
-  }
-
-  function trailDrawingDistanceMeters(points: TrailPoint[]): number {
-    let total = 0;
-    for (let i = 1; i < points.length; i++) {
-      total += haversineMeters(points[i - 1].latitude, points[i - 1].longitude, points[i].latitude, points[i].longitude);
-    }
-    return total;
-  }
-
-  function handleFinishTrail() {
-    if (trailPoints.length < 2) return;
-    setShowCreateTrailModal(true);
-  }
-
-  function handleTrailCreated(trail: TrailResponse) {
-    setTrails((prev) => [
-      {
-        id: trail.id,
-        name: trail.name,
-        description: trail.description,
-        photoUrl: trail.photoUrls[0],
-        points: trail.points,
-        distanceMeters: trail.distanceMeters,
-        createdByUserId: trail.createdByUserId,
-        createdAt: trail.createdAt,
-      },
-      ...prev,
-    ]);
-    setShowCreateTrailModal(false);
-    setDrawingTrail(false);
-    setTrailPoints([]);
-  }
-
-  async function handleDeleteTrail(trail: NearbyTrail) {
-    if (!window.confirm(tTrails("deleteConfirm"))) return;
-
-    setTrailError(null);
-    try {
-      await deleteTrailRequest(trail.id);
-      setTrails((prev) => prev.filter((t) => t.id !== trail.id));
-      setSelectedTrail(null);
-    } catch (err) {
-      setTrailError(getErrorMessage(err, tTrails("unknownError")));
-    }
   }
 
   return (
@@ -343,71 +256,25 @@ function MapPageContent() {
         </button>
       ) : null}
 
-      {drawingTrail ? (
-        <div
-          className="absolute bottom-24 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded px-3 py-2 text-sm shadow-lg"
-          style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
-        >
-          <span>
-            {trailPoints.length < 2 ? tTrails("minPointsHint") : tTrails("tapMapToAddPoint")} ({trailPoints.length})
-          </span>
-          <button onClick={handleUndoTrailPoint} disabled={trailPoints.length === 0} className="underline disabled:opacity-40">
-            {tTrails("undoPoint")}
-          </button>
-          <button
-            onClick={handleFinishTrail}
-            disabled={trailPoints.length < 2}
-            className="rounded px-2 py-1 font-medium disabled:opacity-40"
-            style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
-          >
-            {tTrails("finishTrail")}
-          </button>
-          <button onClick={handleToggleAddTrail} className="underline">
-            {tTrails("cancelTrail")}
-          </button>
-        </div>
-      ) : null}
+      <button
+        onClick={handleToggleAddSpot}
+        aria-pressed={placingSpot}
+        className="absolute right-6 bottom-6 z-10 rounded-full px-4 py-3 text-sm shadow-lg"
+        style={
+          placingSpot
+            ? { backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)", boxShadow: "0 0 0 4px rgba(181,74,36,0.25)" }
+            : { backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }
+        }
+      >
+        {placingSpot ? t("tapMapToPlace") : t("addAtMyLocation")}
+      </button>
 
-      {trailError ? (
-        <div className="absolute bottom-24 left-1/2 z-10 -translate-x-1/2 rounded bg-red-50 dark:bg-red-950 px-3 py-2 text-sm text-red-700 dark:text-red-400 shadow">
-          {trailError}
-        </div>
-      ) : null}
-
-      <div className="absolute right-6 bottom-6 z-10 flex flex-col items-end gap-2">
-        <button
-          onClick={handleToggleAddTrail}
-          aria-pressed={drawingTrail}
-          className="rounded-full px-4 py-3 text-sm shadow-lg"
-          style={
-            drawingTrail
-              ? { backgroundColor: "#2563eb", color: "#fff", boxShadow: "0 0 0 4px rgba(37,99,235,0.25)" }
-              : { backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }
-          }
-        >
-          {tTrails("addTrailButton")}
-        </button>
-
-        <button
-          onClick={handleToggleAddSpot}
-          aria-pressed={placingSpot}
-          className="rounded-full px-4 py-3 text-sm shadow-lg"
-          style={
-            placingSpot
-              ? { backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)", boxShadow: "0 0 0 4px rgba(181,74,36,0.25)" }
-              : { backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }
-          }
-        >
-          {placingSpot ? t("tapMapToPlace") : t("addAtMyLocation")}
-        </button>
-      </div>
-
-      {loginPromptFor ? (
+      {showLoginPrompt ? (
         <div
           className="absolute bottom-6 left-6 z-10 rounded px-4 py-3 text-sm shadow"
           style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
         >
-          {loginPromptFor === "spot" ? t("loginRequiredToCreate") : tTrails("loginRequiredToCreate")}{" "}
+          {t("loginRequiredToCreate")}{" "}
           <Link href="/login" className="underline">
             {tAuth("loginTitle")}
           </Link>
@@ -423,12 +290,6 @@ function MapPageContent() {
         selectedSpot={selectedSpot}
         onSelectSpot={setSelectedSpot}
         highlight={highlight}
-        trails={trails}
-        selectedTrail={selectedTrail}
-        onSelectTrail={setSelectedTrail}
-        currentUserId={currentUserId}
-        onDeleteTrail={handleDeleteTrail}
-        drawingPoints={drawingTrail ? trailPoints : undefined}
       />
 
       {createModalCoords ? (
@@ -437,15 +298,6 @@ function MapPageContent() {
           longitude={createModalCoords.lng}
           onClose={() => setCreateModalCoords(null)}
           onCreated={handleSpotCreated}
-        />
-      ) : null}
-
-      {showCreateTrailModal ? (
-        <CreateTrailModal
-          points={trailPoints}
-          distanceMeters={trailDrawingDistanceMeters(trailPoints)}
-          onClose={() => setShowCreateTrailModal(false)}
-          onCreated={handleTrailCreated}
         />
       ) : null}
     </div>

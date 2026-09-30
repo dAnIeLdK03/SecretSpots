@@ -34,7 +34,6 @@ using SecretSpots.Features.Reports;
 using SecretSpots.Features.Rewards;
 using SecretSpots.Features.SavedSpots;
 using SecretSpots.Features.Spots;
-using SecretSpots.Features.Trails;
 using WebPush;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -424,7 +423,6 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 
 app.MapAuthEndpoints();
 app.MapSpotsEndpoints();
-app.MapTrailsEndpoints();
 app.MapCheckInsEndpoints();
 app.MapCommentsEndpoints();
 app.MapRatingsEndpoints();

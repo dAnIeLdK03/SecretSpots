@@ -553,46 +553,6 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                     b.ToTable("Spots");
                 });
 
-            modelBuilder.Entity("SecretSpots.Domain.Trail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("DistanceMeters")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<LineString>("Path")
-                        .IsRequired()
-                        .HasColumnType("geography (LineString, 4326)");
-
-                    b.Property<List<string>>("PhotoUrls")
-                        .IsRequired()
-                        .HasColumnType("text[]");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Path");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Path"), "GIST");
-
-                    b.ToTable("Trails");
-                });
-
             modelBuilder.Entity("SecretSpots.Domain.User", b =>
                 {
                     b.Property<Guid>("Id")

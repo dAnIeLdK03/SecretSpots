@@ -126,42 +126,6 @@
   <data name="Spots.PageSizeOutOfRange" xml:space="preserve">
     <value>Размерът на страницата трябва да е между 1 и 100.</value>
   </data>
-  <data name="Trails.NameRequired" xml:space="preserve">
-    <value>Името е задължително.</value>
-  </data>
-  <data name="Trails.NameTooLong" xml:space="preserve">
-    <value>Името трябва да е най-много 100 знака.</value>
-  </data>
-  <data name="Trails.DescriptionRequired" xml:space="preserve">
-    <value>Описанието е задължително.</value>
-  </data>
-  <data name="Trails.DescriptionTooLong" xml:space="preserve">
-    <value>Описанието трябва да е най-много 2000 знака.</value>
-  </data>
-  <data name="Trails.PhotoUrlRequired" xml:space="preserve">
-    <value>Нужна е поне една снимка.</value>
-  </data>
-  <data name="Trails.PhotoUrlInvalid" xml:space="preserve">
-    <value>Един или повече адреси на снимки са невалидни.</value>
-  </data>
-  <data name="Trails.PhotoUrlsTooMany" xml:space="preserve">
-    <value>Можеш да добавиш най-много 5 снимки.</value>
-  </data>
-  <data name="Trails.PointsRequired" xml:space="preserve">
-    <value>Маршрутът трябва да има поне 2 точки.</value>
-  </data>
-  <data name="Trails.PointsTooMany" xml:space="preserve">
-    <value>Маршрутът може да има най-много 500 точки.</value>
-  </data>
-  <data name="Trails.RadiusOutOfRange" xml:space="preserve">
-    <value>Радиусът трябва да е между 0 и 100 км.</value>
-  </data>
-  <data name="Trails.NotFound" xml:space="preserve">
-    <value>Маршрутът не е намерен.</value>
-  </data>
-  <data name="Trails.NotYourTrail" xml:space="preserve">
-    <value>Можеш да триеш само маршрути, които си добавил/а.</value>
-  </data>
   <data name="CheckIns.SpotNotFound" xml:space="preserve">
     <value>Това място вече не съществува.</value>
   </data>
