@@ -80,16 +80,22 @@ export default function BusinessesPage() {
       ) : (
         <ul className="flex flex-col gap-3">
           {businesses.map((business) => (
-            <li key={business.id} className="rounded-md border p-4" style={{ borderColor: "var(--fieldmap-contour)" }}>
-              <Link href={`/businesses/${business.id}`} className="font-medium underline">
-                {business.name}
+            <li key={business.id}>
+              <Link
+                href={`/businesses/${business.id}`}
+                className="group flex flex-col gap-1 rounded-md border p-4 shadow-sm transition hover:shadow-md"
+                style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-card)" }}
+              >
+                <h2 className="font-semibold" style={{ color: "var(--fieldmap-ink)" }}>
+                  {business.name}
+                </h2>
+                <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+                  {business.description}
+                </p>
+                <p className="mt-1 text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+                  {formatDistance(business.distanceKm, t)}
+                </p>
               </Link>
-              <p className="mt-1 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-                {business.description}
-              </p>
-              <p className="mt-2 text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-                {formatDistance(business.distanceKm, t)}
-              </p>
             </li>
           ))}
         </ul>
