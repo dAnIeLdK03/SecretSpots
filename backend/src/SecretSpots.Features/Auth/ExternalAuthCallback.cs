@@ -95,10 +95,10 @@ public static class ExternalAuthCallback
                     Id = Guid.NewGuid(),
                     Email = normalizedEmail,
                     DisplayName = userInfo.DisplayName,
-                    CrystalBalance = crystalsOptions.Value.StartingBalance,
                     IsEmailVerified = userInfo.EmailVerified,
                 };
                 db.Users.Add(user);
+                db.CrystalWallets.Add(new CrystalWallet { UserId = user.Id, Balance = crystalsOptions.Value.StartingBalance });
             }
 
             db.ExternalLogins.Add(new ExternalLogin

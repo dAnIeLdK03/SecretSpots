@@ -56,8 +56,8 @@ public static class RedeemReward
                     StatusCodes.Status400BadRequest));
             }
 
-            var user = await db.Users.SingleOrDefaultAsync(u => u.Id == userContext.UserId, cancellationToken);
-            if (user is null)
+            var wallet = await db.CrystalWallets.SingleOrDefaultAsync(w => w.UserId == userContext.UserId, cancellationToken);
+            if (wallet is null)
             {
                 return Result<RewardRedemptionResponse>.Failure(new Error(
                     AuthMessageKeys.UserNotFound,
@@ -65,7 +65,7 @@ public static class RedeemReward
                     StatusCodes.Status404NotFound));
             }
 
-            if (user.CrystalBalance < reward.CrystalCost)
+            if (wallet.Balance < reward.CrystalCost)
             {
                 return Result<RewardRedemptionResponse>.Failure(new Error(
                     RewardsMessageKeys.InsufficientBalance,
@@ -73,20 +73,30 @@ public static class RedeemReward
                     StatusCodes.Status400BadRequest));
             }
 
-            user.CrystalBalance -= reward.CrystalCost;
+            wallet.Balance -= reward.CrystalCost;
 
             var redemption = new RewardRedemption
             {
                 Id = Guid.NewGuid(),
                 RewardId = reward.Id,
                 BusinessId = reward.BusinessId,
-                UserId = user.Id,
+                UserId = userContext.UserId,
                 CrystalsSpent = reward.CrystalCost,
                 RewardTitle = reward.Title,
                 BusinessName = business.Name,
             };
 
+            var crystalTransaction = new CrystalTransaction
+            {
+                Id = Guid.NewGuid(),
+                UserId = userContext.UserId,
+                Amount = -reward.CrystalCost,
+                Reason = CrystalTransactionReason.RewardRedemption,
+                RelatedRedemptionId = redemption.Id,
+            };
+
             db.RewardRedemptions.Add(redemption);
+            db.CrystalTransactions.Add(crystalTransaction);
 
             try
             {
@@ -102,10 +112,10 @@ public static class RedeemReward
                     StatusCodes.Status409Conflict));
             }
 
-            logger.LogInformation(RewardsLogMessages.RewardRedeemed, reward.Id, user.Id, redemption.CrystalsSpent);
+            logger.LogInformation(RewardsLogMessages.RewardRedeemed, reward.Id, userContext.UserId, redemption.CrystalsSpent);
 
             return Result<RewardRedemptionResponse>.Success(new RewardRedemptionResponse(
-                redemption.Id, reward.Id, redemption.CrystalsSpent, user.CrystalBalance, redemption.CreatedAt));
+                redemption.Id, reward.Id, redemption.CrystalsSpent, wallet.Balance, redemption.CreatedAt));
         }
     }
 }

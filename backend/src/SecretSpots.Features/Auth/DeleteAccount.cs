@@ -103,6 +103,9 @@ public static class DeleteAccount
             // with no other code path left to remove them once the account (and its JWT) is gone.
             await db.PushSubscriptions.Where(p => p.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
 
+            await db.CrystalTransactions.Where(t => t.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
+            await db.CrystalWallets.Where(w => w.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
+
             db.Users.Remove(user);
             await db.SaveChangesAsync(cancellationToken);
 
