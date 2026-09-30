@@ -10,7 +10,6 @@ using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Storage;
 using SecretSpots.Features.Spots;
-using SecretSpots.Features.Trails;
 
 namespace SecretSpots.Features.Auth;
 
@@ -65,23 +64,6 @@ public static class DeleteAccount
             foreach (var business in ownedBusinesses)
             {
                 await BusinessDeletionCleanup.DeleteAsync(db, business, cancellationToken);
-            }
-
-            var ownedTrails = await db.Trails.Where(t => t.CreatedByUserId == user.Id).ToListAsync(cancellationToken);
-            foreach (var trail in ownedTrails)
-            {
-                foreach (var photoUrl in trail.PhotoUrls)
-                {
-                    try
-                    {
-                        await photoStorage.DeleteAsync(photoUrl, cancellationToken);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.LogWarning(ex, "Failed to delete photo {PhotoUrl} for deleted trail {TrailId}.", photoUrl, trail.Id);
-                    }
-                }
-                db.Trails.Remove(trail);
             }
 
             // Ratings this user left on spots someone else owns — deleting them changes those

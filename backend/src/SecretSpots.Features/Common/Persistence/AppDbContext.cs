@@ -9,7 +9,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<User> Users => Set<User>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Spot> Spots => Set<Spot>();
-    public DbSet<Trail> Trails => Set<Trail>();
     public DbSet<CheckIn> CheckIns => Set<CheckIn>();
     public DbSet<Business> Businesses => Set<Business>();
     public DbSet<Reward> Rewards => Set<Reward>();
@@ -64,14 +63,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<Spot>()
             .HasIndex(s => s.Location)
-            .HasMethod("GIST");
-
-        modelBuilder.Entity<Trail>()
-            .Property(t => t.Path)
-            .HasColumnType("geography (LineString, 4326)");
-
-        modelBuilder.Entity<Trail>()
-            .HasIndex(t => t.Path)
             .HasMethod("GIST");
 
         modelBuilder.Entity<Notification>()
