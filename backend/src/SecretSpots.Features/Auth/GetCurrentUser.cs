@@ -35,10 +35,14 @@ public static class GetCurrentUser
                     StatusCodes.Status404NotFound));
             }
 
+            // Wallets are created alongside every user (Register/ExternalAuthCallback), so a
+            // missing one only happens for a pre-existing account the backfill missed.
+            var wallet = await db.CrystalWallets.SingleOrDefaultAsync(w => w.UserId == user.Id, cancellationToken);
+
             logger.LogInformation(AuthLogMessages.UserProfileRetrieved, user.Id);
 
             return Result<Response>.Success(
-                new Response(user.Id, user.Email, user.DisplayName, user.CrystalBalance, user.IsEmailVerified, user.IsAdmin));
+                new Response(user.Id, user.Email, user.DisplayName, wallet?.Balance ?? 0, user.IsEmailVerified, user.IsAdmin));
         }
     }
 }

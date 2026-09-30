@@ -85,11 +85,11 @@ public static class Register
                 Email = normalizedEmail,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(command.Password, workFactor: 12),
                 DisplayName = command.DisplayName.Trim(),
-                CrystalBalance = crystalsOptions.Value.StartingBalance,
             };
 
             await using var transaction = await db.BeginTransactionAsync(cancellationToken);
             db.Users.Add(user);
+            db.CrystalWallets.Add(new CrystalWallet { UserId = user.Id, Balance = crystalsOptions.Value.StartingBalance });
 
             try
             {

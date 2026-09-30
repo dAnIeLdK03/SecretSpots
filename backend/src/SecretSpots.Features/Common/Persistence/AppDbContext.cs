@@ -9,6 +9,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<User> Users => Set<User>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Spot> Spots => Set<Spot>();
+    public DbSet<CrystalWallet> CrystalWallets => Set<CrystalWallet>();
+    public DbSet<CrystalTransaction> CrystalTransactions => Set<CrystalTransaction>();
     public DbSet<CheckIn> CheckIns => Set<CheckIn>();
     public DbSet<Business> Businesses => Set<Business>();
     public DbSet<Reward> Rewards => Set<Reward>();
@@ -49,9 +51,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasIndex(u => u.Email)
             .IsUnique();
 
-        // Guards CrystalBalance against lost updates from concurrent check-ins/redemptions —
+        modelBuilder.Entity<CrystalWallet>().HasKey(w => w.UserId);
+
+        // Guards Balance against lost updates from concurrent check-ins/redemptions —
         // xmin is Postgres's built-in row-version system column, so this needs no migration.
-        modelBuilder.Entity<User>().UseXminAsConcurrencyToken();
+        modelBuilder.Entity<CrystalWallet>().UseXminAsConcurrencyToken();
+
+        modelBuilder.Entity<CrystalTransaction>()
+            .HasIndex(t => new { t.UserId, t.CreatedAt });
 
         modelBuilder.Entity<RefreshToken>()
             .HasIndex(r => r.Token)
