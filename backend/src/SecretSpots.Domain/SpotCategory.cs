@@ -18,4 +18,5 @@ public enum SpotCategory
     RockFormation,
     RailwayTunnel,
     FortressRuins,
+    Other,
 }

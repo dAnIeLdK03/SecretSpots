@@ -89,7 +89,7 @@ export function MapSearchBox({ onSelect }: MapSearchBoxProps) {
         <ul
           id={listId}
           role="listbox"
-          className="absolute top-full right-0 left-0 mt-1 overflow-hidden rounded shadow-lg"
+          className="absolute top-full left-0 z-20 mt-1 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded shadow-lg"
           style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
         >
           {results.length === 0 ? (
@@ -105,7 +105,7 @@ export function MapSearchBox({ onSelect }: MapSearchBoxProps) {
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-black/5 dark:hover:bg-white/5"
                 >
                   <CategoryIcon category={spot.category} size={14} />
-                  <span className="truncate">{spot.name}</span>
+                  <span className="min-w-0 break-words">{spot.name}</span>
                 </button>
               </li>
             ))

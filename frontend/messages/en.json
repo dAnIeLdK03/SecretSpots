@@ -79,7 +79,8 @@
       "CampingSpot": "Camping spot",
       "RockFormation": "Rock formation",
       "RailwayTunnel": "Abandoned railway or tunnel",
-      "FortressRuins": "Fortress ruins"
+      "FortressRuins": "Fortress ruins",
+      "Other": "Other"
     },
     "createTitle": "Add Your Secret Spot",
     "nameLabel": "Name",

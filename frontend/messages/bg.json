@@ -79,7 +79,8 @@
       "CampingSpot": "Място за къмпинг",
       "RockFormation": "Скално образувание",
       "RailwayTunnel": "Изоставена жп линия/тунел",
-      "FortressRuins": "Руини на крепост"
+      "FortressRuins": "Руини на крепост",
+      "Other": "Други"
     },
     "createTitle": "Добави своето тайно място",
     "nameLabel": "Име",

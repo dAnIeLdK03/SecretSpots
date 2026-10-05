@@ -19,14 +19,14 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --fieldmap-paper: #1a1712;
-    --fieldmap-paper-light: #252017;
-    --fieldmap-ink: #ece6d6;
-    --fieldmap-contour: #4a4534;
+    --fieldmap-paper: #4a4a47;
+    --fieldmap-paper-light: #5a5a56;
+    --fieldmap-ink: #f7f7f3;
+    --fieldmap-contour: #7c7c75;
     --fieldmap-trail: #e2793f;
-    --fieldmap-dim: #a89a7c;
-    --fieldmap-card: #211d15;
-    --fieldmap-gold: #d9ab52;
+    --fieldmap-dim: #d0d0c6;
+    --fieldmap-card: #54544f;
+    --fieldmap-gold: #e6b65e;
   }
 }
 
