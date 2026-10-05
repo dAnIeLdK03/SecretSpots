@@ -318,7 +318,8 @@
     "rewardsTitle": "Награди",
     "noRewardsYet": "Все още няма налични награди.",
     "loadMoreRewards": "Зареди още награди",
-    "loadingMoreRewards": "Зареждане..."
+    "loadingMoreRewards": "Зареждане...",
+    "yourBalance": "Имаш {value} кристала"
   },
   "Rewards": {
     "crystalsUnit": "кристала",
