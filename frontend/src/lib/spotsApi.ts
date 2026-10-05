@@ -15,6 +15,7 @@ export const SPOT_CATEGORIES = [
   "RockFormation",
   "RailwayTunnel",
   "FortressRuins",
+  "Other",
 ] as const;
 export type SpotCategory = (typeof SPOT_CATEGORIES)[number];
 
