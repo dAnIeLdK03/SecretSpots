@@ -201,13 +201,15 @@ function SpotDetailContent({ id }: { id: string }) {
 
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <button
-                onClick={handleCheckInClick}
-                className="rounded px-4 py-2 text-sm"
-                style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
-              >
-                {tCheckIns("checkInButton")}
-              </button>
+              {!isOwner && (
+                <button
+                  onClick={handleCheckInClick}
+                  className="rounded px-4 py-2 text-sm"
+                  style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
+                >
+                  {tCheckIns("checkInButton")}
+                </button>
+              )}
               <SaveSpotButton spotId={spot.id} />
               {!isOwner && (
                 <button

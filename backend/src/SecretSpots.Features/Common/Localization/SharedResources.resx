@@ -291,6 +291,9 @@
   <data name="Notifications.NewCommentOnYourSpotMessage" xml:space="preserve">
     <value>Someone commented on your spot.</value>
   </data>
+  <data name="Notifications.NewVisitorOnYourSpotMessage" xml:space="preserve">
+    <value>Someone checked in at your spot for the first time and you earned {0} crystals.</value>
+  </data>
   <data name="Notifications.NewRatingOnYourSpotMessage" xml:space="preserve">
     <value>Someone rated your spot.</value>
   </data>

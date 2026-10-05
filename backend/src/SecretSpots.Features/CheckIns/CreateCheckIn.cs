@@ -125,6 +125,31 @@ public static class CreateCheckIn
             var reward = crystalsOptions.Value.CheckInReward;
             user.CrystalBalance += reward;
 
+            // The spot's creator earns a small amount the first time each visitor checks in —
+            // only the first, so repeat visits by the same person can't keep paying out.
+            var isFirstVisitByUser = !await db.CheckIns.AnyAsync(
+                c => c.SpotId == spot.Id && c.UserId == userContext.UserId, cancellationToken);
+            Notification? ownerNotification = null;
+            if (isFirstVisitByUser)
+            {
+                var owner = await db.Users.SingleOrDefaultAsync(u => u.Id == spot.CreatedByUserId, cancellationToken);
+                if (owner is not null)
+                {
+                    var ownerReward = Random.Shared.Next(
+                        crystalsOptions.Value.OwnerRewardMin, crystalsOptions.Value.OwnerRewardMax + 1);
+                    owner.CrystalBalance += ownerReward;
+                    ownerNotification = new Notification
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = owner.Id,
+                        Type = NotificationType.NewVisitorOnYourSpot,
+                        RelatedSpotId = spot.Id,
+                        CrystalsAwarded = ownerReward,
+                    };
+                    db.Notifications.Add(ownerNotification);
+                }
+            }
+
             var checkIn = new CheckIn
             {
                 Id = Guid.NewGuid(),
@@ -165,6 +190,12 @@ public static class CreateCheckIn
 
             await PushNotificationSender.SendAsync(
                 db, webPushClient, webPushOptions, localizer, logger, notification, cancellationToken);
+
+            if (ownerNotification is not null)
+            {
+                await PushNotificationSender.SendAsync(
+                    db, webPushClient, webPushOptions, localizer, logger, ownerNotification, cancellationToken);
+            }
 
             return Result<CheckInResponse>.Success(new CheckInResponse(
                 checkIn.Id,
