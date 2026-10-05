@@ -6,6 +6,7 @@ import { getNearbyBusinesses } from "@/lib/businessesApi";
 import type { NearbyBusiness } from "@/lib/businessesApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { useGeolocationStore } from "@/store/useGeolocationStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { Link } from "@/i18n/navigation";
 
 const SOFIA_CENTER = { lat: 42.6977, lng: 23.3219 };
@@ -22,6 +23,7 @@ export default function BusinessesPage() {
   const t = useTranslations("Businesses");
   const geoStatus = useGeolocationStore((state) => state.status);
   const geoCoords = useGeolocationStore((state) => state.coords);
+  const crystalBalance = useAuthStore((state) => state.user?.crystalBalance);
 
   const [businesses, setBusinesses] = useState<NearbyBusiness[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -65,6 +67,11 @@ export default function BusinessesPage() {
         <p className="mt-1 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
           {t("subtitle")}
         </p>
+        {crystalBalance !== undefined ? (
+          <p className="mt-3 inline-block rounded-full px-3 py-1 text-sm font-medium" style={{ backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-ink)" }}>
+            {t("yourBalance", { value: crystalBalance })}
+          </p>
+        ) : null}
       </div>
 
       {loading ? (
@@ -83,7 +90,7 @@ export default function BusinessesPage() {
             <li key={business.id}>
               <Link
                 href={`/businesses/${business.id}`}
-                className="group flex flex-col gap-1 rounded-md border p-4 shadow-sm transition hover:shadow-md"
+                className="group flex flex-col gap-1 rounded-xl border p-4 shadow-sm transition hover:shadow-md"
                 style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-card)" }}
               >
                 <h2 className="font-semibold" style={{ color: "var(--fieldmap-ink)" }}>

@@ -132,16 +132,16 @@ public static class CreateCheckIn
             Notification? ownerNotification = null;
             if (isFirstVisitByUser)
             {
-                var owner = await db.Users.SingleOrDefaultAsync(u => u.Id == spot.CreatedByUserId, cancellationToken);
-                if (owner is not null)
+                var ownerWallet = await db.CrystalWallets.SingleOrDefaultAsync(w => w.UserId == spot.CreatedByUserId, cancellationToken);
+                if (ownerWallet is not null)
                 {
                     var ownerReward = Random.Shared.Next(
                         crystalsOptions.Value.OwnerRewardMin, crystalsOptions.Value.OwnerRewardMax + 1);
-                    owner.CrystalBalance += ownerReward;
+                    ownerWallet.Balance += ownerReward;
                     ownerNotification = new Notification
                     {
                         Id = Guid.NewGuid(),
-                        UserId = owner.Id,
+                        UserId = ownerWallet.UserId,
                         Type = NotificationType.NewVisitorOnYourSpot,
                         RelatedSpotId = spot.Id,
                         CrystalsAwarded = ownerReward,

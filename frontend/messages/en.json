@@ -318,7 +318,8 @@
     "rewardsTitle": "Rewards",
     "noRewardsYet": "No rewards available yet.",
     "loadMoreRewards": "Load more rewards",
-    "loadingMoreRewards": "Loading..."
+    "loadingMoreRewards": "Loading...",
+    "yourBalance": "You have {value} crystals"
   },
   "Rewards": {
     "crystalsUnit": "crystals",
