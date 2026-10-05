@@ -41,6 +41,16 @@ public class RedeemRewardTests
     private static async Task<Reward> SeedRewardAsync(IAppDbContext db, int crystalCost = 10) =>
         (await SeedBusinessAndRewardAsync(db, crystalCost)).Reward;
 
+    private static async Task SetBalanceAsync(IAppDbContext db, Guid userId, int balance)
+    {
+        var wallet = await db.CrystalWallets.SingleAsync(w => w.UserId == userId);
+        wallet.Balance = balance;
+        await db.SaveChangesAsync();
+    }
+
+    private static async Task<int> GetBalanceAsync(IAppDbContext db, Guid userId) =>
+        (await db.CrystalWallets.SingleAsync(w => w.UserId == userId)).Balance;
+
     private static RedeemReward.Handler CreateHandler(IAppDbContext db, Guid userId) =>
         new(db, new FakeUserContext(userId), TestLocalizerFactory.Create(), NullLogger<RedeemReward.Handler>.Instance);
 
@@ -50,8 +60,7 @@ public class RedeemRewardTests
         await using var db = TestDbContextFactory.Create();
         var (business, reward) = await SeedBusinessAndRewardAsync(db, crystalCost: 15);
         var user = await TestUserFactory.SeedAsync(db, $"redeem-{Guid.NewGuid():N}@example.com", "Str0ng!Passw0rd1");
-        user.CrystalBalance = 20;
-        await db.SaveChangesAsync();
+        await SetBalanceAsync(db, user.Id, 20);
 
         var handler = CreateHandler(db, user.Id);
         var result = await handler.Handle(new RedeemReward.Command(reward.Id), CancellationToken.None);
@@ -60,8 +69,7 @@ public class RedeemRewardTests
         Assert.Equal(15, result.Value.CrystalsSpent);
         Assert.Equal(5, result.Value.NewCrystalBalance);
 
-        var savedUser = await db.Users.SingleAsync(u => u.Id == user.Id);
-        Assert.Equal(5, savedUser.CrystalBalance);
+        Assert.Equal(5, await GetBalanceAsync(db, user.Id));
 
         var redemption = await db.RewardRedemptions.SingleAsync(r => r.RewardId == reward.Id);
         Assert.Equal(user.Id, redemption.UserId);
@@ -69,6 +77,11 @@ public class RedeemRewardTests
         Assert.Equal(15, redemption.CrystalsSpent);
         Assert.Equal(reward.Title, redemption.RewardTitle);
         Assert.Equal(business.Name, redemption.BusinessName);
+
+        var crystalTransaction = await db.CrystalTransactions.SingleAsync(t => t.RelatedRedemptionId == redemption.Id);
+        Assert.Equal(user.Id, crystalTransaction.UserId);
+        Assert.Equal(-15, crystalTransaction.Amount);
+        Assert.Equal(CrystalTransactionReason.RewardRedemption, crystalTransaction.Reason);
     }
 
     [Fact]
@@ -91,8 +104,7 @@ public class RedeemRewardTests
         await using var db = TestDbContextFactory.Create();
         var reward = await SeedRewardAsync(db, crystalCost: 50);
         var user = await TestUserFactory.SeedAsync(db, $"redeem-{Guid.NewGuid():N}@example.com", "Str0ng!Passw0rd1");
-        user.CrystalBalance = 10;
-        await db.SaveChangesAsync();
+        await SetBalanceAsync(db, user.Id, 10);
 
         var handler = CreateHandler(db, user.Id);
         var result = await handler.Handle(new RedeemReward.Command(reward.Id), CancellationToken.None);
@@ -101,8 +113,7 @@ public class RedeemRewardTests
         Assert.Equal(RewardsMessageKeys.InsufficientBalance, result.Error.Code);
         Assert.Equal(StatusCodes.Status400BadRequest, result.Error.StatusCode);
 
-        var savedUser = await db.Users.SingleAsync(u => u.Id == user.Id);
-        Assert.Equal(10, savedUser.CrystalBalance);
+        Assert.Equal(10, await GetBalanceAsync(db, user.Id));
         Assert.False(await db.RewardRedemptions.AnyAsync(r => r.RewardId == reward.Id));
     }
 
@@ -115,8 +126,7 @@ public class RedeemRewardTests
         await db.SaveChangesAsync();
 
         var user = await TestUserFactory.SeedAsync(db, $"redeem-{Guid.NewGuid():N}@example.com", "Str0ng!Passw0rd1");
-        user.CrystalBalance = 20;
-        await db.SaveChangesAsync();
+        await SetBalanceAsync(db, user.Id, 20);
 
         var handler = CreateHandler(db, user.Id);
         var result = await handler.Handle(new RedeemReward.Command(reward.Id), CancellationToken.None);
@@ -125,8 +135,7 @@ public class RedeemRewardTests
         Assert.Equal(RewardsMessageKeys.RewardInactive, result.Error.Code);
         Assert.Equal(StatusCodes.Status400BadRequest, result.Error.StatusCode);
 
-        var savedUser = await db.Users.SingleAsync(u => u.Id == user.Id);
-        Assert.Equal(20, savedUser.CrystalBalance);
+        Assert.Equal(20, await GetBalanceAsync(db, user.Id));
         Assert.False(await db.RewardRedemptions.AnyAsync(r => r.RewardId == reward.Id));
     }
 
@@ -139,8 +148,7 @@ public class RedeemRewardTests
         await db.SaveChangesAsync();
 
         var user = await TestUserFactory.SeedAsync(db, $"redeem-{Guid.NewGuid():N}@example.com", "Str0ng!Passw0rd1");
-        user.CrystalBalance = 20;
-        await db.SaveChangesAsync();
+        await SetBalanceAsync(db, user.Id, 20);
 
         var handler = CreateHandler(db, user.Id);
         var result = await handler.Handle(new RedeemReward.Command(reward.Id), CancellationToken.None);
@@ -149,8 +157,7 @@ public class RedeemRewardTests
         Assert.Equal(RewardsMessageKeys.BusinessInactive, result.Error.Code);
         Assert.Equal(StatusCodes.Status400BadRequest, result.Error.StatusCode);
 
-        var savedUser = await db.Users.SingleAsync(u => u.Id == user.Id);
-        Assert.Equal(20, savedUser.CrystalBalance);
+        Assert.Equal(20, await GetBalanceAsync(db, user.Id));
         Assert.False(await db.RewardRedemptions.AnyAsync(r => r.RewardId == reward.Id));
     }
 }

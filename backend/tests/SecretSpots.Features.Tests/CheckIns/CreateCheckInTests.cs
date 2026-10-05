@@ -127,10 +127,10 @@ public class CreateCheckInHandlerTests
 
         Assert.True(result.IsSuccess);
         Assert.Equal(10, result.Value.CrystalsAwarded);
-        Assert.Equal(user.CrystalBalance, result.Value.NewCrystalBalance);
+        Assert.Equal(10, result.Value.NewCrystalBalance);
 
-        var savedUser = await db.Users.SingleAsync(u => u.Id == user.Id);
-        Assert.Equal(10, savedUser.CrystalBalance);
+        var savedWallet = await db.CrystalWallets.SingleAsync(w => w.UserId == user.Id);
+        Assert.Equal(10, savedWallet.Balance);
 
         var savedCheckIn = await db.CheckIns.SingleAsync(c => c.Id == result.Value.Id);
         Assert.Equal(spot.Id, savedCheckIn.SpotId);
@@ -141,6 +141,11 @@ public class CreateCheckInHandlerTests
         Assert.Equal(NotificationType.CrystalsEarned, notification.Type);
         Assert.Equal(spot.Id, notification.RelatedSpotId);
         Assert.Equal(10, notification.CrystalsAwarded);
+
+        var crystalTransaction = await db.CrystalTransactions.SingleAsync(t => t.RelatedCheckInId == savedCheckIn.Id);
+        Assert.Equal(user.Id, crystalTransaction.UserId);
+        Assert.Equal(10, crystalTransaction.Amount);
+        Assert.Equal(CrystalTransactionReason.CheckInReward, crystalTransaction.Reason);
     }
 
     [Fact]
@@ -177,8 +182,8 @@ public class CreateCheckInHandlerTests
         Assert.Equal(CheckInsMessageKeys.TooFarFromSpot, result.Error.Code);
         Assert.Equal(StatusCodes.Status400BadRequest, result.Error.StatusCode);
 
-        var savedUser = await db.Users.SingleAsync(u => u.Id == user.Id);
-        Assert.Equal(0, savedUser.CrystalBalance);
+        var savedWallet = await db.CrystalWallets.SingleAsync(w => w.UserId == user.Id);
+        Assert.Equal(0, savedWallet.Balance);
         Assert.False(await db.CheckIns.AnyAsync(c => c.SpotId == spot.Id));
     }
 

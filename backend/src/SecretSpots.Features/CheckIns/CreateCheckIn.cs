@@ -113,8 +113,8 @@ public static class CreateCheckIn
             // Same "current authenticated user" edge case as GetCurrentUser — handled the
             // same way (graceful 404), not an unhandled exception, in case the JWT outlives
             // the user row (e.g. account deleted after the token was issued).
-            var user = await db.Users.SingleOrDefaultAsync(u => u.Id == userContext.UserId, cancellationToken);
-            if (user is null)
+            var wallet = await db.CrystalWallets.SingleOrDefaultAsync(w => w.UserId == userContext.UserId, cancellationToken);
+            if (wallet is null)
             {
                 return Result<CheckInResponse>.Failure(new Error(
                     AuthMessageKeys.UserNotFound,
@@ -123,7 +123,7 @@ public static class CreateCheckIn
             }
 
             var reward = crystalsOptions.Value.CheckInReward;
-            user.CrystalBalance += reward;
+            wallet.Balance += reward;
 
             // The spot's creator earns a small amount the first time each visitor checks in —
             // only the first, so repeat visits by the same person can't keep paying out.
@@ -168,8 +168,18 @@ public static class CreateCheckIn
                 CrystalsAwarded = reward,
             };
 
+            var crystalTransaction = new CrystalTransaction
+            {
+                Id = Guid.NewGuid(),
+                UserId = userContext.UserId,
+                Amount = reward,
+                Reason = CrystalTransactionReason.CheckInReward,
+                RelatedCheckInId = checkIn.Id,
+            };
+
             db.CheckIns.Add(checkIn);
             db.Notifications.Add(notification);
+            db.CrystalTransactions.Add(crystalTransaction);
 
             try
             {
@@ -177,7 +187,7 @@ public static class CreateCheckIn
             }
             catch (DbUpdateConcurrencyException)
             {
-                // This user's balance changed concurrently (another check-in, a redemption) —
+                // This user's wallet changed concurrently (another check-in, a redemption) —
                 // reject rather than silently overwrite it with a stale value.
                 return Result<CheckInResponse>.Failure(new Error(
                     CommonMessageKeys.ConcurrencyConflict,
@@ -186,7 +196,7 @@ public static class CreateCheckIn
             }
 
             logger.LogInformation(
-                CheckInsLogMessages.CheckInCreated, checkIn.Id, spot.Id, user.Id, reward);
+                CheckInsLogMessages.CheckInCreated, checkIn.Id, spot.Id, userContext.UserId, reward);
 
             await PushNotificationSender.SendAsync(
                 db, webPushClient, webPushOptions, localizer, logger, notification, cancellationToken);
@@ -202,7 +212,7 @@ public static class CreateCheckIn
                 spot.Id,
                 checkIn.PhotoUrl,
                 reward,
-                user.CrystalBalance,
+                wallet.Balance,
                 checkIn.CreatedAt));
         }
     }
