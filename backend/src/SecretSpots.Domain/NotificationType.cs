@@ -10,4 +10,5 @@ public enum NotificationType
     NewRatingOnYourSpot,
     YourContentRemoved,
     ReportSubmitted,
+    NewVisitorOnYourSpot,
 }

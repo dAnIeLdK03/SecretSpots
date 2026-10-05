@@ -22,6 +22,8 @@ internal static class NotificationResponseFactory
                 localizer[NotificationsMessageKeys.YourContentRemovedMessage].Value,
             NotificationType.ReportSubmitted =>
                 localizer[NotificationsMessageKeys.ReportSubmittedMessage].Value,
+            NotificationType.NewVisitorOnYourSpot =>
+                localizer[NotificationsMessageKeys.NewVisitorOnYourSpotMessage, notification.CrystalsAwarded ?? 0].Value,
             _ => throw new ArgumentOutOfRangeException(nameof(notification), notification.Type, null),
         };
 
