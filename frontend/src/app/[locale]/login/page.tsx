@@ -3,8 +3,10 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useTranslations } from "next-intl";
+import * as Sentry from "@sentry/nextjs";
 import { Link, useRouter } from "@/i18n/navigation";
-import { login, establishSession } from "@/lib/authApi";
+import { login, establishSession, logout } from "@/lib/authApi";
+import { useAuthStore } from "@/store/useAuthStore";
 import { getErrorMessage } from "@/lib/apiClient";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 import { ExternalAuthButtons } from "@/components/ExternalAuthButtons";
@@ -17,6 +19,8 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const restoredUser = useAuthStore((state) => (state.status === "authenticated" ? state.user : null));
+  const [chooseAnother, setChooseAnother] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,9 +36,28 @@ export default function LoginPage() {
     }
   }
 
+  async function handleUseAnother() {
+    await logout().catch((err) => Sentry.captureException(err));
+    useAuthStore.getState().clearSession();
+    setChooseAnother(true);
+  }
+
   return (
     <AuthSplitLayout title={t("loginWelcomeTitle")} subtitle={t("loginWelcomeSubtitle")}>
       <h2 className="text-2xl font-semibold">{t("loginTitle")}</h2>
+      {restoredUser && !chooseAnother ? (
+        <div className="flex w-full max-w-sm flex-col gap-3 rounded-md border p-4" style={{ borderColor: "var(--fieldmap-contour)" }}>
+          <p className="text-sm">{t("continueAs", { name: restoredUser.displayName })}</p>
+          <div className="flex gap-2">
+            <Link href="/account" className="rounded px-4 py-2 text-sm" style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}>
+              {t("continueButton")}
+            </Link>
+            <button type="button" onClick={handleUseAnother} className="rounded border px-4 py-2 text-sm" style={{ borderColor: "var(--fieldmap-contour)" }}>
+              {t("useAnotherAccount")}
+            </button>
+          </div>
+        </div>
+      ) : null}
       <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
         <label className="flex flex-col gap-1">
           <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>

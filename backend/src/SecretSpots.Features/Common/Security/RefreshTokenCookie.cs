@@ -18,11 +18,18 @@ public static class RefreshTokenCookie
         });
     }
 
+    // Must mirror the attributes Append used — browsers only overwrite a cookie whose Secure and
+    // SameSite flags match, so a bare Delete can leave the original refresh cookie in place and
+    // the "remember me" session comes back on the next page load.
     public static void Delete(HttpResponse response)
     {
-        response.Cookies.Delete(Name, new CookieOptions
+        response.Cookies.Append(Name, string.Empty, new CookieOptions
         {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
             Path = "/auth",
+            Expires = DateTimeOffset.UnixEpoch,
         });
     }
 }

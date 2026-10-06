@@ -62,7 +62,11 @@
     "emailNotVerifiedBanner": "Please verify your email address.",
     "resendVerificationButton": "Resend verification email",
     "resendVerificationSending": "Sending...",
-    "resendVerificationSuccess": "Verification email sent — check your inbox."
+    "resendVerificationSuccess": "Verification email sent — check your inbox.",
+    "logoutAllButton": "Log out of all devices",
+    "continueAs": "Continue as {name}?",
+    "continueButton": "Continue",
+    "useAnotherAccount": "Use another account"
   },
   "Spots": {
     "category": {
