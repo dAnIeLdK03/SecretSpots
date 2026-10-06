@@ -62,7 +62,11 @@
     "emailNotVerifiedBanner": "Моля, потвърди имейл адреса си.",
     "resendVerificationButton": "Изпрати имейл за потвърждение отново",
     "resendVerificationSending": "Изпращане...",
-    "resendVerificationSuccess": "Имейлът за потвърждение е изпратен — провери пощата си."
+    "resendVerificationSuccess": "Имейлът за потвърждение е изпратен — провери пощата си.",
+    "logoutAllButton": "Излез от всички устройства",
+    "continueAs": "Продължи като {name}?",
+    "continueButton": "Продължи",
+    "useAnotherAccount": "Друг акаунт"
   },
   "Spots": {
     "category": {

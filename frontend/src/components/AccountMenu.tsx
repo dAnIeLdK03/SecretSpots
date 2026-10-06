@@ -7,7 +7,8 @@ import { Link } from "@/i18n/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNotificationsStore } from "@/store/useNotificationsStore";
 import { useCheckInsHistoryStore } from "@/store/useCheckInsHistoryStore";
-import { logout } from "@/lib/authApi";
+import * as Sentry from "@sentry/nextjs";
+import { logout, logoutAll } from "@/lib/authApi";
 import { Avatar } from "@/components/Avatar";
 
 interface NavItem {
@@ -61,12 +62,23 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
     setIsOpen(false);
   }
 
-  function handleLogout() {
+  function endLocalSession() {
     clearSession();
     resetNotifications();
     resetCheckInsHistory();
-    logout().catch(() => {});
     closeMenu();
+  }
+
+  // The local session is cleared either way; a server-side failure is reported rather than
+  // swallowed, since it would leave the refresh cookie valid for the next page load.
+  function handleLogout() {
+    endLocalSession();
+    logout().catch((err) => Sentry.captureException(err));
+  }
+
+  function handleLogoutAll() {
+    endLocalSession();
+    logoutAll().catch((err) => Sentry.captureException(err));
   }
 
   return (
@@ -135,6 +147,9 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
             )}
             <button onClick={handleLogout} className="block w-full px-4 py-2 text-left hover:bg-black/5 dark:hover:bg-white/5">
               {tAuth("logoutButton")}
+            </button>
+            <button onClick={handleLogoutAll} className="block w-full px-4 py-2 text-left hover:bg-black/5 dark:hover:bg-white/5">
+              {tAuth("logoutAllButton")}
             </button>
           </div>,
           document.body,

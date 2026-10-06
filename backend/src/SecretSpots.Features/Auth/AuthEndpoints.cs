@@ -87,6 +87,18 @@ public static class AuthEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
+        group.MapPost("/logout-all", async (ISender sender, HttpContext http, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new LogoutAll.Command(), cancellationToken);
+                RefreshTokenCookie.Delete(http.Response);
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
+            })
+            .RequireAuthorization()
+            .RequireCsrfHeader()
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden);
+
         group.MapGet("/google", async (ISender sender, CancellationToken cancellationToken) =>
         {
             var result = await sender.Send(new BeginExternalAuth.Command(ExternalAuthProvider.Google), cancellationToken);
