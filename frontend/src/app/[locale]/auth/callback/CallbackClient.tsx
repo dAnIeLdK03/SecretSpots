@@ -7,7 +7,7 @@ import { useRouter } from "@/i18n/navigation";
 import { exchangeExternalAuthCode, establishSession } from "@/lib/authApi";
 import { getErrorMessage } from "@/lib/apiClient";
 
-const KNOWN_ERROR_CODES = ["cancelled", "invalid_state", "provider_error"] as const;
+const KNOWN_ERROR_CODES = ["cancelled", "invalid_state", "provider_error", "email_required"] as const;
 
 export function CallbackClient() {
   const t = useTranslations("Auth");

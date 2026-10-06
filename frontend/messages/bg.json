@@ -37,7 +37,8 @@
     "externalAuthErrors": {
       "cancelled": "Входът беше отказан.",
       "invalid_state": "Тази връзка за вход е невалидна или е изтекла. Опитайте отново.",
-      "provider_error": "Възникна грешка при входа. Опитайте отново."
+      "provider_error": "Възникна грешка при входа. Опитайте отново.",
+      "email_required": "Доставчикът не сподели имейл адрес. Разреши достъп до имейла или влез по друг начин."
     },
     "forgotPasswordLink": "Забравена парола?",
     "forgotPasswordTitle": "Забравена парола?",
@@ -63,7 +64,6 @@
     "resendVerificationButton": "Изпрати имейл за потвърждение отново",
     "resendVerificationSending": "Изпращане...",
     "resendVerificationSuccess": "Имейлът за потвърждение е изпратен — провери пощата си.",
-    "logoutAllButton": "Излез от всички устройства",
     "continueAs": "Продължи като {name}?",
     "continueButton": "Продължи",
     "useAnotherAccount": "Друг акаунт"

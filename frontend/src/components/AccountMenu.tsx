@@ -8,7 +8,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useNotificationsStore } from "@/store/useNotificationsStore";
 import { useCheckInsHistoryStore } from "@/store/useCheckInsHistoryStore";
 import * as Sentry from "@sentry/nextjs";
-import { logout, logoutAll } from "@/lib/authApi";
+import { logout } from "@/lib/authApi";
 import { Avatar } from "@/components/Avatar";
 
 interface NavItem {
@@ -76,10 +76,6 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
     logout().catch((err) => Sentry.captureException(err));
   }
 
-  function handleLogoutAll() {
-    endLocalSession();
-    logoutAll().catch((err) => Sentry.captureException(err));
-  }
 
   return (
     <div className="relative">
@@ -147,9 +143,6 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
             )}
             <button onClick={handleLogout} className="block w-full px-4 py-2 text-left hover:bg-black/5 dark:hover:bg-white/5">
               {tAuth("logoutButton")}
-            </button>
-            <button onClick={handleLogoutAll} className="block w-full px-4 py-2 text-left hover:bg-black/5 dark:hover:bg-white/5">
-              {tAuth("logoutAllButton")}
             </button>
           </div>,
           document.body,
