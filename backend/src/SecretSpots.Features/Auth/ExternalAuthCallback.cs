@@ -57,6 +57,17 @@ public static class ExternalAuthCallback
                 return Result<string>.Success(ErrorRedirect("provider_error"));
             }
 
+            // Without an email we can't match this login to an existing account, and creating one
+            // would produce a duplicate (or an empty-email user that collides on the unique index).
+            // Returning users already linked to this provider are unaffected.
+            var isKnownLogin = await db.ExternalLogins.AnyAsync(
+                l => l.Provider == command.Provider && l.ProviderUserId == userInfo.ProviderUserId, cancellationToken);
+            if (!isKnownLogin && string.IsNullOrWhiteSpace(userInfo.Email))
+            {
+                logger.LogWarning(AuthLogMessages.ExternalAuthEmailMissing, command.Provider);
+                return Result<string>.Success(ErrorRedirect("email_required"));
+            }
+
             var user = await FindOrCreateUserAsync(userInfo, command.Provider, cancellationToken);
 
             transaction!.Status = ExternalAuthTransactionStatus.Completed;

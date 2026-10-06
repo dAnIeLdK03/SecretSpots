@@ -66,6 +66,12 @@ public static class AuthEndpoints
                         result.Value.RefreshToken,
                         result.Value.RememberMe ? result.Value.RefreshTokenExpiresAt : null);
                 }
+                else
+                {
+                    // A rejected cookie is dead weight — clearing it stops every later page load
+                    // from re-sending it and getting another 401.
+                    RefreshTokenCookie.Delete(http.Response);
+                }
                 return result.ToOkOrProblem();
             })
             .RequireRateLimiting(RateLimitPolicies.Auth)
@@ -85,18 +91,6 @@ public static class AuthEndpoints
             .RequireCsrfHeader()
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
-
-        group.MapPost("/logout-all", async (ISender sender, HttpContext http, CancellationToken cancellationToken) =>
-            {
-                var result = await sender.Send(new LogoutAll.Command(), cancellationToken);
-                RefreshTokenCookie.Delete(http.Response);
-                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
-            })
-            .RequireAuthorization()
-            .RequireCsrfHeader()
-            .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
         group.MapGet("/google", async (ISender sender, CancellationToken cancellationToken) =>

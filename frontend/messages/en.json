@@ -37,7 +37,8 @@
     "externalAuthErrors": {
       "cancelled": "Sign-in was cancelled.",
       "invalid_state": "This sign-in link is invalid or has expired. Please try again.",
-      "provider_error": "Something went wrong signing in. Please try again."
+      "provider_error": "Something went wrong signing in. Please try again.",
+      "email_required": "Your provider didn't share an email address. Allow email access there, or sign in another way."
     },
     "forgotPasswordLink": "Forgot password?",
     "forgotPasswordTitle": "Forgot password?",
@@ -63,7 +64,6 @@
     "resendVerificationButton": "Resend verification email",
     "resendVerificationSending": "Sending...",
     "resendVerificationSuccess": "Verification email sent — check your inbox.",
-    "logoutAllButton": "Log out of all devices",
     "continueAs": "Continue as {name}?",
     "continueButton": "Continue",
     "useAnotherAccount": "Use another account"
