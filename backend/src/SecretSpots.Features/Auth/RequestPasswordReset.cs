@@ -44,9 +44,10 @@ public static class RequestPasswordReset
 
             var user = await db.Users.SingleOrDefaultAsync(u => u.Email == normalizedEmail, cancellationToken);
 
-            // Never reveal whether the email is registered — same response either way. If there's
-            // no matching (password-based) account, silently do nothing past this point.
-            if (user is null || user.PasswordHash is null)
+            // Never reveal whether the email is registered — same response either way. Accounts
+            // that only signed in with an external provider have no password yet, and this flow is
+            // also how they set their first one.
+            if (user is null)
             {
                 logger.LogInformation(AuthLogMessages.PasswordResetRequestedForUnknownEmail, normalizedEmail);
                 return Result<Unit>.Success(Unit.Value);
