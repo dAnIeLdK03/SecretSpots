@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { Clock, MapPin, Tag } from "lucide-react";
+import { Clock, MapPin, Navigation, Tag } from "lucide-react";
+import { DirectionsLinks } from "@/components/DirectionsLinks";
 import { deleteSpot, getSpot } from "@/lib/spotsApi";
 import type { SpotResponse } from "@/lib/spotsApi";
 import { ApiError, getErrorMessage } from "@/lib/apiClient";
@@ -196,6 +197,14 @@ function SpotDetailContent({ id }: { id: string }) {
               >
                 {t("viewOnMap")}
               </Link>
+            </dd>
+
+            <dt className="flex items-center gap-2" style={{ color: "var(--fieldmap-dim)" }}>
+              <Navigation size={16} />
+              {t("directionsLabel")}
+            </dt>
+            <dd>
+              <DirectionsLinks latitude={spot.latitude} longitude={spot.longitude} />
             </dd>
           </dl>
 

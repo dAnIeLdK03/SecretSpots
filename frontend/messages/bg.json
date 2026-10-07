@@ -133,7 +133,11 @@
     "viewSpotLabel": "Виж {name}",
     "viewOnMap": "Виж на картата",
     "mapSearchPlaceholder": "Търси място...",
-    "mapSearchNoResults": "Няма намерени места."
+    "mapSearchNoResults": "Няма намерени места.",
+    "directionsLabel": "Навигация",
+    "directionsGoogleMaps": "Google Maps",
+    "directionsWaze": "Waze",
+    "directionsButton": "Заведи ме"
   },
   "PhotoUpload": {
     "uploading": "Качване...",

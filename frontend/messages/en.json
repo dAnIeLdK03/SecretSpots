@@ -133,7 +133,11 @@
     "viewSpotLabel": "View {name}",
     "viewOnMap": "View on map",
     "mapSearchPlaceholder": "Search for a spot...",
-    "mapSearchNoResults": "No spots found."
+    "mapSearchNoResults": "No spots found.",
+    "directionsLabel": "Directions",
+    "directionsGoogleMaps": "Google Maps",
+    "directionsWaze": "Waze",
+    "directionsButton": "Take me there"
   },
   "PhotoUpload": {
     "uploading": "Uploading...",
