@@ -6,7 +6,6 @@ using SecretSpots.Domain;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Ratings;
 using SecretSpots.Features.Tests.TestSupport;
-using WebPush;
 
 namespace SecretSpots.Features.Tests.Ratings;
 
@@ -32,8 +31,7 @@ public class RateSpotTests
     }
 
     private static RateSpot.Handler CreateHandler(IAppDbContext db, Guid userId) =>
-        new(db, new FakeUserContext(userId), new WebPushClient(), TestOptionsFactory.WebPush(),
-            TestLocalizerFactory.Create(), NullLogger<RateSpot.Handler>.Instance);
+        new(db, new FakeUserContext(userId), TestLocalizerFactory.Create(), NullLogger<RateSpot.Handler>.Instance);
 
     [Fact]
     public async Task Creator_cannot_rate_their_own_spot()

@@ -15,7 +15,6 @@ using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Validation;
 using SecretSpots.Features.Notifications;
-using WebPush;
 
 namespace SecretSpots.Features.CheckIns;
 
@@ -53,8 +52,6 @@ public static class CreateCheckIn
         IUserContext userContext,
         IOptions<CrystalsOptions> crystalsOptions,
         IOptions<CheckInOptions> checkInOptions,
-        WebPushClient webPushClient,
-        IOptions<WebPushOptions> webPushOptions,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<CheckInResponse>>
@@ -198,13 +195,9 @@ public static class CreateCheckIn
             logger.LogInformation(
                 CheckInsLogMessages.CheckInCreated, checkIn.Id, spot.Id, userContext.UserId, reward);
 
-            await PushNotificationSender.SendAsync(
-                db, webPushClient, webPushOptions, localizer, logger, notification, cancellationToken);
 
             if (ownerNotification is not null)
             {
-                await PushNotificationSender.SendAsync(
-                    db, webPushClient, webPushOptions, localizer, logger, ownerNotification, cancellationToken);
             }
 
             return Result<CheckInResponse>.Success(new CheckInResponse(

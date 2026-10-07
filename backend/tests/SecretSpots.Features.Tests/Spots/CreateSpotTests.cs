@@ -6,7 +6,6 @@ using SecretSpots.Domain;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Spots;
 using SecretSpots.Features.Tests.TestSupport;
-using WebPush;
 
 namespace SecretSpots.Features.Tests.Spots;
 
@@ -104,8 +103,6 @@ public class CreateSpotHandlerTests
             db,
             new FakeUserContext(userId),
             TestOptionsFactory.Notifications(newSpotRadiusKm: newSpotRadiusKm),
-            new WebPushClient(),
-            TestOptionsFactory.WebPush(),
             TestLocalizerFactory.Create(),
             NullLogger<CreateSpot.Handler>.Instance);
 

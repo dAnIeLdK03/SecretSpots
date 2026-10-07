@@ -21,14 +21,6 @@ public class DeleteAccountTests
         await using var db = TestDbContextFactory.Create();
         var user = await TestUserFactory.SeedAsync(db, $"delete-{Guid.NewGuid():N}@example.com", Password);
 
-        db.PushSubscriptions.Add(new PushSubscription
-        {
-            Id = Guid.NewGuid(),
-            UserId = user.Id,
-            Endpoint = "https://push.example.com/endpoint",
-            P256dh = "p256dh-key",
-            Auth = "auth-secret",
-        });
         db.EmailVerificationTokens.Add(new EmailVerificationToken
         {
             Id = Guid.NewGuid(),
@@ -43,7 +35,6 @@ public class DeleteAccountTests
 
         Assert.True(result.IsSuccess);
         Assert.False(await db.Users.AnyAsync(u => u.Id == user.Id));
-        Assert.False(await db.PushSubscriptions.AnyAsync(p => p.UserId == user.Id));
         Assert.False(await db.EmailVerificationTokens.AnyAsync(t => t.UserId == user.Id));
     }
 
