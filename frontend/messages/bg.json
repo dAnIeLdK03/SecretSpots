@@ -66,7 +66,8 @@
     "resendVerificationSuccess": "Имейлът за потвърждение е изпратен — провери пощата си.",
     "continueAs": "Продължи като {name}?",
     "continueButton": "Продължи",
-    "useAnotherAccount": "Друг акаунт"
+    "useAnotherAccount": "Друг акаунт",
+    "externalAuthAccountHint": "За да влезеш с друг Google или Facebook акаунт, излез от него първо на google.com или facebook.com."
   },
   "Spots": {
     "category": {

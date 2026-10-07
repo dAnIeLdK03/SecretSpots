@@ -9,6 +9,14 @@ import { refreshSession } from "@/lib/apiClient";
 import { getCurrentUser } from "@/lib/authApi";
 import { setCurrentLocale } from "@/lib/currentLocale";
 
+// Mirrors RefreshTokenCookie.SessionMarkerName on the backend — not HttpOnly, carries no secret,
+// just lets us skip the refresh call (and its guaranteed 401) when there's no session at all.
+const SESSION_MARKER_COOKIE = "secretspots_has_session";
+
+function hasSessionMarker(): boolean {
+  return document.cookie.split("; ").some((entry) => entry.startsWith(`${SESSION_MARKER_COOKIE}=`));
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const locale = useLocale();
 
@@ -24,6 +32,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const { setLoading, setSession, clearSession } = useAuthStore.getState();
+
+    if (!hasSessionMarker()) {
+      clearSession();
+      return;
+    }
 
     setLoading();
     refreshSession()
