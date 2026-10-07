@@ -66,7 +66,8 @@
     "resendVerificationSuccess": "Verification email sent — check your inbox.",
     "continueAs": "Continue as {name}?",
     "continueButton": "Continue",
-    "useAnotherAccount": "Use another account"
+    "useAnotherAccount": "Use another account",
+    "externalAuthAccountHint": "To sign in with a different Google or Facebook account, log out of it on google.com or facebook.com first."
   },
   "Spots": {
     "category": {

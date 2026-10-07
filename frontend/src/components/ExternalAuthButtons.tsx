@@ -65,6 +65,11 @@ export function ExternalAuthButtons() {
           <FacebookIcon />
         </a>
       </div>
+      {/* Google/Facebook always sign in as whichever account is active in the browser — neither
+          platform lets a third-party site force an account switch or sign the user out. */}
+      <p className="max-w-xs text-center text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+        {t("externalAuthAccountHint")}
+      </p>
     </div>
   );
 }
