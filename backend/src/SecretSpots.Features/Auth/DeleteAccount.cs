@@ -98,11 +98,6 @@ public static class DeleteAccount
             await db.ExternalLogins.Where(l => l.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
             await db.ExternalAuthTransactions.Where(t => t.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
 
-            // PushSubscription.Endpoint/P256dh/Auth are device-identifying push-encryption
-            // secrets — exactly the residual PII an account deletion is supposed to purge, and
-            // with no other code path left to remove them once the account (and its JWT) is gone.
-            await db.PushSubscriptions.Where(p => p.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
-
             await db.CrystalTransactions.Where(t => t.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
             await db.CrystalWallets.Where(w => w.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
 

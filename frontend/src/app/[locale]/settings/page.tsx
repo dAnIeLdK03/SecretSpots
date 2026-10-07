@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
-import { PushNotificationsToggle } from "@/components/PushNotificationsToggle";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNotificationsStore } from "@/store/useNotificationsStore";
 import { useCheckInsHistoryStore } from "@/store/useCheckInsHistoryStore";
@@ -15,6 +15,7 @@ export default function SettingsPage() {
   const t = useTranslations("Settings");
   const tAuth = useTranslations("Auth");
   const router = useRouter();
+  const isAuthenticated = useRequireAuth();
   const user = useAuthStore((state) => state.user);
   const clearSession = useAuthStore((state) => state.clearSession);
   const resetNotifications = useNotificationsStore((state) => state.reset);
@@ -65,6 +66,10 @@ export default function SettingsPage() {
     }
   }
 
+  if (!isAuthenticated || !user) {
+    return null;
+  }
+
   return (
     <div className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-6 p-8">
       <h1 className="text-3xl font-semibold">{t("title")}</h1>
@@ -101,8 +106,6 @@ export default function SettingsPage() {
         </h2>
         <LocaleSwitcher />
       </div>
-
-      <PushNotificationsToggle />
 
       <div className="flex flex-col gap-2 rounded-2xl border border-red-700/40 p-5" style={{ backgroundColor: "var(--fieldmap-card)" }}>
         <h2 className="text-sm font-semibold uppercase text-red-700 dark:text-red-400">{t("dangerZoneSectionTitle")}</h2>

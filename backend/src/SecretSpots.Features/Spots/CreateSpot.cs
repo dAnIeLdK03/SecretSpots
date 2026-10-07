@@ -12,7 +12,6 @@ using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Validation;
 using SecretSpots.Features.Notifications;
-using WebPush;
 
 namespace SecretSpots.Features.Spots;
 
@@ -63,8 +62,6 @@ public static class CreateSpot
         IAppDbContext db,
         IUserContext userContext,
         IOptions<NotificationsOptions> notificationsOptions,
-        WebPushClient webPushClient,
-        IOptions<WebPushOptions> webPushOptions,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, SpotResponse>
@@ -120,8 +117,6 @@ public static class CreateSpot
 
             foreach (var notification in notifications)
             {
-                await PushNotificationSender.SendAsync(
-                    db, webPushClient, webPushOptions, localizer, logger, notification, cancellationToken);
             }
 
             var creatorDisplayName = await db.Users

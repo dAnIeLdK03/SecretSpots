@@ -13,7 +13,6 @@ using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Storage;
 using SecretSpots.Features.Notifications;
 using SecretSpots.Features.Spots;
-using WebPush;
 
 namespace SecretSpots.Features.Reports;
 
@@ -25,8 +24,6 @@ public static class DeleteReportedContent
         IAppDbContext db,
         IUserContext userContext,
         IPhotoStorage photoStorage,
-        WebPushClient webPushClient,
-        IOptions<WebPushOptions> webPushOptions,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<Unit>>
@@ -107,8 +104,6 @@ public static class DeleteReportedContent
 
             if (notification is not null)
             {
-                await PushNotificationSender.SendAsync(
-                    db, webPushClient, webPushOptions, localizer, logger, notification, cancellationToken);
             }
 
             return Result<Unit>.Success(Unit.Value);

@@ -11,7 +11,6 @@ using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
-using WebPush;
 
 namespace SecretSpots.Features.Reports;
 
@@ -38,8 +37,6 @@ public static class ReportSpot
     public class Handler(
         IAppDbContext db,
         IUserContext userContext,
-        WebPushClient webPushClient,
-        IOptions<WebPushOptions> webPushOptions,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<ReportResponse>>
@@ -95,7 +92,7 @@ public static class ReportSpot
 
             logger.LogInformation(ReportsLogMessages.ContentReported, report.ContentType, report.ContentId, report.Reason, userContext.UserId);
 
-            await ReportAdminNotifier.NotifyAsync(db, webPushClient, webPushOptions, localizer, logger, command.SpotId, cancellationToken);
+            await ReportAdminNotifier.NotifyAsync(db, command.SpotId, cancellationToken);
 
             return Result<ReportResponse>.Success(new ReportResponse(report.Id));
         }

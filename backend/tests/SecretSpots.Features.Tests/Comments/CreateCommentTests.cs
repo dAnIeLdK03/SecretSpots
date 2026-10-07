@@ -8,7 +8,6 @@ using SecretSpots.Features.Auth;
 using SecretSpots.Features.Comments;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Tests.TestSupport;
-using WebPush;
 
 namespace SecretSpots.Features.Tests.Comments;
 
@@ -61,8 +60,7 @@ public class CreateCommentHandlerTests
     }
 
     private static CreateComment.Handler CreateHandler(IAppDbContext db, Guid userId) =>
-        new(db, new FakeUserContext(userId), new WebPushClient(), TestOptionsFactory.WebPush(),
-            TestLocalizerFactory.Create(), NullLogger<CreateComment.Handler>.Instance);
+        new(db, new FakeUserContext(userId), TestLocalizerFactory.Create(), NullLogger<CreateComment.Handler>.Instance);
 
     [Fact]
     public async Task Successful_comment_is_persisted_with_author_display_name()
