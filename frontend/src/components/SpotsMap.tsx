@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { NearbySpot } from "@/lib/spotsApi";
 import { CategoryIcon } from "./CategoryIcon";
+import { DirectionsLinks } from "./DirectionsLinks";
 
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 
@@ -131,6 +132,12 @@ export function SpotsMap({
                   {t("viewDetails")}
                 </Link>
               </div>
+              <DirectionsLinks
+                latitude={selectedSpot.latitude}
+                longitude={selectedSpot.longitude}
+                className="text-xs"
+                forcedLight
+              />
             </div>
           </Popup>
         ) : null}
