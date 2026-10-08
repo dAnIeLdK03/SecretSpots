@@ -46,10 +46,7 @@ public static class ReportSpot
             var spotExists = await db.Spots.AnyAsync(s => s.Id == command.SpotId, cancellationToken);
             if (!spotExists)
             {
-                return Result<ReportResponse>.Failure(new Error(
-                    ReportsMessageKeys.SpotNotFound,
-                    localizer[ReportsMessageKeys.SpotNotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<ReportResponse>.Failure(Error.NotFound(ReportsMessageKeys.SpotNotFound, localizer));
             }
 
             var alreadyReported = await db.Reports.AnyAsync(

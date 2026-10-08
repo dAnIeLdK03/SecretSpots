@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using SecretSpots.Domain;
@@ -22,10 +21,7 @@ public static class SaveSpot
             var spotExists = await db.Spots.AnyAsync(s => s.Id == command.SpotId, cancellationToken);
             if (!spotExists)
             {
-                return Result<Unit>.Failure(new Error(
-                    SavedSpotsMessageKeys.SpotNotFound,
-                    localizer[SavedSpotsMessageKeys.SpotNotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<Unit>.Failure(Error.NotFound(SavedSpotsMessageKeys.SpotNotFound, localizer));
             }
 
             var alreadySaved = await db.SavedSpots.AnyAsync(

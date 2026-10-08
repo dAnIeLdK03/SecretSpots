@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -37,10 +36,7 @@ public static class GetBusinessRewards
             var businessExists = await db.Businesses.AnyAsync(b => b.Id == query.BusinessId, cancellationToken);
             if (!businessExists)
             {
-                return Result<RewardsPageResponse>.Failure(new Error(
-                    BusinessesMessageKeys.NotFound,
-                    localizer[BusinessesMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<RewardsPageResponse>.Failure(Error.NotFound(BusinessesMessageKeys.NotFound, localizer));
             }
 
             var baseQuery = db.Rewards.Where(r => r.BusinessId == query.BusinessId);

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -23,10 +22,7 @@ public static class DismissReport
             var report = await db.Reports.SingleOrDefaultAsync(r => r.Id == command.ReportId, cancellationToken);
             if (report is null)
             {
-                return Result<Unit>.Failure(new Error(
-                    ReportsMessageKeys.NotFound,
-                    localizer[ReportsMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<Unit>.Failure(Error.NotFound(ReportsMessageKeys.NotFound, localizer));
             }
 
             report.ResolvedAt = DateTimeOffset.UtcNow;

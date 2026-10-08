@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -28,10 +27,7 @@ public static class MarkNotificationAsRead
 
             if (notification is null)
             {
-                return Result<NotificationResponse>.Failure(new Error(
-                    NotificationsMessageKeys.NotFound,
-                    localizer[NotificationsMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<NotificationResponse>.Failure(Error.NotFound(NotificationsMessageKeys.NotFound, localizer));
             }
 
             notification.IsRead = true;

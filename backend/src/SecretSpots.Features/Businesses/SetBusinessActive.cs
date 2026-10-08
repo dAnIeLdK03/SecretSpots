@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -26,18 +25,12 @@ public static class SetBusinessActive
             var business = await db.Businesses.SingleOrDefaultAsync(b => b.Id == command.BusinessId, cancellationToken);
             if (business is null)
             {
-                return Result<BusinessResponse>.Failure(new Error(
-                    BusinessesMessageKeys.NotFound,
-                    localizer[BusinessesMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<BusinessResponse>.Failure(Error.NotFound(BusinessesMessageKeys.NotFound, localizer));
             }
 
             if (business.OwnerUserId != userContext.UserId)
             {
-                return Result<BusinessResponse>.Failure(new Error(
-                    BusinessesMessageKeys.NotYourBusiness,
-                    localizer[BusinessesMessageKeys.NotYourBusiness].Value,
-                    StatusCodes.Status403Forbidden));
+                return Result<BusinessResponse>.Failure(Error.Forbidden(BusinessesMessageKeys.NotYourBusiness, localizer));
             }
 
             business.IsActive = command.IsActive;

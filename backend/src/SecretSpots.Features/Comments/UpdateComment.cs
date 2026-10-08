@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -37,18 +36,12 @@ public static class UpdateComment
             var comment = await db.Comments.SingleOrDefaultAsync(c => c.Id == command.CommentId && !c.IsDeleted, cancellationToken);
             if (comment is null)
             {
-                return Result<CommentResponse>.Failure(new Error(
-                    CommentsMessageKeys.NotFound,
-                    localizer[CommentsMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<CommentResponse>.Failure(Error.NotFound(CommentsMessageKeys.NotFound, localizer));
             }
 
             if (comment.UserId != userContext.UserId)
             {
-                return Result<CommentResponse>.Failure(new Error(
-                    CommentsMessageKeys.NotYourComment,
-                    localizer[CommentsMessageKeys.NotYourComment].Value,
-                    StatusCodes.Status403Forbidden));
+                return Result<CommentResponse>.Failure(Error.Forbidden(CommentsMessageKeys.NotYourComment, localizer));
             }
 
             comment.Text = command.Text.Trim();

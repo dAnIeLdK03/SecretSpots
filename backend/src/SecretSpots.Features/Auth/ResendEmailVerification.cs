@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -31,10 +30,7 @@ public static class ResendEmailVerification
             var user = await db.Users.SingleOrDefaultAsync(u => u.Id == userContext.UserId, cancellationToken);
             if (user is null)
             {
-                return Result<Unit>.Failure(new Error(
-                    AuthMessageKeys.UserNotFound,
-                    localizer[AuthMessageKeys.UserNotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<Unit>.Failure(Error.NotFound(AuthMessageKeys.UserNotFound, localizer));
             }
 
             // Already verified — nothing to resend. The authenticated caller already knows their

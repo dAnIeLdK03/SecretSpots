@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -22,18 +21,12 @@ public static class DeleteBusiness
             var business = await db.Businesses.SingleOrDefaultAsync(b => b.Id == command.BusinessId, cancellationToken);
             if (business is null)
             {
-                return Result<Unit>.Failure(new Error(
-                    BusinessesMessageKeys.NotFound,
-                    localizer[BusinessesMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<Unit>.Failure(Error.NotFound(BusinessesMessageKeys.NotFound, localizer));
             }
 
             if (business.OwnerUserId != userContext.UserId)
             {
-                return Result<Unit>.Failure(new Error(
-                    BusinessesMessageKeys.NotYourBusiness,
-                    localizer[BusinessesMessageKeys.NotYourBusiness].Value,
-                    StatusCodes.Status403Forbidden));
+                return Result<Unit>.Failure(Error.Forbidden(BusinessesMessageKeys.NotYourBusiness, localizer));
             }
 
             await BusinessDeletionCleanup.DeleteAsync(db, business, cancellationToken);

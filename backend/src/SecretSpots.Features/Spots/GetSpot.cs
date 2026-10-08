@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using SecretSpots.Features.Common.Localization;
@@ -20,10 +19,7 @@ public static class GetSpot
             var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == query.SpotId, cancellationToken);
             if (spot is null)
             {
-                return Result<SpotResponse>.Failure(new Error(
-                    SpotsMessageKeys.NotFound,
-                    localizer[SpotsMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<SpotResponse>.Failure(Error.NotFound(SpotsMessageKeys.NotFound, localizer));
             }
 
             var creatorDisplayName = await db.Users

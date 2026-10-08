@@ -318,4 +318,7 @@
   <data name="Common.ConcurrencyConflict" xml:space="preserve">
     <value>Заявката не мина, защото акаунтът ти беше променен едновременно от друго действие. Опитай отново.</value>
   </data>
+  <data name="Common.CurrentUserNotFound" xml:space="preserve">
+    <value>Потребителят не е намерен.</value>
+  </data>
 </root>

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using SecretSpots.Features.Common.Localization;
@@ -20,10 +19,7 @@ public static class GetBusiness
             var business = await db.Businesses.SingleOrDefaultAsync(b => b.Id == query.BusinessId, cancellationToken);
             if (business is null)
             {
-                return Result<BusinessResponse>.Failure(new Error(
-                    BusinessesMessageKeys.NotFound,
-                    localizer[BusinessesMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<BusinessResponse>.Failure(Error.NotFound(BusinessesMessageKeys.NotFound, localizer));
             }
 
             return Result<BusinessResponse>.Success(new BusinessResponse(
