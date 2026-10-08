@@ -46,10 +46,7 @@ public static class ReportComment
             var comment = await db.Comments.SingleOrDefaultAsync(c => c.Id == command.CommentId && !c.IsDeleted, cancellationToken);
             if (comment is null)
             {
-                return Result<ReportResponse>.Failure(new Error(
-                    ReportsMessageKeys.CommentNotFound,
-                    localizer[ReportsMessageKeys.CommentNotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<ReportResponse>.Failure(Error.NotFound(ReportsMessageKeys.CommentNotFound, localizer));
             }
 
             var alreadyReported = await db.Reports.AnyAsync(

@@ -1,12 +1,11 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SecretSpots.Domain;
-using SecretSpots.Features.Auth;
 using SecretSpots.Features.Common.Configuration;
+using SecretSpots.Features.Common.ExceptionHandling;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -44,10 +43,7 @@ public static class CreateComment
             var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
             if (spot is null)
             {
-                return Result<CommentResponse>.Failure(new Error(
-                    CommentsMessageKeys.SpotNotFound,
-                    localizer[CommentsMessageKeys.SpotNotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<CommentResponse>.Failure(Error.NotFound(CommentsMessageKeys.SpotNotFound, localizer));
             }
 
             // Same "current authenticated user" edge case as GetCurrentUser/CreateCheckIn —
@@ -55,10 +51,7 @@ public static class CreateComment
             var user = await db.Users.SingleOrDefaultAsync(u => u.Id == userContext.UserId, cancellationToken);
             if (user is null)
             {
-                return Result<CommentResponse>.Failure(new Error(
-                    AuthMessageKeys.UserNotFound,
-                    localizer[AuthMessageKeys.UserNotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<CommentResponse>.Failure(Error.NotFound(CommonMessageKeys.CurrentUserNotFound, localizer));
             }
 
             var comment = new Comment

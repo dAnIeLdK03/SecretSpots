@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -50,18 +49,12 @@ public static class CreateReward
             var business = await db.Businesses.SingleOrDefaultAsync(b => b.Id == command.BusinessId, cancellationToken);
             if (business is null)
             {
-                return Result<RewardResponse>.Failure(new Error(
-                    BusinessesMessageKeys.NotFound,
-                    localizer[BusinessesMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<RewardResponse>.Failure(Error.NotFound(BusinessesMessageKeys.NotFound, localizer));
             }
 
             if (business.OwnerUserId != userContext.UserId)
             {
-                return Result<RewardResponse>.Failure(new Error(
-                    RewardsMessageKeys.NotYourBusiness,
-                    localizer[RewardsMessageKeys.NotYourBusiness].Value,
-                    StatusCodes.Status403Forbidden));
+                return Result<RewardResponse>.Failure(Error.Forbidden(RewardsMessageKeys.NotYourBusiness, localizer));
             }
 
             var reward = new Reward

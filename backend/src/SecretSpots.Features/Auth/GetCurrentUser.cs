@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -29,10 +28,7 @@ public static class GetCurrentUser
 
             if (user is null)
             {
-                return Result<Response>.Failure(new Error(
-                    AuthMessageKeys.UserNotFound,
-                    localizer[AuthMessageKeys.UserNotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<Response>.Failure(Error.NotFound(AuthMessageKeys.UserNotFound, localizer));
             }
 
             // Wallets are created alongside every user (Register/ExternalAuthCallback), so a

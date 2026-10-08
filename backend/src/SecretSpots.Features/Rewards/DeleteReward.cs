@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -22,19 +21,13 @@ public static class DeleteReward
             var reward = await db.Rewards.SingleOrDefaultAsync(r => r.Id == command.RewardId, cancellationToken);
             if (reward is null)
             {
-                return Result<Unit>.Failure(new Error(
-                    RewardsMessageKeys.NotFound,
-                    localizer[RewardsMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<Unit>.Failure(Error.NotFound(RewardsMessageKeys.NotFound, localizer));
             }
 
             var business = await db.Businesses.SingleAsync(b => b.Id == reward.BusinessId, cancellationToken);
             if (business.OwnerUserId != userContext.UserId)
             {
-                return Result<Unit>.Failure(new Error(
-                    RewardsMessageKeys.NotYourBusiness,
-                    localizer[RewardsMessageKeys.NotYourBusiness].Value,
-                    StatusCodes.Status403Forbidden));
+                return Result<Unit>.Failure(Error.Forbidden(RewardsMessageKeys.NotYourBusiness, localizer));
             }
 
             db.Rewards.Remove(reward);

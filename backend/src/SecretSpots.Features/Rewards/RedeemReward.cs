@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using SecretSpots.Domain;
-using SecretSpots.Features.Auth;
 using SecretSpots.Features.Common.ExceptionHandling;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
@@ -25,10 +24,7 @@ public static class RedeemReward
             var reward = await db.Rewards.SingleOrDefaultAsync(r => r.Id == command.RewardId, cancellationToken);
             if (reward is null)
             {
-                return Result<RewardRedemptionResponse>.Failure(new Error(
-                    RewardsMessageKeys.NotFound,
-                    localizer[RewardsMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<RewardRedemptionResponse>.Failure(Error.NotFound(RewardsMessageKeys.NotFound, localizer));
             }
 
             if (!reward.IsActive)
@@ -59,10 +55,7 @@ public static class RedeemReward
             var wallet = await db.CrystalWallets.SingleOrDefaultAsync(w => w.UserId == userContext.UserId, cancellationToken);
             if (wallet is null)
             {
-                return Result<RewardRedemptionResponse>.Failure(new Error(
-                    AuthMessageKeys.UserNotFound,
-                    localizer[AuthMessageKeys.UserNotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<RewardRedemptionResponse>.Failure(Error.NotFound(CommonMessageKeys.CurrentUserNotFound, localizer));
             }
 
             if (wallet.Balance < reward.CrystalCost)

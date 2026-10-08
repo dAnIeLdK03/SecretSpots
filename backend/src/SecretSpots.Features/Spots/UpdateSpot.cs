@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -69,18 +68,12 @@ public static class UpdateSpot
             var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
             if (spot is null)
             {
-                return Result<SpotResponse>.Failure(new Error(
-                    SpotsMessageKeys.NotFound,
-                    localizer[SpotsMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<SpotResponse>.Failure(Error.NotFound(SpotsMessageKeys.NotFound, localizer));
             }
 
             if (spot.CreatedByUserId != userContext.UserId)
             {
-                return Result<SpotResponse>.Failure(new Error(
-                    SpotsMessageKeys.NotYourSpot,
-                    localizer[SpotsMessageKeys.NotYourSpot].Value,
-                    StatusCodes.Status403Forbidden));
+                return Result<SpotResponse>.Failure(Error.Forbidden(SpotsMessageKeys.NotYourSpot, localizer));
             }
 
             var removedPhotoUrls = spot.PhotoUrls.Except(command.PhotoUrls).ToList();

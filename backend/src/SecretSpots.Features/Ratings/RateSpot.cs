@@ -44,10 +44,7 @@ public static class RateSpot
             var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
             if (spot is null)
             {
-                return Result<RatingResponse>.Failure(new Error(
-                    RatingsMessageKeys.SpotNotFound,
-                    localizer[RatingsMessageKeys.SpotNotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<RatingResponse>.Failure(Error.NotFound(RatingsMessageKeys.SpotNotFound, localizer));
             }
 
             // Same self-farming concern CreateCheckIn already guards against: AverageRating is a

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -25,19 +24,13 @@ public static class SetRewardActive
             var reward = await db.Rewards.SingleOrDefaultAsync(r => r.Id == command.RewardId, cancellationToken);
             if (reward is null)
             {
-                return Result<RewardResponse>.Failure(new Error(
-                    RewardsMessageKeys.NotFound,
-                    localizer[RewardsMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<RewardResponse>.Failure(Error.NotFound(RewardsMessageKeys.NotFound, localizer));
             }
 
             var business = await db.Businesses.SingleAsync(b => b.Id == reward.BusinessId, cancellationToken);
             if (business.OwnerUserId != userContext.UserId)
             {
-                return Result<RewardResponse>.Failure(new Error(
-                    RewardsMessageKeys.NotYourBusiness,
-                    localizer[RewardsMessageKeys.NotYourBusiness].Value,
-                    StatusCodes.Status403Forbidden));
+                return Result<RewardResponse>.Failure(Error.Forbidden(RewardsMessageKeys.NotYourBusiness, localizer));
             }
 
             reward.IsActive = command.IsActive;

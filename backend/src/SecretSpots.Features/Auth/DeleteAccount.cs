@@ -35,10 +35,7 @@ public static class DeleteAccount
             var user = await db.Users.SingleOrDefaultAsync(u => u.Id == userContext.UserId, cancellationToken);
             if (user is null)
             {
-                return Result<Unit>.Failure(new Error(
-                    AuthMessageKeys.UserNotFound,
-                    localizer[AuthMessageKeys.UserNotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<Unit>.Failure(Error.NotFound(AuthMessageKeys.UserNotFound, localizer));
             }
 
             if (user.PasswordHash is not null &&

@@ -5,7 +5,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SecretSpots.Domain;
-using SecretSpots.Features.Auth;
 using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.ExceptionHandling;
 using SecretSpots.Features.Common.Localization;
@@ -61,10 +60,7 @@ public static class CreateCheckIn
             var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
             if (spot is null)
             {
-                return Result<CheckInResponse>.Failure(new Error(
-                    CheckInsMessageKeys.SpotNotFound,
-                    localizer[CheckInsMessageKeys.SpotNotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<CheckInResponse>.Failure(Error.NotFound(CheckInsMessageKeys.SpotNotFound, localizer));
             }
 
             // Otherwise a user could farm unlimited crystals for free: create a spot at their
@@ -113,10 +109,7 @@ public static class CreateCheckIn
             var wallet = await db.CrystalWallets.SingleOrDefaultAsync(w => w.UserId == userContext.UserId, cancellationToken);
             if (wallet is null)
             {
-                return Result<CheckInResponse>.Failure(new Error(
-                    AuthMessageKeys.UserNotFound,
-                    localizer[AuthMessageKeys.UserNotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<CheckInResponse>.Failure(Error.NotFound(CommonMessageKeys.CurrentUserNotFound, localizer));
             }
 
             var reward = crystalsOptions.Value.CheckInReward;

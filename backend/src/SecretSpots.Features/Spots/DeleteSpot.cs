@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -28,18 +27,12 @@ public static class DeleteSpot
             var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
             if (spot is null)
             {
-                return Result<Unit>.Failure(new Error(
-                    SpotsMessageKeys.NotFound,
-                    localizer[SpotsMessageKeys.NotFound].Value,
-                    StatusCodes.Status404NotFound));
+                return Result<Unit>.Failure(Error.NotFound(SpotsMessageKeys.NotFound, localizer));
             }
 
             if (spot.CreatedByUserId != userContext.UserId)
             {
-                return Result<Unit>.Failure(new Error(
-                    SpotsMessageKeys.NotYourSpot,
-                    localizer[SpotsMessageKeys.NotYourSpot].Value,
-                    StatusCodes.Status403Forbidden));
+                return Result<Unit>.Failure(Error.Forbidden(SpotsMessageKeys.NotYourSpot, localizer));
             }
 
             await SpotDeletionCleanup.DeleteAsync(db, photoStorage, spot, logger, cancellationToken);
