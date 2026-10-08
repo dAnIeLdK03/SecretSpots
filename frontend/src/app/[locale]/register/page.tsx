@@ -8,13 +8,14 @@ import { register, establishSession } from "@/lib/authApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 import { ExternalAuthButtons } from "@/components/ExternalAuthButtons";
+import { useDraftState, clearDraftState } from "@/hooks/useDraftState";
 
 export default function RegisterPage() {
   const t = useTranslations("Auth");
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useDraftState("register.email", "");
+  const [password, setPassword] = useDraftState("register.password", "");
+  const [displayName, setDisplayName] = useDraftState("register.displayName", "");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -25,6 +26,7 @@ export default function RegisterPage() {
     try {
       const result = await register(email, password, displayName);
       await establishSession(result);
+      clearDraftState("register.email", "register.password", "register.displayName");
       router.push("/account");
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));

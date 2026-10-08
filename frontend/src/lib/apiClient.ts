@@ -28,8 +28,19 @@ export class ApiError extends Error {
 }
 
 export function getErrorMessage(err: unknown, fallback: string): string {
-  if (err instanceof ApiError && (err.problem.detail || err.problem.title)) {
-    return err.message;
+  if (err instanceof ApiError) {
+    // FluentValidation failures (400s) carry their actual per-field messages in `errors` —
+    // `detail` is empty and `title` is just ASP.NET's generic "One or more validation errors
+    // occurred.", which told the user nothing about what to fix (e.g. a weak password).
+    if (err.problem.errors) {
+      const messages = Object.values(err.problem.errors).flat();
+      if (messages.length > 0) {
+        return messages.join(" ");
+      }
+    }
+    if (err.problem.detail || err.problem.title) {
+      return err.message;
+    }
   }
   return fallback;
 }
