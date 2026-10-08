@@ -60,6 +60,20 @@ public static class SpotsEndpoints
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
+        group.MapGet("/mine", async (
+                int? page, int? pageSize, IOptions<SpotSearchOptions> spotSearchOptions,
+                ISender sender, CancellationToken cancellationToken) =>
+            {
+                var query = new GetMySpots.Query(page ?? 1, pageSize ?? spotSearchOptions.Value.DefaultPageSize);
+                var result = await sender.Send(query, cancellationToken);
+                return Results.Ok(result);
+            })
+            .RequireAuthorization()
+            .Produces<SpotSearchPageResponse>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+
         group.MapPut("/{id:guid}", async (
                 Guid id, UpdateSpot.RequestBody body, ISender sender, CancellationToken cancellationToken) =>
             {

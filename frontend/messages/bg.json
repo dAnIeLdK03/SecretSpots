@@ -4,7 +4,8 @@
     "menuLabel": "Меню",
     "languageLabel": "Език",
     "settingsLabel": "Настройки",
-    "adminReportsLabel": "Опашка от доклади"
+    "adminReportsLabel": "Опашка от доклади",
+    "mySpotsLabel": "Моите места"
   },
   "Auth": {
     "emailLabel": "Имейл",
@@ -348,5 +349,13 @@
     "notFoundTitle": "Страницата не е намерена",
     "notFoundDescription": "Страницата, която търсите, не съществува или е преместена.",
     "loading": "Зареждане..."
+  },
+  "MySpots": {
+    "pageTitle": "Моите места",
+    "loading": "Зареждане...",
+    "empty": "Още не си добавил/а места.",
+    "emptyAddLink": "Добави на картата",
+    "loadMore": "Зареди още",
+    "loadingMore": "Зареждане..."
   }
 }

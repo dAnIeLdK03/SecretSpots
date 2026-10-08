@@ -132,6 +132,9 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
             <Link href="/account" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
               {tAuth("profileLabel")}
             </Link>
+            <Link href="/my-spots" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
+              {t("mySpotsLabel")}
+            </Link>
             {isAdmin && (
               <Link
                 href="/admin/reports"
