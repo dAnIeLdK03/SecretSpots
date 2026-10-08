@@ -4,7 +4,8 @@
     "menuLabel": "Menu",
     "languageLabel": "Language",
     "settingsLabel": "Settings",
-    "adminReportsLabel": "Report queue"
+    "adminReportsLabel": "Report queue",
+    "mySpotsLabel": "My spots"
   },
   "Auth": {
     "emailLabel": "Email",
@@ -348,5 +349,13 @@
     "notFoundTitle": "Page not found",
     "notFoundDescription": "The page you are looking for doesn't exist or has been moved.",
     "loading": "Loading..."
+  },
+  "MySpots": {
+    "pageTitle": "My spots",
+    "loading": "Loading...",
+    "empty": "You haven't added any spots yet.",
+    "emptyAddLink": "Add one on the map",
+    "loadMore": "Load more",
+    "loadingMore": "Loading..."
   }
 }

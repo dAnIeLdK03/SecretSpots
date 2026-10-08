@@ -137,3 +137,8 @@ export function searchSpots(
 
   return apiFetch<SpotSearchPageResponse>(`/spots/search?${searchParams.toString()}`, {signal});
 }
+
+export function getMySpots(page: number, pageSize: number, signal?: AbortSignal): Promise<SpotSearchPageResponse> {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  return apiFetch<SpotSearchPageResponse>(`/spots/mine?${params.toString()}`, { signal });
+}
