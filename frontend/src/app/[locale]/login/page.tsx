@@ -10,13 +10,14 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { getErrorMessage } from "@/lib/apiClient";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 import { ExternalAuthButtons } from "@/components/ExternalAuthButtons";
+import { useDraftState, clearDraftState } from "@/hooks/useDraftState";
 
 export default function LoginPage() {
   const t = useTranslations("Auth");
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [email, setEmail] = useDraftState("login.email", "");
+  const [password, setPassword] = useDraftState("login.password", "");
+  const [rememberMe, setRememberMe] = useDraftState("login.rememberMe", false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const restoredUser = useAuthStore((state) => (state.status === "authenticated" ? state.user : null));
@@ -29,6 +30,7 @@ export default function LoginPage() {
     try {
       const result = await login(email, password, rememberMe);
       await establishSession(result);
+      clearDraftState("login.email", "login.password", "login.rememberMe");
       router.push("/account");
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
