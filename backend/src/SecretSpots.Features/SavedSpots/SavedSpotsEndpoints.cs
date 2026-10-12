@@ -56,7 +56,7 @@ public static class SavedSpotsEndpoints
             })
             .WithTags("SavedSpots")
             .RequireAuthorization()
-            .Produces<SavedSpotsPageResponse>(StatusCodes.Status200OK)
+            .Produces<PagedResponse<SavedSpotResponse>>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status500InternalServerError);

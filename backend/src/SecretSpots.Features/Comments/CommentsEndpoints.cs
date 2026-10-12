@@ -40,7 +40,7 @@ public static class CommentsEndpoints
             })
             .WithTags("Comments")
             .RequireAuthorization()
-            .Produces<CommentsPageResponse>(StatusCodes.Status200OK)
+            .Produces<PagedResponse<CommentResponse>>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status500InternalServerError);

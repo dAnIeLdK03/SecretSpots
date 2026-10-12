@@ -24,7 +24,7 @@ public static class NotificationsEndpoints
                 return Results.Ok(result);
             })
             .RequireAuthorization()
-            .Produces<NotificationsPageResponse>(StatusCodes.Status200OK)
+            .Produces<PagedResponse<NotificationResponse>>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status500InternalServerError);

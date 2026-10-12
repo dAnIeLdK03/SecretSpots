@@ -56,7 +56,7 @@ public static class SpotsEndpoints
             var result = await sender.Send(query, cancellationToken);
             return Results.Ok(result);
         })
-            .Produces<SpotSearchPageResponse>(StatusCodes.Status200OK)
+            .Produces<PagedResponse<SpotSearchResultResponse>>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
@@ -69,7 +69,7 @@ public static class SpotsEndpoints
                 return Results.Ok(result);
             })
             .RequireAuthorization()
-            .Produces<SpotSearchPageResponse>(StatusCodes.Status200OK)
+            .Produces<PagedResponse<SpotSearchResultResponse>>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status500InternalServerError);

@@ -38,7 +38,7 @@ public static class CheckInsEndpoints
             })
             .WithTags("CheckIns")
             .RequireAuthorization()
-            .Produces<CheckInsPageResponse>(StatusCodes.Status200OK)
+            .Produces<PagedResponse<MyCheckInResponse>>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status500InternalServerError);

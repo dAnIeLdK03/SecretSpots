@@ -13,7 +13,7 @@ namespace SecretSpots.Features.Rewards;
 
 public static class GetBusinessRewards
 {
-    public record Query(Guid BusinessId, int Page, int PageSize) : IRequest<Result<RewardsPageResponse>>;
+    public record Query(Guid BusinessId, int Page, int PageSize) : IRequest<Result<PagedResponse<RewardResponse>>>;
 
     public class Validator : AbstractValidator<Query>
     {
@@ -29,14 +29,14 @@ public static class GetBusinessRewards
     }
 
     public class Handler(IAppDbContext db, IStringLocalizer<SharedResources> localizer)
-        : IRequestHandler<Query, Result<RewardsPageResponse>>
+        : IRequestHandler<Query, Result<PagedResponse<RewardResponse>>>
     {
-        public async Task<Result<RewardsPageResponse>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<PagedResponse<RewardResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
             var businessExists = await db.Businesses.AnyAsync(b => b.Id == query.BusinessId, cancellationToken);
             if (!businessExists)
             {
-                return Result<RewardsPageResponse>.Failure(Error.NotFound(BusinessesMessageKeys.NotFound, localizer));
+                return Result<PagedResponse<RewardResponse>>.Failure(Error.NotFound(BusinessesMessageKeys.NotFound, localizer));
             }
 
             var baseQuery = db.Rewards.Where(r => r.BusinessId == query.BusinessId);
@@ -50,7 +50,7 @@ public static class GetBusinessRewards
                 .Select(r => new RewardResponse(r.Id, r.BusinessId, r.Title, r.Description, r.CrystalCost, r.IsActive, r.CreatedAt))
                 .ToListAsync(cancellationToken);
 
-            return Result<RewardsPageResponse>.Success(new RewardsPageResponse(items, query.Page, query.PageSize, totalCount));
+            return Result<PagedResponse<RewardResponse>>.Success(new PagedResponse<RewardResponse>(items, query.Page, query.PageSize, totalCount));
         }
     }
 }

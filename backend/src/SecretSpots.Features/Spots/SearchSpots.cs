@@ -7,6 +7,7 @@ using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
+using SecretSpots.Features.Common.Results;
 
 namespace SecretSpots.Features.Spots;
 
@@ -21,7 +22,7 @@ public static class SearchSpots
     private const int MaxCandidatesForRanking = 500;
 
     public record Query(string? SearchTerm, SpotCategory? Category, int Page, int PageSize)
-        : IRequest<SpotSearchPageResponse>;
+        : IRequest<PagedResponse<SpotSearchResultResponse>>;
 
     public class Validator : AbstractValidator<Query>
     {
@@ -36,7 +37,7 @@ public static class SearchSpots
         }
     }
 
-    public class Handler(IAppDbContext db) : IRequestHandler<Query, SpotSearchPageResponse>
+    public class Handler(IAppDbContext db) : IRequestHandler<Query, PagedResponse<SpotSearchResultResponse>>
     {
         // word_similarity()'s score distribution differs from plain similarity() — verified
         // against real seeded content that unrelated words share a "noise floor" up to ~0.3
@@ -51,7 +52,7 @@ public static class SearchSpots
         // is what actually finds them. Short function words are dropped so they don't dominate.
         private static readonly string[] StopWords = ["и", "в", "на", "от", "за", "с", "по", "the", "a", "an", "of", "in", "at"];
 
-        public async Task<SpotSearchPageResponse> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<PagedResponse<SpotSearchResultResponse>> Handle(Query query, CancellationToken cancellationToken)
         {
             var baseSpots = db.Spots.AsQueryable();
 
@@ -121,7 +122,7 @@ public static class SearchSpots
             // ever be ranked/paged through.
             var reportedTotalCount = Math.Min(totalMatches, MaxCandidatesForRanking);
 
-            return new SpotSearchPageResponse(page, query.Page, query.PageSize, reportedTotalCount);
+            return new PagedResponse<SpotSearchResultResponse>(page, query.Page, query.PageSize, reportedTotalCount);
         }
 
         private static string[] SplitIntoWords(string? searchTerm)
