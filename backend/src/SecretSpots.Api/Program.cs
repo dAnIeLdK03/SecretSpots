@@ -37,6 +37,8 @@ using SecretSpots.Features.Spots;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 // No-ops when Sentry:Dsn is unset (e.g. local dev), so this is safe to leave wired up everywhere.
 // Registered before everything else so it can also capture startup failures.
 builder.WebHost.UseSentry(options =>
@@ -90,7 +92,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-var connectionString = builder.Configuration.GetConnectionString("Postgres")
+var connectionString = builder.Configuration.GetConnectionString("secretspots")
     ?? throw new InvalidOperationException(StartupMessages.MissingPostgresConnectionString);
 builder.Services.AddPersistence(connectionString);
 
@@ -447,5 +449,7 @@ if (app.Environment.IsDevelopment())
     app.MapGet("/internal/test/rate-limit-config", (IOptions<RateLimitingOptions> options) =>
         Results.Ok(new { options.Value.AuthPermitLimit, options.Value.AuthWindowSeconds }));
 }
+
+app.MapDefaultEndpoints();
 
 app.Run();
