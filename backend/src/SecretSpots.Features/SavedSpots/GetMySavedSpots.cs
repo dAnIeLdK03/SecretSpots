@@ -6,13 +6,14 @@ using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
+using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
 
 namespace SecretSpots.Features.SavedSpots;
 
 public static class GetMySavedSpots
 {
-    public record Query(int Page, int PageSize) : IRequest<SavedSpotsPageResponse>;
+    public record Query(int Page, int PageSize) : IRequest<PagedResponse<SavedSpotResponse>>;
 
     public class Validator : AbstractValidator<Query>
     {
@@ -27,9 +28,9 @@ public static class GetMySavedSpots
         }
     }
 
-    public class Handler(IAppDbContext db, IUserContext userContext) : IRequestHandler<Query, SavedSpotsPageResponse>
+    public class Handler(IAppDbContext db, IUserContext userContext) : IRequestHandler<Query, PagedResponse<SavedSpotResponse>>
     {
-        public async Task<SavedSpotsPageResponse> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<PagedResponse<SavedSpotResponse>> Handle(Query query, CancellationToken cancellationToken)
         {
             var baseQuery =
                 from savedSpot in db.SavedSpots
@@ -54,7 +55,7 @@ public static class GetMySavedSpots
                 x.spot.Category,
                 x.savedSpot.CreatedAt));
 
-            return new SavedSpotsPageResponse(items, query.Page, query.PageSize, totalCount);
+            return new PagedResponse<SavedSpotResponse>(items, query.Page, query.PageSize, totalCount);
         }
     }
 }

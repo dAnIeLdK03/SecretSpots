@@ -6,12 +6,13 @@ using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
+using SecretSpots.Features.Common.Results;
 
 namespace SecretSpots.Features.Comments;
 
 public static class GetSpotComments
 {
-    public record Query(Guid SpotId, int Page, int PageSize) : IRequest<CommentsPageResponse>;
+    public record Query(Guid SpotId, int Page, int PageSize) : IRequest<PagedResponse<CommentResponse>>;
 
     public class Validator : AbstractValidator<Query>
     {
@@ -26,9 +27,9 @@ public static class GetSpotComments
         }
     }
 
-    public class Handler(IAppDbContext db) : IRequestHandler<Query, CommentsPageResponse>
+    public class Handler(IAppDbContext db) : IRequestHandler<Query, PagedResponse<CommentResponse>>
     {
-        public async Task<CommentsPageResponse> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<PagedResponse<CommentResponse>> Handle(Query query, CancellationToken cancellationToken)
         {
             var baseQuery =
                 from comment in db.Comments
@@ -52,7 +53,7 @@ public static class GetSpotComments
                     x.comment.UpdatedAt))
                 .ToListAsync(cancellationToken);
 
-            return new CommentsPageResponse(items, query.Page, query.PageSize, totalCount);
+            return new PagedResponse<CommentResponse>(items, query.Page, query.PageSize, totalCount);
         }
     }
 }

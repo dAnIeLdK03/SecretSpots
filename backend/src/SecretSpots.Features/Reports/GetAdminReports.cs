@@ -7,12 +7,13 @@ using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
+using SecretSpots.Features.Common.Results;
 
 namespace SecretSpots.Features.Reports;
 
 public static class GetAdminReports
 {
-    public record Query(int Page, int PageSize, bool IncludeResolved) : IRequest<AdminReportsPageResponse>;
+    public record Query(int Page, int PageSize, bool IncludeResolved) : IRequest<PagedResponse<AdminReportResponse>>;
 
     public class Validator : AbstractValidator<Query>
     {
@@ -27,9 +28,9 @@ public static class GetAdminReports
         }
     }
 
-    public class Handler(IAppDbContext db) : IRequestHandler<Query, AdminReportsPageResponse>
+    public class Handler(IAppDbContext db) : IRequestHandler<Query, PagedResponse<AdminReportResponse>>
     {
-        public async Task<AdminReportsPageResponse> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<PagedResponse<AdminReportResponse>> Handle(Query query, CancellationToken cancellationToken)
         {
             var baseQuery = db.Reports.AsQueryable();
             if (!query.IncludeResolved)
@@ -100,7 +101,7 @@ public static class GetAdminReports
                     resolvedByDisplayName, r.ResolutionAction);
             }).ToList();
 
-            return new AdminReportsPageResponse(items, query.Page, query.PageSize, totalCount);
+            return new PagedResponse<AdminReportResponse>(items, query.Page, query.PageSize, totalCount);
         }
     }
 }

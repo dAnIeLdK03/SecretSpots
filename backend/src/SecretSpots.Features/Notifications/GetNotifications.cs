@@ -6,13 +6,14 @@ using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
+using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
 
 namespace SecretSpots.Features.Notifications;
 
 public static class GetNotifications
 {
-    public record Query(int Page, int PageSize) : IRequest<NotificationsPageResponse>;
+    public record Query(int Page, int PageSize) : IRequest<PagedResponse<NotificationResponse>>;
 
     public class Validator : AbstractValidator<Query>
     {
@@ -32,9 +33,9 @@ public static class GetNotifications
         IUserContext userContext,
         IOptions<NotificationsOptions> notificationsOptions,
         IStringLocalizer<SharedResources> localizer)
-        : IRequestHandler<Query, NotificationsPageResponse>
+        : IRequestHandler<Query, PagedResponse<NotificationResponse>>
     {
-        public async Task<NotificationsPageResponse> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<PagedResponse<NotificationResponse>> Handle(Query query, CancellationToken cancellationToken)
         {
             // Read notifications age out of the default listing after ReadRetentionHours —
             // unread ones are always included regardless of how old they are. The row is never
@@ -56,7 +57,7 @@ public static class GetNotifications
                 .Select(n => NotificationResponseFactory.Create(n, localizer))
                 .ToList();
 
-            return new NotificationsPageResponse(items, query.Page, query.PageSize, totalCount);
+            return new PagedResponse<NotificationResponse>(items, query.Page, query.PageSize, totalCount);
         }
     }
 }

@@ -6,13 +6,14 @@ using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
+using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
 
 namespace SecretSpots.Features.Rewards;
 
 public static class GetMyRedemptions
 {
-    public record Query(int Page, int PageSize) : IRequest<RedemptionsPageResponse>;
+    public record Query(int Page, int PageSize) : IRequest<PagedResponse<MyRedemptionResponse>>;
 
     public class Validator : AbstractValidator<Query>
     {
@@ -27,9 +28,9 @@ public static class GetMyRedemptions
         }
     }
 
-    public class Handler(IAppDbContext db, IUserContext userContext) : IRequestHandler<Query, RedemptionsPageResponse>
+    public class Handler(IAppDbContext db, IUserContext userContext) : IRequestHandler<Query, PagedResponse<MyRedemptionResponse>>
     {
-        public async Task<RedemptionsPageResponse> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<PagedResponse<MyRedemptionResponse>> Handle(Query query, CancellationToken cancellationToken)
         {
             // RewardTitle/BusinessName are denormalized onto RewardRedemption at redeem time, so
             // this reads straight off it — no join needed, and it keeps returning correct history
@@ -52,7 +53,7 @@ public static class GetMyRedemptions
                     r.CreatedAt))
                 .ToListAsync(cancellationToken);
 
-            return new RedemptionsPageResponse(items, query.Page, query.PageSize, totalCount);
+            return new PagedResponse<MyRedemptionResponse>(items, query.Page, query.PageSize, totalCount);
         }
     }
 }

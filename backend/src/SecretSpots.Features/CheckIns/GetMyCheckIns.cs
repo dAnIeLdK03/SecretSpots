@@ -6,13 +6,14 @@ using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
+using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
 
 namespace SecretSpots.Features.CheckIns;
 
 public static class GetMyCheckIns
 {
-    public record Query(int Page, int PageSize) : IRequest<CheckInsPageResponse>;
+    public record Query(int Page, int PageSize) : IRequest<PagedResponse<MyCheckInResponse>>;
 
     public class Validator : AbstractValidator<Query>
     {
@@ -27,9 +28,9 @@ public static class GetMyCheckIns
         }
     }
 
-    public class Handler(IAppDbContext db, IUserContext userContext) : IRequestHandler<Query, CheckInsPageResponse>
+    public class Handler(IAppDbContext db, IUserContext userContext) : IRequestHandler<Query, PagedResponse<MyCheckInResponse>>
     {
-        public async Task<CheckInsPageResponse> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<PagedResponse<MyCheckInResponse>> Handle(Query query, CancellationToken cancellationToken)
         {
             var baseQuery =
                 from checkIn in db.CheckIns
@@ -47,7 +48,7 @@ public static class GetMyCheckIns
                     x.checkIn.Id, x.checkIn.SpotId, x.Name, x.checkIn.PhotoUrl, x.checkIn.CrystalsAwarded, x.checkIn.CreatedAt))
                 .ToListAsync(cancellationToken);
 
-            return new CheckInsPageResponse(items, query.Page, query.PageSize, totalCount);
+            return new PagedResponse<MyCheckInResponse>(items, query.Page, query.PageSize, totalCount);
         }
     }
 }

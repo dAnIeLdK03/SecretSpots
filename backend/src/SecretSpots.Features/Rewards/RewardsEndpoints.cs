@@ -39,7 +39,7 @@ public static class RewardsEndpoints
                 return result.ToOkOrProblem();
             })
             .WithTags("Rewards")
-            .Produces<RewardsPageResponse>(StatusCodes.Status200OK)
+            .Produces<PagedResponse<RewardResponse>>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
@@ -112,7 +112,7 @@ public static class RewardsEndpoints
             })
             .WithTags("Rewards")
             .RequireAuthorization()
-            .Produces<RedemptionsPageResponse>(StatusCodes.Status200OK)
+            .Produces<PagedResponse<MyRedemptionResponse>>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
