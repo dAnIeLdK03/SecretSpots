@@ -13,13 +13,14 @@ var minio = builder.AddContainer("minio", "minio/minio:latest")
     .WithEnvironment("MINIO_ROOT_USER", "secretspots")
     .WithEnvironment("MINIO_ROOT_PASSWORD", "secretspots_local_dev");
 
-var api = builder.AddProject<Projects.SecretSpots_Api>("api")
+var api = builder.AddProject<Projects.SecretSpots_Api>("api", launchProfileName: "http")
     .WithReference(db)
     .WaitFor(db)
     .WaitFor(minio);
 
 var frontend = builder.AddNextJsApp("frontend", "../../../frontend")
     .WithNpm()
+    .WithHttpEndpoint(port: 3000, env: "PORT")
     .WithReference(api)
     .WaitFor(api);
 
