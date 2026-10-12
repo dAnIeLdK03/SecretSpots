@@ -8,6 +8,7 @@ using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
+using SecretSpots.Features.Common.Validation;
 
 namespace SecretSpots.Features.Rewards;
 
@@ -19,12 +20,12 @@ public static class GetMyRedemptions
     {
         public Validator(IStringLocalizer<SharedResources> localizer, IOptions<RewardsOptions> rewardsOptions)
         {
-            RuleFor(q => q.Page)
-                .GreaterThanOrEqualTo(1).WithMessage(localizer[RewardsMessageKeys.PageOutOfRange].Value);
-
-            RuleFor(q => q.PageSize)
-                .InclusiveBetween(1, rewardsOptions.Value.MaxPageSize)
-                    .WithMessage(localizer[RewardsMessageKeys.PageSizeOutOfRange].Value);
+            this.ValidatePagination(
+                q => q.Page,
+                q => q.PageSize,
+                rewardsOptions.Value.MaxPageSize,
+                localizer[RewardsMessageKeys.PageOutOfRange].Value,
+                localizer[RewardsMessageKeys.PageSizeOutOfRange].Value);
         }
     }
 
@@ -37,12 +38,8 @@ public static class GetMyRedemptions
             // even after the reward or business behind a redemption has since been deleted.
             var baseQuery = db.RewardRedemptions.Where(r => r.UserId == userContext.UserId);
 
-            var totalCount = await baseQuery.CountAsync(cancellationToken);
-
-            var items = await baseQuery
+            return await baseQuery
                 .OrderByDescending(r => r.CreatedAt)
-                .Skip((query.Page - 1) * query.PageSize)
-                .Take(query.PageSize)
                 .Select(r => new MyRedemptionResponse(
                     r.Id,
                     r.RewardId,
@@ -51,9 +48,7 @@ public static class GetMyRedemptions
                     r.BusinessName,
                     r.CrystalsSpent,
                     r.CreatedAt))
-                .ToListAsync(cancellationToken);
-
-            return new PagedResponse<MyRedemptionResponse>(items, query.Page, query.PageSize, totalCount);
+                .ToPagedResponseAsync(query.Page, query.PageSize, cancellationToken);
         }
     }
 }

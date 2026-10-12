@@ -7,6 +7,7 @@ using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
+using SecretSpots.Features.Common.Validation;
 
 namespace SecretSpots.Features.Comments;
 
@@ -18,12 +19,12 @@ public static class GetSpotComments
     {
         public Validator(IStringLocalizer<SharedResources> localizer, IOptions<CommentOptions> commentOptions)
         {
-            RuleFor(q => q.Page)
-                .GreaterThanOrEqualTo(1).WithMessage(localizer[CommentsMessageKeys.PageOutOfRange].Value);
-
-            RuleFor(q => q.PageSize)
-                .InclusiveBetween(1, commentOptions.Value.MaxPageSize)
-                    .WithMessage(localizer[CommentsMessageKeys.PageSizeOutOfRange].Value);
+            this.ValidatePagination(
+                q => q.Page,
+                q => q.PageSize,
+                commentOptions.Value.MaxPageSize,
+                localizer[CommentsMessageKeys.PageOutOfRange].Value,
+                localizer[CommentsMessageKeys.PageSizeOutOfRange].Value);
         }
     }
 
@@ -37,12 +38,8 @@ public static class GetSpotComments
                 where comment.SpotId == query.SpotId && !comment.IsDeleted
                 select new { comment, user.DisplayName };
 
-            var totalCount = await baseQuery.CountAsync(cancellationToken);
-
-            var items = await baseQuery
+            return await baseQuery
                 .OrderByDescending(x => x.comment.CreatedAt)
-                .Skip((query.Page - 1) * query.PageSize)
-                .Take(query.PageSize)
                 .Select(x => new CommentResponse(
                     x.comment.Id,
                     x.comment.SpotId,
@@ -51,9 +48,7 @@ public static class GetSpotComments
                     x.comment.Text,
                     x.comment.CreatedAt,
                     x.comment.UpdatedAt))
-                .ToListAsync(cancellationToken);
-
-            return new PagedResponse<CommentResponse>(items, query.Page, query.PageSize, totalCount);
+                .ToPagedResponseAsync(query.Page, query.PageSize, cancellationToken);
         }
     }
 }

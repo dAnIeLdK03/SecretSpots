@@ -8,6 +8,7 @@ using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
+using SecretSpots.Features.Common.Validation;
 
 namespace SecretSpots.Features.Spots;
 
@@ -28,12 +29,12 @@ public static class SearchSpots
     {
         public Validator(IStringLocalizer<SharedResources> localizer, IOptions<SpotSearchOptions> spotSearchOptions)
         {
-            RuleFor(q => q.Page)
-                .GreaterThanOrEqualTo(1).WithMessage(localizer[SpotsMessageKeys.PageOutOfRange].Value);
-
-            RuleFor(q => q.PageSize)
-                .InclusiveBetween(1, spotSearchOptions.Value.MaxPageSize)
-                    .WithMessage(localizer[SpotsMessageKeys.PageSizeOutOfRange].Value);
+            this.ValidatePagination(
+                q => q.Page,
+                q => q.PageSize,
+                spotSearchOptions.Value.MaxPageSize,
+                localizer[SpotsMessageKeys.PageOutOfRange].Value,
+                localizer[SpotsMessageKeys.PageSizeOutOfRange].Value);
         }
     }
 

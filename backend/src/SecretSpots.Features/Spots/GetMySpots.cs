@@ -8,6 +8,7 @@ using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
+using SecretSpots.Features.Common.Validation;
 
 namespace SecretSpots.Features.Spots;
 
@@ -19,12 +20,12 @@ public static class GetMySpots
     {
         public Validator(IStringLocalizer<SharedResources> localizer, IOptions<SpotSearchOptions> spotSearchOptions)
         {
-            RuleFor(q => q.Page)
-                .GreaterThanOrEqualTo(1).WithMessage(localizer[SpotsMessageKeys.PageOutOfRange].Value);
-
-            RuleFor(q => q.PageSize)
-                .InclusiveBetween(1, spotSearchOptions.Value.MaxPageSize)
-                    .WithMessage(localizer[SpotsMessageKeys.PageSizeOutOfRange].Value);
+            this.ValidatePagination(
+                q => q.Page,
+                q => q.PageSize,
+                spotSearchOptions.Value.MaxPageSize,
+                localizer[SpotsMessageKeys.PageOutOfRange].Value,
+                localizer[SpotsMessageKeys.PageSizeOutOfRange].Value);
         }
     }
 
@@ -34,28 +35,24 @@ public static class GetMySpots
         {
             var baseQuery = db.Spots.Where(s => s.CreatedByUserId == userContext.UserId);
 
-            var totalCount = await baseQuery.CountAsync(cancellationToken);
-
-            var spots = await baseQuery
+            // Materialized first, then shaped in-memory — Location.Y/.X (geography column)
+            // can't be translated to SQL by the Npgsql provider.
+            return await baseQuery
                 .OrderByDescending(s => s.CreatedAt)
-                .Skip((query.Page - 1) * query.PageSize)
-                .Take(query.PageSize)
-                .ToListAsync(cancellationToken);
-
-            var items = spots
-                .Select(s => new SpotSearchResultResponse(
-                    s.Id,
-                    s.Name,
-                    s.Description,
-                    s.Category,
-                    s.PhotoUrls[0],
-                    s.Location.Y,
-                    s.Location.X,
-                    s.CreatedByUserId,
-                    s.CreatedAt))
-                .ToList();
-
-            return new PagedResponse<SpotSearchResultResponse>(items, query.Page, query.PageSize, totalCount);
+                .ToPagedResponseAsync(
+                    query.Page,
+                    query.PageSize,
+                    s => new SpotSearchResultResponse(
+                        s.Id,
+                        s.Name,
+                        s.Description,
+                        s.Category,
+                        s.PhotoUrls[0],
+                        s.Location.Y,
+                        s.Location.X,
+                        s.CreatedByUserId,
+                        s.CreatedAt),
+                    cancellationToken);
         }
     }
 }

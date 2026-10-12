@@ -8,6 +8,7 @@ using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
+using SecretSpots.Features.Common.Validation;
 
 namespace SecretSpots.Features.CheckIns;
 
@@ -19,12 +20,12 @@ public static class GetMyCheckIns
     {
         public Validator(IStringLocalizer<SharedResources> localizer, IOptions<CheckInOptions> checkInOptions)
         {
-            RuleFor(q => q.Page)
-                .GreaterThanOrEqualTo(1).WithMessage(localizer[CheckInsMessageKeys.PageOutOfRange].Value);
-
-            RuleFor(q => q.PageSize)
-                .InclusiveBetween(1, checkInOptions.Value.MaxPageSize)
-                    .WithMessage(localizer[CheckInsMessageKeys.PageSizeOutOfRange].Value);
+            this.ValidatePagination(
+                q => q.Page,
+                q => q.PageSize,
+                checkInOptions.Value.MaxPageSize,
+                localizer[CheckInsMessageKeys.PageOutOfRange].Value,
+                localizer[CheckInsMessageKeys.PageSizeOutOfRange].Value);
         }
     }
 
@@ -38,17 +39,11 @@ public static class GetMyCheckIns
                 where checkIn.UserId == userContext.UserId
                 select new { checkIn, spot.Name };
 
-            var totalCount = await baseQuery.CountAsync(cancellationToken);
-
-            var items = await baseQuery
+            return await baseQuery
                 .OrderByDescending(x => x.checkIn.CreatedAt)
-                .Skip((query.Page - 1) * query.PageSize)
-                .Take(query.PageSize)
                 .Select(x => new MyCheckInResponse(
                     x.checkIn.Id, x.checkIn.SpotId, x.Name, x.checkIn.PhotoUrl, x.checkIn.CrystalsAwarded, x.checkIn.CreatedAt))
-                .ToListAsync(cancellationToken);
-
-            return new PagedResponse<MyCheckInResponse>(items, query.Page, query.PageSize, totalCount);
+                .ToPagedResponseAsync(query.Page, query.PageSize, cancellationToken);
         }
     }
 }

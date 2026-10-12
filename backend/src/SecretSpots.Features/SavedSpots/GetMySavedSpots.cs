@@ -8,6 +8,7 @@ using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
+using SecretSpots.Features.Common.Validation;
 
 namespace SecretSpots.Features.SavedSpots;
 
@@ -19,12 +20,12 @@ public static class GetMySavedSpots
     {
         public Validator(IStringLocalizer<SharedResources> localizer, IOptions<SavedSpotsOptions> savedSpotsOptions)
         {
-            RuleFor(q => q.Page)
-                .GreaterThanOrEqualTo(1).WithMessage(localizer[SavedSpotsMessageKeys.PageOutOfRange].Value);
-
-            RuleFor(q => q.PageSize)
-                .InclusiveBetween(1, savedSpotsOptions.Value.MaxPageSize)
-                    .WithMessage(localizer[SavedSpotsMessageKeys.PageSizeOutOfRange].Value);
+            this.ValidatePagination(
+                q => q.Page,
+                q => q.PageSize,
+                savedSpotsOptions.Value.MaxPageSize,
+                localizer[SavedSpotsMessageKeys.PageOutOfRange].Value,
+                localizer[SavedSpotsMessageKeys.PageSizeOutOfRange].Value);
         }
     }
 
@@ -38,24 +39,20 @@ public static class GetMySavedSpots
                 where savedSpot.UserId == userContext.UserId
                 select new { savedSpot, spot };
 
-            var totalCount = await baseQuery.CountAsync(cancellationToken);
-
             // Materialized first, then shaped in-memory — PhotoUrls[0] (like SearchNearbySpots)
             // can't be translated to SQL by the Npgsql provider.
-            var page = await baseQuery
+            return await baseQuery
                 .OrderByDescending(x => x.savedSpot.CreatedAt)
-                .Skip((query.Page - 1) * query.PageSize)
-                .Take(query.PageSize)
-                .ToListAsync(cancellationToken);
-
-            var items = page.ConvertAll(x => new SavedSpotResponse(
-                x.spot.Id,
-                x.spot.Name,
-                x.spot.PhotoUrls.Count > 0 ? x.spot.PhotoUrls[0] : string.Empty,
-                x.spot.Category,
-                x.savedSpot.CreatedAt));
-
-            return new PagedResponse<SavedSpotResponse>(items, query.Page, query.PageSize, totalCount);
+                .ToPagedResponseAsync(
+                    query.Page,
+                    query.PageSize,
+                    x => new SavedSpotResponse(
+                        x.spot.Id,
+                        x.spot.Name,
+                        x.spot.PhotoUrls.Count > 0 ? x.spot.PhotoUrls[0] : string.Empty,
+                        x.spot.Category,
+                        x.savedSpot.CreatedAt),
+                    cancellationToken);
         }
     }
 }

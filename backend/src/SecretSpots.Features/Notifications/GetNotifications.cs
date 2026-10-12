@@ -8,6 +8,7 @@ using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
+using SecretSpots.Features.Common.Validation;
 
 namespace SecretSpots.Features.Notifications;
 
@@ -19,12 +20,12 @@ public static class GetNotifications
     {
         public Validator(IStringLocalizer<SharedResources> localizer, IOptions<NotificationsOptions> notificationsOptions)
         {
-            RuleFor(q => q.Page)
-                .GreaterThanOrEqualTo(1).WithMessage(localizer[NotificationsMessageKeys.PageOutOfRange].Value);
-
-            RuleFor(q => q.PageSize)
-                .InclusiveBetween(1, notificationsOptions.Value.MaxPageSize)
-                    .WithMessage(localizer[NotificationsMessageKeys.PageSizeOutOfRange].Value);
+            this.ValidatePagination(
+                q => q.Page,
+                q => q.PageSize,
+                notificationsOptions.Value.MaxPageSize,
+                localizer[NotificationsMessageKeys.PageOutOfRange].Value,
+                localizer[NotificationsMessageKeys.PageSizeOutOfRange].Value);
         }
     }
 
@@ -45,19 +46,13 @@ public static class GetNotifications
             var baseQuery = db.Notifications
                 .Where(n => n.UserId == userContext.UserId && (!n.IsRead || n.ReadAt >= readCutoff));
 
-            var totalCount = await baseQuery.CountAsync(cancellationToken);
-
-            var notifications = await baseQuery
+            return await baseQuery
                 .OrderByDescending(n => n.CreatedAt)
-                .Skip((query.Page - 1) * query.PageSize)
-                .Take(query.PageSize)
-                .ToListAsync(cancellationToken);
-
-            var items = notifications
-                .Select(n => NotificationResponseFactory.Create(n, localizer))
-                .ToList();
-
-            return new PagedResponse<NotificationResponse>(items, query.Page, query.PageSize, totalCount);
+                .ToPagedResponseAsync(
+                    query.Page,
+                    query.PageSize,
+                    n => NotificationResponseFactory.Create(n, localizer),
+                    cancellationToken);
         }
     }
 }
