@@ -8,6 +8,7 @@ using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
+using SecretSpots.Features.Common.Validation;
 
 namespace SecretSpots.Features.Rewards;
 
@@ -19,12 +20,12 @@ public static class GetBusinessRewards
     {
         public Validator(IStringLocalizer<SharedResources> localizer, IOptions<RewardsOptions> rewardsOptions)
         {
-            RuleFor(q => q.Page)
-                .GreaterThanOrEqualTo(1).WithMessage(localizer[RewardsMessageKeys.PageOutOfRange].Value);
-
-            RuleFor(q => q.PageSize)
-                .InclusiveBetween(1, rewardsOptions.Value.MaxPageSize)
-                    .WithMessage(localizer[RewardsMessageKeys.PageSizeOutOfRange].Value);
+            this.ValidatePagination(
+                q => q.Page,
+                q => q.PageSize,
+                rewardsOptions.Value.MaxPageSize,
+                localizer[RewardsMessageKeys.PageOutOfRange].Value,
+                localizer[RewardsMessageKeys.PageSizeOutOfRange].Value);
         }
     }
 
@@ -41,16 +42,12 @@ public static class GetBusinessRewards
 
             var baseQuery = db.Rewards.Where(r => r.BusinessId == query.BusinessId);
 
-            var totalCount = await baseQuery.CountAsync(cancellationToken);
-
-            var items = await baseQuery
+            var pagedResponse = await baseQuery
                 .OrderBy(r => r.CreatedAt)
-                .Skip((query.Page - 1) * query.PageSize)
-                .Take(query.PageSize)
                 .Select(r => new RewardResponse(r.Id, r.BusinessId, r.Title, r.Description, r.CrystalCost, r.IsActive, r.CreatedAt))
-                .ToListAsync(cancellationToken);
+                .ToPagedResponseAsync(query.Page, query.PageSize, cancellationToken);
 
-            return Result<PagedResponse<RewardResponse>>.Success(new PagedResponse<RewardResponse>(items, query.Page, query.PageSize, totalCount));
+            return Result<PagedResponse<RewardResponse>>.Success(pagedResponse);
         }
     }
 }

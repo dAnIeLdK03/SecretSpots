@@ -8,6 +8,7 @@ using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
+using SecretSpots.Features.Common.Validation;
 
 namespace SecretSpots.Features.Reports;
 
@@ -19,12 +20,12 @@ public static class GetAdminReports
     {
         public Validator(IStringLocalizer<SharedResources> localizer, IOptions<ReportsOptions> reportsOptions)
         {
-            RuleFor(q => q.Page)
-                .GreaterThanOrEqualTo(1).WithMessage(localizer[ReportsMessageKeys.PageOutOfRange].Value);
-
-            RuleFor(q => q.PageSize)
-                .InclusiveBetween(1, reportsOptions.Value.MaxPageSize)
-                    .WithMessage(localizer[ReportsMessageKeys.PageSizeOutOfRange].Value);
+            this.ValidatePagination(
+                q => q.Page,
+                q => q.PageSize,
+                reportsOptions.Value.MaxPageSize,
+                localizer[ReportsMessageKeys.PageOutOfRange].Value,
+                localizer[ReportsMessageKeys.PageSizeOutOfRange].Value);
         }
     }
 
