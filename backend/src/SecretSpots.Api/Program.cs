@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SecretSpots.Api;
+using SecretSpots.Domain;
 using SecretSpots.Features.Auth;
 using SecretSpots.Features.Businesses;
 using SecretSpots.Features.CheckIns;
@@ -203,7 +204,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimNames.IsAdmin, "true"));
+    options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimNames.Role, nameof(UserRole.Admin)));
 });
 
 // Partitions by authenticated user id rather than IP whenever one is available, so (a) an
