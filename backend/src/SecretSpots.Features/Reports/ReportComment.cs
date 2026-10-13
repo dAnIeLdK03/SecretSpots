@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -56,10 +55,7 @@ public static class ReportComment
                 cancellationToken);
             if (alreadyReported)
             {
-                return Result<ReportResponse>.Failure(new Error(
-                    ReportsMessageKeys.AlreadyReported,
-                    localizer[ReportsMessageKeys.AlreadyReported].Value,
-                    StatusCodes.Status409Conflict));
+                return Result<ReportResponse>.Failure(Error.Conflict(ReportsMessageKeys.AlreadyReported, localizer));
             }
 
             var report = new Report
@@ -81,10 +77,7 @@ public static class ReportComment
             catch (DbUpdateException)
             {
                 // Concurrent duplicate report from the same user caught by the unique index.
-                return Result<ReportResponse>.Failure(new Error(
-                    ReportsMessageKeys.AlreadyReported,
-                    localizer[ReportsMessageKeys.AlreadyReported].Value,
-                    StatusCodes.Status409Conflict));
+                return Result<ReportResponse>.Failure(Error.Conflict(ReportsMessageKeys.AlreadyReported, localizer));
             }
 
             logger.LogInformation(ReportsLogMessages.ContentReported, report.ContentType, report.ContentId, report.Reason, userContext.UserId);

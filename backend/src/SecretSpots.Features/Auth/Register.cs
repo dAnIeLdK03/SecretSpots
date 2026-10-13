@@ -1,6 +1,5 @@
 using System.Net.Mail;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -62,10 +61,7 @@ public static class Register
             // it were ever invoked directly, bypassing the validation pipeline.
             if (!MailAddress.TryCreate(normalizedEmail, out _))
             {
-                return Result<AuthResult>.Failure(new Error(
-                    AuthMessageKeys.EmailInvalidFormat,
-                    localizer[AuthMessageKeys.EmailInvalidFormat].Value,
-                    StatusCodes.Status400BadRequest));
+                return Result<AuthResult>.Failure(Error.BadRequest(AuthMessageKeys.EmailInvalidFormat, localizer));
             }
 
             var emailTaken = await db.Users
@@ -73,10 +69,7 @@ public static class Register
 
             if (emailTaken)
             {
-                return Result<AuthResult>.Failure(new Error(
-                    AuthMessageKeys.EmailAlreadyRegistered,
-                    localizer[AuthMessageKeys.EmailAlreadyRegistered].Value,
-                    StatusCodes.Status409Conflict));
+                return Result<AuthResult>.Failure(Error.Conflict(AuthMessageKeys.EmailAlreadyRegistered, localizer));
             }
 
             var user = new User
@@ -97,10 +90,7 @@ public static class Register
             }
             catch (DbUpdateException)
             {
-                return Result<AuthResult>.Failure(new Error(
-                    AuthMessageKeys.EmailAlreadyRegistered,
-                    localizer[AuthMessageKeys.EmailAlreadyRegistered].Value,
-                    StatusCodes.Status409Conflict));
+                return Result<AuthResult>.Failure(Error.Conflict(AuthMessageKeys.EmailAlreadyRegistered, localizer));
             }
 
             var issueResult = await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, rememberMe: true, cancellationToken);

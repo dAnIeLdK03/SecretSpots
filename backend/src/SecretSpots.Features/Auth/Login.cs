@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -56,10 +55,7 @@ public static class Login
             // and this must run before .Trim() so it can't NullReferenceException instead.
             if (string.IsNullOrWhiteSpace(command.Email))
             {
-                return Result<AuthResult>.Failure(new Error(
-                    AuthMessageKeys.EmailRequired,
-                    localizer[AuthMessageKeys.EmailRequired].Value,
-                    StatusCodes.Status400BadRequest));
+                return Result<AuthResult>.Failure(Error.BadRequest(AuthMessageKeys.EmailRequired, localizer));
             }
 
             var normalizedEmail = command.Email.Trim().ToLowerInvariant();
@@ -77,10 +73,7 @@ public static class Login
             if (user is null || user.PasswordHash is null || !passwordMatches)
             {
                 logger.LogWarning(AuthLogMessages.FailedLoginAttempt, normalizedEmail);
-                return Result<AuthResult>.Failure(new Error(
-                    AuthMessageKeys.InvalidCredentials,
-                    localizer[AuthMessageKeys.InvalidCredentials].Value,
-                    StatusCodes.Status401Unauthorized));
+                return Result<AuthResult>.Failure(Error.Unauthorized(AuthMessageKeys.InvalidCredentials, localizer));
             }
 
             var authResult = await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, command.RememberMe, cancellationToken);

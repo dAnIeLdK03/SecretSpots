@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -54,10 +53,7 @@ public static class RefreshAccessToken
 
             if (!isUsable)
             {
-                return Result<AuthResult>.Failure(new Error(
-                    AuthMessageKeys.InvalidOrExpiredRefreshToken,
-                    localizer[AuthMessageKeys.InvalidOrExpiredRefreshToken].Value,
-                    StatusCodes.Status401Unauthorized));
+                return Result<AuthResult>.Failure(Error.Unauthorized(AuthMessageKeys.InvalidOrExpiredRefreshToken, localizer));
             }
 
             var user = await db.Users

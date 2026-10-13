@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -42,10 +41,7 @@ public static class ResetPassword
             var isUsable = token is { UsedAt: null } && token.ExpiresAt > DateTimeOffset.UtcNow;
             if (!isUsable)
             {
-                return Result<Unit>.Failure(new Error(
-                    AuthMessageKeys.PasswordResetTokenInvalidOrExpired,
-                    localizer[AuthMessageKeys.PasswordResetTokenInvalidOrExpired].Value,
-                    StatusCodes.Status400BadRequest));
+                return Result<Unit>.Failure(Error.BadRequest(AuthMessageKeys.PasswordResetTokenInvalidOrExpired, localizer));
             }
 
             var user = await db.Users.SingleAsync(u => u.Id == token!.UserId, cancellationToken);

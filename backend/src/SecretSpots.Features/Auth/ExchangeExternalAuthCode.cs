@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -41,10 +40,7 @@ public static class ExchangeExternalAuthCode
 
             if (!isUsable)
             {
-                return Result<AuthResult>.Failure(new Error(
-                    AuthMessageKeys.ExternalAuthCodeInvalidOrExpired,
-                    localizer[AuthMessageKeys.ExternalAuthCodeInvalidOrExpired].Value,
-                    StatusCodes.Status401Unauthorized));
+                return Result<AuthResult>.Failure(Error.Unauthorized(AuthMessageKeys.ExternalAuthCodeInvalidOrExpired, localizer));
             }
 
             transaction!.Status = ExternalAuthTransactionStatus.Consumed;

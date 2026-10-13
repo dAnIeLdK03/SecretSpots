@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -29,10 +28,7 @@ public static class RedeemReward
 
             if (!reward.IsActive)
             {
-                return Result<RewardRedemptionResponse>.Failure(new Error(
-                    RewardsMessageKeys.RewardInactive,
-                    localizer[RewardsMessageKeys.RewardInactive].Value,
-                    StatusCodes.Status400BadRequest));
+                return Result<RewardRedemptionResponse>.Failure(Error.BadRequest(RewardsMessageKeys.RewardInactive, localizer));
             }
 
             // Reward always has a valid BusinessId (CreateReward requires the business to exist,
@@ -46,10 +42,7 @@ public static class RedeemReward
             // redemptions the (deliberately unavailable) business can't actually fulfill.
             if (!business.IsActive)
             {
-                return Result<RewardRedemptionResponse>.Failure(new Error(
-                    RewardsMessageKeys.BusinessInactive,
-                    localizer[RewardsMessageKeys.BusinessInactive].Value,
-                    StatusCodes.Status400BadRequest));
+                return Result<RewardRedemptionResponse>.Failure(Error.BadRequest(RewardsMessageKeys.BusinessInactive, localizer));
             }
 
             var wallet = await db.CrystalWallets.SingleOrDefaultAsync(w => w.UserId == userContext.UserId, cancellationToken);
@@ -60,10 +53,7 @@ public static class RedeemReward
 
             if (wallet.Balance < reward.CrystalCost)
             {
-                return Result<RewardRedemptionResponse>.Failure(new Error(
-                    RewardsMessageKeys.InsufficientBalance,
-                    localizer[RewardsMessageKeys.InsufficientBalance].Value,
-                    StatusCodes.Status400BadRequest));
+                return Result<RewardRedemptionResponse>.Failure(Error.BadRequest(RewardsMessageKeys.InsufficientBalance, localizer));
             }
 
             wallet.Balance -= reward.CrystalCost;
@@ -99,10 +89,7 @@ public static class RedeemReward
             {
                 // The balance check above raced with another update to this same user (another
                 // redemption, a check-in) — reject rather than silently spend a stale balance.
-                return Result<RewardRedemptionResponse>.Failure(new Error(
-                    CommonMessageKeys.ConcurrencyConflict,
-                    localizer[CommonMessageKeys.ConcurrencyConflict].Value,
-                    StatusCodes.Status409Conflict));
+                return Result<RewardRedemptionResponse>.Failure(Error.Conflict(CommonMessageKeys.ConcurrencyConflict, localizer));
             }
 
             logger.LogInformation(RewardsLogMessages.RewardRedeemed, reward.Id, userContext.UserId, redemption.CrystalsSpent);

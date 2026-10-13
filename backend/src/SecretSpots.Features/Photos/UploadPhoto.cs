@@ -56,18 +56,12 @@ public static class UploadPhoto
                 var info = await Image.IdentifyAsync(uploadStream, cancellationToken);
                 if (info is null)
                 {
-                    return Result<UploadPhotoResponse>.Failure(new Error(
-                        PhotoMessageKeys.InvalidImage,
-                        localizer[PhotoMessageKeys.InvalidImage].Value,
-                        StatusCodes.Status400BadRequest));
+                    return Result<UploadPhotoResponse>.Failure(Error.BadRequest(PhotoMessageKeys.InvalidImage, localizer));
                 }
 
                 if ((long)info.Width * info.Height > photoOptions.Value.MaxDecodedPixels)
                 {
-                    return Result<UploadPhotoResponse>.Failure(new Error(
-                        PhotoMessageKeys.ImageDimensionsTooLarge,
-                        localizer[PhotoMessageKeys.ImageDimensionsTooLarge].Value,
-                        StatusCodes.Status400BadRequest));
+                    return Result<UploadPhotoResponse>.Failure(Error.BadRequest(PhotoMessageKeys.ImageDimensionsTooLarge, localizer));
                 }
 
                 uploadStream.Position = 0;
@@ -78,10 +72,7 @@ public static class UploadPhoto
                 // Covers both "not an image at all" (UnknownImageFormatException) and "corrupt/
                 // truncated image data" (InvalidImageContentException) — the authoritative check
                 // is a real decode attempt, not trusting the client-supplied Content-Type/extension.
-                return Result<UploadPhotoResponse>.Failure(new Error(
-                    PhotoMessageKeys.InvalidImage,
-                    localizer[PhotoMessageKeys.InvalidImage].Value,
-                    StatusCodes.Status400BadRequest));
+                return Result<UploadPhotoResponse>.Failure(Error.BadRequest(PhotoMessageKeys.InvalidImage, localizer));
             }
 
             using (image)
