@@ -1,7 +1,5 @@
 namespace SecretSpots.Features.Common.Configuration;
 
-public class SavedSpotsOptions
+public class SavedSpotsOptions : PaginationOptionsBase
 {
-    public int DefaultPageSize { get; set; } = 20;
-    public int MaxPageSize { get; set; } = 100;
 }

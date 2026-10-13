@@ -50,7 +50,8 @@ public static class SavedSpotsEndpoints
                 int? page, int? pageSize, IOptions<SavedSpotsOptions> savedSpotsOptions,
                 ISender sender, CancellationToken cancellationToken) =>
             {
-                var query = new GetMySavedSpots.Query(page ?? 1, pageSize ?? savedSpotsOptions.Value.DefaultPageSize);
+                var (resolvedPage, resolvedPageSize) = savedSpotsOptions.Value.ResolvePaging(page, pageSize);
+                var query = new GetMySavedSpots.Query(resolvedPage, resolvedPageSize);
                 var result = await sender.Send(query, cancellationToken);
                 return Results.Ok(result);
             })

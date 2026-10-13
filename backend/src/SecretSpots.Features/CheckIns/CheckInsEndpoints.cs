@@ -32,7 +32,8 @@ public static class CheckInsEndpoints
                 int? page, int? pageSize, IOptions<CheckInOptions> checkInOptions,
                 ISender sender, CancellationToken cancellationToken) =>
             {
-                var query = new GetMyCheckIns.Query(page ?? 1, pageSize ?? checkInOptions.Value.DefaultPageSize);
+                var (resolvedPage, resolvedPageSize) = checkInOptions.Value.ResolvePaging(page, pageSize);
+                var query = new GetMyCheckIns.Query(resolvedPage, resolvedPageSize);
                 var result = await sender.Send(query, cancellationToken);
                 return Results.Ok(result);
             })

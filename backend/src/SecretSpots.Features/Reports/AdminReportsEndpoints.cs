@@ -18,8 +18,8 @@ public static class AdminReportsEndpoints
                 int? page, int? pageSize, bool? includeResolved, IOptions<ReportsOptions> reportsOptions,
                 ISender sender, CancellationToken cancellationToken) =>
             {
-                var query = new GetAdminReports.Query(
-                    page ?? 1, pageSize ?? reportsOptions.Value.DefaultPageSize, includeResolved ?? false);
+                var (resolvedPage, resolvedPageSize) = reportsOptions.Value.ResolvePaging(page, pageSize);
+                var query = new GetAdminReports.Query(resolvedPage, resolvedPageSize, includeResolved ?? false);
                 var result = await sender.Send(query, cancellationToken);
                 return Results.Ok(result);
             })
