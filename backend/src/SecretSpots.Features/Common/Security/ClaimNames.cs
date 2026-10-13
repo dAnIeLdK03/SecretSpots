@@ -4,5 +4,5 @@ namespace SecretSpots.Features.Common.Security;
 // Program.cs (which builds authorization policies off them).
 public static class ClaimNames
 {
-    public const string IsAdmin = "is_admin";
+    public const string Role = "role";
 }

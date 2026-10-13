@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using SecretSpots.Domain;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -38,7 +39,7 @@ public static class GetCurrentUser
             logger.LogInformation(AuthLogMessages.UserProfileRetrieved, user.Id);
 
             return Result<Response>.Success(
-                new Response(user.Id, user.Email, user.DisplayName, wallet?.Balance ?? 0, user.IsEmailVerified, user.IsAdmin));
+                new Response(user.Id, user.Email, user.DisplayName, wallet?.Balance ?? 0, user.IsEmailVerified, user.Role == UserRole.Admin));
         }
     }
 }

@@ -14,7 +14,7 @@ internal static class ReportAdminNotifier
         CancellationToken cancellationToken)
     {
         var adminIds = await db.Users
-            .Where(u => u.IsAdmin)
+            .Where(u => u.Role == UserRole.Admin)
             .Select(u => u.Id)
             .ToListAsync(cancellationToken);
 

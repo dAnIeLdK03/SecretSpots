@@ -22,10 +22,7 @@ public class JwtService(IOptions<JwtOptions> options) : IJwtService
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         ];
 
-        if (user.IsAdmin)
-        {
-            claims.Add(new Claim(ClaimNames.IsAdmin, "true"));
-        }
+        claims.Add(new Claim(ClaimNames.Role, user.Role.ToString()));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using NetTopologySuite.Geometries;
 using SecretSpots.Domain;
-using SecretSpots.Features.Auth;
 using SecretSpots.Features.CheckIns;
+using SecretSpots.Features.Common.ExceptionHandling;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Tests.TestSupport;
 
@@ -197,7 +197,7 @@ public class CreateCheckInHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Equal(AuthMessageKeys.UserNotFound, result.Error.Code);
+        Assert.Equal(CommonMessageKeys.CurrentUserNotFound, result.Error.Code);
         Assert.Equal(StatusCodes.Status404NotFound, result.Error.StatusCode);
     }
 }

@@ -7,6 +7,6 @@ public class User : IHasCreatedAt
     public string? PasswordHash { get; set; }
     public required string DisplayName { get; set; }
     public bool IsEmailVerified { get; set; }
-    public bool IsAdmin { get; set; }
+    public UserRole Role { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }
