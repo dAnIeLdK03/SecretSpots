@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -41,10 +40,7 @@ public static class DeleteAccount
             if (user.PasswordHash is not null &&
                 (string.IsNullOrEmpty(command.Password) || !BCrypt.Net.BCrypt.Verify(command.Password, user.PasswordHash)))
             {
-                return Result<Unit>.Failure(new Error(
-                    AuthMessageKeys.InvalidCredentials,
-                    localizer[AuthMessageKeys.InvalidCredentials].Value,
-                    StatusCodes.Status401Unauthorized));
+                return Result<Unit>.Failure(Error.Unauthorized(AuthMessageKeys.InvalidCredentials, localizer));
             }
 
             await using var transaction = await db.BeginTransactionAsync(cancellationToken);

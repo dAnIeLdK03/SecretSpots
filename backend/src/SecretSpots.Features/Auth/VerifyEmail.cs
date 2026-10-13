@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -34,10 +33,7 @@ public static class VerifyEmail
             var isUsable = token is { UsedAt: null } && token.ExpiresAt > DateTimeOffset.UtcNow;
             if (!isUsable)
             {
-                return Result<Unit>.Failure(new Error(
-                    AuthMessageKeys.EmailVerificationTokenInvalidOrExpired,
-                    localizer[AuthMessageKeys.EmailVerificationTokenInvalidOrExpired].Value,
-                    StatusCodes.Status400BadRequest));
+                return Result<Unit>.Failure(Error.BadRequest(AuthMessageKeys.EmailVerificationTokenInvalidOrExpired, localizer));
             }
 
             var user = await db.Users.SingleAsync(u => u.Id == token!.UserId, cancellationToken);

@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -69,10 +68,7 @@ public static class CreateCheckIn
             // cooldown below only stops repeat check-ins on the *same* spot, not this.
             if (spot.CreatedByUserId == userContext.UserId)
             {
-                return Result<CheckInResponse>.Failure(new Error(
-                    CheckInsMessageKeys.CannotCheckInOwnSpot,
-                    localizer[CheckInsMessageKeys.CannotCheckInOwnSpot].Value,
-                    StatusCodes.Status400BadRequest));
+                return Result<CheckInResponse>.Failure(Error.BadRequest(CheckInsMessageKeys.CannotCheckInOwnSpot, localizer));
             }
 
             // spot is a materialized entity here, so reading .Y/.X off its Location is safe —
@@ -82,10 +78,7 @@ public static class CreateCheckIn
 
             if (distanceMeters > checkInOptions.Value.MaxDistanceMeters)
             {
-                return Result<CheckInResponse>.Failure(new Error(
-                    CheckInsMessageKeys.TooFarFromSpot,
-                    localizer[CheckInsMessageKeys.TooFarFromSpot].Value,
-                    StatusCodes.Status400BadRequest));
+                return Result<CheckInResponse>.Failure(Error.BadRequest(CheckInsMessageKeys.TooFarFromSpot, localizer));
             }
 
             // Stops trivially farming crystals by repeatedly checking in at the same spot —
@@ -97,10 +90,7 @@ public static class CreateCheckIn
 
             if (checkedInRecently)
             {
-                return Result<CheckInResponse>.Failure(new Error(
-                    CheckInsMessageKeys.TooSoonSinceLastCheckIn,
-                    localizer[CheckInsMessageKeys.TooSoonSinceLastCheckIn].Value,
-                    StatusCodes.Status400BadRequest));
+                return Result<CheckInResponse>.Failure(Error.BadRequest(CheckInsMessageKeys.TooSoonSinceLastCheckIn, localizer));
             }
 
             // Same "current authenticated user" edge case as GetCurrentUser — handled the
@@ -179,10 +169,7 @@ public static class CreateCheckIn
             {
                 // This user's wallet changed concurrently (another check-in, a redemption) —
                 // reject rather than silently overwrite it with a stale value.
-                return Result<CheckInResponse>.Failure(new Error(
-                    CommonMessageKeys.ConcurrencyConflict,
-                    localizer[CommonMessageKeys.ConcurrencyConflict].Value,
-                    StatusCodes.Status409Conflict));
+                return Result<CheckInResponse>.Failure(Error.Conflict(CommonMessageKeys.ConcurrencyConflict, localizer));
             }
 
             logger.LogInformation(

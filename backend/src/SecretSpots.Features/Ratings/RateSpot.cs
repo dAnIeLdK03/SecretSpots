@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -52,10 +51,7 @@ public static class RateSpot
             // one account is all it'd take for a creator to hand their own spot a permanent 5.
             if (spot.CreatedByUserId == userContext.UserId)
             {
-                return Result<RatingResponse>.Failure(new Error(
-                    RatingsMessageKeys.CannotRateOwnSpot,
-                    localizer[RatingsMessageKeys.CannotRateOwnSpot].Value,
-                    StatusCodes.Status400BadRequest));
+                return Result<RatingResponse>.Failure(Error.BadRequest(RatingsMessageKeys.CannotRateOwnSpot, localizer));
             }
 
             var rating = await db.Ratings.SingleOrDefaultAsync(
