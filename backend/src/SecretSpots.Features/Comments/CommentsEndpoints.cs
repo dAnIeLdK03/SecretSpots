@@ -34,7 +34,8 @@ public static class CommentsEndpoints
                 Guid spotId, int? page, int? pageSize, IOptions<CommentOptions> commentOptions,
                 ISender sender, CancellationToken cancellationToken) =>
             {
-                var query = new GetSpotComments.Query(spotId, page ?? 1, pageSize ?? commentOptions.Value.DefaultPageSize);
+                var (resolvedPage, resolvedPageSize) = commentOptions.Value.ResolvePaging(page, pageSize);
+                var query = new GetSpotComments.Query(spotId, resolvedPage, resolvedPageSize);
                 var result = await sender.Send(query, cancellationToken);
                 return Results.Ok(result);
             })

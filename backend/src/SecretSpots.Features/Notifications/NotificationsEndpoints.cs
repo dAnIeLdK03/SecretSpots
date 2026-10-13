@@ -18,8 +18,8 @@ public static class NotificationsEndpoints
                 int? page, int? pageSize, IOptions<NotificationsOptions> notificationsOptions,
                 ISender sender, CancellationToken cancellationToken) =>
             {
-                var query = new GetNotifications.Query(
-                    page ?? 1, pageSize ?? notificationsOptions.Value.DefaultPageSize);
+                var (resolvedPage, resolvedPageSize) = notificationsOptions.Value.ResolvePaging(page, pageSize);
+                var query = new GetNotifications.Query(resolvedPage, resolvedPageSize);
                 var result = await sender.Send(query, cancellationToken);
                 return Results.Ok(result);
             })

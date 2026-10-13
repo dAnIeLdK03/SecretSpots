@@ -52,7 +52,8 @@ public static class SpotsEndpoints
             ISender sender, CancellationToken cancellationToken
         ) =>
         {
-            var query = new SearchSpots.Query(q, category, page ?? 1, pageSize ?? spotSearchOptions.Value.DefaultPageSize);
+            var (resolvedPage, resolvedPageSize) = spotSearchOptions.Value.ResolvePaging(page, pageSize);
+            var query = new SearchSpots.Query(q, category, resolvedPage, resolvedPageSize);
             var result = await sender.Send(query, cancellationToken);
             return Results.Ok(result);
         })
@@ -64,7 +65,8 @@ public static class SpotsEndpoints
                 int? page, int? pageSize, IOptions<SpotSearchOptions> spotSearchOptions,
                 ISender sender, CancellationToken cancellationToken) =>
             {
-                var query = new GetMySpots.Query(page ?? 1, pageSize ?? spotSearchOptions.Value.DefaultPageSize);
+                var (resolvedPage, resolvedPageSize) = spotSearchOptions.Value.ResolvePaging(page, pageSize);
+                var query = new GetMySpots.Query(resolvedPage, resolvedPageSize);
                 var result = await sender.Send(query, cancellationToken);
                 return Results.Ok(result);
             })

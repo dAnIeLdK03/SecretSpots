@@ -33,8 +33,8 @@ public static class RewardsEndpoints
                 Guid businessId, int? page, int? pageSize, IOptions<RewardsOptions> rewardsOptions,
                 ISender sender, CancellationToken cancellationToken) =>
             {
-                var query = new GetBusinessRewards.Query(
-                    businessId, page ?? 1, pageSize ?? rewardsOptions.Value.DefaultPageSize);
+                var (resolvedPage, resolvedPageSize) = rewardsOptions.Value.ResolvePaging(page, pageSize);
+                var query = new GetBusinessRewards.Query(businessId, resolvedPage, resolvedPageSize);
                 var result = await sender.Send(query, cancellationToken);
                 return result.ToOkOrProblem();
             })
@@ -106,7 +106,8 @@ public static class RewardsEndpoints
                 int? page, int? pageSize, IOptions<RewardsOptions> rewardsOptions,
                 ISender sender, CancellationToken cancellationToken) =>
             {
-                var query = new GetMyRedemptions.Query(page ?? 1, pageSize ?? rewardsOptions.Value.DefaultPageSize);
+                var (resolvedPage, resolvedPageSize) = rewardsOptions.Value.ResolvePaging(page, pageSize);
+                var query = new GetMyRedemptions.Query(resolvedPage, resolvedPageSize);
                 var result = await sender.Send(query, cancellationToken);
                 return Results.Ok(result);
             })
