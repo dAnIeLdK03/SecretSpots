@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using SecretSpots.Features.Common.Localization;
@@ -18,17 +17,12 @@ public static class DeleteReward
     {
         public async Task<Result<Unit>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var reward = await db.Rewards.SingleOrDefaultAsync(r => r.Id == command.RewardId, cancellationToken);
-            if (reward is null)
+            var rewardResult = await RewardOwnershipHandler.GetOwnedRewardAsync(db, userContext, localizer, command.RewardId, cancellationToken);
+            if (!rewardResult.IsSuccess)
             {
-                return Result<Unit>.Failure(Error.NotFound(RewardsMessageKeys.NotFound, localizer));
+                return Result<Unit>.Failure(rewardResult.Error);
             }
-
-            var business = await db.Businesses.SingleAsync(b => b.Id == reward.BusinessId, cancellationToken);
-            if (business.OwnerUserId != userContext.UserId)
-            {
-                return Result<Unit>.Failure(Error.Forbidden(RewardsMessageKeys.NotYourBusiness, localizer));
-            }
+            var reward = rewardResult.Value;
 
             db.Rewards.Remove(reward);
             await db.SaveChangesAsync(cancellationToken);

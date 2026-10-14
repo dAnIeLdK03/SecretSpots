@@ -28,16 +28,7 @@ public static class CreateReward
     {
         public Validator(IStringLocalizer<SharedResources> localizer)
         {
-            RuleFor(c => c.Title)
-                .NotEmpty().WithMessage(localizer[RewardsMessageKeys.TitleRequired].Value)
-                .MaximumLength(100).WithMessage(localizer[RewardsMessageKeys.TitleTooLong].Value);
-
-            RuleFor(c => c.Description)
-                .NotEmpty().WithMessage(localizer[RewardsMessageKeys.DescriptionRequired].Value)
-                .MaximumLength(2000).WithMessage(localizer[RewardsMessageKeys.DescriptionTooLong].Value);
-
-            RuleFor(c => c.CrystalCost)
-                .GreaterThan(0).WithMessage(localizer[RewardsMessageKeys.CrystalCostOutOfRange].Value);
+            this.ValidateRewardFields(c => c.Title, c => c.Description, c => c.CrystalCost, localizer);
         }
     }
 

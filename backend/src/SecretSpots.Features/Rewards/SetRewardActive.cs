@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using SecretSpots.Features.Common.Localization;
@@ -21,17 +20,12 @@ public static class SetRewardActive
     {
         public async Task<Result<RewardResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var reward = await db.Rewards.SingleOrDefaultAsync(r => r.Id == command.RewardId, cancellationToken);
-            if (reward is null)
+            var rewardResult = await RewardOwnershipHandler.GetOwnedRewardAsync(db, userContext, localizer, command.RewardId, cancellationToken);
+            if (!rewardResult.IsSuccess)
             {
-                return Result<RewardResponse>.Failure(Error.NotFound(RewardsMessageKeys.NotFound, localizer));
+                return Result<RewardResponse>.Failure(rewardResult.Error);
             }
-
-            var business = await db.Businesses.SingleAsync(b => b.Id == reward.BusinessId, cancellationToken);
-            if (business.OwnerUserId != userContext.UserId)
-            {
-                return Result<RewardResponse>.Failure(Error.Forbidden(RewardsMessageKeys.NotYourBusiness, localizer));
-            }
+            var reward = rewardResult.Value;
 
             reward.IsActive = command.IsActive;
             await db.SaveChangesAsync(cancellationToken);
