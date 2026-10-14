@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using SecretSpots.Features.Common.Localization;
@@ -26,16 +25,7 @@ public static class UpdateReward
     {
         public Validator(IStringLocalizer<SharedResources> localizer)
         {
-            RuleFor(c => c.Title)
-                .NotEmpty().WithMessage(localizer[RewardsMessageKeys.TitleRequired].Value)
-                .MaximumLength(100).WithMessage(localizer[RewardsMessageKeys.TitleTooLong].Value);
-
-            RuleFor(c => c.Description)
-                .NotEmpty().WithMessage(localizer[RewardsMessageKeys.DescriptionRequired].Value)
-                .MaximumLength(2000).WithMessage(localizer[RewardsMessageKeys.DescriptionTooLong].Value);
-
-            RuleFor(c => c.CrystalCost)
-                .GreaterThan(0).WithMessage(localizer[RewardsMessageKeys.CrystalCostOutOfRange].Value);
+            this.ValidateRewardFields(c => c.Title, c => c.Description, c => c.CrystalCost, localizer);
         }
     }
 
@@ -44,17 +34,12 @@ public static class UpdateReward
     {
         public async Task<Result<RewardResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var reward = await db.Rewards.SingleOrDefaultAsync(r => r.Id == command.RewardId, cancellationToken);
-            if (reward is null)
+            var rewardResult = await RewardOwnershipHandler.GetOwnedRewardAsync(db, userContext, localizer, command.RewardId, cancellationToken);
+            if (!rewardResult.IsSuccess)
             {
-                return Result<RewardResponse>.Failure(Error.NotFound(RewardsMessageKeys.NotFound, localizer));
+                return Result<RewardResponse>.Failure(rewardResult.Error);
             }
-
-            var business = await db.Businesses.SingleAsync(b => b.Id == reward.BusinessId, cancellationToken);
-            if (business.OwnerUserId != userContext.UserId)
-            {
-                return Result<RewardResponse>.Failure(Error.Forbidden(RewardsMessageKeys.NotYourBusiness, localizer));
-            }
+            var reward = rewardResult.Value;
 
             reward.Title = command.Title.Trim();
             reward.Description = command.Description.Trim();
