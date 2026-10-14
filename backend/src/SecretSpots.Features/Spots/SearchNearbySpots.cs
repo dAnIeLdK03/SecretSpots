@@ -53,34 +53,31 @@ public static class SearchNearbySpots
                 withinRadius = withinRadius.Where(s => s.Category == query.Category);
             }
 
-            // A plain COUNT, independent of the MaxResults cap below — lets the frontend tell the
-            // user a search was truncated instead of silently dropping the farthest matches.
-            var totalCount = await withinRadius.CountAsync(cancellationToken);
-
             // IsWithinDistance (-> ST_DWithin) filters using the GIST index first, and Distance
             // is projected once per surviving row for OrderBy. The final shaping into
-            // NearbySpotResponse happens in-memory, after ToListAsync — ST_Y/ST_X (which
+            // NearbySpotResponse happens in-memory, after materialization — ST_Y/ST_X (which
             // Location.Y/.X translate to) only support geometry, not geography, so extracting
             // lat/lng must happen on the materialized Point, not inside the translated query.
-            var nearby = await withinRadius
+            // TotalCount here is a plain COUNT independent of the MaxResults cap below — lets the
+            // frontend tell the user a search was truncated instead of silently dropping the
+            // farthest matches.
+            var result = await withinRadius
                 .Select(s => new { Spot = s, DistanceMeters = s.Location.Distance(searchPoint) })
                 .OrderBy(x => x.DistanceMeters)
-                .Take(MaxResults)
-                .ToListAsync(cancellationToken);
+                .ToPagedResponseAsync(1, MaxResults, x => new NearbySpotResponse(
+                    x.Spot.Id,
+                    x.Spot.Name,
+                    x.Spot.Description,
+                    x.Spot.Category,
+                    x.Spot.PhotoUrls[0],
+                    x.Spot.Location.Y,
+                    x.Spot.Location.X,
+                    x.Spot.CreatedByUserId,
+                    x.Spot.CreatedAt,
+                    x.DistanceMeters / 1000),
+                    cancellationToken);
 
-            var items = nearby.ConvertAll(x => new NearbySpotResponse(
-                x.Spot.Id,
-                x.Spot.Name,
-                x.Spot.Description,
-                x.Spot.Category,
-                x.Spot.PhotoUrls[0],
-                x.Spot.Location.Y,
-                x.Spot.Location.X,
-                x.Spot.CreatedByUserId,
-                x.Spot.CreatedAt,
-                x.DistanceMeters / 1000));
-
-            return new NearbySpotsResponse(items, totalCount);
+            return new NearbySpotsResponse(result.Items, result.TotalCount);
         }
     }
 }

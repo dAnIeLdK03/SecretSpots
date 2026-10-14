@@ -46,26 +46,23 @@ public static class SearchNearbyBusinesses
             var withinRadius = db.Businesses
                 .Where(b => b.IsActive && b.Location.IsWithinDistance(searchPoint, radiusMeters));
 
-            var totalCount = await withinRadius.CountAsync(cancellationToken);
-
             // Same reason as SearchNearbySpots: ST_Y/ST_X only support geometry, so lat/lng
-            // extraction happens on the materialized Point after ToListAsync, not in-query.
-            var nearby = await withinRadius
+            // extraction happens on the materialized Point, not in-query. TotalCount here is a
+            // plain COUNT independent of the MaxResults cap below.
+            var result = await withinRadius
                 .Select(b => new { Business = b, DistanceMeters = b.Location.Distance(searchPoint) })
                 .OrderBy(x => x.DistanceMeters)
-                .Take(MaxResults)
-                .ToListAsync(cancellationToken);
+                .ToPagedResponseAsync(1, MaxResults, x => new NearbyBusinessResponse(
+                    x.Business.Id,
+                    x.Business.Name,
+                    x.Business.Description,
+                    x.Business.Location.Y,
+                    x.Business.Location.X,
+                    x.Business.IsPromoted,
+                    x.DistanceMeters / 1000),
+                    cancellationToken);
 
-            var items = nearby.ConvertAll(x => new NearbyBusinessResponse(
-                x.Business.Id,
-                x.Business.Name,
-                x.Business.Description,
-                x.Business.Location.Y,
-                x.Business.Location.X,
-                x.Business.IsPromoted,
-                x.DistanceMeters / 1000));
-
-            return new NearbyBusinessesResponse(items, totalCount);
+            return new NearbyBusinessesResponse(result.Items, result.TotalCount);
         }
     }
 }
