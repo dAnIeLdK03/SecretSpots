@@ -48,43 +48,10 @@ public static class ReportComment
                 return Result<ReportResponse>.Failure(Error.NotFound(ReportsMessageKeys.CommentNotFound, localizer));
             }
 
-            var alreadyReported = await db.Reports.AnyAsync(
-                r => r.ContentType == ReportedContentType.Comment
-                     && r.ContentId == command.CommentId
-                     && r.ReporterUserId == userContext.UserId,
-                cancellationToken);
-            if (alreadyReported)
-            {
-                return Result<ReportResponse>.Failure(Error.Conflict(ReportsMessageKeys.AlreadyReported, localizer));
-            }
-
-            var report = new Report
-            {
-                Id = Guid.NewGuid(),
-                ContentType = ReportedContentType.Comment,
-                ContentId = command.CommentId,
-                ReporterUserId = userContext.UserId,
-                Reason = command.Reason,
-                Details = command.Details?.Trim(),
-            };
-
-            db.Reports.Add(report);
-
-            try
-            {
-                await db.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateException)
-            {
-                // Concurrent duplicate report from the same user caught by the unique index.
-                return Result<ReportResponse>.Failure(Error.Conflict(ReportsMessageKeys.AlreadyReported, localizer));
-            }
-
-            logger.LogInformation(ReportsLogMessages.ContentReported, report.ContentType, report.ContentId, report.Reason, userContext.UserId);
-
-            await ReportAdminNotifier.NotifyAsync(db, comment.SpotId, cancellationToken);
-
-            return Result<ReportResponse>.Success(new ReportResponse(report.Id));
+            return await ReportContentHandler.CreateAsync(
+                db, userContext, localizer, logger,
+                ReportedContentType.Comment, command.CommentId, comment.SpotId,
+                command.Reason, command.Details, cancellationToken);
         }
     }
 }
