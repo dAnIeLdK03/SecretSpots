@@ -126,6 +126,7 @@ builder.Services.Configure<PhotoOptions>(builder.Configuration.GetSection("Photo
 builder.Services.Configure<NotificationsOptions>(builder.Configuration.GetSection("Notifications"));
 builder.Services.Configure<SavedSpotsOptions>(builder.Configuration.GetSection("SavedSpots"));
 builder.Services.Configure<RewardsOptions>(builder.Configuration.GetSection("Rewards"));
+builder.Services.Configure<AdminUsersOptions>(builder.Configuration.GetSection("AdminUsers"));
 builder.Services.Configure<RateLimitingOptions>(builder.Configuration.GetSection("RateLimiting"));
 
 builder.Services.Configure<GoogleAuthOptions>(builder.Configuration.GetSection("GoogleAuth"));
