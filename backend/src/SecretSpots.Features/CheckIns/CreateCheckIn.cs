@@ -175,11 +175,6 @@ public static class CreateCheckIn
             logger.LogInformation(
                 CheckInsLogMessages.CheckInCreated, checkIn.Id, spot.Id, userContext.UserId, reward);
 
-
-            if (ownerNotification is not null)
-            {
-            }
-
             return Result<CheckInResponse>.Success(new CheckInResponse(
                 checkIn.Id,
                 spot.Id,
