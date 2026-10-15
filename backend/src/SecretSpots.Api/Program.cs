@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SecretSpots.Api;
 using SecretSpots.Domain;
+using SecretSpots.Features.Admin;
 using SecretSpots.Features.Auth;
 using SecretSpots.Features.Businesses;
 using SecretSpots.Features.CheckIns;
@@ -105,6 +106,9 @@ builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
 
 builder.Services.Configure<TokenCleanupOptions>(builder.Configuration.GetSection("TokenCleanup"));
 builder.Services.AddHostedService<TokenCleanupService>();
+
+builder.Services.Configure<AdminBootstrapOptions>(builder.Configuration.GetSection("AdminBootstrap"));
+builder.Services.AddHostedService<AdminBootstrapService>();
 
 builder.Services.AddMediator(featuresAssembly);
 builder.Services.AddValidatorsFromAssembly(featuresAssembly);
@@ -432,6 +436,7 @@ app.MapRewardsEndpoints();
 app.MapNotificationsEndpoints();
 app.MapReportsEndpoints();
 app.MapAdminReportsEndpoints();
+app.MapAdminUsersEndpoints();
 
 // Lets e2e tests read back what InMemoryEmailSender captured (see registration above) instead of
 // needing a real inbox — e.g. to pull the token out of a password-reset link. Gated on
