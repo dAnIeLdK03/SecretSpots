@@ -321,4 +321,10 @@
   <data name="Common.CurrentUserNotFound" xml:space="preserve">
     <value>Потребителят не е намерен.</value>
   </data>
+  <data name="Admin.UserNotFound" xml:space="preserve">
+    <value>Този потребител вече не съществува.</value>
+  </data>
+  <data name="Admin.RoleInvalid" xml:space="preserve">
+    <value>Невалидна роля.</value>
+  </data>
 </root>

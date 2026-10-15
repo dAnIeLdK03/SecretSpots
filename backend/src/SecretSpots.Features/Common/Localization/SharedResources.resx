@@ -321,4 +321,10 @@
   <data name="Common.CurrentUserNotFound" xml:space="preserve">
     <value>User not found.</value>
   </data>
+  <data name="Admin.UserNotFound" xml:space="preserve">
+    <value>This user no longer exists.</value>
+  </data>
+  <data name="Admin.RoleInvalid" xml:space="preserve">
+    <value>Invalid role.</value>
+  </data>
 </root>
