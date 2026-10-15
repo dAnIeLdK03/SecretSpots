@@ -127,10 +127,6 @@ public static class RateSpot
 
             logger.LogInformation(RatingsLogMessages.SpotRated, spot.Id, rating.Value, userContext.UserId);
 
-            if (notification is not null)
-            {
-            }
-
             return Result<RatingResponse>.Success(new RatingResponse(spot.Id, rating.Value, spot.AverageRating, spot.RatingsCount));
         }
     }

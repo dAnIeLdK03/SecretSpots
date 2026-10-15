@@ -83,10 +83,6 @@ public static class CreateComment
 
             logger.LogInformation(CommentsLogMessages.CommentCreated, comment.Id, comment.SpotId, user.Id);
 
-            if (notification is not null)
-            {
-            }
-
             return Result<CommentResponse>.Success(new CommentResponse(
                 comment.Id,
                 comment.SpotId,
