@@ -333,4 +333,13 @@
   <data name="Admin.RoleInvalid" xml:space="preserve">
     <value>Невалидна роля.</value>
   </data>
+  <data name="Admin.SpotNotFound" xml:space="preserve">
+    <value>Това място вече не съществува.</value>
+  </data>
+  <data name="Admin.RejectionReasonRequired" xml:space="preserve">
+    <value>Причина за отхвърлянето е задължителна.</value>
+  </data>
+  <data name="Admin.RejectionReasonTooLong" xml:space="preserve">
+    <value>Причината за отхвърлянето трябва да е най-много 500 символа.</value>
+  </data>
 </root>
