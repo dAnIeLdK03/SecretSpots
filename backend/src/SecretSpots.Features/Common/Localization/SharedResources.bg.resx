@@ -126,6 +126,9 @@
   <data name="Spots.PageSizeOutOfRange" xml:space="preserve">
     <value>Размерът на страницата трябва да е между 1 и 100.</value>
   </data>
+  <data name="Spots.AdminsCannotCreateSpots" xml:space="preserve">
+    <value>Администраторските акаунти не могат да добавят места.</value>
+  </data>
   <data name="Admin.PageOutOfRange" xml:space="preserve">
     <value>Страницата трябва да е 1 или по-голяма.</value>
   </data>
@@ -176,6 +179,9 @@
   </data>
   <data name="Comments.PageSizeOutOfRange" xml:space="preserve">
     <value>Размерът на страницата трябва да е между 1 и 100.</value>
+  </data>
+  <data name="Comments.AdminsCannotComment" xml:space="preserve">
+    <value>Администраторските акаунти не могат да публикуват коментари.</value>
   </data>
   <data name="Ratings.SpotNotFound" xml:space="preserve">
     <value>Това място вече не съществува.</value>

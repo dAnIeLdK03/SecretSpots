@@ -17,13 +17,14 @@ public static class SpotsEndpoints
 
         group.MapPost("/", async (CreateSpot.Command command, ISender sender, CancellationToken cancellationToken) =>
             {
-                var response = await sender.Send(command, cancellationToken);
-                return Results.Created($"/spots/{response.Id}", response);
+                var result = await sender.Send(command, cancellationToken);
+                return result.IsSuccess ? Results.Created($"/spots/{result.Value.Id}", result.Value) : result.ToProblem();
             })
             .RequireAuthorization()
             .Produces<SpotResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status500InternalServerError)
             .Accepts<CreateSpot.Command>("application/json");
 

@@ -17,4 +17,5 @@ public static class SpotsMessageKeys
     public const string NotYourSpot = "Spots.NotYourSpot";
     public const string PageOutOfRange = "Spots.PageOutOfRange";
     public const string PageSizeOutOfRange = "Spots.PageSizeOutOfRange";
+    public const string AdminsCannotCreateSpots = "Spots.AdminsCannotCreateSpots";
 }

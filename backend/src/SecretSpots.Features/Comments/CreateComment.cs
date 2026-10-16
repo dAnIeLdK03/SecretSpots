@@ -40,6 +40,11 @@ public static class CreateComment
     {
         public async Task<Result<CommentResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
+            if (userContext.Role == UserRole.Admin)
+            {
+                return Result<CommentResponse>.Failure(Error.Forbidden(CommentsMessageKeys.AdminsCannotComment, localizer));
+            }
+
             var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
             if (spot is null)
             {

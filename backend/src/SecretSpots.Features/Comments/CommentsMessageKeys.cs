@@ -11,4 +11,5 @@ public static class CommentsMessageKeys
     public const string NotYourComment = "Comments.NotYourComment";
     public const string PageOutOfRange = "Comments.PageOutOfRange";
     public const string PageSizeOutOfRange = "Comments.PageSizeOutOfRange";
+    public const string AdminsCannotComment = "Comments.AdminsCannotComment";
 }
