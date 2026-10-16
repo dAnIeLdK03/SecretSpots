@@ -5,4 +5,8 @@ namespace SecretSpots.Features.Common.Security;
 public interface IUserContext
 {
     Guid UserId { get; }
+
+    // Non-throwing variant of UserId for endpoints reachable anonymously (e.g. GetSpot), where
+    // "no authenticated user" is a normal case, not an error.
+    Guid? UserIdOrNull { get; }
 }

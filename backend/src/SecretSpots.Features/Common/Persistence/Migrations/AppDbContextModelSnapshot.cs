@@ -540,6 +540,9 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("geography (Point, 4326)");
 
+                    b.Property<int>("ModerationStatus")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -550,6 +553,9 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
 
                     b.Property<int>("RatingsCount")
                         .HasColumnType("integer");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

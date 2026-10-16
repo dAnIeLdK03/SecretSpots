@@ -15,4 +15,13 @@ public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContex
             return Guid.Parse(subClaim.Value);
         }
     }
+
+    public Guid? UserIdOrNull
+    {
+        get
+        {
+            var subClaim = httpContextAccessor.HttpContext?.User.FindFirst(JwtRegisteredClaimNames.Sub);
+            return subClaim is null ? null : Guid.Parse(subClaim.Value);
+        }
+    }
 }

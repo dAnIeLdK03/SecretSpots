@@ -46,7 +46,8 @@ public static class SearchNearbySpots
             var searchPoint = new Point(query.Longitude, query.Latitude) { SRID = 4326 };
             var radiusMeters = query.RadiusKm * 1000;
 
-            var withinRadius = db.Spots.Where(s => s.Location.IsWithinDistance(searchPoint, radiusMeters));
+            var withinRadius = db.Spots.Where(s =>
+                s.Location.IsWithinDistance(searchPoint, radiusMeters) && s.ModerationStatus != SpotModerationStatus.Rejected);
 
             if (query.Category is not null)
             {
