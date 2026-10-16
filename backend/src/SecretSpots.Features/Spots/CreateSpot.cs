@@ -9,6 +9,7 @@ using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
+using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Validation;
 using SecretSpots.Features.Notifications;
@@ -25,7 +26,7 @@ public static class CreateSpot
         SpotCategory Category,
         IReadOnlyList<string> PhotoUrls,
         double Latitude,
-        double Longitude) : IRequest<SpotResponse>;
+        double Longitude) : IRequest<Result<SpotResponse>>;
 
     public class Validator : AbstractValidator<Command>
     {
@@ -64,10 +65,15 @@ public static class CreateSpot
         IOptions<NotificationsOptions> notificationsOptions,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
-        : IRequestHandler<Command, SpotResponse>
+        : IRequestHandler<Command, Result<SpotResponse>>
     {
-        public async Task<SpotResponse> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<SpotResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
+            if (userContext.Role == UserRole.Admin)
+            {
+                return Result<SpotResponse>.Failure(Error.Forbidden(SpotsMessageKeys.AdminsCannotCreateSpots, localizer));
+            }
+
             var location = new Point(command.Longitude, command.Latitude) { SRID = 4326 };
 
             var spot = new Spot
@@ -121,7 +127,7 @@ public static class CreateSpot
                 .Select(u => u.DisplayName)
                 .SingleOrDefaultAsync(cancellationToken) ?? string.Empty;
 
-            return new SpotResponse(
+            return Result<SpotResponse>.Success(new SpotResponse(
                 spot.Id,
                 spot.Name,
                 spot.Description,
@@ -135,7 +141,7 @@ public static class CreateSpot
                 spot.RatingsCount,
                 spot.CreatedAt,
                 spot.ModerationStatus,
-                spot.RejectionReason);
+                spot.RejectionReason));
         }
     }
 }

@@ -140,7 +140,8 @@ public class CreateSpotHandlerTests
             42.6461,
             23.2445);
 
-        var response = await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command, CancellationToken.None);
+        var response = result.Value;
 
         Assert.Equal(userId, response.CreatedByUserId);
         Assert.Equal(command.Latitude, response.Latitude, precision: 6);
@@ -162,7 +163,8 @@ public class CreateSpotHandlerTests
         var handler = CreateHandler(db, authorId);
         var command = new CreateSpot.Command(
             "New spot", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], SofiaLatitude, SofiaLongitude);
-        var response = await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command, CancellationToken.None);
+        var response = result.Value;
 
         var notification = await db.Notifications.SingleAsync(n => n.UserId == nearbyCreatorId);
         Assert.Equal(NotificationType.NewSpotNearby, notification.Type);
@@ -188,7 +190,8 @@ public class CreateSpotHandlerTests
         var handler = CreateHandler(db, authorId);
         var command = new CreateSpot.Command(
             "New spot", "Desc", SpotCategory.Nature, ["https://example.com/a.jpg"], SofiaLatitude, SofiaLongitude);
-        var response = await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command, CancellationToken.None);
+        var response = result.Value;
 
         var notification = await db.Notifications.SingleAsync(n => n.UserId == checkedInUserId);
         Assert.Equal(NotificationType.NewSpotNearby, notification.Type);

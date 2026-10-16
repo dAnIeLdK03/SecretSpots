@@ -1,3 +1,5 @@
+using SecretSpots.Domain;
+
 namespace SecretSpots.Features.Common.Security;
 
 // Reads "who is calling" from the current request's authenticated principal —
@@ -9,4 +11,6 @@ public interface IUserContext
     // Non-throwing variant of UserId for endpoints reachable anonymously (e.g. GetSpot), where
     // "no authenticated user" is a normal case, not an error.
     Guid? UserIdOrNull { get; }
+
+    UserRole Role { get; }
 }
