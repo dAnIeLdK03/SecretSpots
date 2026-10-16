@@ -118,7 +118,9 @@ public static class UpdateSpot
                 creatorDisplayName,
                 spot.AverageRating,
                 spot.RatingsCount,
-                spot.CreatedAt));
+                spot.CreatedAt,
+                spot.ModerationStatus,
+                spot.RejectionReason));
         }
     }
 }

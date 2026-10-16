@@ -79,6 +79,7 @@ public static class CreateSpot
                 PhotoUrls = command.PhotoUrls.ToList(),
                 Location = location,
                 CreatedByUserId = userContext.UserId,
+                ModerationStatus = SpotModerationStatus.Pending,
             };
 
             // Queried before the new spot is added to the context, so it can't match itself —
@@ -115,10 +116,6 @@ public static class CreateSpot
             logger.LogInformation(SpotsLogMessages.SpotCreated, spot.Id, spot.Category, spot.CreatedByUserId);
             logger.LogInformation(SpotsLogMessages.NearbyUsersNotified, nearbyUserIds.Count, spot.Id);
 
-            foreach (var notification in notifications)
-            {
-            }
-
             var creatorDisplayName = await db.Users
                 .Where(u => u.Id == spot.CreatedByUserId)
                 .Select(u => u.DisplayName)
@@ -136,7 +133,9 @@ public static class CreateSpot
                 creatorDisplayName,
                 spot.AverageRating,
                 spot.RatingsCount,
-                spot.CreatedAt);
+                spot.CreatedAt,
+                spot.ModerationStatus,
+                spot.RejectionReason);
         }
     }
 }

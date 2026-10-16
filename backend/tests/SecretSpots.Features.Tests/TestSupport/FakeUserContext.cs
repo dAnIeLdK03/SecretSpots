@@ -5,4 +5,6 @@ namespace SecretSpots.Features.Tests.TestSupport;
 internal class FakeUserContext(Guid userId) : IUserContext
 {
     public Guid UserId => userId;
+
+    public Guid? UserIdOrNull => userId;
 }

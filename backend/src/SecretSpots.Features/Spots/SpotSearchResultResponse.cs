@@ -11,4 +11,6 @@ public record SpotSearchResultResponse(
     double Latitude,
     double Longitude,
     Guid CreatedByUserId,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    SpotModerationStatus ModerationStatus,
+    string? RejectionReason);

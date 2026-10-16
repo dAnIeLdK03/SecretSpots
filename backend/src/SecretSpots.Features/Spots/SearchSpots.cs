@@ -56,6 +56,7 @@ public static class SearchSpots
         public async Task<PagedResponse<SpotSearchResultResponse>> Handle(Query query, CancellationToken cancellationToken)
         {
             var baseSpots = db.Spots.AsQueryable();
+            baseSpots = baseSpots.Where(s => s.ModerationStatus != SpotModerationStatus.Rejected);
 
             if (query.Category is not null)
             {
@@ -115,7 +116,9 @@ public static class SearchSpots
                     s.Location.Y,
                     s.Location.X,
                     s.CreatedByUserId,
-                    s.CreatedAt))
+                    s.CreatedAt,
+                    s.ModerationStatus,
+                    s.RejectionReason))
                 .ToList();
 
             // Clamped to what's actually reachable via pagination — reporting the true (uncapped)

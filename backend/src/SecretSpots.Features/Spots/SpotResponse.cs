@@ -14,4 +14,6 @@ public record SpotResponse(
     string CreatedByDisplayName,
     double AverageRating,
     int RatingsCount,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    SpotModerationStatus ModerationStatus,
+    string? RejectionReason);

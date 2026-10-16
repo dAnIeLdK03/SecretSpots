@@ -13,5 +13,7 @@ public class Spot : IHasCreatedAt
     public Guid CreatedByUserId { get; set; }
     public double AverageRating { get; set; }
     public int RatingsCount { get; set; }
+    public SpotModerationStatus ModerationStatus { get; set; } = SpotModerationStatus.Pending;
+    public string? RejectionReason { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }

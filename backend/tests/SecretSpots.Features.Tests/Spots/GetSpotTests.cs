@@ -34,7 +34,7 @@ public class GetSpotTests
         await using var db = TestDbContextFactory.Create();
         var spot = await SeedAsync(db);
 
-        var handler = new GetSpot.Handler(db, TestLocalizerFactory.Create());
+        var handler = new GetSpot.Handler(db, new FakeUserContext(Guid.NewGuid()), TestLocalizerFactory.Create());
         var result = await handler.Handle(new GetSpot.Query(spot.Id), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
@@ -45,7 +45,7 @@ public class GetSpotTests
     public async Task Nonexistent_spot_returns_not_found()
     {
         await using var db = TestDbContextFactory.Create();
-        var handler = new GetSpot.Handler(db, TestLocalizerFactory.Create());
+        var handler = new GetSpot.Handler(db, new FakeUserContext(Guid.NewGuid()), TestLocalizerFactory.Create());
 
         var result = await handler.Handle(new GetSpot.Query(Guid.NewGuid()), CancellationToken.None);
 
