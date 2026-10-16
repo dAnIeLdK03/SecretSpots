@@ -127,6 +127,7 @@ builder.Services.Configure<NotificationsOptions>(builder.Configuration.GetSectio
 builder.Services.Configure<SavedSpotsOptions>(builder.Configuration.GetSection("SavedSpots"));
 builder.Services.Configure<RewardsOptions>(builder.Configuration.GetSection("Rewards"));
 builder.Services.Configure<AdminUsersOptions>(builder.Configuration.GetSection("AdminUsers"));
+builder.Services.Configure<AdminSpotsOptions>(builder.Configuration.GetSection("AdminSpots"));
 builder.Services.Configure<RateLimitingOptions>(builder.Configuration.GetSection("RateLimiting"));
 
 builder.Services.Configure<GoogleAuthOptions>(builder.Configuration.GetSection("GoogleAuth"));
@@ -438,6 +439,7 @@ app.MapNotificationsEndpoints();
 app.MapReportsEndpoints();
 app.MapAdminReportsEndpoints();
 app.MapAdminUsersEndpoints();
+app.MapAdminSpotsEndpoints();
 
 // Lets e2e tests read back what InMemoryEmailSender captured (see registration above) instead of
 // needing a real inbox — e.g. to pull the token out of a password-reset link. Gated on

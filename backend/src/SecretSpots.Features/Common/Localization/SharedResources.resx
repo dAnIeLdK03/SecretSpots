@@ -333,4 +333,13 @@
   <data name="Admin.RoleInvalid" xml:space="preserve">
     <value>Invalid role.</value>
   </data>
+  <data name="Admin.SpotNotFound" xml:space="preserve">
+    <value>This spot no longer exists.</value>
+  </data>
+  <data name="Admin.RejectionReasonRequired" xml:space="preserve">
+    <value>A rejection reason is required.</value>
+  </data>
+  <data name="Admin.RejectionReasonTooLong" xml:space="preserve">
+    <value>Rejection reason must be at most 500 characters long.</value>
+  </data>
 </root>
