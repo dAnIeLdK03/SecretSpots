@@ -18,6 +18,11 @@ public static class SaveSpot
     {
         public async Task<Result<Unit>> Handle(Command command, CancellationToken cancellationToken)
         {
+            if (userContext.Role == UserRole.Admin)
+            {
+                return Result<Unit>.Failure(Error.Forbidden(SavedSpotsMessageKeys.AdminsCannotSaveSpots, localizer));
+            }
+
             var spotExists = await db.Spots.AnyAsync(s => s.Id == command.SpotId, cancellationToken);
             if (!spotExists)
             {

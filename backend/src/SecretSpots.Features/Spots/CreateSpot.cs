@@ -103,7 +103,9 @@ public static class CreateSpot
                 where checkedInSpot.Location.IsWithinDistance(location, radiusMeters) && checkIn.UserId != userContext.UserId
                 select checkIn.UserId;
 
-            var nearbyUserIds = await creatorsNearby.Union(checkedInUsersNearby).ToListAsync(cancellationToken);
+            var nearbyUserIds = await creatorsNearby.Union(checkedInUsersNearby)
+                .Where(id => !db.Users.Any(u => u.Id == id && u.Role == UserRole.Admin))
+                .ToListAsync(cancellationToken);
 
             db.Spots.Add(spot);
 

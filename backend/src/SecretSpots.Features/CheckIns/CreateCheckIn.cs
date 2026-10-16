@@ -56,6 +56,11 @@ public static class CreateCheckIn
     {
         public async Task<Result<CheckInResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
+            if (userContext.Role == UserRole.Admin)
+            {
+                return Result<CheckInResponse>.Failure(Error.Forbidden(CheckInsMessageKeys.AdminsCannotCheckIn, localizer));
+            }
+
             var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
             if (spot is null)
             {

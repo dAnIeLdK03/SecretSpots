@@ -12,4 +12,5 @@ public static class CheckInsMessageKeys
     public const string PageSizeOutOfRange = "CheckIns.PageSizeOutOfRange";
     public const string TooSoonSinceLastCheckIn = "CheckIns.TooSoonSinceLastCheckIn";
     public const string CannotCheckInOwnSpot = "CheckIns.CannotCheckInOwnSpot";
+    public const string AdminsCannotCheckIn = "CheckIns.AdminsCannotCheckIn";
 }

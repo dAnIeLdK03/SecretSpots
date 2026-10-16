@@ -23,6 +23,11 @@ internal static class ReportContentHandler
         string? details,
         CancellationToken cancellationToken)
     {
+        if (userContext.Role == UserRole.Admin)
+        {
+            return Result<ReportResponse>.Failure(Error.Forbidden(ReportsMessageKeys.AdminsCannotReport, localizer));
+        }
+
         var alreadyReported = await db.Reports.AnyAsync(
             r => r.ContentType == contentType
                  && r.ContentId == contentId

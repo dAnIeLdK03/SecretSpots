@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -72,6 +73,21 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    // Default schema IDs are just the bare type name, dropping both generic type arguments and
+    // the enclosing feature class — every vertical slice nests a "RequestBody"/"Response"/etc
+    // (colliding with every other feature's same-named type), and every closed generic (e.g.
+    // PagedResponse<T> for different T) collides with every other closed instantiation too, since
+    // Type.Name alone is just "PagedResponse`1" regardless of T. This builds a unique id from the
+    // declaring type plus (for generics) the type arguments.
+    options.CustomSchemaIds(type =>
+    {
+        var name = type.IsGenericType
+            ? $"{type.Name[..type.Name.IndexOf('`')]}Of{string.Join("", type.GetGenericArguments().Select(a => a.Name))}"
+            : type.Name;
+
+        return type.DeclaringType is not null ? $"{type.DeclaringType.Name}.{name}" : name;
+    });
+
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -323,6 +339,17 @@ builder.Services.AddHsts(options =>
 });
 
 var app = builder.Build();
+
+// Development-only: auto-applies any pending EF migrations on startup, so a local Postgres never
+// drifts behind the model after a pull. Production (Render/Koyeb) deliberately stays manual —
+// auto-migrating a shared database on every deploy is a one-way door with no review step, and a
+// multi-instance rollout could race two processes applying the same migration concurrently.
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+}
 
 // Must run before anything that reads the client IP or scheme — the rate limiter (partitioned
 // by RemoteIpAddress), UseHttpsRedirection, and request logging all rely on this. Without it,
