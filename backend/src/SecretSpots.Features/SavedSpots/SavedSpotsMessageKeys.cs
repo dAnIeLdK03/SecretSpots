@@ -7,4 +7,5 @@ public static class SavedSpotsMessageKeys
     public const string SpotNotFound = "SavedSpots.SpotNotFound";
     public const string PageOutOfRange = "SavedSpots.PageOutOfRange";
     public const string PageSizeOutOfRange = "SavedSpots.PageSizeOutOfRange";
+    public const string AdminsCannotSaveSpots = "SavedSpots.AdminsCannotSaveSpots";
 }

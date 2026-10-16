@@ -40,6 +40,11 @@ public static class RateSpot
     {
         public async Task<Result<RatingResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
+            if (userContext.Role == UserRole.Admin)
+            {
+                return Result<RatingResponse>.Failure(Error.Forbidden(RatingsMessageKeys.AdminsCannotRate, localizer));
+            }
+
             var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
             if (spot is null)
             {

@@ -348,4 +348,16 @@
   <data name="Admin.RejectionReasonTooLong" xml:space="preserve">
     <value>Rejection reason must be at most 500 characters long.</value>
   </data>
+  <data name="CheckIns.AdminsCannotCheckIn" xml:space="preserve">
+    <value>Admin accounts can't check in at spots.</value>
+  </data>
+  <data name="Ratings.AdminsCannotRate" xml:space="preserve">
+    <value>Admin accounts can't rate spots.</value>
+  </data>
+  <data name="SavedSpots.AdminsCannotSaveSpots" xml:space="preserve">
+    <value>Admin accounts can't save spots.</value>
+  </data>
+  <data name="Reports.AdminsCannotReport" xml:space="preserve">
+    <value>Admin accounts can't report content.</value>
+  </data>
 </root>

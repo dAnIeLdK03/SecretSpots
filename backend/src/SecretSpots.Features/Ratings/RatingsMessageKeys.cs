@@ -7,4 +7,5 @@ public static class RatingsMessageKeys
     public const string SpotNotFound = "Ratings.SpotNotFound";
     public const string ValueOutOfRange = "Ratings.ValueOutOfRange";
     public const string CannotRateOwnSpot = "Ratings.CannotRateOwnSpot";
+    public const string AdminsCannotRate = "Ratings.AdminsCannotRate";
 }

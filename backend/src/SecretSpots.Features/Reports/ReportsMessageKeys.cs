@@ -12,4 +12,5 @@ public static class ReportsMessageKeys
     public const string NotFound = "Reports.NotFound";
     public const string PageOutOfRange = "Reports.PageOutOfRange";
     public const string PageSizeOutOfRange = "Reports.PageSizeOutOfRange";
+    public const string AdminsCannotReport = "Reports.AdminsCannotReport";
 }
