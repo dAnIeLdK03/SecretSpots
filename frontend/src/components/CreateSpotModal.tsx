@@ -9,6 +9,7 @@ import { getErrorMessage } from "@/lib/apiClient";
 import { MultiPhotoUpload } from "@/components/MultiPhotoUpload";
 import { CategorySelect } from "@/components/CategorySelect";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
+import { trackEvent } from "@/lib/analytics";
 
 interface CreateSpotModalProps {
   latitude: number;
@@ -37,6 +38,7 @@ export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: Cre
     try {
       const spot = await createSpot({ name, description, category, photoUrls, latitude, longitude });
       onCreated(spot);
+      trackEvent("spot_created", { spotId: spot.id, category });
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
       setSubmitting(false);

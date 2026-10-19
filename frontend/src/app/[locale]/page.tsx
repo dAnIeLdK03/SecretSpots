@@ -8,6 +8,7 @@ import { FeaturedSpotCard } from "@/components/FeaturedSpotCard";
 import { searchSpots, SPOT_CATEGORIES } from "@/lib/spotsApi";
 import type { SpotCategory, SpotSearchResult } from "@/lib/spotsApi";
 import { CategoryIcon } from "@/components/CategoryIcon";
+import { trackEvent } from "@/lib/analytics";
 
 const PAGE_SIZE = 4;
 
@@ -47,6 +48,7 @@ export default function LandingPage() {
   function handleCategoryChange(category: SpotCategory | "All") {
     setCategoryFilter(category);
     setSearchTerm(null);
+    trackEvent("category_filter", { category });
   }
 
   const handleSearch = useCallback(
