@@ -23,6 +23,7 @@ import { SpotRatingInput } from "@/components/SpotRatingInput";
 import { SpotRatingSummary } from "@/components/SpotRatingSummary";
 import { Link, useRouter } from "@/i18n/navigation";
 import { CategoryIcon } from "@/components/CategoryIcon";
+import { trackEvent } from "@/lib/analytics";
 
 type LoadState =
   | { status: "loading" }
@@ -51,7 +52,10 @@ function SpotDetailContent({ id }: { id: string }) {
     const controller = new AbortController();
 
     getSpot(id, controller.signal)
-      .then((spot) => setState({ status: "success", spot }))
+      .then((spot) => {
+        setState({ status: "success", spot });
+        trackEvent("spot_view", { spotId: spot.id, category: spot.category });
+      })
       .catch((err) => {
         if (controller.signal.aborted) return;
         if (err instanceof ApiError && err.status === 404) {
