@@ -9,6 +9,7 @@ import { ApiError, getErrorMessage } from "@/lib/apiClient";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { CHECKIN_GEOLOCATION_OPTIONS } from "@/lib/geolocationOptions";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
+import { trackEvent } from "@/lib/analytics";
 
 interface CheckInModalProps {
   spotId: string;
@@ -49,6 +50,7 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
     try {
       const response = await createCheckIn(spotId, { photoUrl, latitude, longitude });
       setResult(response);
+      trackEvent("checkin_attempt", { spotId, success: true });
     } catch (err) {
       if (err instanceof ApiError && err.problem.code === "CheckIns.TooFarFromSpot") {
         setError(t("tooFarFromSpot"));
@@ -56,6 +58,7 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
         setError(getErrorMessage(err, t("unknownError")));
       }
       setSubmitting(false);
+      trackEvent("checkin_attempt", { spotId, success: false });
     }
   }
 

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { searchSpots } from "@/lib/spotsApi";
 import type { SpotSearchResult } from "@/lib/spotsApi";
 import { CategoryIcon } from "./CategoryIcon";
+import { trackEvent } from "@/lib/analytics";
 
 const MAX_RESULTS = 5;
 const DEBOUNCE_MS = 300;
@@ -36,6 +37,7 @@ export function MapSearchBox({ onSelect }: MapSearchBoxProps) {
         .then((page) => {
           setResults(page.items);
           setSearched(true);
+          trackEvent("search", { term: trimmed, resultCount: page.items.length });
         })
         .catch(() => {
           if (controller.signal.aborted) return;
