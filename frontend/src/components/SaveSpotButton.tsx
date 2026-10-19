@@ -5,6 +5,7 @@ import { Bookmark } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/store/useAuthStore";
 import { saveSpot, unsaveSpot, fetchIsSpotSaved } from "@/lib/savedSpotsApi";
+import { trackEvent } from "@/lib/analytics";
 
 export function SaveSpotButton({ spotId }: { spotId: string }) {
   const t = useTranslations("SavedSpots");
@@ -37,6 +38,7 @@ export function SaveSpotButton({ spotId }: { spotId: string }) {
     try {
       await (nextSaved ? saveSpot(spotId) : unsaveSpot(spotId));
       setSaved(nextSaved);
+      trackEvent("save_toggle", { spotId, saved: nextSaved });
     } catch {
       // Leave the toggle as-is on failure — the user can just try again.
     } finally {

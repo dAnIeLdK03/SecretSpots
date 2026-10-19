@@ -7,6 +7,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { rateSpot, fetchMyRating } from "@/lib/ratingsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { Link } from "@/i18n/navigation";
+import { trackEvent } from "@/lib/analytics";
 
 const STAR_VALUES = [1, 2, 3, 4, 5];
 
@@ -50,6 +51,7 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
       const result = await rateSpot(spotId, selected);
       setMyRating(result.value);
       onRated({ averageRating: result.averageRating, ratingsCount: result.ratingsCount });
+      trackEvent("rating_given", { spotId, value: selected });
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
     } finally {
