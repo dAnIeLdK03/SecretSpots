@@ -35,6 +35,22 @@ services:
       timeout: 5s
       retries: 10
 
+  # Self-hosted analytics (step 1 of adding user-behavior tracking) — its own database
+  # (docker/initdb/02-create-umami-db.sql), separate from the app's own data. The web UI
+  # (dashboards/custom events) lives at http://localhost:3001.
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://secretspots:secretspots_local_dev@postgres:5432/umami
+      DATABASE_TYPE: postgresql
+      APP_SECRET: umami_local_dev_secret_change_in_production
+    ports:
+      - "127.0.0.1:3001:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres-data:
   minio-data:
