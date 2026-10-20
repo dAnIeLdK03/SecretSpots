@@ -5,6 +5,7 @@
     "languageLabel": "Език",
     "settingsLabel": "Настройки",
     "adminReportsLabel": "Опашка от доклади",
+    "adminUsersLabel": "Потребители",
     "mySpotsLabel": "Моите места"
   },
   "Auth": {
@@ -229,6 +230,17 @@
     "submittedMessage": "Благодарим — докладът е получен.",
     "closeButton": "Затвори",
     "alreadyReported": "Вече си докладвал/а това.",
+    "unknownError": "Нещо се обърка. Опитайте отново."
+  },
+  "AdminUsers": {
+    "title": "Потребители",
+    "searchPlaceholder": "Търси по имейл или име...",
+    "loading": "Зареждане...",
+    "loadMore": "Зареди още",
+    "loadingMore": "Зареждане...",
+    "empty": "Няма потребители.",
+    "roleAdmin": "Админ",
+    "roleUser": "Потребител",
     "unknownError": "Нещо се обърка. Опитайте отново."
   },
   "AdminReports": {

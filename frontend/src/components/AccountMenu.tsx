@@ -136,13 +136,22 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
               {t("mySpotsLabel")}
             </Link>
             {isAdmin && (
-              <Link
-                href="/admin/reports"
-                onClick={closeMenu}
-                className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5"
-              >
-                {t("adminReportsLabel")}
-              </Link>
+              <>
+                <Link
+                  href="/admin/reports"
+                  onClick={closeMenu}
+                  className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5"
+                >
+                  {t("adminReportsLabel")}
+                </Link>
+                <Link
+                  href="/admin/users"
+                  onClick={closeMenu}
+                  className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5"
+                >
+                  {t("adminUsersLabel")}
+                </Link>
+              </>
             )}
             <button onClick={handleLogout} className="block w-full px-4 py-2 text-left hover:bg-black/5 dark:hover:bg-white/5">
               {tAuth("logoutButton")}

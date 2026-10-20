@@ -5,6 +5,7 @@
     "languageLabel": "Language",
     "settingsLabel": "Settings",
     "adminReportsLabel": "Report queue",
+    "adminUsersLabel": "Users",
     "mySpotsLabel": "My spots"
   },
   "Auth": {
@@ -229,6 +230,17 @@
     "submittedMessage": "Thanks — we've received your report.",
     "closeButton": "Close",
     "alreadyReported": "You've already reported this.",
+    "unknownError": "Something went wrong. Please try again."
+  },
+  "AdminUsers": {
+    "title": "Users",
+    "searchPlaceholder": "Search by email or name...",
+    "loading": "Loading...",
+    "loadMore": "Load more",
+    "loadingMore": "Loading...",
+    "empty": "No users.",
+    "roleAdmin": "Admin",
+    "roleUser": "User",
     "unknownError": "Something went wrong. Please try again."
   },
   "AdminReports": {
