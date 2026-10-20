@@ -10,6 +10,7 @@ import { useCheckInsHistoryStore } from "@/store/useCheckInsHistoryStore";
 import * as Sentry from "@sentry/nextjs";
 import { logout } from "@/lib/authApi";
 import { Avatar } from "@/components/Avatar";
+import { UserRole } from "@/lib/userRole";
 
 interface NavItem {
   href: string;
@@ -27,7 +28,7 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
   const t = useTranslations("Layout");
   const tHome = useTranslations("Home");
   const tAuth = useTranslations("Auth");
-  const isAdmin = useAuthStore((state) => state.user?.isAdmin ?? false);
+  const isAdmin = useAuthStore((state) => state.user?.role === UserRole.Admin);
   const clearSession = useAuthStore((state) => state.clearSession);
   const resetNotifications = useNotificationsStore((state) => state.reset);
   const resetCheckInsHistory = useCheckInsHistoryStore((state) => state.reset);

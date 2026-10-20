@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { UserRole } from "@/lib/userRole";
 
 export interface AuthUser {
   id: string;
@@ -6,7 +7,7 @@ export interface AuthUser {
   displayName: string;
   crystalBalance: number;
   isEmailVerified: boolean;
-  isAdmin: boolean;
+  role: UserRole;
 }
 
 export type AuthStatus = "idle" | "loading" | "authenticated" | "unauthenticated";

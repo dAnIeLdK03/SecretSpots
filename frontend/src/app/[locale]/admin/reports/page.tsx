@@ -10,6 +10,7 @@ import { getAdminReports, dismissReport, deleteReportedContent } from "@/lib/adm
 import type { AdminReport } from "@/lib/adminApi";
 import { formatRelativeTime } from "@/lib/relativeTime";
 import { useLocale } from "next-intl";
+import { UserRole } from "@/lib/userRole";
 
 const PAGE_SIZE = 20;
 
@@ -30,7 +31,7 @@ export default function AdminReportsPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isAuthenticated && user && !user.isAdmin) {
+    if (isAuthenticated && user && user.role !== UserRole.Admin) {
       router.replace("/");
     }
   }, [isAuthenticated, user, router]);
@@ -52,11 +53,11 @@ export default function AdminReportsPage() {
   );
 
   useEffect(() => {
-    if (isAuthenticated && user?.isAdmin) {
+    if (isAuthenticated && user?.role === UserRole.Admin) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- kicking off the initial fetch on mount, no user event to attach to
       void fetchPage(1, false);
     }
-  }, [isAuthenticated, user?.isAdmin, fetchPage]);
+  }, [isAuthenticated, user?.role, fetchPage]);
 
   async function handleDismiss(id: string) {
     setBusyId(id);
@@ -87,7 +88,7 @@ export default function AdminReportsPage() {
     }
   }
 
-  if (!isAuthenticated || !user?.isAdmin) {
+  if (!isAuthenticated || user?.role !== UserRole.Admin) {
     return null;
   }
 
