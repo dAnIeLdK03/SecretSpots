@@ -47,3 +47,25 @@ export function dismissReport(id: string): Promise<void> {
 export function deleteReportedContent(id: string): Promise<void> {
   return apiFetchVoid(`/admin/reports/${id}/delete-content`, { method: "POST" });
 }
+
+export type UserRole = "User" | "Admin";
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  displayName: string;
+  role: UserRole;
+}
+
+export interface AdminUsersPageResponse {
+  items: AdminUser[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+}
+
+export function getAdminUsers(page: number, pageSize: number, q?: string): Promise<AdminUsersPageResponse> {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  if (q) params.set("q", q);
+  return apiFetch<AdminUsersPageResponse>(`/admin/users?${params.toString()}`);
+}
