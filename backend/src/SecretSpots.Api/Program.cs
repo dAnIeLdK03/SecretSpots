@@ -226,7 +226,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimNames.Role, nameof(UserRole.Admin)));
+    options.AddPolicy(AuthorizationPolicies.Admin, policy => policy.RequireClaim(ClaimNames.Role, nameof(UserRole.Admin)));
 });
 
 // Partitions by authenticated user id rather than IP whenever one is available, so (a) an

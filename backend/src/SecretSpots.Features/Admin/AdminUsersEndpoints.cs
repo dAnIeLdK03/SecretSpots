@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Results;
+using SecretSpots.Features.Common.Security;
 
 namespace SecretSpots.Features.Admin;
 
@@ -12,7 +13,7 @@ public static class AdminUsersEndpoints
 {
     public static IEndpointRouteBuilder MapAdminUsersEndpoints(this IEndpointRouteBuilder app)
     {
-        RouteGroupBuilder group = app.MapGroup("/admin/users").WithTags("Admin").RequireAuthorization("Admin");
+        RouteGroupBuilder group = app.MapGroup("/admin/users").WithTags("Admin").RequireAuthorization(AuthorizationPolicies.Admin);
 
         group.MapGet("/", async (
                 string? q, int? page, int? pageSize, IOptions<AdminUsersOptions> adminUsersOptions,

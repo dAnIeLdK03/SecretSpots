@@ -8,6 +8,7 @@ import { useRouter } from "@/i18n/navigation";
 import { getErrorMessage } from "@/lib/apiClient";
 import { getAdminUsers } from "@/lib/adminApi";
 import type { AdminUser } from "@/lib/adminApi";
+import { UserRole } from "@/lib/userRole";
 
 const PAGE_SIZE = 20;
 const DEBOUNCE_MS = 300;
@@ -26,7 +27,7 @@ export default function AdminUsersPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isAuthenticated && user && !user.isAdmin) {
+    if (isAuthenticated && user && user.role !== UserRole.Admin) {
       router.replace("/");
     }
   }, [isAuthenticated, user, router]);
@@ -48,16 +49,16 @@ export default function AdminUsersPage() {
   );
 
   useEffect(() => {
-    if (!isAuthenticated || !user?.isAdmin) return;
+    if (!isAuthenticated || user?.role !== UserRole.Admin) return;
 
     const timeoutId = setTimeout(() => {
       void fetchPage(1, false);
     }, DEBOUNCE_MS);
 
     return () => clearTimeout(timeoutId);
-  }, [isAuthenticated, user?.isAdmin, fetchPage]);
+  }, [isAuthenticated, user?.role, fetchPage]);
 
-  if (!isAuthenticated || !user?.isAdmin) {
+  if (!isAuthenticated || user?.role !== UserRole.Admin) {
     return null;
   }
 
@@ -103,12 +104,12 @@ export default function AdminUsersPage() {
               <span
                 className="rounded-full px-3 py-1 text-xs font-medium"
                 style={
-                  item.role === "Admin"
+                  item.role === UserRole.Admin
                     ? { backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }
                     : { backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-ink)" }
                 }
               >
-                {item.role === "Admin" ? t("roleAdmin") : t("roleUser")}
+                {item.role === UserRole.Admin ? t("roleAdmin") : t("roleUser")}
               </span>
             </li>
           ))}

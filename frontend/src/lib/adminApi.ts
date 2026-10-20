@@ -1,5 +1,6 @@
 import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
 import type { ReportReason } from "@/lib/reportsApi";
+import type { UserRole } from "@/lib/userRole";
 
 export type ReportedContentType = "Spot" | "Comment";
 
@@ -47,8 +48,6 @@ export function dismissReport(id: string): Promise<void> {
 export function deleteReportedContent(id: string): Promise<void> {
   return apiFetchVoid(`/admin/reports/${id}/delete-content`, { method: "POST" });
 }
-
-export type UserRole = "User" | "Admin";
 
 export interface AdminUser {
   id: string;

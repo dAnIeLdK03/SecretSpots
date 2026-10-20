@@ -6,6 +6,7 @@ using SecretSpots.Domain;
 using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Results;
+using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Spots;
 
 namespace SecretSpots.Features.Admin;
@@ -14,7 +15,7 @@ public static class AdminSpotsEndpoints
 {
     public static IEndpointRouteBuilder MapAdminSpotsEndpoints(this IEndpointRouteBuilder app)
     {
-        RouteGroupBuilder group = app.MapGroup("/admin/spots").WithTags("Admin").RequireAuthorization("Admin");
+        RouteGroupBuilder group = app.MapGroup("/admin/spots").WithTags("Admin").RequireAuthorization(AuthorizationPolicies.Admin);
 
         group.MapGet("/", async (
                 SpotModerationStatus? status, int? page, int? pageSize, IOptions<AdminSpotsOptions> adminSpotsOptions,
