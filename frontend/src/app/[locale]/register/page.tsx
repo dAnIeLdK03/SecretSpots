@@ -9,6 +9,7 @@ import { getErrorMessage } from "@/lib/apiClient";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 import { ExternalAuthButtons } from "@/components/ExternalAuthButtons";
 import { useDraftState, clearDraftState } from "@/hooks/useDraftState";
+import { trackEvent } from "@/lib/analytics";
 
 export default function RegisterPage() {
   const t = useTranslations("Auth");
@@ -26,6 +27,7 @@ export default function RegisterPage() {
     try {
       const result = await register(email, password, displayName);
       await establishSession(result);
+      trackEvent("register");
       clearDraftState("register.email", "register.password", "register.displayName");
       router.push("/account");
     } catch (err) {

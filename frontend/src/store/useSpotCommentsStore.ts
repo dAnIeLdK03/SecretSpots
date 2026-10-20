@@ -6,6 +6,7 @@ import {
   deleteComment as deleteCommentApi,
   type CommentResponse,
 } from "@/lib/commentsApi";
+import { trackEvent } from "@/lib/analytics";
 
 const PAGE_SIZE = 20;
 
@@ -61,6 +62,7 @@ export const useSpotCommentsStore = create<SpotCommentsStore>((set, get) => ({
   addComment: async (spotId, text) => {
     const comment = await createCommentApi(spotId, text);
     set((state) => ({ items: [comment, ...state.items], totalCount: state.totalCount + 1 }));
+    trackEvent("comment_created", { spotId });
   },
 
   editComment: async (commentId, text) => {

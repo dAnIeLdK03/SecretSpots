@@ -8,6 +8,7 @@ import { redeemReward } from "@/lib/rewardsApi";
 import type { RewardResponse } from "@/lib/rewardsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { Link } from "@/i18n/navigation";
+import { trackEvent } from "@/lib/analytics";
 
 export function RewardCard({ reward }: { reward: RewardResponse }) {
   const t = useTranslations("Rewards");
@@ -31,6 +32,7 @@ export function RewardCard({ reward }: { reward: RewardResponse }) {
       const result = await redeemReward(reward.id);
       setCrystalBalance(result.newCrystalBalance);
       setRedeemed(true);
+      trackEvent("reward_redeemed", { rewardId: reward.id, crystalCost: reward.crystalCost });
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
     } finally {

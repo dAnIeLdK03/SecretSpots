@@ -11,6 +11,7 @@ import { getErrorMessage } from "@/lib/apiClient";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 import { ExternalAuthButtons } from "@/components/ExternalAuthButtons";
 import { useDraftState, clearDraftState } from "@/hooks/useDraftState";
+import { trackEvent } from "@/lib/analytics";
 
 export default function LoginPage() {
   const t = useTranslations("Auth");
@@ -30,6 +31,7 @@ export default function LoginPage() {
     try {
       const result = await login(email, password, rememberMe);
       await establishSession(result);
+      trackEvent("login");
       clearDraftState("login.email", "login.password", "login.rememberMe");
       router.push("/account");
     } catch (err) {
