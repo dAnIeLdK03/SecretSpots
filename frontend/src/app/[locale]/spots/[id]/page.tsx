@@ -109,6 +109,7 @@ function SpotDetailContent({ id }: { id: string }) {
     setError(null);
     try {
       await deleteSpot(spot.id);
+      trackEvent("spot_deleted", { spotId: spot.id });
       router.push("/map");
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
@@ -136,6 +137,7 @@ function SpotDetailContent({ id }: { id: string }) {
 
   async function handleReportSubmit(reason: ReportReason, details: string) {
     await reportSpot(spot.id, reason, details);
+    trackEvent("report_submitted", { contentType: "spot", spotId: spot.id, reason });
   }
 
   return (

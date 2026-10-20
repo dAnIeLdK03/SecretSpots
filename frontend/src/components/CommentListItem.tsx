@@ -11,6 +11,7 @@ import type { CommentResponse } from "@/lib/commentsApi";
 import { ReportModal } from "@/components/ReportModal";
 import { reportComment } from "@/lib/reportsApi";
 import type { ReportReason } from "@/lib/reportsApi";
+import { trackEvent } from "@/lib/analytics";
 
 export function CommentListItem({ comment }: { comment: CommentResponse }) {
   const t = useTranslations("Comments");
@@ -30,6 +31,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
 
   async function handleReportSubmit(reason: ReportReason, details: string) {
     await reportComment(comment.id, reason, details);
+    trackEvent("report_submitted", { contentType: "comment", commentId: comment.id, reason });
   }
 
   async function handleSaveEdit(event: FormEvent<HTMLFormElement>) {
