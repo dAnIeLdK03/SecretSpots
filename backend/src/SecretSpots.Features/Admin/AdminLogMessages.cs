@@ -6,6 +6,7 @@ internal static class AdminLogMessages
 {
     public const string BootstrapAdminsPromoted = "Promoted {Count} user(s) to Admin via AdminBootstrap config.";
     public const string UserRoleChanged = "User {UserId} role changed to {Role} by admin {AdminUserId}.";
+    public const string RolePromotionEmailSendFailed = "Failed to send Admin-promotion security email for user {UserId}.";
     public const string SpotApproved = "Spot {SpotId} approved by admin {AdminUserId}.";
     public const string SpotRejected = "Spot {SpotId} rejected by admin {AdminUserId}.";
 }

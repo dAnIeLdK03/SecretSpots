@@ -351,6 +351,12 @@
   <data name="Admin.CannotChangeOwnRole" xml:space="preserve">
     <value>You can't change your own role.</value>
   </data>
+  <data name="Admin.RolePromotedToAdminEmailSubject" xml:space="preserve">
+    <value>Security alert: a user was promoted to Admin on SecretSpots</value>
+  </data>
+  <data name="Admin.RolePromotedToAdminEmailBody" xml:space="preserve">
+    <value>&lt;p&gt;User {0} (id: {1}) was just promoted to the Admin role.&lt;/p&gt;&lt;p&gt;This change was made by admin account with id {2}.&lt;/p&gt;&lt;p&gt;If you didn't expect this, review it immediately.&lt;/p&gt;</value>
+  </data>
   <data name="CheckIns.AdminsCannotCheckIn" xml:space="preserve">
     <value>Admin accounts can't check in at spots.</value>
   </data>
