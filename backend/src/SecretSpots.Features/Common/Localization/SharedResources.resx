@@ -348,6 +348,9 @@
   <data name="Admin.RejectionReasonTooLong" xml:space="preserve">
     <value>Rejection reason must be at most 500 characters long.</value>
   </data>
+  <data name="Admin.CannotChangeOwnRole" xml:space="preserve">
+    <value>You can't change your own role.</value>
+  </data>
   <data name="CheckIns.AdminsCannotCheckIn" xml:space="preserve">
     <value>Admin accounts can't check in at spots.</value>
   </data>

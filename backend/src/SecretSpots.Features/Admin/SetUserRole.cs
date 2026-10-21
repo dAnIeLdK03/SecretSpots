@@ -33,6 +33,11 @@ public static class SetUserRole
     {
         public async Task<Result<AdminUserResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
+            if (command.UserId == userContext.UserId)
+            {
+                return Result<AdminUserResponse>.Failure(Error.Forbidden(AdminMessageKeys.CannotChangeOwnRole, localizer));
+            }
+
             var user = await db.Users.SingleOrDefaultAsync(u => u.Id == command.UserId, cancellationToken);
             if (user is null)
             {

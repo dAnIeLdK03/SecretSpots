@@ -9,4 +9,5 @@ public static class AdminMessageKeys
     public const string SpotNotFound = "Admin.SpotNotFound";
     public const string RejectionReasonRequired = "Admin.RejectionReasonRequired";
     public const string RejectionReasonTooLong = "Admin.RejectionReasonTooLong";
+    public const string CannotChangeOwnRole = "Admin.CannotChangeOwnRole";
 }
