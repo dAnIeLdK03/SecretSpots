@@ -24,6 +24,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
     public DbSet<EmailVerificationToken> EmailVerificationTokens => Set<EmailVerificationToken>();
     public DbSet<Report> Reports => Set<Report>();
+    public DbSet<RoleChangeAudit> RoleChangeAudits => Set<RoleChangeAudit>();
 
     public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         => await Database.BeginTransactionAsync(cancellationToken);
@@ -116,6 +117,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<Report>()
             .HasIndex(r => new { r.ReporterUserId, r.ContentType, r.ContentId })
             .IsUnique();
+
+        modelBuilder.Entity<RoleChangeAudit>()
+            .HasIndex(a => new { a.UserId, a.CreatedAt });
 
         base.OnModelCreating(modelBuilder);
     }

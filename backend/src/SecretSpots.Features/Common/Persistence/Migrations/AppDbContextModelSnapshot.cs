@@ -489,6 +489,34 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                     b.ToTable("RewardRedemptions");
                 });
 
+            modelBuilder.Entity("SecretSpots.Domain.RoleChangeAudit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ChangedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("NewRole")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OldRole")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "CreatedAt");
+
+                    b.ToTable("RoleChangeAudits");
+                });
+
             modelBuilder.Entity("SecretSpots.Domain.SavedSpot", b =>
                 {
                     b.Property<Guid>("Id")
