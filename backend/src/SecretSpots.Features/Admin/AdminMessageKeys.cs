@@ -10,4 +10,6 @@ public static class AdminMessageKeys
     public const string RejectionReasonRequired = "Admin.RejectionReasonRequired";
     public const string RejectionReasonTooLong = "Admin.RejectionReasonTooLong";
     public const string CannotChangeOwnRole = "Admin.CannotChangeOwnRole";
+    public const string RolePromotedToAdminEmailSubject = "Admin.RolePromotedToAdminEmailSubject";
+    public const string RolePromotedToAdminEmailBody = "Admin.RolePromotedToAdminEmailBody";
 }

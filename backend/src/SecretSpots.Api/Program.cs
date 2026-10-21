@@ -152,6 +152,7 @@ builder.Services.Configure<ExternalAuthOptions>(builder.Configuration.GetSection
 builder.Services.Configure<ResendOptions>(builder.Configuration.GetSection("Resend"));
 builder.Services.Configure<PasswordResetOptions>(builder.Configuration.GetSection("PasswordReset"));
 builder.Services.Configure<EmailVerificationOptions>(builder.Configuration.GetSection("EmailVerification"));
+builder.Services.Configure<AdminSecurityOptions>(builder.Configuration.GetSection("AdminSecurity"));
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, UserContext>();

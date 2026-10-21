@@ -351,6 +351,12 @@
   <data name="Admin.CannotChangeOwnRole" xml:space="preserve">
     <value>Не можеш да смениш собствената си роля.</value>
   </data>
+  <data name="Admin.RolePromotedToAdminEmailSubject" xml:space="preserve">
+    <value>Известие за сигурност: потребител е промотиран до Admin в SecretSpots</value>
+  </data>
+  <data name="Admin.RolePromotedToAdminEmailBody" xml:space="preserve">
+    <value>&lt;p&gt;Потребител {0} (id: {1}) току-що беше промотиран до роля Admin.&lt;/p&gt;&lt;p&gt;Промяната е направена от администраторски акаунт с id {2}.&lt;/p&gt;&lt;p&gt;Ако не си очаквал това, провери го веднага.&lt;/p&gt;</value>
+  </data>
   <data name="CheckIns.AdminsCannotCheckIn" xml:space="preserve">
     <value>Администраторските акаунти не могат да се чекват на места.</value>
   </data>
