@@ -56,6 +56,18 @@ public static class SetUserRole
             var wasPromotedToAdmin = user.Role != UserRole.Admin && command.Role == UserRole.Admin;
 
             user.Role = command.Role;
+
+            // The user's current access token still carries the old role until it expires (up to
+            // Jwt:AccessTokenMinutes) — revoking refresh tokens forces a fresh login/refresh, so
+            // the new role takes effect immediately instead of staying stale for up to 15 minutes.
+            var activeRefreshTokens = await db.RefreshTokens
+                .Where(t => t.UserId == user.Id && t.RevokedAt == null)
+                .ToListAsync(cancellationToken);
+            foreach (var refreshToken in activeRefreshTokens)
+            {
+                refreshToken.RevokedAt = DateTimeOffset.UtcNow;
+            }
+
             await db.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(AdminLogMessages.UserRoleChanged, user.Id, user.Role, userContext.UserId);
