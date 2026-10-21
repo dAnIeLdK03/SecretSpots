@@ -348,6 +348,9 @@
   <data name="Admin.RejectionReasonTooLong" xml:space="preserve">
     <value>Причината за отхвърлянето трябва да е най-много 500 символа.</value>
   </data>
+  <data name="Admin.CannotChangeOwnRole" xml:space="preserve">
+    <value>Не можеш да смениш собствената си роля.</value>
+  </data>
   <data name="CheckIns.AdminsCannotCheckIn" xml:space="preserve">
     <value>Администраторските акаунти не могат да се чекват на места.</value>
   </data>
