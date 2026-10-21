@@ -54,8 +54,18 @@ public static class SetUserRole
             }
 
             var wasPromotedToAdmin = user.Role != UserRole.Admin && command.Role == UserRole.Admin;
+            var oldRole = user.Role;
 
             user.Role = command.Role;
+
+            db.RoleChangeAudits.Add(new RoleChangeAudit
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                OldRole = oldRole,
+                NewRole = command.Role,
+                ChangedByUserId = userContext.UserId,
+            });
 
             // The user's current access token still carries the old role until it expires (up to
             // Jwt:AccessTokenMinutes) — revoking refresh tokens forces a fresh login/refresh, so
