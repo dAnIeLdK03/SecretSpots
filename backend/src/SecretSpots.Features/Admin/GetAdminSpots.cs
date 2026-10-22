@@ -58,7 +58,9 @@ public static class GetAdminSpots
                         s.CreatedByUserId,
                         s.CreatedAt,
                         s.ModerationStatus,
-                        s.RejectionReason),
+                        s.RejectionReason,
+
+                        s.ScheduledDeletionAt),
                     cancellationToken);
         }
     }

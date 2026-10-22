@@ -118,7 +118,9 @@ public static class SearchSpots
                     s.CreatedByUserId,
                     s.CreatedAt,
                     s.ModerationStatus,
-                    s.RejectionReason))
+                    s.RejectionReason,
+
+                    s.ScheduledDeletionAt))
                 .ToList();
 
             // Clamped to what's actually reachable via pagination — reporting the true (uncapped)

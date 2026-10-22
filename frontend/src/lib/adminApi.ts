@@ -1,5 +1,6 @@
 import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
 import type { ReportReason } from "@/lib/reportsApi";
+import type { SpotModerationStatus, SpotSearchPageResponse } from "@/lib/spotsApi";
 import type { UserRole } from "@/lib/userRole";
 
 export type ReportedContentType = "Spot" | "Comment";
@@ -96,4 +97,21 @@ export interface AdminUserDetails {
 
 export function getAdminUser(id: string, signal?: AbortSignal): Promise<AdminUserDetails> {
   return apiFetch<AdminUserDetails>(`/admin/users/${id}`, { signal });
+}
+
+export function getAdminSpots(
+  page: number,
+  pageSize: number,
+  status: SpotModerationStatus,
+): Promise<SpotSearchPageResponse> {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize), status });
+  return apiFetch<SpotSearchPageResponse>(`/admin/spots?${params.toString()}`);
+}
+
+export function approveSpot(id: string): Promise<void> {
+  return apiFetchVoid(`/admin/spots/${id}/approve`, { method: "POST" });
+}
+
+export function rejectSpot(id: string, reason: string): Promise<void> {
+  return apiFetchVoid(`/admin/spots/${id}/reject`, { method: "POST", body: JSON.stringify({ reason }) });
 }

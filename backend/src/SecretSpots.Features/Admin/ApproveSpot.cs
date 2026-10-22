@@ -31,6 +31,7 @@ public static class ApproveSpot
             // Clear any stale rejection reason — e.g. the creator fixed the spot off-platform
             // and an admin reconsidered. A rejection reason shouldn't linger on an Approved spot.
             spot.RejectionReason = null;
+            spot.ScheduledDeletionAt = null;
 
             await db.SaveChangesAsync(cancellationToken);
 
@@ -55,7 +56,9 @@ public static class ApproveSpot
                 spot.RatingsCount,
                 spot.CreatedAt,
                 spot.ModerationStatus,
-                spot.RejectionReason));
+                spot.RejectionReason,
+
+                spot.ScheduledDeletionAt));
         }
     }
 }

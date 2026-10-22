@@ -19,6 +19,10 @@ export const SPOT_CATEGORIES = [
 ] as const;
 export type SpotCategory = (typeof SPOT_CATEGORIES)[number];
 
+export const SPOT_MODERATION_STATUSES = ["Pending", "Approved", "Rejected"] as const;
+
+export type SpotModerationStatus = (typeof SPOT_MODERATION_STATUSES)[number];
+
 export interface NearbySpot {
   id: string;
   name: string;
@@ -42,6 +46,9 @@ export interface SpotSearchResult {
   longitude: number;
   createdByUserId: string;
   createdAt: string;
+  moderationStatus: SpotModerationStatus;
+  rejectionReason: string | null;
+  scheduledDeletionAt: string | null;
 }
 
 export interface SpotResponse {
@@ -57,6 +64,9 @@ export interface SpotResponse {
   averageRating: number;
   ratingsCount: number;
   createdAt: string;
+  moderationStatus: SpotModerationStatus;
+  rejectionReason: string | null;
+  scheduledDeletionAt: string | null;
 }
 
 export interface CreateSpotCommand {

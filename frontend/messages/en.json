@@ -4,6 +4,7 @@
     "menuLabel": "Menu",
     "languageLabel": "Language",
     "settingsLabel": "Settings",
+    "adminSpotsLabel": "Spot moderation",
     "adminReportsLabel": "Report queue",
     "adminUsersLabel": "Users",
     "mySpotsLabel": "My spots"
@@ -139,7 +140,12 @@
     "directionsLabel": "Directions",
     "directionsGoogleMaps": "Google Maps",
     "directionsWaze": "Waze",
-    "directionsButton": "Take me there"
+    "directionsButton": "Take me there",
+    "rejectedNotice": "This spot was rejected by a moderator and is hidden from other users.",
+    "rejectionReasonLabel": "Reason",
+    "moderationStatusRejected": "Rejected",
+    "moderationStatusPending": "Pending review",
+    "scheduledDeletionNotice": "It will be deleted on {date}."
   },
   "PhotoUpload": {
     "uploading": "Uploading...",
@@ -289,6 +295,29 @@
     "deleteContentButton": "Delete content",
     "deleteContentConfirm": "Delete this {type}? This cannot be undone.",
     "unknownError": "Something went wrong. Please try again."
+  },
+  "AdminSpots": {
+    "title": "Spot moderation",
+    "statusFilterLabel": "Status",
+    "status": {
+      "Pending": "Pending",
+      "Approved": "Approved",
+      "Rejected": "Rejected"
+    },
+    "loading": "Loading...",
+    "loadMore": "Load more",
+    "loadingMore": "Loading...",
+    "empty": "No spots.",
+    "viewSpotLink": "View spot",
+    "viewCreatorLink": "View creator",
+    "approveButton": "Approve",
+    "rejectButton": "Reject",
+    "confirmRejectButton": "Confirm rejection",
+    "cancelButton": "Cancel",
+    "rejectionReasonLabel": "Rejection reason",
+    "rejectionReasonPlaceholder": "Why is this spot being rejected? The creator will see this.",
+    "unknownError": "Something went wrong. Please try again.",
+    "scheduledDeletionLabel": "Will be deleted on {date}"
   },
   "SavedSpots": {
     "pageTitle": "Saved spots",

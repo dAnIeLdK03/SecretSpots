@@ -560,6 +560,9 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -584,6 +587,9 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
 
                     b.Property<string>("RejectionReason")
                         .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("ScheduledDeletionAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

@@ -50,7 +50,9 @@ public static class GetSpot
                 spot.RatingsCount,
                 spot.CreatedAt,
                 spot.ModerationStatus,
-                spot.RejectionReason));
+                spot.RejectionReason,
+
+                spot.ScheduledDeletionAt));
         }
     }
 }

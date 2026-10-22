@@ -122,6 +122,7 @@ builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
 
 builder.Services.Configure<TokenCleanupOptions>(builder.Configuration.GetSection("TokenCleanup"));
 builder.Services.AddHostedService<TokenCleanupService>();
+builder.Services.AddHostedService<RejectedSpotCleanupService>();
 
 builder.Services.Configure<AdminBootstrapOptions>(builder.Configuration.GetSection("AdminBootstrap"));
 builder.Services.AddHostedService<AdminBootstrapService>();
@@ -144,6 +145,7 @@ builder.Services.Configure<SavedSpotsOptions>(builder.Configuration.GetSection("
 builder.Services.Configure<RewardsOptions>(builder.Configuration.GetSection("Rewards"));
 builder.Services.Configure<AdminUsersOptions>(builder.Configuration.GetSection("AdminUsers"));
 builder.Services.Configure<AdminSpotsOptions>(builder.Configuration.GetSection("AdminSpots"));
+builder.Services.Configure<SpotModerationOptions>(builder.Configuration.GetSection("SpotModeration"));
 builder.Services.Configure<RateLimitingOptions>(builder.Configuration.GetSection("RateLimiting"));
 
 builder.Services.Configure<GoogleAuthOptions>(builder.Configuration.GetSection("GoogleAuth"));

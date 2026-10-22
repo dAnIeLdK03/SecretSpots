@@ -53,7 +53,9 @@ public static class GetMySpots
                         s.CreatedByUserId,
                         s.CreatedAt,
                         s.ModerationStatus,
-                        s.RejectionReason),
+                        s.RejectionReason,
+
+                        s.ScheduledDeletionAt),
                     cancellationToken);
         }
     }

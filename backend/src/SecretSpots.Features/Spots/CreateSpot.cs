@@ -143,7 +143,9 @@ public static class CreateSpot
                 spot.RatingsCount,
                 spot.CreatedAt,
                 spot.ModerationStatus,
-                spot.RejectionReason));
+                spot.RejectionReason,
+
+                spot.ScheduledDeletionAt));
         }
     }
 }

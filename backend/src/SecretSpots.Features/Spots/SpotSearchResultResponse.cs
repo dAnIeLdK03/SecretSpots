@@ -13,4 +13,5 @@ public record SpotSearchResultResponse(
     Guid CreatedByUserId,
     DateTimeOffset CreatedAt,
     SpotModerationStatus ModerationStatus,
-    string? RejectionReason);
+    string? RejectionReason,
+    DateTimeOffset? ScheduledDeletionAt);

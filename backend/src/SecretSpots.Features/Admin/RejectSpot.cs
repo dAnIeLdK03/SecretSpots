@@ -2,7 +2,9 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SecretSpots.Domain;
+using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -31,7 +33,12 @@ public static class RejectSpot
         }
     }
 
-    public class Handler(IAppDbContext db, IUserContext userContext, IStringLocalizer<SharedResources> localizer, ILogger<Handler> logger)
+    public class Handler(
+        IAppDbContext db,
+        IUserContext userContext,
+        IOptions<SpotModerationOptions> spotModerationOptions,
+        IStringLocalizer<SharedResources> localizer,
+        ILogger<Handler> logger)
         : IRequestHandler<Command, Result<SpotResponse>>
     {
         public async Task<Result<SpotResponse>> Handle(Command command, CancellationToken cancellationToken)
@@ -44,6 +51,9 @@ public static class RejectSpot
 
             spot.ModerationStatus = SpotModerationStatus.Rejected;
             spot.RejectionReason = command.Reason.Trim();
+
+            // ??= so re-rejecting (e.g. to fix the reason's wording) doesn't extend the grace period.
+            spot.ScheduledDeletionAt ??= DateTimeOffset.UtcNow.AddHours(spotModerationOptions.Value.RejectionGracePeriodHours);
 
             await db.SaveChangesAsync(cancellationToken);
 
@@ -68,7 +78,9 @@ public static class RejectSpot
                 spot.RatingsCount,
                 spot.CreatedAt,
                 spot.ModerationStatus,
-                spot.RejectionReason));
+                spot.RejectionReason,
+
+                spot.ScheduledDeletionAt));
         }
     }
 }
