@@ -121,9 +121,11 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
               </nav>
             )}
 
-            <Link href="/map" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
-              {tHome("addASpot")}
-            </Link>
+            {!isAdmin && (
+              <Link href="/map" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
+                {tHome("addASpot")}
+              </Link>
+            )}
             <Link href="/settings" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
               {t("settingsLabel")}
             </Link>
@@ -133,9 +135,11 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
             <Link href="/account" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
               {tAuth("profileLabel")}
             </Link>
-            <Link href="/my-spots" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
-              {t("mySpotsLabel")}
-            </Link>
+            {!isAdmin && (
+              <Link href="/my-spots" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
+                {t("mySpotsLabel")}
+              </Link>
+            )}
             {isAdmin && (
               <>
                 <Link
