@@ -18,11 +18,11 @@ public static class AdminSpotsEndpoints
         RouteGroupBuilder group = app.MapGroup("/admin/spots").WithTags("Admin").RequireAuthorization(AuthorizationPolicies.Admin);
 
         group.MapGet("/", async (
-                SpotModerationStatus? status, int? page, int? pageSize, IOptions<AdminSpotsOptions> adminSpotsOptions,
+                SpotModerationStatus? status, Guid? userId, int? page, int? pageSize, IOptions<AdminSpotsOptions> adminSpotsOptions,
                 ISender sender, CancellationToken cancellationToken) =>
             {
                 var (resolvedPage, resolvedPageSize) = adminSpotsOptions.Value.ResolvePaging(page, pageSize);
-                var query = new GetAdminSpots.Query(status, resolvedPage, resolvedPageSize);
+                var query = new GetAdminSpots.Query(status, userId, resolvedPage, resolvedPageSize);
                 var result = await sender.Send(query, cancellationToken);
                 return Results.Ok(result);
             })

@@ -57,7 +57,6 @@ public static class ApproveSpot
                 spot.CreatedAt,
                 spot.ModerationStatus,
                 spot.RejectionReason,
-
                 spot.ScheduledDeletionAt));
         }
     }

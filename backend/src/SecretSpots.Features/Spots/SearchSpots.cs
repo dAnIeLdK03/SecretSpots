@@ -119,7 +119,6 @@ public static class SearchSpots
                     s.CreatedAt,
                     s.ModerationStatus,
                     s.RejectionReason,
-
                     s.ScheduledDeletionAt))
                 .ToList();
 

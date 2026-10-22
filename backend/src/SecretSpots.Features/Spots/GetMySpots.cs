@@ -54,7 +54,6 @@ public static class GetMySpots
                         s.CreatedAt,
                         s.ModerationStatus,
                         s.RejectionReason,
-
                         s.ScheduledDeletionAt),
                     cancellationToken);
         }

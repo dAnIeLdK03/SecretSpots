@@ -121,7 +121,6 @@ public static class UpdateSpot
                 spot.CreatedAt,
                 spot.ModerationStatus,
                 spot.RejectionReason,
-
                 spot.ScheduledDeletionAt));
         }
     }

@@ -273,7 +273,11 @@
       "ratings": "Ratings",
       "reportsFiled": "Reports filed",
       "crystalBalance": "Crystals"
-    }
+    },
+    "spotsHeading": "Spots",
+    "spotsEmpty": "This user hasn't added any spots.",
+    "previousSpots": "Previous spots",
+    "nextSpots": "Next spots"
   },
   "AdminReports": {
     "title": "Report queue",

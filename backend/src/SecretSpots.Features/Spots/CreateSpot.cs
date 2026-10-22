@@ -144,7 +144,6 @@ public static class CreateSpot
                 spot.CreatedAt,
                 spot.ModerationStatus,
                 spot.RejectionReason,
-
                 spot.ScheduledDeletionAt));
         }
     }

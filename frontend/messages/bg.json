@@ -273,7 +273,11 @@
       "ratings": "Оценки",
       "reportsFiled": "Подадени репорти",
       "crystalBalance": "Кристали"
-    }
+    },
+    "spotsHeading": "Места",
+    "spotsEmpty": "Този потребител не е добавял места.",
+    "previousSpots": "Предишни места",
+    "nextSpots": "Следващи места"
   },
   "AdminReports": {
     "title": "Опашка от доклади",

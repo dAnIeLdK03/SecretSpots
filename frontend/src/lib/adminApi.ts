@@ -102,10 +102,13 @@ export function getAdminUser(id: string, signal?: AbortSignal): Promise<AdminUse
 export function getAdminSpots(
   page: number,
   pageSize: number,
-  status: SpotModerationStatus,
+  filters: { status?: SpotModerationStatus; userId?: string },
+  signal?: AbortSignal,
 ): Promise<SpotSearchPageResponse> {
-  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize), status });
-  return apiFetch<SpotSearchPageResponse>(`/admin/spots?${params.toString()}`);
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  if (filters.status) params.set("status", filters.status);
+  if (filters.userId) params.set("userId", filters.userId);
+  return apiFetch<SpotSearchPageResponse>(`/admin/spots?${params.toString()}`, { signal });
 }
 
 export function approveSpot(id: string): Promise<void> {

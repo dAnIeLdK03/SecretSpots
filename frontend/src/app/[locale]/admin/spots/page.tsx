@@ -44,7 +44,7 @@ export default function AdminSpotsPage() {
   const fetchPage = useCallback(
     (pageNum: number, append: boolean) => {
       setStatus(append ? "loadingMore" : "loading");
-      return getAdminSpots(pageNum, PAGE_SIZE, statusFilter)
+      return getAdminSpots(pageNum, PAGE_SIZE, { status: statusFilter })
         .then((result) => {
           setItems((prev) => (append ? [...prev, ...result.items] : result.items));
           setTotalCount(result.totalCount);

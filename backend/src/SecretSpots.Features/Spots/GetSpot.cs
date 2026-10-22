@@ -20,11 +20,15 @@ public static class GetSpot
         {
             var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == query.SpotId, cancellationToken);
 
-            // A Rejected spot is hidden from everyone except its creator — a direct lookup by
-            // anyone else returns the same not-found response as a truly nonexistent spot, so
-            // the response doesn't reveal that a rejected spot exists.
+            // A Rejected spot is hidden from everyone except its creator and admins — a direct
+            // lookup by anyone else returns the same not-found response as a truly nonexistent
+            // spot, so the response doesn't reveal that a rejected spot exists. UserIdOrNull is
+            // checked first because Role throws for anonymous requests.
+            var isAdmin = userContext.UserIdOrNull is not null && userContext.Role == UserRole.Admin;
             var isHiddenFromThisViewer = spot is null
-                || (spot.ModerationStatus == SpotModerationStatus.Rejected && spot.CreatedByUserId != userContext.UserIdOrNull);
+                || (spot.ModerationStatus == SpotModerationStatus.Rejected
+                    && spot.CreatedByUserId != userContext.UserIdOrNull
+                    && !isAdmin);
 
             if (isHiddenFromThisViewer || spot is null)
             {
@@ -51,7 +55,6 @@ public static class GetSpot
                 spot.CreatedAt,
                 spot.ModerationStatus,
                 spot.RejectionReason,
-
                 spot.ScheduledDeletionAt));
         }
     }
