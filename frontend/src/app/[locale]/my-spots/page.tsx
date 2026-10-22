@@ -3,13 +3,18 @@
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useMySpotsListStore } from "@/store/useMySpotsListStore";
 import { FeaturedSpotCard } from "@/components/FeaturedSpotCard";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
+import { UserRole } from "@/lib/userRole";
 
 export default function MySpotsPage() {
   const t = useTranslations("MySpots");
+  const router = useRouter();
   const isAuthenticated = useRequireAuth();
+  // Admins can't create spots, so there's nothing to list here for them.
+  const isAdmin = useAuthStore((state) => state.user?.role === UserRole.Admin);
 
   const items = useMySpotsListStore((state) => state.items);
   const status = useMySpotsListStore((state) => state.status);
@@ -18,12 +23,18 @@ export default function MySpotsPage() {
   const loadMore = useMySpotsListStore((state) => state.loadMore);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && isAdmin) {
+      router.replace("/");
+    }
+  }, [isAuthenticated, isAdmin, router]);
+
+  useEffect(() => {
+    if (isAuthenticated && !isAdmin) {
       loadFirstPage();
     }
-  }, [isAuthenticated, loadFirstPage]);
+  }, [isAuthenticated, isAdmin, loadFirstPage]);
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || isAdmin) {
     return null;
   }
 

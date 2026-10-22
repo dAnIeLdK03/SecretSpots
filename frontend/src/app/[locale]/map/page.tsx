@@ -11,6 +11,7 @@ import { getNearbySpots } from "@/lib/spotsApi";
 import type { NearbySpot, SpotResponse, SpotSearchResult } from "@/lib/spotsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { useAuthStore } from "@/store/useAuthStore";
+import { UserRole } from "@/lib/userRole";
 import { useGeolocationStore } from "@/store/useGeolocationStore";
 import { Link } from "@/i18n/navigation";
 
@@ -50,6 +51,8 @@ function MapPageContent() {
   const pendingSelectIdRef = useRef<string | null>(target?.spotId ?? null);
   const tAuth = useTranslations("Auth");
   const authStatus = useAuthStore((state) => state.status);
+  // Admins moderate spots rather than create them (the API rejects their CreateSpot calls).
+  const isAdmin = useAuthStore((state) => state.user?.role === UserRole.Admin);
   const geoStatus = useGeolocationStore((state) => state.status);
   const geoCoords = useGeolocationStore((state) => state.coords);
   const geoErrorReason = useGeolocationStore((state) => state.errorReason);
@@ -256,18 +259,20 @@ function MapPageContent() {
         </button>
       ) : null}
 
-      <button
-        onClick={handleToggleAddSpot}
-        aria-pressed={placingSpot}
-        className="absolute right-6 bottom-6 z-10 rounded-full px-4 py-3 text-sm shadow-lg"
-        style={
-          placingSpot
-            ? { backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)", boxShadow: "0 0 0 4px rgba(181,74,36,0.25)" }
-            : { backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }
-        }
-      >
-        {placingSpot ? t("tapMapToPlace") : t("addAtMyLocation")}
-      </button>
+      {isAdmin ? null : (
+        <button
+          onClick={handleToggleAddSpot}
+          aria-pressed={placingSpot}
+          className="absolute right-6 bottom-6 z-10 rounded-full px-4 py-3 text-sm shadow-lg"
+          style={
+            placingSpot
+              ? { backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)", boxShadow: "0 0 0 4px rgba(181,74,36,0.25)" }
+              : { backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }
+          }
+        >
+          {placingSpot ? t("tapMapToPlace") : t("addAtMyLocation")}
+        </button>
+      )}
 
       {showLoginPrompt ? (
         <div
