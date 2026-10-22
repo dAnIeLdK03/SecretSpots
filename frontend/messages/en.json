@@ -243,6 +243,32 @@
     "roleUser": "User",
     "unknownError": "Something went wrong. Please try again."
   },
+  "AdminUserDetails": {
+    "backToUsers": "Back to users",
+    "loading": "Loading...",
+    "notFound": "User not found.",
+    "unknownError": "Something went wrong. Please try again.",
+    "accountHeading": "Account",
+    "email": "Email",
+    "emailVerified": "Email verified",
+    "registeredAt": "Registered",
+    "hasPassword": "Has password",
+    "linkedProviders": "Linked accounts",
+    "yes": "Yes",
+    "no": "No",
+    "none": "None",
+    "activityHeading": "Activity",
+    "activity": {
+      "spotsApproved": "Approved spots",
+      "spotsPending": "Pending spots",
+      "spotsRejected": "Rejected spots",
+      "comments": "Comments",
+      "checkIns": "Check-ins",
+      "ratings": "Ratings",
+      "reportsFiled": "Reports filed",
+      "crystalBalance": "Crystals"
+    }
+  },
   "AdminReports": {
     "title": "Report queue",
     "includeResolvedLabel": "Show resolved",

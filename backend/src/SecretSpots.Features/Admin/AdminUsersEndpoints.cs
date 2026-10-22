@@ -29,6 +29,16 @@ public static class AdminUsersEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
+        group.MapGet("/{id:guid}", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new GetAdminUser.Query(id), cancellationToken);
+                return result.ToOkOrProblem();
+            })
+            .Produces<AdminUserDetailsResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         group.MapPut("/{id:guid}/role", async (
                 Guid id, SetUserRole.RequestBody body, ISender sender, CancellationToken cancellationToken) =>
             {

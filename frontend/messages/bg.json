@@ -243,6 +243,32 @@
     "roleUser": "Потребител",
     "unknownError": "Нещо се обърка. Опитайте отново."
   },
+  "AdminUserDetails": {
+    "backToUsers": "Обратно към потребителите",
+    "loading": "Зареждане...",
+    "notFound": "Потребителят не е намерен.",
+    "unknownError": "Нещо се обърка. Опитайте отново.",
+    "accountHeading": "Акаунт",
+    "email": "Имейл",
+    "emailVerified": "Потвърден имейл",
+    "registeredAt": "Регистриран",
+    "hasPassword": "Има парола",
+    "linkedProviders": "Свързани акаунти",
+    "yes": "Да",
+    "no": "Не",
+    "none": "Няма",
+    "activityHeading": "Активност",
+    "activity": {
+      "spotsApproved": "Одобрени места",
+      "spotsPending": "Чакащи места",
+      "spotsRejected": "Отхвърлени места",
+      "comments": "Коментари",
+      "checkIns": "Check-in-и",
+      "ratings": "Оценки",
+      "reportsFiled": "Подадени репорти",
+      "crystalBalance": "Кристали"
+    }
+  },
   "AdminReports": {
     "title": "Опашка от доклади",
     "includeResolvedLabel": "Покажи разгледаните",
