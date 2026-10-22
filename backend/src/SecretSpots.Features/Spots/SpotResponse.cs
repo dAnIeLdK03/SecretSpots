@@ -16,4 +16,5 @@ public record SpotResponse(
     int RatingsCount,
     DateTimeOffset CreatedAt,
     SpotModerationStatus ModerationStatus,
-    string? RejectionReason);
+    string? RejectionReason,
+    DateTimeOffset? ScheduledDeletionAt);

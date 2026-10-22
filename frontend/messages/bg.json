@@ -4,6 +4,7 @@
     "menuLabel": "Меню",
     "languageLabel": "Език",
     "settingsLabel": "Настройки",
+    "adminSpotsLabel": "Модерация на места",
     "adminReportsLabel": "Опашка от доклади",
     "adminUsersLabel": "Потребители",
     "mySpotsLabel": "Моите места"
@@ -139,7 +140,12 @@
     "directionsLabel": "Навигация",
     "directionsGoogleMaps": "Google Maps",
     "directionsWaze": "Waze",
-    "directionsButton": "Заведи ме"
+    "directionsButton": "Заведи ме",
+    "rejectedNotice": "Това място е отхвърлено от модератор и е скрито за останалите потребители.",
+    "rejectionReasonLabel": "Причина",
+    "moderationStatusRejected": "Отхвърлено",
+    "moderationStatusPending": "Очаква преглед",
+    "scheduledDeletionNotice": "Ще бъде изтрито на {date}."
   },
   "PhotoUpload": {
     "uploading": "Качване...",
@@ -267,7 +273,11 @@
       "ratings": "Оценки",
       "reportsFiled": "Подадени репорти",
       "crystalBalance": "Кристали"
-    }
+    },
+    "spotsHeading": "Места",
+    "spotsEmpty": "Този потребител не е добавял места.",
+    "previousSpots": "Предишни места",
+    "nextSpots": "Следващи места"
   },
   "AdminReports": {
     "title": "Опашка от доклади",
@@ -289,6 +299,29 @@
     "deleteContentButton": "Изтрий съдържанието",
     "deleteContentConfirm": "Да изтрия ли това {type}? Действието е необратимо.",
     "unknownError": "Нещо се обърка. Опитайте отново."
+  },
+  "AdminSpots": {
+    "title": "Модерация на места",
+    "statusFilterLabel": "Статус",
+    "status": {
+      "Pending": "Чакащи",
+      "Approved": "Одобрени",
+      "Rejected": "Отхвърлени"
+    },
+    "loading": "Зареждане...",
+    "loadMore": "Зареди още",
+    "loadingMore": "Зареждане...",
+    "empty": "Няма места.",
+    "viewSpotLink": "Виж мястото",
+    "viewCreatorLink": "Виж автора",
+    "approveButton": "Одобри",
+    "rejectButton": "Отхвърли",
+    "confirmRejectButton": "Потвърди отхвърлянето",
+    "cancelButton": "Отказ",
+    "rejectionReasonLabel": "Причина за отхвърляне",
+    "rejectionReasonPlaceholder": "Защо отхвърляте това място? Авторът ще види причината.",
+    "unknownError": "Нещо се обърка. Опитайте отново.",
+    "scheduledDeletionLabel": "Ще бъде изтрито на {date}"
   },
   "SavedSpots": {
     "pageTitle": "Запазени места",

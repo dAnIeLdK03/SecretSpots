@@ -58,7 +58,7 @@ export default function MySpotsPage() {
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           {items.map((spot) => (
-            <FeaturedSpotCard key={spot.id} spot={spot} />
+            <FeaturedSpotCard key={spot.id} spot={spot} moderationStatus={spot.moderationStatus} />
           ))}
         </div>
       )}

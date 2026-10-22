@@ -143,6 +143,13 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
             {isAdmin && (
               <>
                 <Link
+                  href="/admin/spots"
+                  onClick={closeMenu}
+                  className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5"
+                >
+                  {t("adminSpotsLabel")}
+                </Link>
+                <Link
                   href="/admin/reports"
                   onClick={closeMenu}
                   className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5"

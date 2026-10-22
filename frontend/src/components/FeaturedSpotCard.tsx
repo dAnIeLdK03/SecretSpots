@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatRelativeTime } from "@/lib/relativeTime";
-import type { SpotCategory } from "@/lib/spotsApi";
+import type { SpotCategory, SpotModerationStatus } from "@/lib/spotsApi";
 import { CategoryIcon } from "./CategoryIcon";
 
 interface FeaturedSpotCardProps {
@@ -16,12 +16,17 @@ interface FeaturedSpotCardProps {
     photoUrl: string;
     createdAt: string;
     distanceKm?: number;
-  }
+    rejectionReason?: string | null;
+    scheduledDeletionAt?: string | null;
+  };
+  // Only passed by the creator's own list (My spots) — public lists never show moderation state.
+  moderationStatus?: SpotModerationStatus;
 }
 
-export function FeaturedSpotCard({ spot }: FeaturedSpotCardProps) {
+export function FeaturedSpotCard({ spot, moderationStatus }: FeaturedSpotCardProps) {
   const t = useTranslations("Spots");
   const locale = useLocale();
+  const format = useFormatter();
   const [imageFailed, setImageFailed] = useState(false);
 
   return (
@@ -56,6 +61,32 @@ export function FeaturedSpotCard({ spot }: FeaturedSpotCardProps) {
         <p className="mt-1 line-clamp-2 flex-1 text-sm break-words" style={{ color: "var(--fieldmap-dim)" }}>
           {spot.description}
         </p>
+        {moderationStatus === "Rejected" ? (
+          <div className="mt-2 flex flex-col gap-1 text-xs text-red-700 dark:text-red-400">
+            <span className="self-start rounded-full border border-red-300 dark:border-red-800 px-2 py-0.5 font-semibold">
+              {t("moderationStatusRejected")}
+            </span>
+            {spot.rejectionReason ? (
+              <span className="line-clamp-2 break-words">
+                {t("rejectionReasonLabel")}: {spot.rejectionReason}
+              </span>
+            ) : null}
+            {spot.scheduledDeletionAt ? (
+              <span>
+                {t("scheduledDeletionNotice", {
+                  date: format.dateTime(new Date(spot.scheduledDeletionAt), { dateStyle: "medium", timeStyle: "short" }),
+                })}
+              </span>
+            ) : null}
+          </div>
+        ) : moderationStatus === "Pending" ? (
+          <span
+            className="mt-2 self-start rounded-full px-2 py-0.5 text-xs font-semibold"
+            style={{ backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-ink)" }}
+          >
+            {t("moderationStatusPending")}
+          </span>
+        ) : null}
         {spot.distanceKm !== undefined ? (
           <p className="mt-2 text-xs" style={{ color: "var(--fieldmap-dim)" }}>
             {spot.distanceKm.toFixed(1)} km

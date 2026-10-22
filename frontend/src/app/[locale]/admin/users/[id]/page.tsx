@@ -10,6 +10,7 @@ import { ApiError, getErrorMessage } from "@/lib/apiClient";
 import { getAdminUser } from "@/lib/adminApi";
 import type { AdminUserActivity, AdminUserDetails } from "@/lib/adminApi";
 import { UserRole } from "@/lib/userRole";
+import { AdminUserSpotsCarousel } from "@/components/AdminUserSpotsCarousel";
 
 type LoadState =
   | { status: "loading" }
@@ -143,6 +144,8 @@ function AdminUserDetailsContent({ id }: { id: string }) {
               ))}
             </div>
           </section>
+
+          <AdminUserSpotsCarousel userId={state.user.id} />
         </>
       )}
     </div>

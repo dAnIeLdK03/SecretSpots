@@ -47,7 +47,11 @@ public static class DeleteAccount
 
             // Owned spots/businesses first — each already has its own cascading cleanup
             // (comments, ratings, saved spots, check-ins, R2 photos, reward redemptions/rewards).
-            var ownedSpots = await db.Spots.Where(s => s.CreatedByUserId == user.Id).ToListAsync(cancellationToken);
+            // IgnoreQueryFilters: deleting an account is a full purge, so soft-deleted spots go too.
+            var ownedSpots = await db.Spots
+                .IgnoreQueryFilters()
+                .Where(s => s.CreatedByUserId == user.Id)
+                .ToListAsync(cancellationToken);
             foreach (var spot in ownedSpots)
             {
                 await SpotDeletionCleanup.DeleteAsync(db, photoStorage, spot, logger, cancellationToken);

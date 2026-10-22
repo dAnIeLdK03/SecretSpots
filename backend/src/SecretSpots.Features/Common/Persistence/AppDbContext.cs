@@ -65,6 +65,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .IsUnique();
 
         modelBuilder.Entity<Spot>()
+            .HasQueryFilter(s => s.DeletedAt == null);
+
+        modelBuilder.Entity<Spot>()
             .Property(s => s.Location)
             .HasColumnType("geography (Point, 4326)");
 

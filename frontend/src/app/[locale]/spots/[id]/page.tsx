@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { useTranslations, useLocale } from "next-intl";
+import { useFormatter, useTranslations, useLocale } from "next-intl";
 import { Clock, MapPin, Navigation, Tag } from "lucide-react";
 import { DirectionsLinks } from "@/components/DirectionsLinks";
 import { deleteSpot, getSpot } from "@/lib/spotsApi";
@@ -36,6 +36,7 @@ function SpotDetailContent({ id }: { id: string }) {
   const tCheckIns = useTranslations("CheckIns");
   const tAuth = useTranslations("Auth");
   const locale = useLocale();
+  const format = useFormatter();
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const authStatus = useAuthStore((state) => state.status);
@@ -151,6 +152,24 @@ function SpotDetailContent({ id }: { id: string }) {
         </div>
 
         <div className="flex flex-1 flex-col gap-3">
+          {/* Only the creator can load a Rejected spot at all (GetSpot 404s for everyone else). */}
+          {isOwner && spot.moderationStatus === "Rejected" ? (
+            <div className="rounded border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950 px-3 py-2 text-sm text-red-700 dark:text-red-400">
+              <p className="font-medium">{t("rejectedNotice")}</p>
+              {spot.rejectionReason ? (
+                <p>
+                  {t("rejectionReasonLabel")}: {spot.rejectionReason}
+                </p>
+              ) : null}
+              {spot.scheduledDeletionAt ? (
+                <p>
+                  {t("scheduledDeletionNotice", {
+                    date: format.dateTime(new Date(spot.scheduledDeletionAt), { dateStyle: "medium", timeStyle: "short" }),
+                  })}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
           <h1 className="text-2xl font-semibold">{spot.name}</h1>
           <SpotRatingSummary averageRating={spot.averageRating} ratingsCount={spot.ratingsCount} />
 

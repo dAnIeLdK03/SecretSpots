@@ -8,5 +8,6 @@ internal static class SpotsLogMessages
     public const string SpotUpdated = "Spot {SpotId} updated by user {UserId}.";
     public const string SpotDeleted = "Spot {SpotId} deleted by user {UserId}.";
     public const string SpotPhotoDeleteFailed = "Failed to delete photo {PhotoUrl} for deleted spot {SpotId}.";
+    public const string RejectedSpotsSoftDeleted = "Soft-deleted {DeletedCount} rejected spot(s) whose grace period had passed.";
     public const string NearbyUsersNotified = "Notified {NotifiedCount} nearby user(s) about new spot {SpotId}.";
 }

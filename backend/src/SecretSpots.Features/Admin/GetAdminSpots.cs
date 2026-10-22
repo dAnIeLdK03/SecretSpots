@@ -14,7 +14,9 @@ namespace SecretSpots.Features.Admin;
 
 public static class GetAdminSpots
 {
-    public record Query(SpotModerationStatus? Status, int Page, int PageSize) : IRequest<PagedResponse<SpotSearchResultResponse>>;
+    // CreatedByUserId narrows the list to one user's spots (the admin user details page).
+    public record Query(SpotModerationStatus? Status, Guid? CreatedByUserId, int Page, int PageSize)
+        : IRequest<PagedResponse<SpotSearchResultResponse>>;
 
     public class Validator : AbstractValidator<Query>
     {
@@ -40,6 +42,11 @@ public static class GetAdminSpots
                 baseQuery = baseQuery.Where(s => s.ModerationStatus == query.Status);
             }
 
+            if (query.CreatedByUserId is not null)
+            {
+                baseQuery = baseQuery.Where(s => s.CreatedByUserId == query.CreatedByUserId);
+            }
+
             // Materialized first, then shaped in-memory — Location.Y/.X (geography column)
             // can't be translated to SQL by the Npgsql provider (same reasoning as GetMySpots).
             return await baseQuery
@@ -58,7 +65,8 @@ public static class GetAdminSpots
                         s.CreatedByUserId,
                         s.CreatedAt,
                         s.ModerationStatus,
-                        s.RejectionReason),
+                        s.RejectionReason,
+                        s.ScheduledDeletionAt),
                     cancellationToken);
         }
     }
