@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { getErrorMessage } from "@/lib/apiClient";
 import { getAdminUsers } from "@/lib/adminApi";
 import type { AdminUser } from "@/lib/adminApi";
@@ -90,27 +90,29 @@ export default function AdminUsersPage() {
       ) : (
         <ul className="flex flex-col gap-2">
           {items.map((item) => (
-            <li
-              key={item.id}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-2xl p-4"
-              style={{ backgroundColor: "var(--fieldmap-card)" }}
-            >
-              <div className="flex flex-col">
-                <span className="text-sm font-medium">{item.displayName}</span>
-                <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-                  {item.email}
-                </span>
-              </div>
-              <span
-                className="rounded-full px-3 py-1 text-xs font-medium"
-                style={
-                  item.role === UserRole.Admin
-                    ? { backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }
-                    : { backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-ink)" }
-                }
+            <li key={item.id}>
+              <Link
+                href={`/admin/users/${item.id}`}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-2xl p-4 hover:opacity-80"
+                style={{ backgroundColor: "var(--fieldmap-card)" }}
               >
-                {item.role === UserRole.Admin ? t("roleAdmin") : t("roleUser")}
-              </span>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">{item.displayName}</span>
+                  <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+                    {item.email}
+                  </span>
+                </div>
+                <span
+                  className="rounded-full px-3 py-1 text-xs font-medium"
+                  style={
+                    item.role === UserRole.Admin
+                      ? { backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }
+                      : { backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-ink)" }
+                  }
+                >
+                  {item.role === UserRole.Admin ? t("roleAdmin") : t("roleUser")}
+                </span>
+              </Link>
             </li>
           ))}
         </ul>

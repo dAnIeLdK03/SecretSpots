@@ -68,3 +68,32 @@ export function getAdminUsers(page: number, pageSize: number, q?: string): Promi
   if (q) params.set("q", q);
   return apiFetch<AdminUsersPageResponse>(`/admin/users?${params.toString()}`);
 }
+
+export type ExternalAuthProvider = "Google" | "Facebook";
+
+export interface AdminUserActivity {
+  spotsPending: number;
+  spotsApproved: number;
+  spotsRejected: number;
+  comments: number;
+  checkIns: number;
+  ratings: number;
+  reportsFiled: number;
+  crystalBalance: number;
+}
+
+export interface AdminUserDetails {
+  id: string;
+  email: string;
+  displayName: string;
+  role: UserRole;
+  isEmailVerified: boolean;
+  hasPassword: boolean;
+  createdAt: string;
+  linkedProviders: ExternalAuthProvider[];
+  activity: AdminUserActivity;
+}
+
+export function getAdminUser(id: string, signal?: AbortSignal): Promise<AdminUserDetails> {
+  return apiFetch<AdminUserDetails>(`/admin/users/${id}`, { signal });
+}
