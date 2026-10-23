@@ -26,8 +26,17 @@ public static class AdminSpotsEndpoints
                 var result = await sender.Send(query, cancellationToken);
                 return Results.Ok(result);
             })
-            .Produces<PagedResponse<SpotSearchResultResponse>>(StatusCodes.Status200OK)
+            .Produces<PagedResponse<AdminSpotResponse>>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden);
+
+        group.MapGet("/counts", async (ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new GetAdminSpotCounts.Query(), cancellationToken);
+                return Results.Ok(result);
+            })
+            .Produces<AdminSpotCountsResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 

@@ -313,7 +313,6 @@
     "loadingMore": "Loading...",
     "empty": "No spots.",
     "viewSpotLink": "View spot",
-    "viewCreatorLink": "View creator",
     "approveButton": "Approve",
     "rejectButton": "Reject",
     "confirmRejectButton": "Confirm rejection",
@@ -321,7 +320,27 @@
     "rejectionReasonLabel": "Rejection reason",
     "rejectionReasonPlaceholder": "Why is this spot being rejected? The creator will see this.",
     "unknownError": "Something went wrong. Please try again.",
-    "scheduledDeletionLabel": "Will be deleted on {date}"
+    "scheduledDeletionLabel": "Will be deleted on {date}",
+    "subtitle": "Review, approve or reject spots submitted by users",
+    "statusWithCount": "{status} ({count})",
+    "enlargePhoto": "Enlarge",
+    "viewOnMapLink": "View on map",
+    "closeLabel": "Close",
+    "rejectModalTitle": "Reject spot",
+    "rejectModalDescription": "Choose why \"{name}\" is being rejected. The creator will see this reason.",
+    "rejectReasons": {
+      "inappropriate": "Offensive or inappropriate content",
+      "lowQualityPhoto": "Low-quality or irrelevant photo",
+      "spam": "Spam or not a real place",
+      "duplicate": "Duplicate of an existing spot",
+      "other": "Other"
+    },
+    "rejectionDetailsPlaceholder": "Extra details for the creator (optional)",
+    "restoreButton": "Restore",
+    "removeButton": "Remove",
+    "removeModalTitle": "Remove spot",
+    "removeModalDescription": "Choose why \"{name}\" is being removed. The creator will see this reason.",
+    "confirmRemoveButton": "Confirm removal"
   },
   "SavedSpots": {
     "pageTitle": "Saved spots",

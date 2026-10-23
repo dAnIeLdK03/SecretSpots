@@ -1,20 +1,36 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { Check, ExternalLink, MapPin, RotateCcw, ShieldCheck, Trash2, User, X, ZoomIn } from "lucide-react";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Link, useRouter } from "@/i18n/navigation";
 import { getErrorMessage } from "@/lib/apiClient";
-import { approveSpot, getAdminSpots, rejectSpot } from "@/lib/adminApi";
+import { approveSpot, getAdminSpotCounts, getAdminSpots, rejectSpot } from "@/lib/adminApi";
+import type { AdminSpot, AdminSpotCounts } from "@/lib/adminApi";
 import { SPOT_MODERATION_STATUSES } from "@/lib/spotsApi";
-import type { SpotModerationStatus, SpotSearchResult } from "@/lib/spotsApi";
+import type { SpotModerationStatus } from "@/lib/spotsApi";
 import { formatRelativeTime } from "@/lib/relativeTime";
 import { UserRole } from "@/lib/userRole";
+import { CategoryIcon } from "@/components/CategoryIcon";
+import { ImageLightbox } from "@/components/ImageLightbox";
+import { RejectSpotModal } from "@/components/RejectSpotModal";
 
 const PAGE_SIZE = 20;
-// Mirrors RejectSpot.MaxReasonLength on the backend.
-const MAX_REJECTION_REASON_LENGTH = 500;
+
+const STATUS_COUNT_KEYS: Record<SpotModerationStatus, keyof AdminSpotCounts> = {
+  Pending: "pending",
+  Approved: "approved",
+  Rejected: "rejected",
+};
+
+const STATUS_BADGE_STYLES: Record<SpotModerationStatus, CSSProperties> = {
+  Pending: { backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-ink)" },
+  Approved: { backgroundColor: "var(--fieldmap-gold)", color: "var(--fieldmap-ink)" },
+  Rejected: { backgroundColor: "rgba(185, 28, 28, 0.15)", color: "#ef4444", border: "1px solid rgba(239, 68, 68, 0.35)" },
+};
 
 export default function AdminSpotsPage() {
   const t = useTranslations("AdminSpots");
@@ -24,22 +40,32 @@ export default function AdminSpotsPage() {
   const router = useRouter();
   const isAuthenticated = useRequireAuth();
   const user = useAuthStore((state) => state.user);
+  const isAdmin = isAuthenticated && user?.role === UserRole.Admin;
 
   const [statusFilter, setStatusFilter] = useState<SpotModerationStatus>("Pending");
-  const [items, setItems] = useState<SpotSearchResult[]>([]);
+  const [items, setItems] = useState<AdminSpot[]>([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [counts, setCounts] = useState<AdminSpotCounts | null>(null);
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState<"loading" | "idle" | "loadingMore">("loading");
   const [error, setError] = useState<string | null>(null);
-  const [busyId, setBusyId] = useState<string | null>(null);
-  const [rejectingId, setRejectingId] = useState<string | null>(null);
-  const [rejectionReason, setRejectionReason] = useState("");
+  const [busyIds, setBusyIds] = useState<Set<string>>(new Set());
+  const [rejectingSpot, setRejectingSpot] = useState<AdminSpot | null>(null);
+  const [lightboxSpot, setLightboxSpot] = useState<AdminSpot | null>(null);
 
   useEffect(() => {
     if (isAuthenticated && user && user.role !== UserRole.Admin) {
       router.replace("/");
     }
   }, [isAuthenticated, user, router]);
+
+  const refreshCounts = useCallback(() => {
+    getAdminSpotCounts()
+      .then(setCounts)
+      .catch(() => {
+        // Counts are decoration on the filter — the list itself still works without them.
+      });
+  }, []);
 
   const fetchPage = useCallback(
     (pageNum: number, append: boolean) => {
@@ -58,71 +84,99 @@ export default function AdminSpotsPage() {
   );
 
   useEffect(() => {
-    if (isAuthenticated && user?.role === UserRole.Admin) {
+    if (isAdmin) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- kicking off the initial fetch on mount, no user event to attach to
       void fetchPage(1, false);
     }
-  }, [isAuthenticated, user?.role, fetchPage]);
+  }, [isAdmin, fetchPage]);
 
-  // Every action moves the spot out of the currently filtered status, so it leaves this list.
+  useEffect(() => {
+    if (isAdmin) refreshCounts();
+  }, [isAdmin, refreshCounts]);
+
+  // Every action moves a spot out of the currently filtered status, so it leaves this list.
   function removeFromList(id: string) {
     setItems((prev) => prev.filter((s) => s.id !== id));
     setTotalCount((prev) => prev - 1);
+    refreshCounts();
+  }
+
+  function setBusy(id: string, busy: boolean) {
+    setBusyIds((prev) => {
+      const next = new Set(prev);
+      if (busy) next.add(id);
+      else next.delete(id);
+      return next;
+    });
   }
 
   async function handleApprove(id: string) {
-    setBusyId(id);
+    setBusy(id, true);
     try {
       await approveSpot(id);
       removeFromList(id);
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
     } finally {
-      setBusyId(null);
+      setBusy(id, false);
     }
   }
 
-  function startRejecting(id: string) {
-    setRejectingId(id);
-    setRejectionReason("");
-  }
-
-  async function handleReject(id: string) {
-    setBusyId(id);
+  async function handleReject(reason: string) {
+    if (!rejectingSpot) return;
+    const id = rejectingSpot.id;
+    setBusy(id, true);
     try {
-      await rejectSpot(id, rejectionReason.trim());
+      await rejectSpot(id, reason);
       removeFromList(id);
-      setRejectingId(null);
+      setRejectingSpot(null);
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
     } finally {
-      setBusyId(null);
+      setBusy(id, false);
     }
   }
 
-  if (!isAuthenticated || user?.role !== UserRole.Admin) {
+  if (!isAdmin) {
     return null;
   }
 
   const hasMore = items.length < totalCount;
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 p-8">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-semibold">{t("title")}</h1>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as SpotModerationStatus)}
-          aria-label={t("statusFilterLabel")}
-          className="rounded border px-2 py-1 text-sm"
-          style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-card)" }}
-        >
-          {SPOT_MODERATION_STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {t(`status.${s}`)}
-            </option>
-          ))}
-        </select>
+    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 md:p-8">
+      <div
+        className="flex flex-col justify-between gap-4 border-b pb-4 md:flex-row md:items-center"
+        style={{ borderColor: "var(--fieldmap-contour)" }}
+      >
+        <div>
+          <h1 className="flex items-center gap-2 text-2xl font-semibold">
+            <ShieldCheck size={24} style={{ color: "var(--fieldmap-trail)" }} />
+            {t("title")}
+          </h1>
+          <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+            {t("subtitle")}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as SpotModerationStatus)}
+            aria-label={t("statusFilterLabel")}
+            className="rounded-lg border px-3 py-2 text-sm"
+            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-card)" }}
+          >
+            {SPOT_MODERATION_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {counts
+                  ? t("statusWithCount", { status: t(`status.${s}`), count: counts[STATUS_COUNT_KEYS[s]] })
+                  : t(`status.${s}`)}
+              </option>
+            ))}
+          </select>
+
+        </div>
       </div>
 
       {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
@@ -132,109 +186,158 @@ export default function AdminSpotsPage() {
           {t("loading")}
         </p>
       ) : items.length === 0 ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+        <p className="rounded-xl p-8 text-center text-sm" style={{ backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-dim)" }}>
           {t("empty")}
         </p>
       ) : (
-        <ul className="flex flex-col gap-3">
-          {items.map((spot) => (
-            <li
-              key={spot.id}
-              className="flex flex-col gap-3 rounded-2xl p-4 sm:flex-row"
-              style={{ backgroundColor: "var(--fieldmap-card)" }}
-            >
-              <div
-                className="h-32 w-full shrink-0 overflow-hidden rounded-xl sm:w-40"
-                style={{ backgroundColor: "var(--fieldmap-contour)" }}
+        <ul className="flex flex-col gap-4">
+          {items.map((spot) => {
+            const busy = busyIds.has(spot.id);
+            return (
+              <li
+                key={spot.id}
+                className="rounded-xl border p-4 transition"
+                style={{
+                  backgroundColor: "var(--fieldmap-card)",
+                  borderColor: spot.moderationStatus === "Rejected" ? "rgba(239, 68, 68, 0.35)" : "var(--fieldmap-contour)",
+                  opacity: busy ? 0.6 : 1,
+                }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={spot.photoUrl} alt={spot.name} className="h-full w-full object-cover" />
-              </div>
-
-              <div className="flex min-w-0 flex-1 flex-col gap-2">
-                <div className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-                  {tSpots(`category.${spot.category}`)} · {formatRelativeTime(spot.createdAt, locale)}
-                </div>
-                <h2 className="text-sm font-semibold">{spot.name}</h2>
-                <p className="text-sm break-words" style={{ color: "var(--fieldmap-ink)" }}>
-                  {spot.description}
-                </p>
-
-                {spot.rejectionReason ? (
-                  <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-                    {t("rejectionReasonLabel")}: {spot.rejectionReason}
-                  </p>
-                ) : null}
-
-                {spot.scheduledDeletionAt ? (
-                  <p className="text-xs text-red-700 dark:text-red-400">
-                    {t("scheduledDeletionLabel", {
-                      date: format.dateTime(new Date(spot.scheduledDeletionAt), { dateStyle: "medium", timeStyle: "short" }),
-                    })}
-                  </p>
-                ) : null}
-
-                {rejectingId === spot.id ? (
-                  <div className="flex flex-col gap-2">
-                    <textarea
-                      value={rejectionReason}
-                      onChange={(e) => setRejectionReason(e.target.value)}
-                      maxLength={MAX_REJECTION_REASON_LENGTH}
-                      placeholder={t("rejectionReasonPlaceholder")}
-                      rows={3}
-                      className="rounded border px-3 py-2 text-sm"
-                      style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
+                <div className="flex flex-col items-start gap-4 md:flex-row">
+                  <button
+                    type="button"
+                    onClick={() => setLightboxSpot(spot)}
+                    aria-label={t("enlargePhoto")}
+                    className="group relative h-32 w-full shrink-0 overflow-hidden rounded-lg border md:w-48"
+                    style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-contour)" }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={spot.photoUrl}
+                      alt={spot.name}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
-                    <div className="flex flex-wrap gap-3 text-sm">
-                      <button
-                        onClick={() => handleReject(spot.id)}
-                        disabled={busyId === spot.id || rejectionReason.trim().length === 0}
-                        className="rounded border border-red-300 dark:border-red-800 px-3 py-1 text-red-700 dark:text-red-400 disabled:opacity-50"
+                    <span className="pointer-events-none absolute inset-0 flex items-center justify-center gap-1 bg-black/30 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
+                      <ZoomIn size={14} />
+                      {t("enlargePhoto")}
+                    </span>
+                  </button>
+
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-2 text-xs">
+                        <span className="rounded px-2 py-0.5 font-semibold" style={STATUS_BADGE_STYLES[spot.moderationStatus]}>
+                          {t(`status.${spot.moderationStatus}`)}
+                        </span>
+                        <span className="flex items-center gap-1" style={{ color: "var(--fieldmap-dim)" }}>
+                          <CategoryIcon category={spot.category} size={12} />
+                          {tSpots(`category.${spot.category}`)}
+                        </span>
+                        <span style={{ color: "var(--fieldmap-dim)" }}>• {formatRelativeTime(spot.createdAt, locale)}</span>
+                      </div>
+                      <Link
+                        href={`/admin/users/${spot.createdByUserId}`}
+                        className="flex items-center gap-1 text-xs hover:underline"
+                        style={{ color: "var(--fieldmap-dim)" }}
                       >
-                        {t("confirmRejectButton")}
-                      </button>
-                      <button
-                        onClick={() => setRejectingId(null)}
-                        disabled={busyId === spot.id}
-                        className="rounded border px-3 py-1 disabled:opacity-50"
-                        style={{ borderColor: "var(--fieldmap-contour)" }}
+                        <User size={12} />
+                        {spot.createdByDisplayName}
+                      </Link>
+                    </div>
+
+                    <div className="space-y-1">
+                      <h2 className="text-lg font-semibold break-words">{spot.name}</h2>
+                      <p className="line-clamp-2 text-sm break-words" style={{ color: "var(--fieldmap-dim)" }}>
+                        {spot.description}
+                      </p>
+                    </div>
+
+                    {spot.rejectionReason || spot.scheduledDeletionAt ? (
+                      <div className="space-y-0.5 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
+                        {spot.rejectionReason ? (
+                          <p>
+                            <span className="font-semibold">{t("rejectionReasonLabel")}:</span> {spot.rejectionReason}
+                          </p>
+                        ) : null}
+                        {spot.scheduledDeletionAt ? (
+                          <p>
+                            {t("scheduledDeletionLabel", {
+                              date: format.dateTime(new Date(spot.scheduledDeletionAt), { dateStyle: "medium", timeStyle: "short" }),
+                            })}
+                          </p>
+                        ) : null}
+                      </div>
+                    ) : null}
+
+                    <div className="flex flex-wrap items-center gap-4 pt-1 text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+                      <Link
+                        href={`/map?lat=${spot.latitude}&lng=${spot.longitude}&spot=${spot.id}`}
+                        className="flex items-center gap-1 hover:underline"
                       >
-                        {t("cancelButton")}
-                      </button>
+                        <MapPin size={12} />
+                        {t("viewOnMapLink")}
+                      </Link>
+                      <Link
+                        href={`/spots/${spot.id}`}
+                        className="flex items-center gap-1 hover:underline"
+                        style={{ color: "var(--fieldmap-trail)" }}
+                      >
+                        <ExternalLink size={12} />
+                        {t("viewSpotLink")}
+                      </Link>
                     </div>
                   </div>
-                ) : (
-                  <div className="flex flex-wrap items-center gap-3 text-sm">
-                    <Link href={`/spots/${spot.id}`} className="underline">
-                      {t("viewSpotLink")}
-                    </Link>
-                    <Link href={`/admin/users/${spot.createdByUserId}`} className="underline">
-                      {t("viewCreatorLink")}
-                    </Link>
+
+                  <div
+                    className="flex w-full justify-end gap-2 border-t pt-3 md:w-auto md:flex-col md:border-t-0 md:pt-0"
+                    style={{ borderColor: "var(--fieldmap-contour)" }}
+                  >
                     {spot.moderationStatus !== "Approved" ? (
                       <button
                         onClick={() => handleApprove(spot.id)}
-                        disabled={busyId === spot.id}
-                        className="rounded px-3 py-1 disabled:opacity-50"
+                        disabled={busy}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 disabled:opacity-50 md:flex-none"
                         style={{ backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }}
                       >
-                        {t("approveButton")}
+                        {/* Approving a Rejected spot undoes the rejection, so it reads as a restore. */}
+                        {spot.moderationStatus === "Rejected" ? (
+                          <>
+                            <RotateCcw size={16} />
+                            {t("restoreButton")}
+                          </>
+                        ) : (
+                          <>
+                            <Check size={16} />
+                            {t("approveButton")}
+                          </>
+                        )}
                       </button>
                     ) : null}
                     {spot.moderationStatus !== "Rejected" ? (
                       <button
-                        onClick={() => startRejecting(spot.id)}
-                        disabled={busyId === spot.id}
-                        className="rounded border border-red-300 dark:border-red-800 px-3 py-1 text-red-700 dark:text-red-400 disabled:opacity-50"
+                        onClick={() => setRejectingSpot(spot)}
+                        disabled={busy}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 transition hover:bg-red-100 disabled:opacity-50 md:flex-none dark:border-red-800 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-950/70"
                       >
-                        {t("rejectButton")}
+                        {/* Rejecting an Approved spot takes it down, so it reads as a removal. */}
+                        {spot.moderationStatus === "Approved" ? (
+                          <>
+                            <Trash2 size={16} />
+                            {t("removeButton")}
+                          </>
+                        ) : (
+                          <>
+                            <X size={16} />
+                            {t("rejectButton")}
+                          </>
+                        )}
                       </button>
                     ) : null}
                   </div>
-                )}
-              </div>
-            </li>
-          ))}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
 
@@ -242,11 +345,25 @@ export default function AdminSpotsPage() {
         <button
           onClick={() => fetchPage(page + 1, true)}
           disabled={status === "loadingMore"}
-          className="rounded border px-4 py-2 text-sm disabled:opacity-50"
+          className="self-center rounded-lg border px-5 py-2 text-sm disabled:opacity-50"
           style={{ borderColor: "var(--fieldmap-contour)" }}
         >
           {status === "loadingMore" ? t("loadingMore") : t("loadMore")}
         </button>
+      ) : null}
+
+      {rejectingSpot ? (
+        <RejectSpotModal
+          spotName={rejectingSpot.name}
+          isRemoval={rejectingSpot.moderationStatus === "Approved"}
+          busy={busyIds.has(rejectingSpot.id)}
+          onConfirm={handleReject}
+          onClose={() => setRejectingSpot(null)}
+        />
+      ) : null}
+
+      {lightboxSpot ? (
+        <ImageLightbox src={lightboxSpot.photoUrl} alt={lightboxSpot.name} onClose={() => setLightboxSpot(null)} />
       ) : null}
     </div>
   );
