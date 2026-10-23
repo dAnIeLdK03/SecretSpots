@@ -372,7 +372,12 @@
     "confirmRejectButton": "Потвърди отхвърлянето",
     "cancelButton": "Отказ",
     "rejectionReasonPlaceholder": "Защо отхвърляте заявката? Авторът ще види причината.",
-    "unknownError": "Нещо се обърка. Опитайте отново."
+    "unknownError": "Нещо се обърка. Опитайте отново.",
+    "photosLabel": "Снимки",
+    "photosSummary": "{removed, plural, =0 {} one {# махната снимка} other {# махнати снимки}}{removed, plural, =0 {} other {{added, plural, =0 {} other {, }}}}{added, plural, =0 {} one {# нова снимка} other {# нови снимки}}",
+    "photosReordered": "Променен е редът на снимките",
+    "photoRemovedBadge": "Махната",
+    "photoAddedBadge": "Нова"
   },
   "SavedSpots": {
     "pageTitle": "Запазени места",

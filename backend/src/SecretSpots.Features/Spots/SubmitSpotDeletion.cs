@@ -8,6 +8,7 @@ using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Storage;
+using SecretSpots.Features.Notifications;
 
 namespace SecretSpots.Features.Spots;
 
@@ -52,6 +53,10 @@ public static class SubmitSpotDeletion
                     RequestedByUserId = userContext.UserId,
                 };
                 db.SpotChangeRequests.Add(request);
+
+                // Only for a brand-new request — replacing a pending one doesn't re-page admins.
+                await AdminNotifier.AddForAllAdminsAsync(
+                    db, NotificationType.SpotChangeRequestSubmitted, spot.Id, spot.Name, cancellationToken);
             }
             else
             {

@@ -10,6 +10,7 @@ using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Storage;
 using SecretSpots.Features.Spots;
+using SecretSpots.Features.Notifications;
 
 namespace SecretSpots.Features.Admin;
 
@@ -57,6 +58,12 @@ public static class RejectSpotChangeRequest
             request.RejectionReason = command.Reason.Trim();
             request.ReviewedByUserId = userContext.UserId;
             request.ReviewedAt = DateTimeOffset.UtcNow;
+
+            SpotOwnerNotifier.Add(
+                db,
+                request.Type == SpotChangeRequestType.Deletion ? NotificationType.SpotDeletionRejected : NotificationType.SpotEditRejected,
+                spot,
+                spot.Id);
 
             await db.SaveChangesAsync(cancellationToken);
 

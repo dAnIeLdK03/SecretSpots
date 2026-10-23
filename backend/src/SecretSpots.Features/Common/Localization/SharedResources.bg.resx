@@ -378,4 +378,34 @@
   <data name="Admin.ChangeRequestNotFound" xml:space="preserve">
     <value>Заявката за промяна не е намерена или вече е прегледана.</value>
   </data>
+  <data name="Notifications.SpotSubmittedForReviewMessage" xml:space="preserve">
+    <value>Новото място „{0}“ чака преглед.</value>
+  </data>
+  <data name="Notifications.SpotChangeRequestSubmittedMessage" xml:space="preserve">
+    <value>Авторът на „{0}“ поиска промяна.</value>
+  </data>
+  <data name="Notifications.SpotApprovedMessage" xml:space="preserve">
+    <value>Мястото ти „{0}“ е одобрено.</value>
+  </data>
+  <data name="Notifications.SpotRejectedMessage" xml:space="preserve">
+    <value>Мястото ти „{0}“ е отхвърлено. Отвори го, за да видиш защо.</value>
+  </data>
+  <data name="Notifications.SpotRemovedMessage" xml:space="preserve">
+    <value>Модератор премахна мястото ти „{0}“. Отвори го, за да видиш защо.</value>
+  </data>
+  <data name="Notifications.SpotRestoredMessage" xml:space="preserve">
+    <value>Мястото ти „{0}“ е възстановено.</value>
+  </data>
+  <data name="Notifications.SpotEditApprovedMessage" xml:space="preserve">
+    <value>Редакцията ти на „{0}“ е одобрена и вече се вижда.</value>
+  </data>
+  <data name="Notifications.SpotEditRejectedMessage" xml:space="preserve">
+    <value>Редакцията ти на „{0}“ е отхвърлена. Отвори мястото, за да видиш защо.</value>
+  </data>
+  <data name="Notifications.SpotDeletionApprovedMessage" xml:space="preserve">
+    <value>Мястото ти „{0}“ е изтрито, както поиска.</value>
+  </data>
+  <data name="Notifications.SpotDeletionRejectedMessage" xml:space="preserve">
+    <value>Заявката ти за изтриване на „{0}“ е отхвърлена. Отвори мястото, за да видиш защо.</value>
+  </data>
 </root>

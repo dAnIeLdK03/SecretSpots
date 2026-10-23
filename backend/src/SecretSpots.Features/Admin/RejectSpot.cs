@@ -11,6 +11,7 @@ using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Spots;
+using SecretSpots.Features.Notifications;
 
 namespace SecretSpots.Features.Admin;
 
@@ -49,11 +50,22 @@ public static class RejectSpot
                 return Result<SpotResponse>.Failure(Error.NotFound(AdminMessageKeys.SpotNotFound, localizer));
             }
 
+            // Rejecting an Approved spot takes it down — the creator hears it as a removal.
+            var notificationType = spot.ModerationStatus == SpotModerationStatus.Approved
+                ? NotificationType.SpotRemoved
+                : NotificationType.SpotRejected;
+            var statusChanged = spot.ModerationStatus != SpotModerationStatus.Rejected;
+
             spot.ModerationStatus = SpotModerationStatus.Rejected;
             spot.RejectionReason = command.Reason.Trim();
 
             // ??= so re-rejecting (e.g. to fix the reason's wording) doesn't extend the grace period.
             spot.ScheduledDeletionAt ??= DateTimeOffset.UtcNow.AddHours(spotModerationOptions.Value.RejectionGracePeriodHours);
+
+            if (statusChanged)
+            {
+                SpotOwnerNotifier.Add(db, notificationType, spot, spot.Id);
+            }
 
             await db.SaveChangesAsync(cancellationToken);
 

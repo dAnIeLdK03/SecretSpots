@@ -20,12 +20,16 @@ const MAX_REJECTION_REASON_LENGTH = 500;
 function PhotoStrip({
   photoUrls,
   highlight,
+  highlightLabel,
+  highlightTone,
   label,
   onOpen,
 }: {
   photoUrls: string[];
   // Photos that differ from the other side: removed ones on the current strip, added on the proposed.
   highlight: Set<string>;
+  highlightLabel?: string;
+  highlightTone?: "removed" | "added";
   label: string;
   onOpen: (url: string) => void;
 }) {
@@ -40,11 +44,26 @@ function PhotoStrip({
             key={url}
             type="button"
             onClick={() => onOpen(url)}
-            className="h-16 w-16 overflow-hidden rounded-md border-2"
-            style={{ borderColor: highlight.has(url) ? "var(--fieldmap-trail)" : "transparent" }}
+            className="relative h-20 w-20 overflow-hidden rounded-md border-2"
+            style={{
+              borderColor: !highlight.has(url) ? "transparent" : highlightTone === "removed" ? "#ef4444" : "#16a34a",
+            }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={url} alt="" className="h-full w-full object-cover" />
+            <img
+              src={url}
+              alt=""
+              className="h-full w-full object-cover"
+              style={{ opacity: highlight.has(url) && highlightTone === "removed" ? 0.5 : 1 }}
+            />
+            {highlight.has(url) && highlightLabel ? (
+              <span
+                className="absolute inset-x-0 bottom-0 py-0.5 text-center text-[10px] font-semibold text-white"
+                style={{ backgroundColor: highlightTone === "removed" ? "#b91c1c" : "#15803d" }}
+              >
+                {highlightLabel}
+              </span>
+            ) : null}
           </button>
         ))}
       </div>
@@ -267,19 +286,33 @@ export default function AdminSpotChangesPage() {
                       />
                     ) : null}
                     {photosChanged ? (
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <PhotoStrip
-                          photoUrls={request.currentPhotoUrls}
-                          highlight={removedPhotos}
-                          label={t("currentPhotosLabel")}
-                          onOpen={setLightboxUrl}
-                        />
-                        <PhotoStrip
-                          photoUrls={proposedPhotos}
-                          highlight={addedPhotos}
-                          label={t("proposedPhotosLabel")}
-                          onOpen={setLightboxUrl}
-                        />
+                      <div className="flex flex-col gap-2">
+                        <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+                          {t("photosLabel")}
+                        </span>
+                        <p className="text-sm font-medium">
+                          {removedPhotos.size === 0 && addedPhotos.size === 0
+                            ? t("photosReordered")
+                            : t("photosSummary", { removed: removedPhotos.size, added: addedPhotos.size })}
+                        </p>
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          <PhotoStrip
+                            photoUrls={request.currentPhotoUrls}
+                            highlight={removedPhotos}
+                            highlightLabel={t("photoRemovedBadge")}
+                            highlightTone="removed"
+                            label={t("currentPhotosLabel")}
+                            onOpen={setLightboxUrl}
+                          />
+                          <PhotoStrip
+                            photoUrls={proposedPhotos}
+                            highlight={addedPhotos}
+                            highlightLabel={t("photoAddedBadge")}
+                            highlightTone="added"
+                            label={t("proposedPhotosLabel")}
+                            onOpen={setLightboxUrl}
+                          />
+                        </div>
                       </div>
                     ) : null}
                   </div>

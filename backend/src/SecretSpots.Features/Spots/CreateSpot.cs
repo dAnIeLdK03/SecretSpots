@@ -119,6 +119,9 @@ public static class CreateSpot
 
             db.Notifications.AddRange(notifications);
 
+            await AdminNotifier.AddForAllAdminsAsync(
+                db, NotificationType.SpotSubmittedForReview, spot.Id, spot.Name, cancellationToken);
+
             await db.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(SpotsLogMessages.SpotCreated, spot.Id, spot.Category, spot.CreatedByUserId);
