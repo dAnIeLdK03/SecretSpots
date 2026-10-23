@@ -77,33 +77,58 @@ public static class SpotsEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
+        // PUT/DELETE don't change the spot — they submit a change request an admin has to
+        // approve (see SubmitSpotEdit/SubmitSpotDeletion).
         group.MapPut("/{id:guid}", async (
-                Guid id, UpdateSpot.RequestBody body, ISender sender, CancellationToken cancellationToken) =>
+                Guid id, SubmitSpotEdit.RequestBody body, ISender sender, CancellationToken cancellationToken) =>
             {
-                var command = new UpdateSpot.Command(id, body.Name, body.Description, body.Category, body.PhotoUrls);
+                var command = new SubmitSpotEdit.Command(id, body.Name, body.Description, body.Category, body.PhotoUrls);
                 var result = await sender.Send(command, cancellationToken);
                 return result.ToOkOrProblem();
             })
             .RequireAuthorization()
-            .Produces<SpotResponse>(StatusCodes.Status200OK)
+            .Produces<SpotChangeRequestResponse>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError)
-            .Accepts<UpdateSpot.RequestBody>("application/json");
+            .Accepts<SubmitSpotEdit.RequestBody>("application/json");
 
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
             {
-                var result = await sender.Send(new DeleteSpot.Command(id), cancellationToken);
+                var result = await sender.Send(new SubmitSpotDeletion.Command(id), cancellationToken);
+                return result.ToOkOrProblem();
+            })
+            .RequireAuthorization()
+            .Produces<SpotChangeRequestResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+        group.MapGet("/{id:guid}/change-request", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new GetMySpotChangeRequest.Query(id), cancellationToken);
+                return result.ToOkOrProblem();
+            })
+            .RequireAuthorization()
+            .Produces<SpotChangeRequestResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapDelete("/{id:guid}/change-request", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new CancelSpotChangeRequest.Command(id), cancellationToken);
                 return result.IsSuccess ? Results.NoContent() : result.ToProblem();
             })
             .RequireAuthorization()
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status500InternalServerError);
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return app;
     }

@@ -1,6 +1,6 @@
 import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
 import type { ReportReason } from "@/lib/reportsApi";
-import type { SpotModerationStatus, SpotSearchResult } from "@/lib/spotsApi";
+import type { SpotCategory, SpotChangeRequestType, SpotModerationStatus, SpotSearchResult } from "@/lib/spotsApi";
 import type { UserRole } from "@/lib/userRole";
 
 export type ReportedContentType = "Spot" | "Comment";
@@ -134,4 +134,41 @@ export function approveSpot(id: string): Promise<void> {
 
 export function rejectSpot(id: string, reason: string): Promise<void> {
   return apiFetchVoid(`/admin/spots/${id}/reject`, { method: "POST", body: JSON.stringify({ reason }) });
+}
+
+export interface AdminSpotChangeRequest {
+  id: string;
+  type: SpotChangeRequestType;
+  createdAt: string;
+  requestedByUserId: string;
+  requestedByDisplayName: string;
+  spotId: string;
+  currentName: string;
+  currentDescription: string;
+  currentCategory: SpotCategory;
+  currentPhotoUrls: string[];
+  proposedName: string | null;
+  proposedDescription: string | null;
+  proposedCategory: SpotCategory | null;
+  proposedPhotoUrls: string[] | null;
+}
+
+export interface AdminSpotChangeRequestsPageResponse {
+  items: AdminSpotChangeRequest[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+}
+
+export function getAdminSpotChangeRequests(page: number, pageSize: number): Promise<AdminSpotChangeRequestsPageResponse> {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  return apiFetch<AdminSpotChangeRequestsPageResponse>(`/admin/spot-change-requests?${params.toString()}`);
+}
+
+export function approveSpotChangeRequest(id: string): Promise<void> {
+  return apiFetchVoid(`/admin/spot-change-requests/${id}/approve`, { method: "POST" });
+}
+
+export function rejectSpotChangeRequest(id: string, reason: string): Promise<void> {
+  return apiFetchVoid(`/admin/spot-change-requests/${id}/reject`, { method: "POST", body: JSON.stringify({ reason }) });
 }

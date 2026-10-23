@@ -610,6 +610,59 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                     b.ToTable("Spots");
                 });
 
+            modelBuilder.Entity("SecretSpots.Domain.SpotChangeRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ProposedCategory")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProposedDescription")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProposedName")
+                        .HasColumnType("text");
+
+                    b.Property<List<string>>("ProposedPhotoUrls")
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("RequestedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("ReviewedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ReviewedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SpotId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SpotId")
+                        .IsUnique()
+                        .HasFilter("\"Status\" = 0");
+
+                    b.HasIndex("Status", "CreatedAt");
+
+                    b.ToTable("SpotChangeRequests");
+                });
+
             modelBuilder.Entity("SecretSpots.Domain.User", b =>
                 {
                     b.Property<Guid>("Id")

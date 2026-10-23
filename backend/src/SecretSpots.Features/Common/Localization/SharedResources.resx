@@ -369,4 +369,13 @@
   <data name="Reports.AdminsCannotReport" xml:space="preserve">
     <value>Admin accounts can't report content.</value>
   </data>
+  <data name="Spots.NoChanges" xml:space="preserve">
+    <value>Nothing has changed — edit at least one field before submitting.</value>
+  </data>
+  <data name="Spots.ChangeRequestNotFound" xml:space="preserve">
+    <value>There is no change request for this spot.</value>
+  </data>
+  <data name="Admin.ChangeRequestNotFound" xml:space="preserve">
+    <value>Change request not found or already reviewed.</value>
+  </data>
 </root>

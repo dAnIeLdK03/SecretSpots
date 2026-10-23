@@ -470,6 +470,7 @@ app.MapReportsEndpoints();
 app.MapAdminReportsEndpoints();
 app.MapAdminUsersEndpoints();
 app.MapAdminSpotsEndpoints();
+app.MapAdminSpotChangeRequestsEndpoints();
 
 // Lets e2e tests read back what InMemoryEmailSender captured (see registration above) instead of
 // needing a real inbox — e.g. to pull the token out of a password-reset link. Gated on

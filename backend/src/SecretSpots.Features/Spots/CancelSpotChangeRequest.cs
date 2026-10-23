@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using SecretSpots.Domain;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -10,7 +11,7 @@ using SecretSpots.Features.Common.Storage;
 
 namespace SecretSpots.Features.Spots;
 
-public static class DeleteSpot
+public static class CancelSpotChangeRequest
 {
     public record Command(Guid SpotId) : IRequest<Result<Unit>>;
 
@@ -35,9 +36,22 @@ public static class DeleteSpot
                 return Result<Unit>.Failure(Error.Forbidden(SpotsMessageKeys.NotYourSpot, localizer));
             }
 
-            await SpotDeletionCleanup.DeleteAsync(db, photoStorage, spot, logger, cancellationToken);
+            var request = await db.SpotChangeRequests.SingleOrDefaultAsync(
+                r => r.SpotId == spot.Id && r.Status == SpotChangeRequestStatus.Pending, cancellationToken);
+            if (request is null)
+            {
+                return Result<Unit>.Failure(Error.NotFound(SpotsMessageKeys.ChangeRequestNotFound, localizer));
+            }
 
-            logger.LogInformation(SpotsLogMessages.SpotDeleted, spot.Id, userContext.UserId);
+            // Removed rather than given a "Cancelled" status — a withdrawn proposal has nothing
+            // worth keeping, and the admin never saw it as final.
+            db.SpotChangeRequests.Remove(request);
+            await db.SaveChangesAsync(cancellationToken);
+
+            await SpotChangeRequestPhotos.DeleteUnusedAsync(
+                photoStorage, request.ProposedPhotoUrls, spot.PhotoUrls, spot.Id, logger, cancellationToken);
+
+            logger.LogInformation(SpotsLogMessages.SpotChangeRequestCancelled, spot.Id, userContext.UserId);
 
             return Result<Unit>.Success(Unit.Value);
         }

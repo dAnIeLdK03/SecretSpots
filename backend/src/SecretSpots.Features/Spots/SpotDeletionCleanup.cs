@@ -6,7 +6,7 @@ using SecretSpots.Features.Common.Storage;
 
 namespace SecretSpots.Features.Spots;
 
-// Shared by DeleteSpot and DeleteAccount (deleting an account deletes every spot it created) —
+// Shared by ApproveSpotChangeRequest (an approved deletion request) and DeleteAccount (deleting an account deletes every spot it created) —
 // keeps the cascade logic in one place so the two can't drift apart.
 public static class SpotDeletionCleanup
 {
@@ -48,6 +48,16 @@ public static class SpotDeletionCleanup
         await db.Ratings.Where(r => r.SpotId == spot.Id).ExecuteDeleteAsync(cancellationToken);
         await db.SavedSpots.Where(s => s.SpotId == spot.Id).ExecuteDeleteAsync(cancellationToken);
         await db.CheckIns.Where(c => c.SpotId == spot.Id).ExecuteDeleteAsync(cancellationToken);
+
+        // Captured before the rows go — a still-pending edit may have uploaded photos that
+        // aren't on the spot, and nothing else would ever clean those up.
+        var proposedPhotoUrls = await db.SpotChangeRequests
+            .Where(r => r.SpotId == spot.Id && r.Status == SpotChangeRequestStatus.Pending && r.ProposedPhotoUrls != null)
+            .Select(r => r.ProposedPhotoUrls!)
+            .ToListAsync(cancellationToken);
+        await db.SpotChangeRequests.Where(r => r.SpotId == spot.Id).ExecuteDeleteAsync(cancellationToken);
+        await SpotChangeRequestPhotos.DeleteUnusedAsync(
+            photoStorage, proposedPhotoUrls.SelectMany(urls => urls), spot.PhotoUrls, spot.Id, logger, cancellationToken);
 
         // Best-effort — a storage hiccup shouldn't stop the spot/account deletion. Worst case an
         // orphaned object lingers in R2; it doesn't block anything.
