@@ -313,7 +313,6 @@
     "loadingMore": "Зареждане...",
     "empty": "Няма места.",
     "viewSpotLink": "Виж мястото",
-    "viewCreatorLink": "Виж автора",
     "approveButton": "Одобри",
     "rejectButton": "Отхвърли",
     "confirmRejectButton": "Потвърди отхвърлянето",
@@ -321,7 +320,27 @@
     "rejectionReasonLabel": "Причина за отхвърляне",
     "rejectionReasonPlaceholder": "Защо отхвърляте това място? Авторът ще види причината.",
     "unknownError": "Нещо се обърка. Опитайте отново.",
-    "scheduledDeletionLabel": "Ще бъде изтрито на {date}"
+    "scheduledDeletionLabel": "Ще бъде изтрито на {date}",
+    "subtitle": "Преглед, одобряване или отхвърляне на места, добавени от потребители",
+    "statusWithCount": "{status} ({count})",
+    "enlargePhoto": "Увеличи",
+    "viewOnMapLink": "Виж на картата",
+    "closeLabel": "Затвори",
+    "rejectModalTitle": "Отхвърляне на място",
+    "rejectModalDescription": "Изберете защо отхвърляте „{name}“. Авторът ще види причината.",
+    "rejectReasons": {
+      "inappropriate": "Обиден или неподходящ текст",
+      "lowQualityPhoto": "Лошо качество или нерелевантна снимка",
+      "spam": "Спам или несъществуващо място",
+      "duplicate": "Дублира съществуващо място",
+      "other": "Друго"
+    },
+    "rejectionDetailsPlaceholder": "Допълнителни подробности за автора (по избор)",
+    "restoreButton": "Възстанови",
+    "removeButton": "Премахни",
+    "removeModalTitle": "Премахване на място",
+    "removeModalDescription": "Изберете защо премахвате „{name}“. Авторът ще види причината.",
+    "confirmRemoveButton": "Потвърди премахването"
   },
   "SavedSpots": {
     "pageTitle": "Запазени места",

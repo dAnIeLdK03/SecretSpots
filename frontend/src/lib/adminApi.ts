@@ -1,6 +1,6 @@
 import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
 import type { ReportReason } from "@/lib/reportsApi";
-import type { SpotModerationStatus, SpotSearchPageResponse } from "@/lib/spotsApi";
+import type { SpotModerationStatus, SpotSearchResult } from "@/lib/spotsApi";
 import type { UserRole } from "@/lib/userRole";
 
 export type ReportedContentType = "Spot" | "Comment";
@@ -99,16 +99,33 @@ export function getAdminUser(id: string, signal?: AbortSignal): Promise<AdminUse
   return apiFetch<AdminUserDetails>(`/admin/users/${id}`, { signal });
 }
 
+export interface AdminSpot extends SpotSearchResult {
+  createdByDisplayName: string;
+}
+
+export interface AdminSpotsPageResponse {
+  items: AdminSpot[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+}
+
+export type AdminSpotCounts = Record<"pending" | "approved" | "rejected", number>;
+
 export function getAdminSpots(
   page: number,
   pageSize: number,
   filters: { status?: SpotModerationStatus; userId?: string },
   signal?: AbortSignal,
-): Promise<SpotSearchPageResponse> {
+): Promise<AdminSpotsPageResponse> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
   if (filters.status) params.set("status", filters.status);
   if (filters.userId) params.set("userId", filters.userId);
-  return apiFetch<SpotSearchPageResponse>(`/admin/spots?${params.toString()}`, { signal });
+  return apiFetch<AdminSpotsPageResponse>(`/admin/spots?${params.toString()}`, { signal });
+}
+
+export function getAdminSpotCounts(): Promise<AdminSpotCounts> {
+  return apiFetch<AdminSpotCounts>("/admin/spots/counts");
 }
 
 export function approveSpot(id: string): Promise<void> {
