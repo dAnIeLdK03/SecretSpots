@@ -278,6 +278,9 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                     b.Property<Guid?>("RelatedSpotId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("RelatedSpotName")
+                        .HasColumnType("text");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 

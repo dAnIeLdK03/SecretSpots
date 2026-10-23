@@ -372,7 +372,12 @@
     "confirmRejectButton": "Confirm rejection",
     "cancelButton": "Cancel",
     "rejectionReasonPlaceholder": "Why is this request being rejected? The creator will see this.",
-    "unknownError": "Something went wrong. Please try again."
+    "unknownError": "Something went wrong. Please try again.",
+    "photosLabel": "Photos",
+    "photosSummary": "{removed, plural, =0 {} one {# photo removed} other {# photos removed}}{removed, plural, =0 {} other {{added, plural, =0 {} other {, }}}}{added, plural, =0 {} one {# photo added} other {# photos added}}",
+    "photosReordered": "Photo order changed",
+    "photoRemovedBadge": "Removed",
+    "photoAddedBadge": "New"
   },
   "SavedSpots": {
     "pageTitle": "Saved spots",

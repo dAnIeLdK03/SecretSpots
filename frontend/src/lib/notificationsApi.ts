@@ -6,7 +6,18 @@ export type NotificationType =
   | "NewCommentOnYourSpot"
   | "NewRatingOnYourSpot"
   | "YourContentRemoved"
-  | "ReportSubmitted";
+  | "ReportSubmitted"
+  | "NewVisitorOnYourSpot"
+  | "SpotSubmittedForReview"
+  | "SpotChangeRequestSubmitted"
+  | "SpotApproved"
+  | "SpotRejected"
+  | "SpotRemoved"
+  | "SpotRestored"
+  | "SpotEditApproved"
+  | "SpotEditRejected"
+  | "SpotDeletionApproved"
+  | "SpotDeletionRejected";
 
 export interface NotificationResponse {
   id: string;

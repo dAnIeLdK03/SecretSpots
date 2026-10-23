@@ -13,6 +13,24 @@ const TYPE_ICONS: Record<NotificationType, string> = {
   NewRatingOnYourSpot: "⭐",
   YourContentRemoved: "🚫",
   ReportSubmitted: "🚩",
+  NewVisitorOnYourSpot: "👣",
+  SpotSubmittedForReview: "🆕",
+  SpotChangeRequestSubmitted: "✏️",
+  SpotApproved: "✅",
+  SpotRejected: "❌",
+  SpotRemoved: "🚫",
+  SpotRestored: "↩️",
+  SpotEditApproved: "✅",
+  SpotEditRejected: "❌",
+  SpotDeletionApproved: "🗑️",
+  SpotDeletionRejected: "❌",
+};
+
+// Admin notifications open the queue they belong to rather than the spot itself.
+const ADMIN_QUEUE_ROUTES: Partial<Record<NotificationType, string>> = {
+  ReportSubmitted: "/admin/reports",
+  SpotSubmittedForReview: "/admin/spots",
+  SpotChangeRequestSubmitted: "/admin/spot-changes",
 };
 
 interface NotificationItemProps {
@@ -27,8 +45,9 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
 
   function handleClick() {
     markAsRead(notification.id);
-    if (notification.type === "ReportSubmitted") {
-      router.push("/admin/reports");
+    const adminQueueRoute = ADMIN_QUEUE_ROUTES[notification.type];
+    if (adminQueueRoute) {
+      router.push(adminQueueRoute);
       onNavigate();
     } else if (notification.relatedSpotId) {
       router.push(`/spots/${notification.relatedSpotId}`);

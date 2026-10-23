@@ -378,4 +378,34 @@
   <data name="Admin.ChangeRequestNotFound" xml:space="preserve">
     <value>Change request not found or already reviewed.</value>
   </data>
+  <data name="Notifications.SpotSubmittedForReviewMessage" xml:space="preserve">
+    <value>New spot "{0}" is waiting for review.</value>
+  </data>
+  <data name="Notifications.SpotChangeRequestSubmittedMessage" xml:space="preserve">
+    <value>The creator of "{0}" requested a change.</value>
+  </data>
+  <data name="Notifications.SpotApprovedMessage" xml:space="preserve">
+    <value>Your spot "{0}" was approved.</value>
+  </data>
+  <data name="Notifications.SpotRejectedMessage" xml:space="preserve">
+    <value>Your spot "{0}" was rejected. Open it to see why.</value>
+  </data>
+  <data name="Notifications.SpotRemovedMessage" xml:space="preserve">
+    <value>Your spot "{0}" was removed by a moderator. Open it to see why.</value>
+  </data>
+  <data name="Notifications.SpotRestoredMessage" xml:space="preserve">
+    <value>Your spot "{0}" was restored.</value>
+  </data>
+  <data name="Notifications.SpotEditApprovedMessage" xml:space="preserve">
+    <value>Your edit to "{0}" was approved and is now live.</value>
+  </data>
+  <data name="Notifications.SpotEditRejectedMessage" xml:space="preserve">
+    <value>Your edit to "{0}" was rejected. Open the spot to see why.</value>
+  </data>
+  <data name="Notifications.SpotDeletionApprovedMessage" xml:space="preserve">
+    <value>Your spot "{0}" was deleted, as you requested.</value>
+  </data>
+  <data name="Notifications.SpotDeletionRejectedMessage" xml:space="preserve">
+    <value>Your request to delete "{0}" was rejected. Open the spot to see why.</value>
+  </data>
 </root>

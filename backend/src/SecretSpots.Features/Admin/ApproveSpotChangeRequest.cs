@@ -9,6 +9,7 @@ using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Storage;
 using SecretSpots.Features.Spots;
+using SecretSpots.Features.Notifications;
 
 namespace SecretSpots.Features.Admin;
 
@@ -42,6 +43,11 @@ public static class ApproveSpotChangeRequest
                 // SpotDeletionCleanup also deletes this request row along with everything else
                 // attached to the spot, so there's no status to update first.
                 await SpotDeletionCleanup.DeleteAsync(db, photoStorage, spot, logger, cancellationToken);
+
+                // Added after the cleanup (which unlinks notifications from the spot) and without
+                // a spot link — the spot is gone, only its name is left to show.
+                SpotOwnerNotifier.Add(db, NotificationType.SpotDeletionApproved, spot, relatedSpotId: null);
+                await db.SaveChangesAsync(cancellationToken);
                 logger.LogInformation(AdminLogMessages.SpotChangeRequestApproved, request.Id, request.Type, spot.Id, userContext.UserId);
                 return Result<Unit>.Success(Unit.Value);
             }
@@ -56,6 +62,8 @@ public static class ApproveSpotChangeRequest
             request.Status = SpotChangeRequestStatus.Approved;
             request.ReviewedByUserId = userContext.UserId;
             request.ReviewedAt = DateTimeOffset.UtcNow;
+
+            SpotOwnerNotifier.Add(db, NotificationType.SpotEditApproved, spot, spot.Id);
 
             await db.SaveChangesAsync(cancellationToken);
 

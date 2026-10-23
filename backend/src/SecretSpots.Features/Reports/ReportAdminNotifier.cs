@@ -1,6 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using SecretSpots.Domain;
 using SecretSpots.Features.Common.Persistence;
+using SecretSpots.Features.Notifications;
 
 namespace SecretSpots.Features.Reports;
 
@@ -13,27 +13,7 @@ internal static class ReportAdminNotifier
         Guid relatedSpotId,
         CancellationToken cancellationToken)
     {
-        var adminIds = await db.Users
-            .Where(u => u.Role == UserRole.Admin)
-            .Select(u => u.Id)
-            .ToListAsync(cancellationToken);
-
-        if (adminIds.Count == 0)
-        {
-            return;
-        }
-
-        var notifications = adminIds
-            .Select(adminId => new Notification
-            {
-                Id = Guid.NewGuid(),
-                UserId = adminId,
-                Type = NotificationType.ReportSubmitted,
-                RelatedSpotId = relatedSpotId,
-            })
-            .ToList();
-
-        db.Notifications.AddRange(notifications);
+        await AdminNotifier.AddForAllAdminsAsync(db, NotificationType.ReportSubmitted, relatedSpotId, null, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
     }
 }
