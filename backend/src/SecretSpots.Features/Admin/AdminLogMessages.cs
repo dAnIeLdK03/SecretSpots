@@ -8,5 +8,7 @@ internal static class AdminLogMessages
     public const string UserRoleChanged = "User {UserId} role changed to {Role} by admin {AdminUserId}.";
     public const string RolePromotionEmailSendFailed = "Failed to send Admin-promotion security email for user {UserId}.";
     public const string SpotApproved = "Spot {SpotId} approved by admin {AdminUserId}.";
+    public const string SpotChangeRequestApproved = "Change request {RequestId} ({Type}) for spot {SpotId} approved by admin {AdminUserId}.";
+    public const string SpotChangeRequestRejected = "Change request {RequestId} ({Type}) for spot {SpotId} rejected by admin {AdminUserId}.";
     public const string SpotRejected = "Spot {SpotId} rejected by admin {AdminUserId}.";
 }

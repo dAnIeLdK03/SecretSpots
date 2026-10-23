@@ -25,6 +25,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<EmailVerificationToken> EmailVerificationTokens => Set<EmailVerificationToken>();
     public DbSet<Report> Reports => Set<Report>();
     public DbSet<RoleChangeAudit> RoleChangeAudits => Set<RoleChangeAudit>();
+    public DbSet<SpotChangeRequest> SpotChangeRequests => Set<SpotChangeRequest>();
 
     public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         => await Database.BeginTransactionAsync(cancellationToken);
@@ -123,6 +124,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<RoleChangeAudit>()
             .HasIndex(a => new { a.UserId, a.CreatedAt });
+
+        // At most one Pending request per spot — a new submission replaces the pending one
+        // instead of queueing behind it (0 = SpotChangeRequestStatus.Pending).
+        modelBuilder.Entity<SpotChangeRequest>()
+            .HasIndex(r => r.SpotId)
+            .IsUnique()
+            .HasFilter("\"Status\" = 0");
+
+        modelBuilder.Entity<SpotChangeRequest>()
+            .HasIndex(r => new { r.Status, r.CreatedAt });
 
         base.OnModelCreating(modelBuilder);
     }

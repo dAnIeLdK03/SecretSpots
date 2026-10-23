@@ -25,6 +25,7 @@ public interface IAppDbContext
     DbSet<EmailVerificationToken> EmailVerificationTokens { get; }
     DbSet<Report> Reports { get; }
     DbSet<RoleChangeAudit> RoleChangeAudits { get; }
+    DbSet<SpotChangeRequest> SpotChangeRequests { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

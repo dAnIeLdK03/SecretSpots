@@ -15,7 +15,9 @@ using SecretSpots.Features.Common.Validation;
 
 namespace SecretSpots.Features.Spots;
 
-public static class UpdateSpot
+// The creator proposes an edit; nothing on the spot changes until an admin approves it
+// (ApproveSpotChangeRequest). A new submission replaces any request still pending for the spot.
+public static class SubmitSpotEdit
 {
     // SpotId comes from the route, not the request body — kept as a separate
     // record so the endpoint can bind RequestBody from JSON and Command from both.
@@ -28,7 +30,7 @@ public static class UpdateSpot
         string Name,
         string Description,
         SpotCategory Category,
-        IReadOnlyList<string> PhotoUrls) : IRequest<Result<SpotResponse>>;
+        IReadOnlyList<string> PhotoUrls) : IRequest<Result<SpotChangeRequestResponse>>;
 
     public class Validator : AbstractValidator<Command>
     {
@@ -61,67 +63,68 @@ public static class UpdateSpot
         IPhotoStorage photoStorage,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
-        : IRequestHandler<Command, Result<SpotResponse>>
+        : IRequestHandler<Command, Result<SpotChangeRequestResponse>>
     {
-        public async Task<Result<SpotResponse>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<SpotChangeRequestResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
             var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
             if (spot is null)
             {
-                return Result<SpotResponse>.Failure(Error.NotFound(SpotsMessageKeys.NotFound, localizer));
+                return Result<SpotChangeRequestResponse>.Failure(Error.NotFound(SpotsMessageKeys.NotFound, localizer));
             }
 
             if (spot.CreatedByUserId != userContext.UserId)
             {
-                return Result<SpotResponse>.Failure(Error.Forbidden(SpotsMessageKeys.NotYourSpot, localizer));
+                return Result<SpotChangeRequestResponse>.Failure(Error.Forbidden(SpotsMessageKeys.NotYourSpot, localizer));
             }
 
-            var removedPhotoUrls = spot.PhotoUrls.Except(command.PhotoUrls).ToList();
+            var name = command.Name.Trim();
+            var description = command.Description.Trim();
+            var photoUrls = command.PhotoUrls.ToList();
 
-            spot.Name = command.Name.Trim();
-            spot.Description = command.Description.Trim();
-            spot.Category = command.Category;
-            spot.PhotoUrls = command.PhotoUrls.ToList();
+            if (name == spot.Name
+                && description == spot.Description
+                && command.Category == spot.Category
+                && photoUrls.SequenceEqual(spot.PhotoUrls))
+            {
+                return Result<SpotChangeRequestResponse>.Failure(Error.BadRequest(SpotsMessageKeys.NoChanges, localizer));
+            }
+
+            var request = await db.SpotChangeRequests.SingleOrDefaultAsync(
+                r => r.SpotId == spot.Id && r.Status == SpotChangeRequestStatus.Pending, cancellationToken);
+
+            var replacedPhotoUrls = request?.ProposedPhotoUrls;
+
+            if (request is null)
+            {
+                request = new SpotChangeRequest
+                {
+                    Id = Guid.NewGuid(),
+                    SpotId = spot.Id,
+                    RequestedByUserId = userContext.UserId,
+                };
+                db.SpotChangeRequests.Add(request);
+            }
+            else
+            {
+                // Replacing the pending request — it goes back to the end of the review queue.
+                request.CreatedAt = DateTimeOffset.UtcNow;
+            }
+
+            request.Type = SpotChangeRequestType.Edit;
+            request.ProposedName = name;
+            request.ProposedDescription = description;
+            request.ProposedCategory = command.Category;
+            request.ProposedPhotoUrls = photoUrls;
 
             await db.SaveChangesAsync(cancellationToken);
 
-            // Best-effort — a storage hiccup shouldn't stop the update from saving. Worst case
-            // an orphaned object lingers in R2; it doesn't block anything (same as DeleteSpot).
-            foreach (var photoUrl in removedPhotoUrls)
-            {
-                try
-                {
-                    await photoStorage.DeleteAsync(photoUrl, cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogWarning(ex, SpotsLogMessages.SpotPhotoDeleteFailed, photoUrl, spot.Id);
-                }
-            }
+            await SpotChangeRequestPhotos.DeleteUnusedAsync(
+                photoStorage, replacedPhotoUrls, spot.PhotoUrls.Concat(photoUrls), spot.Id, logger, cancellationToken);
 
-            logger.LogInformation(SpotsLogMessages.SpotUpdated, spot.Id, userContext.UserId);
+            logger.LogInformation(SpotsLogMessages.SpotEditRequested, spot.Id, userContext.UserId);
 
-            var creatorDisplayName = await db.Users
-                .Where(u => u.Id == spot.CreatedByUserId)
-                .Select(u => u.DisplayName)
-                .SingleOrDefaultAsync(cancellationToken) ?? string.Empty;
-
-            return Result<SpotResponse>.Success(new SpotResponse(
-                spot.Id,
-                spot.Name,
-                spot.Description,
-                spot.Category,
-                spot.PhotoUrls,
-                spot.Location.Y,
-                spot.Location.X,
-                spot.CreatedByUserId,
-                creatorDisplayName,
-                spot.AverageRating,
-                spot.RatingsCount,
-                spot.CreatedAt,
-                spot.ModerationStatus,
-                spot.RejectionReason,
-                spot.ScheduledDeletionAt));
+            return Result<SpotChangeRequestResponse>.Success(SpotChangeRequestResponse.From(request));
         }
     }
 }

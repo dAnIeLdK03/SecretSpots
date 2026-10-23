@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { updateSpot } from "@/lib/spotsApi";
-import type { SpotCategory, SpotResponse } from "@/lib/spotsApi";
+import type { SpotCategory, SpotChangeRequest, SpotResponse } from "@/lib/spotsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { MultiPhotoUpload } from "@/components/MultiPhotoUpload";
 import { CategorySelect } from "@/components/CategorySelect";
@@ -13,10 +13,11 @@ import { useModalDismiss } from "@/hooks/useModalDismiss";
 interface EditSpotModalProps {
     spot: SpotResponse;
     onClose: () => void;
-    onUpdate: (spot: SpotResponse) => void;
+    // The edit isn't applied yet — it's a change request waiting for an admin.
+    onSubmitted: (request: SpotChangeRequest) => void;
 }
 
-export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
+export function EditSpotModal({ spot, onClose, onSubmitted }: EditSpotModalProps) {
     const t = useTranslations("Spots");
     const [name, setName] = useState(spot.name);
     const [description, setDescription] = useState(spot.description);
@@ -31,8 +32,8 @@ export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
         setError(null);
         setSubmitting(true);
         try {
-            const updated = await updateSpot(spot.id, { name, description, category, photoUrls });
-            onUpdate(updated);
+            const request = await updateSpot(spot.id, { name, description, category, photoUrls });
+            onSubmitted(request);
         } catch (err) {
             setError(getErrorMessage(err, t("unknownError")));
             setSubmitting(false);
@@ -50,7 +51,8 @@ export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
                 className="w-full max-w-sm rounded-lg p-6 outline-none"
                 style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
             >
-                <h2 className="mb-4 text-lg font-semibold">{t("editTitle")}</h2>
+                <h2 className="mb-1 text-lg font-semibold">{t("editTitle")}</h2>
+                <p className="mb-4 text-xs" style={{ color: "var(--fieldmap-dim)" }}>{t("editReviewNotice")}</p>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <label className="flex flex-col gap-1">
                         <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>{t("nameLabel")}</span>
@@ -92,7 +94,7 @@ export function EditSpotModal({ spot, onClose, onUpdate }: EditSpotModalProps) {
                             className="rounded px-4 py-2 disabled:opacity-50"
                             style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
                         >
-                            {submitting ? t("saving") : t("saveButton")}
+                            {submitting ? t("saving") : t("submitForReviewButton")}
                         </button>
                     </div>
                 </form>

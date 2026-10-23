@@ -1,0 +1,364 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { ArrowRight, Check, ExternalLink, FilePenLine, Trash2, User, X } from "lucide-react";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { useAuthStore } from "@/store/useAuthStore";
+import { Link, useRouter } from "@/i18n/navigation";
+import { getErrorMessage } from "@/lib/apiClient";
+import { approveSpotChangeRequest, getAdminSpotChangeRequests, rejectSpotChangeRequest } from "@/lib/adminApi";
+import type { AdminSpotChangeRequest } from "@/lib/adminApi";
+import { formatRelativeTime } from "@/lib/relativeTime";
+import { UserRole } from "@/lib/userRole";
+import { ImageLightbox } from "@/components/ImageLightbox";
+
+const PAGE_SIZE = 20;
+// Mirrors RejectSpotChangeRequest.MaxReasonLength on the backend.
+const MAX_REJECTION_REASON_LENGTH = 500;
+
+function PhotoStrip({
+  photoUrls,
+  highlight,
+  label,
+  onOpen,
+}: {
+  photoUrls: string[];
+  // Photos that differ from the other side: removed ones on the current strip, added on the proposed.
+  highlight: Set<string>;
+  label: string;
+  onOpen: (url: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+        {label}
+      </span>
+      <div className="flex flex-wrap gap-2">
+        {photoUrls.map((url) => (
+          <button
+            key={url}
+            type="button"
+            onClick={() => onOpen(url)}
+            className="h-16 w-16 overflow-hidden rounded-md border-2"
+            style={{ borderColor: highlight.has(url) ? "var(--fieldmap-trail)" : "transparent" }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={url} alt="" className="h-full w-full object-cover" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ChangedField({ label, from, to }: { label: string; from: string; to: string }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+        {label}
+      </span>
+      <div className="grid grid-cols-1 items-start gap-2 text-sm sm:grid-cols-[1fr_auto_1fr]">
+        <p className="break-words line-through" style={{ color: "var(--fieldmap-dim)" }}>
+          {from}
+        </p>
+        <ArrowRight size={14} className="hidden sm:block" style={{ color: "var(--fieldmap-dim)" }} />
+        <p className="font-medium break-words">{to}</p>
+      </div>
+    </div>
+  );
+}
+
+export default function AdminSpotChangesPage() {
+  const t = useTranslations("AdminSpotChanges");
+  const tSpots = useTranslations("Spots");
+  const locale = useLocale();
+  const router = useRouter();
+  const isAuthenticated = useRequireAuth();
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = isAuthenticated && user?.role === UserRole.Admin;
+
+  const [items, setItems] = useState<AdminSpotChangeRequest[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const [status, setStatus] = useState<"loading" | "idle" | "loadingMore">("loading");
+  const [error, setError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isAuthenticated && user && user.role !== UserRole.Admin) {
+      router.replace("/");
+    }
+  }, [isAuthenticated, user, router]);
+
+  const fetchPage = useCallback(
+    (pageNum: number, append: boolean) => {
+      setStatus(append ? "loadingMore" : "loading");
+      return getAdminSpotChangeRequests(pageNum, PAGE_SIZE)
+        .then((result) => {
+          setItems((prev) => (append ? [...prev, ...result.items] : result.items));
+          setTotalCount(result.totalCount);
+          setPage(pageNum);
+          setError(null);
+        })
+        .catch((err) => setError(getErrorMessage(err, t("unknownError"))))
+        .finally(() => setStatus("idle"));
+    },
+    [t],
+  );
+
+  useEffect(() => {
+    if (isAdmin) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- kicking off the initial fetch on mount, no user event to attach to
+      void fetchPage(1, false);
+    }
+  }, [isAdmin, fetchPage]);
+
+  function removeFromList(id: string) {
+    setItems((prev) => prev.filter((r) => r.id !== id));
+    setTotalCount((prev) => prev - 1);
+  }
+
+  async function handleApprove(request: AdminSpotChangeRequest) {
+    if (request.type === "Deletion" && !window.confirm(t("approveDeletionConfirm", { name: request.currentName }))) return;
+
+    setBusyId(request.id);
+    try {
+      await approveSpotChangeRequest(request.id);
+      removeFromList(request.id);
+    } catch (err) {
+      setError(getErrorMessage(err, t("unknownError")));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleReject(id: string) {
+    setBusyId(id);
+    try {
+      await rejectSpotChangeRequest(id, rejectionReason.trim());
+      removeFromList(id);
+      setRejectingId(null);
+    } catch (err) {
+      setError(getErrorMessage(err, t("unknownError")));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  if (!isAdmin) {
+    return null;
+  }
+
+  const hasMore = items.length < totalCount;
+
+  return (
+    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 md:p-8">
+      <div className="border-b pb-4" style={{ borderColor: "var(--fieldmap-contour)" }}>
+        <h1 className="flex items-center gap-2 text-2xl font-semibold">
+          <FilePenLine size={24} style={{ color: "var(--fieldmap-trail)" }} />
+          {t("title")}
+          {status !== "loading" ? (
+            <span className="text-base font-normal" style={{ color: "var(--fieldmap-dim)" }}>
+              ({totalCount})
+            </span>
+          ) : null}
+        </h1>
+        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+          {t("subtitle")}
+        </p>
+      </div>
+
+      {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+
+      {status === "loading" ? (
+        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+          {t("loading")}
+        </p>
+      ) : items.length === 0 ? (
+        <p className="rounded-xl p-8 text-center text-sm" style={{ backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-dim)" }}>
+          {t("empty")}
+        </p>
+      ) : (
+        <ul className="flex flex-col gap-4">
+          {items.map((request) => {
+            const busy = busyId === request.id;
+            const isDeletion = request.type === "Deletion";
+            const proposedPhotos = request.proposedPhotoUrls ?? [];
+            const photosChanged =
+              !isDeletion &&
+              (proposedPhotos.length !== request.currentPhotoUrls.length ||
+                proposedPhotos.some((url, i) => url !== request.currentPhotoUrls[i]));
+            const removedPhotos = new Set(request.currentPhotoUrls.filter((url) => !proposedPhotos.includes(url)));
+            const addedPhotos = new Set(proposedPhotos.filter((url) => !request.currentPhotoUrls.includes(url)));
+
+            return (
+              <li
+                key={request.id}
+                className="flex flex-col gap-4 rounded-xl border p-4"
+                style={{
+                  backgroundColor: "var(--fieldmap-card)",
+                  borderColor: isDeletion ? "rgba(239, 68, 68, 0.35)" : "var(--fieldmap-contour)",
+                  opacity: busy ? 0.6 : 1,
+                }}
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {isDeletion ? (
+                      <span className="flex items-center gap-1 rounded border border-red-300 bg-red-50 px-2 py-0.5 font-semibold text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
+                        <Trash2 size={12} />
+                        {t("typeDeletion")}
+                      </span>
+                    ) : (
+                      <span
+                        className="flex items-center gap-1 rounded px-2 py-0.5 font-semibold"
+                        style={{ backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-ink)" }}
+                      >
+                        <FilePenLine size={12} />
+                        {t("typeEdit")}
+                      </span>
+                    )}
+                    <Link href={`/spots/${request.spotId}`} className="flex items-center gap-1 font-semibold hover:underline">
+                      {request.currentName}
+                      <ExternalLink size={12} />
+                    </Link>
+                    <span style={{ color: "var(--fieldmap-dim)" }}>• {formatRelativeTime(request.createdAt, locale)}</span>
+                  </div>
+                  <Link
+                    href={`/admin/users/${request.requestedByUserId}`}
+                    className="flex items-center gap-1 hover:underline"
+                    style={{ color: "var(--fieldmap-dim)" }}
+                  >
+                    <User size={12} />
+                    {request.requestedByDisplayName}
+                  </Link>
+                </div>
+
+                {isDeletion ? (
+                  <div className="flex flex-col gap-3">
+                    <p className="text-sm">{t("deletionDescription")}</p>
+                    <PhotoStrip
+                      photoUrls={request.currentPhotoUrls}
+                      highlight={new Set()}
+                      label={t("currentPhotosLabel")}
+                      onOpen={setLightboxUrl}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {request.proposedName !== request.currentName ? (
+                      <ChangedField label={t("nameLabel")} from={request.currentName} to={request.proposedName ?? ""} />
+                    ) : null}
+                    {request.proposedDescription !== request.currentDescription ? (
+                      <ChangedField
+                        label={t("descriptionLabel")}
+                        from={request.currentDescription}
+                        to={request.proposedDescription ?? ""}
+                      />
+                    ) : null}
+                    {request.proposedCategory !== request.currentCategory && request.proposedCategory ? (
+                      <ChangedField
+                        label={t("categoryLabel")}
+                        from={tSpots(`category.${request.currentCategory}`)}
+                        to={tSpots(`category.${request.proposedCategory}`)}
+                      />
+                    ) : null}
+                    {photosChanged ? (
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <PhotoStrip
+                          photoUrls={request.currentPhotoUrls}
+                          highlight={removedPhotos}
+                          label={t("currentPhotosLabel")}
+                          onOpen={setLightboxUrl}
+                        />
+                        <PhotoStrip
+                          photoUrls={proposedPhotos}
+                          highlight={addedPhotos}
+                          label={t("proposedPhotosLabel")}
+                          onOpen={setLightboxUrl}
+                        />
+                      </div>
+                    ) : null}
+                  </div>
+                )}
+
+                <div className="border-t pt-3" style={{ borderColor: "var(--fieldmap-contour)" }}>
+                  {rejectingId === request.id ? (
+                    <div className="flex flex-col gap-2">
+                      <textarea
+                        value={rejectionReason}
+                        onChange={(e) => setRejectionReason(e.target.value)}
+                        maxLength={MAX_REJECTION_REASON_LENGTH}
+                        placeholder={t("rejectionReasonPlaceholder")}
+                        rows={3}
+                        autoFocus
+                        className="rounded-lg border px-3 py-2 text-sm"
+                        style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+                      />
+                      <div className="flex flex-wrap justify-end gap-2 text-sm">
+                        <button
+                          onClick={() => setRejectingId(null)}
+                          disabled={busy}
+                          className="rounded-lg px-4 py-2 disabled:opacity-50"
+                          style={{ color: "var(--fieldmap-dim)" }}
+                        >
+                          {t("cancelButton")}
+                        </button>
+                        <button
+                          onClick={() => handleReject(request.id)}
+                          disabled={busy || rejectionReason.trim().length === 0}
+                          className="rounded-lg bg-red-700 px-4 py-2 font-medium text-white hover:bg-red-600 disabled:opacity-50"
+                        >
+                          {t("confirmRejectButton")}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap justify-end gap-2 text-sm">
+                      <button
+                        onClick={() => {
+                          setRejectingId(request.id);
+                          setRejectionReason("");
+                        }}
+                        disabled={busy}
+                        className="flex items-center gap-2 rounded-lg border border-red-300 bg-red-50 px-4 py-2 font-medium text-red-700 transition hover:bg-red-100 disabled:opacity-50 dark:border-red-800 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-950/70"
+                      >
+                        <X size={16} />
+                        {t("rejectButton")}
+                      </button>
+                      <button
+                        onClick={() => handleApprove(request)}
+                        disabled={busy}
+                        className="flex items-center gap-2 rounded-lg px-4 py-2 font-medium shadow-sm transition hover:opacity-90 disabled:opacity-50"
+                        style={{ backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }}
+                      >
+                        <Check size={16} />
+                        {isDeletion ? t("approveDeletionButton") : t("approveEditButton")}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {hasMore ? (
+        <button
+          onClick={() => fetchPage(page + 1, true)}
+          disabled={status === "loadingMore"}
+          className="self-center rounded-lg border px-5 py-2 text-sm disabled:opacity-50"
+          style={{ borderColor: "var(--fieldmap-contour)" }}
+        >
+          {status === "loadingMore" ? t("loadingMore") : t("loadMore")}
+        </button>
+      ) : null}
+
+      {lightboxUrl ? <ImageLightbox src={lightboxUrl} alt="" onClose={() => setLightboxUrl(null)} /> : null}
+    </div>
+  );
+}

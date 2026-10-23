@@ -369,4 +369,13 @@
   <data name="Reports.AdminsCannotReport" xml:space="preserve">
     <value>Администраторските акаунти не могат да подават репорти.</value>
   </data>
+  <data name="Spots.NoChanges" xml:space="preserve">
+    <value>Нищо не е променено — редактирайте поне едно поле, преди да изпратите.</value>
+  </data>
+  <data name="Spots.ChangeRequestNotFound" xml:space="preserve">
+    <value>Няма заявка за промяна на това място.</value>
+  </data>
+  <data name="Admin.ChangeRequestNotFound" xml:space="preserve">
+    <value>Заявката за промяна не е намерена или вече е прегледана.</value>
+  </data>
 </root>

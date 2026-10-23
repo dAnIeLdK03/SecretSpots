@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using SecretSpots.Domain;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -10,9 +11,11 @@ using SecretSpots.Features.Common.Storage;
 
 namespace SecretSpots.Features.Spots;
 
-public static class DeleteSpot
+// The creator asks for their spot to be deleted; an admin decides (ApproveSpotChangeRequest
+// runs SpotDeletionCleanup). Replaces any request still pending for the spot, including an edit.
+public static class SubmitSpotDeletion
 {
-    public record Command(Guid SpotId) : IRequest<Result<Unit>>;
+    public record Command(Guid SpotId) : IRequest<Result<SpotChangeRequestResponse>>;
 
     public class Handler(
         IAppDbContext db,
@@ -20,26 +23,55 @@ public static class DeleteSpot
         IPhotoStorage photoStorage,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
-        : IRequestHandler<Command, Result<Unit>>
+        : IRequestHandler<Command, Result<SpotChangeRequestResponse>>
     {
-        public async Task<Result<Unit>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<SpotChangeRequestResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
             var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
             if (spot is null)
             {
-                return Result<Unit>.Failure(Error.NotFound(SpotsMessageKeys.NotFound, localizer));
+                return Result<SpotChangeRequestResponse>.Failure(Error.NotFound(SpotsMessageKeys.NotFound, localizer));
             }
 
             if (spot.CreatedByUserId != userContext.UserId)
             {
-                return Result<Unit>.Failure(Error.Forbidden(SpotsMessageKeys.NotYourSpot, localizer));
+                return Result<SpotChangeRequestResponse>.Failure(Error.Forbidden(SpotsMessageKeys.NotYourSpot, localizer));
             }
 
-            await SpotDeletionCleanup.DeleteAsync(db, photoStorage, spot, logger, cancellationToken);
+            var request = await db.SpotChangeRequests.SingleOrDefaultAsync(
+                r => r.SpotId == spot.Id && r.Status == SpotChangeRequestStatus.Pending, cancellationToken);
 
-            logger.LogInformation(SpotsLogMessages.SpotDeleted, spot.Id, userContext.UserId);
+            var replacedPhotoUrls = request?.ProposedPhotoUrls;
 
-            return Result<Unit>.Success(Unit.Value);
+            if (request is null)
+            {
+                request = new SpotChangeRequest
+                {
+                    Id = Guid.NewGuid(),
+                    SpotId = spot.Id,
+                    RequestedByUserId = userContext.UserId,
+                };
+                db.SpotChangeRequests.Add(request);
+            }
+            else
+            {
+                request.CreatedAt = DateTimeOffset.UtcNow;
+            }
+
+            request.Type = SpotChangeRequestType.Deletion;
+            request.ProposedName = null;
+            request.ProposedDescription = null;
+            request.ProposedCategory = null;
+            request.ProposedPhotoUrls = null;
+
+            await db.SaveChangesAsync(cancellationToken);
+
+            await SpotChangeRequestPhotos.DeleteUnusedAsync(
+                photoStorage, replacedPhotoUrls, spot.PhotoUrls, spot.Id, logger, cancellationToken);
+
+            logger.LogInformation(SpotsLogMessages.SpotDeletionRequested, spot.Id, userContext.UserId);
+
+            return Result<SpotChangeRequestResponse>.Success(SpotChangeRequestResponse.From(request));
         }
     }
 }

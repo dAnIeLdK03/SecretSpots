@@ -15,6 +15,8 @@ public static class SpotsMessageKeys
     public const string RadiusOutOfRange = "Spots.RadiusOutOfRange";
     public const string NotFound = "Spots.NotFound";
     public const string NotYourSpot = "Spots.NotYourSpot";
+    public const string NoChanges = "Spots.NoChanges";
+    public const string ChangeRequestNotFound = "Spots.ChangeRequestNotFound";
     public const string PageOutOfRange = "Spots.PageOutOfRange";
     public const string PageSizeOutOfRange = "Spots.PageSizeOutOfRange";
     public const string AdminsCannotCreateSpots = "Spots.AdminsCannotCreateSpots";

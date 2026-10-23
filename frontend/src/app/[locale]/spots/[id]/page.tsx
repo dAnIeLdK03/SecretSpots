@@ -5,8 +5,8 @@ import { useParams } from "next/navigation";
 import { useFormatter, useTranslations, useLocale } from "next-intl";
 import { Clock, MapPin, Navigation, Tag } from "lucide-react";
 import { DirectionsLinks } from "@/components/DirectionsLinks";
-import { deleteSpot, getSpot } from "@/lib/spotsApi";
-import type { SpotResponse } from "@/lib/spotsApi";
+import { cancelSpotChangeRequest, deleteSpot, getMySpotChangeRequest, getSpot } from "@/lib/spotsApi";
+import type { SpotChangeRequest, SpotResponse } from "@/lib/spotsApi";
 import { ApiError, getErrorMessage } from "@/lib/apiClient";
 import { formatRelativeTime } from "@/lib/relativeTime";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -21,7 +21,7 @@ import type { ReportReason } from "@/lib/reportsApi";
 import { SaveSpotButton } from "@/components/SaveSpotButton";
 import { SpotRatingInput } from "@/components/SpotRatingInput";
 import { SpotRatingSummary } from "@/components/SpotRatingSummary";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { trackEvent } from "@/lib/analytics";
 
@@ -37,7 +37,6 @@ function SpotDetailContent({ id }: { id: string }) {
   const tAuth = useTranslations("Auth");
   const locale = useLocale();
   const format = useFormatter();
-  const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const authStatus = useAuthStore((state) => state.status);
   const [state, setState] = useState<LoadState>({ status: "loading" });
@@ -47,7 +46,12 @@ function SpotDetailContent({ id }: { id: string }) {
   const [showReportModal, setShowReportModal] = useState(false);
   const [showReportLoginPrompt, setShowReportLoginPrompt] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [cancellingRequest, setCancellingRequest] = useState(false);
+  const [changeRequest, setChangeRequest] = useState<SpotChangeRequest | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const ownerId = state.status === "success" ? state.spot.createdByUserId : null;
+  const viewerIsOwner = authStatus === "authenticated" && ownerId !== null && user?.id === ownerId;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -68,6 +72,20 @@ function SpotDetailContent({ id }: { id: string }) {
 
     return () => controller.abort();
   }, [id, t]);
+
+  // Only the creator has change requests to see; a 404 just means there's never been one.
+  useEffect(() => {
+    if (!viewerIsOwner) return;
+    const controller = new AbortController();
+
+    getMySpotChangeRequest(id, controller.signal)
+      .then(setChangeRequest)
+      .catch(() => {
+        if (!controller.signal.aborted) setChangeRequest(null);
+      });
+
+    return () => controller.abort();
+  }, [id, viewerIsOwner]);
 
   if (state.status === "loading") {
     return (
@@ -109,14 +127,29 @@ function SpotDetailContent({ id }: { id: string }) {
     setDeleting(true);
     setError(null);
     try {
-      await deleteSpot(spot.id);
-      trackEvent("spot_deleted", { spotId: spot.id });
-      router.push("/map");
+      setChangeRequest(await deleteSpot(spot.id));
+      trackEvent("spot_deletion_requested", { spotId: spot.id });
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
+    } finally {
       setDeleting(false);
     }
   }
+
+  async function handleCancelChangeRequest() {
+    setCancellingRequest(true);
+    setError(null);
+    try {
+      await cancelSpotChangeRequest(spot.id);
+      setChangeRequest(null);
+    } catch (err) {
+      setError(getErrorMessage(err, t("unknownError")));
+    } finally {
+      setCancellingRequest(false);
+    }
+  }
+
+  const pendingRequest = changeRequest?.status === "Pending" ? changeRequest : null;
 
   function handleCheckInClick() {
     if (authStatus !== "authenticated") {
@@ -166,6 +199,33 @@ function SpotDetailContent({ id }: { id: string }) {
                   {t("scheduledDeletionNotice", {
                     date: format.dateTime(new Date(spot.scheduledDeletionAt), { dateStyle: "medium", timeStyle: "short" }),
                   })}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+          {isOwner && pendingRequest ? (
+            <div
+              className="flex flex-wrap items-center justify-between gap-2 rounded border px-3 py-2 text-sm"
+              style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+            >
+              <p>{pendingRequest.type === "Deletion" ? t("deletionPendingNotice") : t("editPendingNotice")}</p>
+              <button
+                onClick={handleCancelChangeRequest}
+                disabled={cancellingRequest}
+                className="text-sm underline disabled:opacity-50"
+              >
+                {t("cancelChangeRequestButton")}
+              </button>
+            </div>
+          ) : null}
+          {isOwner && changeRequest?.status === "Rejected" ? (
+            <div className="rounded border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950 px-3 py-2 text-sm text-red-700 dark:text-red-400">
+              <p className="font-medium">
+                {changeRequest.type === "Deletion" ? t("deletionRejectedNotice") : t("editRejectedNotice")}
+              </p>
+              {changeRequest.rejectionReason ? (
+                <p>
+                  {t("rejectionReasonLabel")}: {changeRequest.rejectionReason}
                 </p>
               ) : null}
             </div>
@@ -266,7 +326,7 @@ function SpotDetailContent({ id }: { id: string }) {
                   </button>
                   <button
                     onClick={handleDeleteClick}
-                    disabled={deleting}
+                    disabled={deleting || pendingRequest?.type === "Deletion"}
                     className="rounded border border-red-300 dark:border-red-800 px-4 py-2 text-sm text-red-700 dark:text-red-400 disabled:opacity-50"
                   >
                     {t("deleteButton")}
@@ -312,8 +372,8 @@ function SpotDetailContent({ id }: { id: string }) {
         <EditSpotModal
           spot={spot}
           onClose={() => setShowEditModal(false)}
-          onUpdate={(updated) => {
-            setState({ status: "success", spot: updated });
+          onSubmitted={(request) => {
+            setChangeRequest(request);
             setShowEditModal(false);
           }}
         />
