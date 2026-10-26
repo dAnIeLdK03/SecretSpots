@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { formatRelativeTime } from "@/lib/relativeTime";
 import type { SpotCategory, SpotModerationStatus } from "@/lib/spotsApi";
 import { CategoryIcon } from "./CategoryIcon";
+import { ModerationStatusBadge } from "./ModerationStatusBadge";
 
 interface FeaturedSpotCardProps {
   spot: {
@@ -63,9 +64,7 @@ export function FeaturedSpotCard({ spot, moderationStatus }: FeaturedSpotCardPro
         </p>
         {moderationStatus === "Rejected" ? (
           <div className="mt-2 flex flex-col gap-1 text-xs text-red-700 dark:text-red-400">
-            <span className="self-start rounded-full border border-red-300 dark:border-red-800 px-2 py-0.5 font-semibold">
-              {t("moderationStatusRejected")}
-            </span>
+            <ModerationStatusBadge status="Rejected" className="self-start" />
             {spot.rejectionReason ? (
               <span className="line-clamp-2 break-words">
                 {t("rejectionReasonLabel")}: {spot.rejectionReason}
@@ -80,12 +79,7 @@ export function FeaturedSpotCard({ spot, moderationStatus }: FeaturedSpotCardPro
             ) : null}
           </div>
         ) : moderationStatus === "Pending" ? (
-          <span
-            className="mt-2 self-start rounded-full px-2 py-0.5 text-xs font-semibold"
-            style={{ backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-ink)" }}
-          >
-            {t("moderationStatusPending")}
-          </span>
+          <ModerationStatusBadge status="Pending" className="mt-2 self-start" />
         ) : null}
         {spot.distanceKm !== undefined ? (
           <p className="mt-2 text-xs" style={{ color: "var(--fieldmap-dim)" }}>

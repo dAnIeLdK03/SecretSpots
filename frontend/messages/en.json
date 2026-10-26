@@ -144,8 +144,6 @@
     "directionsButton": "Take me there",
     "rejectedNotice": "This spot was rejected by a moderator and is hidden from other users.",
     "rejectionReasonLabel": "Reason",
-    "moderationStatusRejected": "Rejected",
-    "moderationStatusPending": "Pending review",
     "scheduledDeletionNotice": "It will be deleted on {date}.",
     "editReviewNotice": "Your changes will be applied after an admin reviews them.",
     "submitForReviewButton": "Submit for review",
@@ -153,7 +151,12 @@
     "deletionPendingNotice": "Your deletion request is waiting for admin review.",
     "cancelChangeRequestButton": "Cancel request",
     "editRejectedNotice": "An admin rejected your last edit.",
-    "deletionRejectedNotice": "An admin rejected your deletion request."
+    "deletionRejectedNotice": "An admin rejected your deletion request.",
+    "moderationStatus": {
+      "Pending": "Pending review",
+      "Approved": "Approved",
+      "Rejected": "Rejected"
+    }
   },
   "PhotoUpload": {
     "uploading": "Uploading...",

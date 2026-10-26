@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { CSSProperties } from "react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { Check, ExternalLink, MapPin, RotateCcw, Search, ShieldCheck, Trash2, User, X, ZoomIn } from "lucide-react";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
@@ -16,6 +15,7 @@ import { formatRelativeTime } from "@/lib/relativeTime";
 import { UserRole } from "@/lib/userRole";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { ImageLightbox } from "@/components/ImageLightbox";
+import { ModerationStatusBadge } from "@/components/ModerationStatusBadge";
 import { RejectSpotModal } from "@/components/RejectSpotModal";
 
 const PAGE_SIZE = 20;
@@ -27,11 +27,6 @@ const STATUS_COUNT_KEYS: Record<SpotModerationStatus, keyof AdminSpotCounts> = {
   Rejected: "rejected",
 };
 
-const STATUS_BADGE_STYLES: Record<SpotModerationStatus, CSSProperties> = {
-  Pending: { backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-ink)" },
-  Approved: { backgroundColor: "var(--fieldmap-gold)", color: "var(--fieldmap-ink)" },
-  Rejected: { backgroundColor: "rgba(185, 28, 28, 0.15)", color: "#ef4444", border: "1px solid rgba(239, 68, 68, 0.35)" },
-};
 
 export default function AdminSpotsPage() {
   const t = useTranslations("AdminSpots");
@@ -253,9 +248,7 @@ export default function AdminSpotsPage() {
                   <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex flex-wrap items-center gap-2 text-xs">
-                        <span className="rounded px-2 py-0.5 font-semibold" style={STATUS_BADGE_STYLES[spot.moderationStatus]}>
-                          {t(`status.${spot.moderationStatus}`)}
-                        </span>
+                        <ModerationStatusBadge status={spot.moderationStatus} />
                         <span className="flex items-center gap-1" style={{ color: "var(--fieldmap-dim)" }}>
                           <CategoryIcon category={spot.category} size={12} />
                           {tSpots(`category.${spot.category}`)}
