@@ -144,8 +144,6 @@
     "directionsButton": "Заведи ме",
     "rejectedNotice": "Това място е отхвърлено от модератор и е скрито за останалите потребители.",
     "rejectionReasonLabel": "Причина",
-    "moderationStatusRejected": "Отхвърлено",
-    "moderationStatusPending": "Очаква преглед",
     "scheduledDeletionNotice": "Ще бъде изтрито на {date}.",
     "editReviewNotice": "Промените ще бъдат приложени, след като администратор ги прегледа.",
     "submitForReviewButton": "Изпрати за преглед",
@@ -153,7 +151,12 @@
     "deletionPendingNotice": "Заявката ви за изтриване чака преглед от администратор.",
     "cancelChangeRequestButton": "Откажи заявката",
     "editRejectedNotice": "Администратор отхвърли последната ви редакция.",
-    "deletionRejectedNotice": "Администратор отхвърли заявката ви за изтриване."
+    "deletionRejectedNotice": "Администратор отхвърли заявката ви за изтриване.",
+    "moderationStatus": {
+      "Pending": "Чака преглед",
+      "Approved": "Одобрено",
+      "Rejected": "Отхвърлено"
+    }
   },
   "PhotoUpload": {
     "uploading": "Качване...",

@@ -5,20 +5,14 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { getErrorMessage } from "@/lib/apiClient";
 import { getAdminSpots } from "@/lib/adminApi";
-import type { SpotModerationStatus, SpotSearchResult } from "@/lib/spotsApi";
+import type { SpotSearchResult } from "@/lib/spotsApi";
+import { ModerationStatusBadge } from "@/components/ModerationStatusBadge";
 
 const PAGE_SIZE = 20;
 // How close (in px) to the right edge the scroll position has to get before the next page loads.
 const LOAD_MORE_THRESHOLD_PX = 200;
 
-const STATUS_BADGE_STYLES: Record<SpotModerationStatus, React.CSSProperties> = {
-  Approved: { backgroundColor: "rgba(241, 237, 220, 0.9)", color: "var(--fieldmap-ink)" },
-  Pending: { backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-ink)" },
-  Rejected: { backgroundColor: "#b91c1c", color: "#fff" },
-};
-
 function SpotTile({ spot }: { spot: SpotSearchResult }) {
-  const tAdminSpots = useTranslations("AdminSpots");
   const [imageFailed, setImageFailed] = useState(false);
 
   return (
@@ -36,12 +30,7 @@ function SpotTile({ spot }: { spot: SpotSearchResult }) {
           className="h-full w-full object-cover transition hover:scale-105"
         />
       ) : null}
-      <span
-        className="absolute top-2 left-2 rounded-full px-2 py-0.5 text-xs font-semibold"
-        style={STATUS_BADGE_STYLES[spot.moderationStatus]}
-      >
-        {tAdminSpots(`status.${spot.moderationStatus}`)}
-      </span>
+      <ModerationStatusBadge status={spot.moderationStatus} className="absolute top-2 left-2" />
       <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-2 pt-6 pb-2 text-sm font-medium break-words text-white">
         {spot.name}
       </span>
