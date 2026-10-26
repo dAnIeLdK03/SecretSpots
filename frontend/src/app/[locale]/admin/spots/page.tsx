@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
-import { Check, ExternalLink, MapPin, RotateCcw, ShieldCheck, Trash2, User, X, ZoomIn } from "lucide-react";
+import { Check, ExternalLink, MapPin, RotateCcw, Search, ShieldCheck, Trash2, User, X, ZoomIn } from "lucide-react";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -19,6 +19,7 @@ import { ImageLightbox } from "@/components/ImageLightbox";
 import { RejectSpotModal } from "@/components/RejectSpotModal";
 
 const PAGE_SIZE = 20;
+const SEARCH_DEBOUNCE_MS = 300;
 
 const STATUS_COUNT_KEYS: Record<SpotModerationStatus, keyof AdminSpotCounts> = {
   Pending: "pending",
@@ -43,6 +44,10 @@ export default function AdminSpotsPage() {
   const isAdmin = isAuthenticated && user?.role === UserRole.Admin;
 
   const [statusFilter, setStatusFilter] = useState<SpotModerationStatus>("Pending");
+  const [search, setSearch] = useState("");
+  // What the list is actually filtered by — lags `search` by SEARCH_DEBOUNCE_MS so typing
+  // doesn't fire a request per keystroke.
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [items, setItems] = useState<AdminSpot[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [counts, setCounts] = useState<AdminSpotCounts | null>(null);
@@ -59,6 +64,11 @@ export default function AdminSpotsPage() {
     }
   }, [isAuthenticated, user, router]);
 
+  useEffect(() => {
+    const timeoutId = setTimeout(() => setDebouncedSearch(search.trim()), SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(timeoutId);
+  }, [search]);
+
   const refreshCounts = useCallback(() => {
     getAdminSpotCounts()
       .then(setCounts)
@@ -70,7 +80,7 @@ export default function AdminSpotsPage() {
   const fetchPage = useCallback(
     (pageNum: number, append: boolean) => {
       setStatus(append ? "loadingMore" : "loading");
-      return getAdminSpots(pageNum, PAGE_SIZE, { status: statusFilter })
+      return getAdminSpots(pageNum, PAGE_SIZE, { status: statusFilter, q: debouncedSearch || undefined })
         .then((result) => {
           setItems((prev) => (append ? [...prev, ...result.items] : result.items));
           setTotalCount(result.totalCount);
@@ -80,7 +90,7 @@ export default function AdminSpotsPage() {
         .catch((err) => setError(getErrorMessage(err, t("unknownError"))))
         .finally(() => setStatus("idle"));
     },
-    [statusFilter, t],
+    [statusFilter, debouncedSearch, t],
   );
 
   useEffect(() => {
@@ -179,6 +189,23 @@ export default function AdminSpotsPage() {
         </div>
       </div>
 
+      <label className="relative block">
+        <Search
+          size={16}
+          className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
+          style={{ color: "var(--fieldmap-dim)" }}
+        />
+        <input
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t("searchPlaceholder", { status: t(`status.${statusFilter}`).toLowerCase() })}
+          aria-label={t("searchLabel")}
+          className="w-full rounded-lg border py-2 pr-3 pl-9 text-sm"
+          style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-card)" }}
+        />
+      </label>
+
       {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
 
       {status === "loading" ? (
@@ -187,7 +214,7 @@ export default function AdminSpotsPage() {
         </p>
       ) : items.length === 0 ? (
         <p className="rounded-xl p-8 text-center text-sm" style={{ backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-dim)" }}>
-          {t("empty")}
+          {debouncedSearch ? t("noSearchResults", { query: debouncedSearch }) : t("empty")}
         </p>
       ) : (
         <ul className="flex flex-col gap-4">

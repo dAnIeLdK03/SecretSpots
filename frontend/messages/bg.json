@@ -348,7 +348,10 @@
     "removeButton": "Премахни",
     "removeModalTitle": "Премахване на място",
     "removeModalDescription": "Изберете защо премахвате „{name}“. Авторът ще види причината.",
-    "confirmRemoveButton": "Потвърди премахването"
+    "confirmRemoveButton": "Потвърди премахването",
+    "searchLabel": "Търсене на места",
+    "searchPlaceholder": "Търси сред {status} по име, описание или автор...",
+    "noSearchResults": "Няма места, отговарящи на „{query}“."
   },
   "AdminSpotChanges": {
     "title": "Заявки за промяна на места",

@@ -115,12 +115,13 @@ export type AdminSpotCounts = Record<"pending" | "approved" | "rejected", number
 export function getAdminSpots(
   page: number,
   pageSize: number,
-  filters: { status?: SpotModerationStatus; userId?: string },
+  filters: { status?: SpotModerationStatus; userId?: string; q?: string },
   signal?: AbortSignal,
 ): Promise<AdminSpotsPageResponse> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
   if (filters.status) params.set("status", filters.status);
   if (filters.userId) params.set("userId", filters.userId);
+  if (filters.q) params.set("q", filters.q);
   return apiFetch<AdminSpotsPageResponse>(`/admin/spots?${params.toString()}`, { signal });
 }
 
