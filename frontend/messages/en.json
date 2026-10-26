@@ -348,7 +348,10 @@
     "removeButton": "Remove",
     "removeModalTitle": "Remove spot",
     "removeModalDescription": "Choose why \"{name}\" is being removed. The creator will see this reason.",
-    "confirmRemoveButton": "Confirm removal"
+    "confirmRemoveButton": "Confirm removal",
+    "searchLabel": "Search spots",
+    "searchPlaceholder": "Search {status} spots by name, description or creator...",
+    "noSearchResults": "No spots match \"{query}\"."
   },
   "AdminSpotChanges": {
     "title": "Spot change requests",

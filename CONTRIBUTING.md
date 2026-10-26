@@ -60,6 +60,19 @@ export SECRETSPOTS_TEST_CONNECTION_STRING="Host=localhost;Port=5432;Database=sec
 
 И двете стойности по-горе съвпадат с credentials-ите в `docker-compose.yml` — само локални, не продукционни тайни.
 
+## Примерни данни (само Development)
+
+При стартиране в Development API-то пълни базата с примерни потребители, места (с генерирани снимки в MinIO), оценки, коментари, check-in-и и запазени места — ако още няма потребители на `@example.com`. Пуска се веднъж; за ново сийдване пресъздай базата (изтрий Postgres volume-а на Aspire).
+
+Всички акаунти са с парола `Sample123!`:
+
+| Имейл | Роля |
+|---|---|
+| `admin@example.com` | Admin |
+| `maria.ivanova@example.com`, `georgi.petrov@example.com`, `elena.dimitrova@example.com`, `nikolay.stoyanov@example.com`, `ivana.georgieva@example.com`, `petar.kolev@example.com`, `desislava.todorova@example.com` | User |
+
+Изключва се със `SampleData__Enabled=false`. Съдържанието е в `backend/src/SecretSpots.Features/SampleData/SampleDataCatalog.cs`.
+
 ## Тестове преди PR
 
 ```bash
