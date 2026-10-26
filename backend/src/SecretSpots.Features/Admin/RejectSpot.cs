@@ -17,8 +17,6 @@ namespace SecretSpots.Features.Admin;
 
 public static class RejectSpot
 {
-    private const int MaxReasonLength = 500;
-
     // SpotId comes from the route, not the request body — same convention as SetRewardActive.
     public record RequestBody(string Reason);
 
@@ -30,7 +28,8 @@ public static class RejectSpot
         {
             RuleFor(c => c.Reason)
                 .NotEmpty().WithMessage(localizer[AdminMessageKeys.RejectionReasonRequired].Value)
-                .MaximumLength(MaxReasonLength).WithMessage(localizer[AdminMessageKeys.RejectionReasonTooLong].Value);
+                .MaximumLength(RejectionReasonRules.MaxLength)
+                .WithMessage(localizer[AdminMessageKeys.RejectionReasonTooLong, RejectionReasonRules.MaxLength].Value);
         }
     }
 

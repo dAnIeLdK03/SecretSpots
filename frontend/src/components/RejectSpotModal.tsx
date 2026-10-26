@@ -5,9 +5,8 @@ import type { FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { CircleAlert, X } from "lucide-react";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
+import { MAX_REJECTION_REASON_LENGTH } from "@/lib/adminApi";
 
-// Mirrors RejectSpot.MaxReasonLength on the backend.
-const MAX_REJECTION_REASON_LENGTH = 500;
 const DETAILS_SEPARATOR = " — ";
 
 const PRESET_REASONS = ["inappropriate", "lowQualityPhoto", "spam", "duplicate", "other"] as const;
