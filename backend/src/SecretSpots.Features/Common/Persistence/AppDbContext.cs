@@ -34,7 +34,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     {
         foreach (var entry in ChangeTracker.Entries<IHasCreatedAt>())
         {
-            if (entry.State == EntityState.Added)
+            // Only when the caller didn't set it — SampleDataSeeder backdates rows on purpose.
+            if (entry.State == EntityState.Added && entry.Entity.CreatedAt == default)
             {
                 entry.Entity.CreatedAt = DateTimeOffset.UtcNow;
             }

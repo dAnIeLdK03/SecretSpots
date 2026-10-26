@@ -36,6 +36,7 @@ using SecretSpots.Features.Ratings;
 using SecretSpots.Features.Reports;
 using SecretSpots.Features.Rewards;
 using SecretSpots.Features.SavedSpots;
+using SecretSpots.Features.SampleData;
 using SecretSpots.Features.Spots;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -173,6 +174,11 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddSingleton<ITestEmailInbox, TestEmailInbox>();
     builder.Services.AddSingleton<IEmailSender, InMemoryEmailSender>();
+
+    // Fills an empty local database with sample users/spots/activity on startup (see
+    // SampleDataSeeder). Never registered outside Development; SampleData:Enabled=false opts out.
+    builder.Services.Configure<SampleDataOptions>(builder.Configuration.GetSection("SampleData"));
+    builder.Services.AddHostedService<SampleDataSeeder>();
 }
 else
 {
