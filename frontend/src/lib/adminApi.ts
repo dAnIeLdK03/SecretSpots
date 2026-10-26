@@ -129,6 +129,10 @@ export function getAdminSpotCounts(): Promise<AdminSpotCounts> {
   return apiFetch<AdminSpotCounts>("/admin/spots/counts");
 }
 
+// Mirrors RejectionReasonRules.MaxLength on the backend — the limit for every rejection reason
+// an admin writes (spot rejections and change request rejections).
+export const MAX_REJECTION_REASON_LENGTH = 500;
+
 export function approveSpot(id: string): Promise<void> {
   return apiFetchVoid(`/admin/spots/${id}/approve`, { method: "POST" });
 }

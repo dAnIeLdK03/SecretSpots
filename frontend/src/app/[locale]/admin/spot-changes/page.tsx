@@ -7,15 +7,18 @@ import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Link, useRouter } from "@/i18n/navigation";
 import { getErrorMessage } from "@/lib/apiClient";
-import { approveSpotChangeRequest, getAdminSpotChangeRequests, rejectSpotChangeRequest } from "@/lib/adminApi";
+import {
+  approveSpotChangeRequest,
+  getAdminSpotChangeRequests,
+  MAX_REJECTION_REASON_LENGTH,
+  rejectSpotChangeRequest,
+} from "@/lib/adminApi";
 import type { AdminSpotChangeRequest } from "@/lib/adminApi";
 import { formatRelativeTime } from "@/lib/relativeTime";
 import { UserRole } from "@/lib/userRole";
 import { ImageLightbox } from "@/components/ImageLightbox";
 
 const PAGE_SIZE = 20;
-// Mirrors RejectSpotChangeRequest.MaxReasonLength on the backend.
-const MAX_REJECTION_REASON_LENGTH = 500;
 
 function PhotoStrip({
   photoUrls,

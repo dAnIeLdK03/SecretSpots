@@ -346,7 +346,7 @@
     <value>A rejection reason is required.</value>
   </data>
   <data name="Admin.RejectionReasonTooLong" xml:space="preserve">
-    <value>Rejection reason must be at most 500 characters long.</value>
+    <value>Rejection reason must be at most {0} characters long.</value>
   </data>
   <data name="Admin.CannotChangeOwnRole" xml:space="preserve">
     <value>You can't change your own role.</value>

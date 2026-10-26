@@ -16,8 +16,6 @@ namespace SecretSpots.Features.Admin;
 
 public static class RejectSpotChangeRequest
 {
-    private const int MaxReasonLength = 500;
-
     // RequestId comes from the route, not the request body — same convention as RejectSpot.
     public record RequestBody(string Reason);
 
@@ -29,7 +27,8 @@ public static class RejectSpotChangeRequest
         {
             RuleFor(c => c.Reason)
                 .NotEmpty().WithMessage(localizer[AdminMessageKeys.RejectionReasonRequired].Value)
-                .MaximumLength(MaxReasonLength).WithMessage(localizer[AdminMessageKeys.RejectionReasonTooLong].Value);
+                .MaximumLength(RejectionReasonRules.MaxLength)
+                .WithMessage(localizer[AdminMessageKeys.RejectionReasonTooLong, RejectionReasonRules.MaxLength].Value);
         }
     }
 
