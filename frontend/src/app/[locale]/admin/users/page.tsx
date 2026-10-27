@@ -7,6 +7,8 @@ import { getErrorMessage } from "@/lib/apiClient";
 import { getAdminUsers } from "@/lib/adminApi";
 import type { AdminUser } from "@/lib/adminApi";
 import { UserRole } from "@/lib/userRole";
+import { usePagedList } from "@/hooks/usePagedList";
+import { LoadMoreButton } from "@/components/LoadMoreButton";
 
 const PAGE_SIZE = 20;
 const DEBOUNCE_MS = 300;
@@ -15,37 +17,22 @@ export default function AdminUsersPage() {
   const t = useTranslations("AdminUsers");
 
   const [search, setSearch] = useState("");
-  const [items, setItems] = useState<AdminUser[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [page, setPage] = useState(1);
-  const [status, setStatus] = useState<"loading" | "idle" | "loadingMore">("loading");
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchPage = useCallback(
-    (pageNum: number, append: boolean) => {
-      setStatus(append ? "loadingMore" : "loading");
-      return getAdminUsers(pageNum, PAGE_SIZE, search.trim() || undefined)
-        .then((result) => {
-          setItems((prev) => (append ? [...prev, ...result.items] : result.items));
-          setTotalCount(result.totalCount);
-          setPage(pageNum);
-          setError(null);
-        })
-        .catch((err) => setError(getErrorMessage(err, t("unknownError"))))
-        .finally(() => setStatus("idle"));
-    },
-    [search, t],
-  );
+  // What the list is actually filtered by — lags `search` by DEBOUNCE_MS so typing doesn't fire
+  // a request per keystroke.
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      void fetchPage(1, false);
-    }, DEBOUNCE_MS);
-
+    const timeoutId = setTimeout(() => setDebouncedSearch(search.trim()), DEBOUNCE_MS);
     return () => clearTimeout(timeoutId);
-  }, [fetchPage]);
+  }, [search]);
 
-  const hasMore = items.length < totalCount;
+  const fetchUsers = useCallback(
+    (page: number, signal: AbortSignal) => getAdminUsers(page, PAGE_SIZE, debouncedSearch || undefined, signal),
+    [debouncedSearch],
+  );
+  const list = usePagedList<AdminUser>(fetchUsers);
+  const { items, status } = list;
+  const error = list.error ? getErrorMessage(list.error, t("unknownError")) : null;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 p-8">
@@ -101,16 +88,7 @@ export default function AdminUsersPage() {
         </ul>
       )}
 
-      {hasMore ? (
-        <button
-          onClick={() => fetchPage(page + 1, true)}
-          disabled={status === "loadingMore"}
-          className="rounded border px-4 py-2 text-sm disabled:opacity-50"
-          style={{ borderColor: "var(--fieldmap-contour)" }}
-        >
-          {status === "loadingMore" ? t("loadingMore") : t("loadMore")}
-        </button>
-      ) : null}
+      <LoadMoreButton list={list} />
     </div>
   );
 }

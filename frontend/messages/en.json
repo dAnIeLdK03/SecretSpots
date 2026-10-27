@@ -1,4 +1,8 @@
 {
+  "Common": {
+    "loadMore": "Load more",
+    "loadingMore": "Loading..."
+  },
   "Layout": {
     "appName": "SecretSpots",
     "menuLabel": "Menu",
@@ -253,8 +257,6 @@
     "title": "Users",
     "searchPlaceholder": "Search by email or name...",
     "loading": "Loading...",
-    "loadMore": "Load more",
-    "loadingMore": "Loading...",
     "empty": "No users.",
     "roleAdmin": "Admin",
     "roleUser": "User",
@@ -294,8 +296,6 @@
     "title": "Report queue",
     "includeResolvedLabel": "Show resolved",
     "loading": "Loading...",
-    "loadMore": "Load more",
-    "loadingMore": "Loading...",
     "empty": "No reports.",
     "contentTypeSpot": "Spot",
     "contentTypeComment": "Comment",
@@ -320,8 +320,6 @@
       "Rejected": "Rejected"
     },
     "loading": "Loading...",
-    "loadMore": "Load more",
-    "loadingMore": "Loading...",
     "empty": "No spots.",
     "viewSpotLink": "View spot",
     "approveButton": "Approve",
@@ -360,8 +358,6 @@
     "title": "Spot change requests",
     "subtitle": "Edits and deletions requested by spot creators — nothing changes until you approve it",
     "loading": "Loading...",
-    "loadMore": "Load more",
-    "loadingMore": "Loading...",
     "empty": "No pending change requests.",
     "typeEdit": "Edit",
     "typeDeletion": "Deletion",
@@ -488,7 +484,6 @@
     "loading": "Loading...",
     "empty": "You haven't added any spots yet.",
     "emptyAddLink": "Add one on the map",
-    "loadMore": "Load more",
-    "loadingMore": "Loading..."
+    "unknownError": "Couldn't load your spots. Please try again."
   }
 }

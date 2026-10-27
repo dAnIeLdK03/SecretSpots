@@ -7,6 +7,7 @@ import { getErrorMessage } from "@/lib/apiClient";
 import { getAdminSpots } from "@/lib/adminApi";
 import type { SpotSearchResult } from "@/lib/spotsApi";
 import { ModerationStatusBadge } from "@/components/ModerationStatusBadge";
+import { usePagedList } from "@/hooks/usePagedList";
 
 const PAGE_SIZE = 20;
 // How close (in px) to the right edge the scroll position has to get before the next page loads.
@@ -41,15 +42,15 @@ function SpotTile({ spot }: { spot: SpotSearchResult }) {
 export function AdminUserSpotsCarousel({ userId }: { userId: string }) {
   const t = useTranslations("AdminUserDetails");
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const [items, setItems] = useState<SpotSearchResult[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [page, setPage] = useState(1);
-  const [status, setStatus] = useState<"loading" | "idle" | "loadingMore">("loading");
-  const [error, setError] = useState<string | null>(null);
+  const fetchSpots = useCallback(
+    (page: number, signal: AbortSignal) => getAdminSpots(page, PAGE_SIZE, { userId }, signal),
+    [userId],
+  );
+  const list = usePagedList<SpotSearchResult>(fetchSpots);
+  const { items, totalCount, status, hasMore, loadMore } = list;
+  const error = list.error ? getErrorMessage(list.error, t("unknownError")) : null;
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
-
-  const hasMore = items.length < totalCount;
 
   const updateScrollButtons = useCallback(() => {
     const el = scrollerRef.current;
@@ -58,52 +59,17 @@ export function AdminUserSpotsCarousel({ userId }: { userId: string }) {
     setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
   }, []);
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    getAdminSpots(1, PAGE_SIZE, { userId }, controller.signal)
-      .then((result) => {
-        setItems(result.items);
-        setTotalCount(result.totalCount);
-        setPage(1);
-        setError(null);
-      })
-      .catch((err) => {
-        if (controller.signal.aborted) return;
-        setError(getErrorMessage(err, t("unknownError")));
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setStatus("idle");
-      });
-
-    return () => controller.abort();
-  }, [userId, t]);
-
   // Recompute after every render that changes the number of tiles — new tiles change scrollWidth.
   useEffect(() => {
     updateScrollButtons();
   }, [items.length, updateScrollButtons]);
-
-  async function loadMore() {
-    setStatus("loadingMore");
-    try {
-      const result = await getAdminSpots(page + 1, PAGE_SIZE, { userId });
-      setItems((prev) => [...prev, ...result.items]);
-      setTotalCount(result.totalCount);
-      setPage(result.page);
-    } catch (err) {
-      setError(getErrorMessage(err, t("unknownError")));
-    } finally {
-      setStatus("idle");
-    }
-  }
 
   function handleScroll() {
     updateScrollButtons();
     const el = scrollerRef.current;
     if (!el || !hasMore || status !== "idle") return;
     if (el.scrollLeft + el.clientWidth >= el.scrollWidth - LOAD_MORE_THRESHOLD_PX) {
-      void loadMore();
+      loadMore();
     }
   }
 

@@ -14,6 +14,8 @@ import { CategoryIcon } from "@/components/CategoryIcon";
 import { ImageLightbox } from "@/components/ImageLightbox";
 import { ModerationStatusBadge } from "@/components/ModerationStatusBadge";
 import { RejectSpotModal } from "@/components/RejectSpotModal";
+import { LoadMoreButton } from "@/components/LoadMoreButton";
+import { usePagedList } from "@/hooks/usePagedList";
 
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 300;
@@ -36,12 +38,8 @@ export default function AdminSpotsPage() {
   // What the list is actually filtered by — lags `search` by SEARCH_DEBOUNCE_MS so typing
   // doesn't fire a request per keystroke.
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [items, setItems] = useState<AdminSpot[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
   const [counts, setCounts] = useState<AdminSpotCounts | null>(null);
-  const [page, setPage] = useState(1);
-  const [status, setStatus] = useState<"loading" | "idle" | "loadingMore">("loading");
-  const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [busyIds, setBusyIds] = useState<Set<string>>(new Set());
   const [rejectingSpot, setRejectingSpot] = useState<AdminSpot | null>(null);
   const [lightboxSpot, setLightboxSpot] = useState<AdminSpot | null>(null);
@@ -59,26 +57,14 @@ export default function AdminSpotsPage() {
       });
   }, []);
 
-  const fetchPage = useCallback(
-    (pageNum: number, append: boolean) => {
-      setStatus(append ? "loadingMore" : "loading");
-      return getAdminSpots(pageNum, PAGE_SIZE, { status: statusFilter, q: debouncedSearch || undefined })
-        .then((result) => {
-          setItems((prev) => (append ? [...prev, ...result.items] : result.items));
-          setTotalCount(result.totalCount);
-          setPage(pageNum);
-          setError(null);
-        })
-        .catch((err) => setError(getErrorMessage(err, t("unknownError"))))
-        .finally(() => setStatus("idle"));
-    },
-    [statusFilter, debouncedSearch, t],
+  const fetchSpots = useCallback(
+    (page: number, signal: AbortSignal) =>
+      getAdminSpots(page, PAGE_SIZE, { status: statusFilter, q: debouncedSearch || undefined }, signal),
+    [statusFilter, debouncedSearch],
   );
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- kicking off the initial fetch on mount, no user event to attach to
-    void fetchPage(1, false);
-  }, [fetchPage]);
+  const list = usePagedList(fetchSpots);
+  const { items, status } = list;
+  const error = actionError ?? (list.error ? getErrorMessage(list.error, t("unknownError")) : null);
 
   useEffect(() => {
     refreshCounts();
@@ -86,8 +72,7 @@ export default function AdminSpotsPage() {
 
   // Every action moves a spot out of the currently filtered status, so it leaves this list.
   function removeFromList(id: string) {
-    setItems((prev) => prev.filter((s) => s.id !== id));
-    setTotalCount((prev) => prev - 1);
+    list.removeItem(id);
     refreshCounts();
   }
 
@@ -106,7 +91,7 @@ export default function AdminSpotsPage() {
       await approveSpot(id);
       removeFromList(id);
     } catch (err) {
-      setError(getErrorMessage(err, t("unknownError")));
+      setActionError(getErrorMessage(err, t("unknownError")));
     } finally {
       setBusy(id, false);
     }
@@ -121,13 +106,11 @@ export default function AdminSpotsPage() {
       removeFromList(id);
       setRejectingSpot(null);
     } catch (err) {
-      setError(getErrorMessage(err, t("unknownError")));
+      setActionError(getErrorMessage(err, t("unknownError")));
     } finally {
       setBusy(id, false);
     }
   }
-
-  const hasMore = items.length < totalCount;
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 md:p-8">
@@ -342,16 +325,7 @@ export default function AdminSpotsPage() {
         </ul>
       )}
 
-      {hasMore ? (
-        <button
-          onClick={() => fetchPage(page + 1, true)}
-          disabled={status === "loadingMore"}
-          className="self-center rounded-lg border px-5 py-2 text-sm disabled:opacity-50"
-          style={{ borderColor: "var(--fieldmap-contour)" }}
-        >
-          {status === "loadingMore" ? t("loadingMore") : t("loadMore")}
-        </button>
-      ) : null}
+      <LoadMoreButton list={list} className="self-center" />
 
       {rejectingSpot ? (
         <RejectSpotModal

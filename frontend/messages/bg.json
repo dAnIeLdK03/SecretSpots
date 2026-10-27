@@ -1,4 +1,8 @@
 {
+  "Common": {
+    "loadMore": "Зареди още",
+    "loadingMore": "Зареждане..."
+  },
   "Layout": {
     "appName": "SecretSpots",
     "menuLabel": "Меню",
@@ -253,8 +257,6 @@
     "title": "Потребители",
     "searchPlaceholder": "Търси по имейл или име...",
     "loading": "Зареждане...",
-    "loadMore": "Зареди още",
-    "loadingMore": "Зареждане...",
     "empty": "Няма потребители.",
     "roleAdmin": "Админ",
     "roleUser": "Потребител",
@@ -294,8 +296,6 @@
     "title": "Опашка от доклади",
     "includeResolvedLabel": "Покажи разгледаните",
     "loading": "Зареждане...",
-    "loadMore": "Зареди още",
-    "loadingMore": "Зареждане...",
     "empty": "Няма доклади.",
     "contentTypeSpot": "Място",
     "contentTypeComment": "Коментар",
@@ -320,8 +320,6 @@
       "Rejected": "Отхвърлени"
     },
     "loading": "Зареждане...",
-    "loadMore": "Зареди още",
-    "loadingMore": "Зареждане...",
     "empty": "Няма места.",
     "viewSpotLink": "Виж мястото",
     "approveButton": "Одобри",
@@ -360,8 +358,6 @@
     "title": "Заявки за промяна на места",
     "subtitle": "Редакции и изтривания, поискани от авторите — нищо не се променя, докато не одобрите",
     "loading": "Зареждане...",
-    "loadMore": "Зареди още",
-    "loadingMore": "Зареждане...",
     "empty": "Няма чакащи заявки за промяна.",
     "typeEdit": "Редакция",
     "typeDeletion": "Изтриване",
@@ -488,7 +484,6 @@
     "loading": "Зареждане...",
     "empty": "Още не си добавил/а места.",
     "emptyAddLink": "Добави на картата",
-    "loadMore": "Зареди още",
-    "loadingMore": "Зареждане..."
+    "unknownError": "Не успяхме да заредим местата ти. Опитай отново."
   }
 }

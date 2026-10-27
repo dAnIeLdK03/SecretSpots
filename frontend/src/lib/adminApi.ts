@@ -33,13 +33,14 @@ export function getAdminReports(
   page: number,
   pageSize: number,
   includeResolved: boolean,
+  signal?: AbortSignal,
 ): Promise<AdminReportsPageResponse> {
   const params = new URLSearchParams({
     page: String(page),
     pageSize: String(pageSize),
     includeResolved: String(includeResolved),
   });
-  return apiFetch<AdminReportsPageResponse>(`/admin/reports?${params.toString()}`);
+  return apiFetch<AdminReportsPageResponse>(`/admin/reports?${params.toString()}`, { signal });
 }
 
 export function dismissReport(id: string): Promise<void> {
@@ -64,10 +65,10 @@ export interface AdminUsersPageResponse {
   totalCount: number;
 }
 
-export function getAdminUsers(page: number, pageSize: number, q?: string): Promise<AdminUsersPageResponse> {
+export function getAdminUsers(page: number, pageSize: number, q?: string, signal?: AbortSignal): Promise<AdminUsersPageResponse> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
   if (q) params.set("q", q);
-  return apiFetch<AdminUsersPageResponse>(`/admin/users?${params.toString()}`);
+  return apiFetch<AdminUsersPageResponse>(`/admin/users?${params.toString()}`, { signal });
 }
 
 export type ExternalAuthProvider = "Google" | "Facebook";
@@ -165,9 +166,13 @@ export interface AdminSpotChangeRequestsPageResponse {
   totalCount: number;
 }
 
-export function getAdminSpotChangeRequests(page: number, pageSize: number): Promise<AdminSpotChangeRequestsPageResponse> {
+export function getAdminSpotChangeRequests(
+  page: number,
+  pageSize: number,
+  signal?: AbortSignal,
+): Promise<AdminSpotChangeRequestsPageResponse> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
-  return apiFetch<AdminSpotChangeRequestsPageResponse>(`/admin/spot-change-requests?${params.toString()}`);
+  return apiFetch<AdminSpotChangeRequestsPageResponse>(`/admin/spot-change-requests?${params.toString()}`, { signal });
 }
 
 export function approveSpotChangeRequest(id: string): Promise<void> {
