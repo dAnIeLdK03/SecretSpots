@@ -2,9 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRequireAuth } from "@/hooks/useRequireAuth";
-import { useAuthStore } from "@/store/useAuthStore";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { getErrorMessage } from "@/lib/apiClient";
 import { getAdminUsers } from "@/lib/adminApi";
 import type { AdminUser } from "@/lib/adminApi";
@@ -15,9 +13,6 @@ const DEBOUNCE_MS = 300;
 
 export default function AdminUsersPage() {
   const t = useTranslations("AdminUsers");
-  const router = useRouter();
-  const isAuthenticated = useRequireAuth();
-  const user = useAuthStore((state) => state.user);
 
   const [search, setSearch] = useState("");
   const [items, setItems] = useState<AdminUser[]>([]);
@@ -25,12 +20,6 @@ export default function AdminUsersPage() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState<"loading" | "idle" | "loadingMore">("loading");
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isAuthenticated && user && user.role !== UserRole.Admin) {
-      router.replace("/");
-    }
-  }, [isAuthenticated, user, router]);
 
   const fetchPage = useCallback(
     (pageNum: number, append: boolean) => {
@@ -49,18 +38,12 @@ export default function AdminUsersPage() {
   );
 
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== UserRole.Admin) return;
-
     const timeoutId = setTimeout(() => {
       void fetchPage(1, false);
     }, DEBOUNCE_MS);
 
     return () => clearTimeout(timeoutId);
-  }, [isAuthenticated, user?.role, fetchPage]);
-
-  if (!isAuthenticated || user?.role !== UserRole.Admin) {
-    return null;
-  }
+  }, [fetchPage]);
 
   const hasMore = items.length < totalCount;
 
