@@ -1,12 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { getErrorMessage } from "@/lib/apiClient";
 import { getAdminReports, dismissReport, deleteReportedContent } from "@/lib/adminApi";
 import type { AdminReport } from "@/lib/adminApi";
 import { formatRelativeTime } from "@/lib/relativeTime";
+import { usePagedList } from "@/hooks/usePagedList";
+import { LoadMoreButton } from "@/components/LoadMoreButton";
 import { useLocale } from "next-intl";
 
 const PAGE_SIZE = 20;
@@ -17,42 +19,24 @@ export default function AdminReportsPage() {
   const locale = useLocale();
 
   const [includeResolved, setIncludeResolved] = useState(false);
-  const [items, setItems] = useState<AdminReport[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [page, setPage] = useState(1);
-  const [status, setStatus] = useState<"loading" | "idle" | "loadingMore">("loading");
-  const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  const fetchPage = useCallback(
-    (pageNum: number, append: boolean) => {
-      setStatus(append ? "loadingMore" : "loading");
-      return getAdminReports(pageNum, PAGE_SIZE, includeResolved)
-        .then((result) => {
-          setItems((prev) => (append ? [...prev, ...result.items] : result.items));
-          setTotalCount(result.totalCount);
-          setPage(pageNum);
-          setError(null);
-        })
-        .catch((err) => setError(getErrorMessage(err, t("unknownError"))))
-        .finally(() => setStatus("idle"));
-    },
-    [includeResolved, t],
+  const fetchReports = useCallback(
+    (page: number, signal: AbortSignal) => getAdminReports(page, PAGE_SIZE, includeResolved, signal),
+    [includeResolved],
   );
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- kicking off the initial fetch on mount, no user event to attach to
-    void fetchPage(1, false);
-  }, [fetchPage]);
+  const list = usePagedList(fetchReports);
+  const { items, status } = list;
+  const error = actionError ?? (list.error ? getErrorMessage(list.error, t("unknownError")) : null);
 
   async function handleDismiss(id: string) {
     setBusyId(id);
     try {
       await dismissReport(id);
-      setItems((prev) => prev.filter((r) => r.id !== id));
-      setTotalCount((prev) => prev - 1);
+      list.removeItem(id);
     } catch (err) {
-      setError(getErrorMessage(err, t("unknownError")));
+      setActionError(getErrorMessage(err, t("unknownError")));
     } finally {
       setBusyId(null);
     }
@@ -65,16 +49,13 @@ export default function AdminReportsPage() {
     setBusyId(report.id);
     try {
       await deleteReportedContent(report.id);
-      setItems((prev) => prev.filter((r) => r.id !== report.id));
-      setTotalCount((prev) => prev - 1);
+      list.removeItem(report.id);
     } catch (err) {
-      setError(getErrorMessage(err, t("unknownError")));
+      setActionError(getErrorMessage(err, t("unknownError")));
     } finally {
       setBusyId(null);
     }
   }
-
-  const hasMore = items.length < totalCount;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 p-8">
@@ -172,16 +153,7 @@ export default function AdminReportsPage() {
         </ul>
       )}
 
-      {hasMore ? (
-        <button
-          onClick={() => fetchPage(page + 1, true)}
-          disabled={status === "loadingMore"}
-          className="rounded border px-4 py-2 text-sm disabled:opacity-50"
-          style={{ borderColor: "var(--fieldmap-contour)" }}
-        >
-          {status === "loadingMore" ? t("loadingMore") : t("loadMore")}
-        </button>
-      ) : null}
+      <LoadMoreButton list={list} />
     </div>
   );
 }

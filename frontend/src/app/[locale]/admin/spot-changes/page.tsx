@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowRight, Check, ExternalLink, FilePenLine, Trash2, User, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -14,8 +14,13 @@ import {
 import type { AdminSpotChangeRequest } from "@/lib/adminApi";
 import { formatRelativeTime } from "@/lib/relativeTime";
 import { ImageLightbox } from "@/components/ImageLightbox";
+import { LoadMoreButton } from "@/components/LoadMoreButton";
+import { usePagedList } from "@/hooks/usePagedList";
 
 const PAGE_SIZE = 20;
+
+// No filters on this queue, so the fetcher is stable and the list loads once on mount.
+const fetchChangeRequests = (page: number, signal: AbortSignal) => getAdminSpotChangeRequests(page, PAGE_SIZE, signal);
 
 function PhotoStrip({
   photoUrls,
@@ -93,41 +98,15 @@ export default function AdminSpotChangesPage() {
   const tSpots = useTranslations("Spots");
   const locale = useLocale();
 
-  const [items, setItems] = useState<AdminSpotChangeRequest[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [page, setPage] = useState(1);
-  const [status, setStatus] = useState<"loading" | "idle" | "loadingMore">("loading");
-  const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
-  const fetchPage = useCallback(
-    (pageNum: number, append: boolean) => {
-      setStatus(append ? "loadingMore" : "loading");
-      return getAdminSpotChangeRequests(pageNum, PAGE_SIZE)
-        .then((result) => {
-          setItems((prev) => (append ? [...prev, ...result.items] : result.items));
-          setTotalCount(result.totalCount);
-          setPage(pageNum);
-          setError(null);
-        })
-        .catch((err) => setError(getErrorMessage(err, t("unknownError"))))
-        .finally(() => setStatus("idle"));
-    },
-    [t],
-  );
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- kicking off the initial fetch on mount, no user event to attach to
-    void fetchPage(1, false);
-  }, [fetchPage]);
-
-  function removeFromList(id: string) {
-    setItems((prev) => prev.filter((r) => r.id !== id));
-    setTotalCount((prev) => prev - 1);
-  }
+  const list = usePagedList<AdminSpotChangeRequest>(fetchChangeRequests);
+  const { items, totalCount, status } = list;
+  const error = actionError ?? (list.error ? getErrorMessage(list.error, t("unknownError")) : null);
 
   async function handleApprove(request: AdminSpotChangeRequest) {
     if (request.type === "Deletion" && !window.confirm(t("approveDeletionConfirm", { name: request.currentName }))) return;
@@ -135,9 +114,9 @@ export default function AdminSpotChangesPage() {
     setBusyId(request.id);
     try {
       await approveSpotChangeRequest(request.id);
-      removeFromList(request.id);
+      list.removeItem(request.id);
     } catch (err) {
-      setError(getErrorMessage(err, t("unknownError")));
+      setActionError(getErrorMessage(err, t("unknownError")));
     } finally {
       setBusyId(null);
     }
@@ -147,16 +126,14 @@ export default function AdminSpotChangesPage() {
     setBusyId(id);
     try {
       await rejectSpotChangeRequest(id, rejectionReason.trim());
-      removeFromList(id);
+      list.removeItem(id);
       setRejectingId(null);
     } catch (err) {
-      setError(getErrorMessage(err, t("unknownError")));
+      setActionError(getErrorMessage(err, t("unknownError")));
     } finally {
       setBusyId(null);
     }
   }
-
-  const hasMore = items.length < totalCount;
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 md:p-8">
@@ -364,16 +341,7 @@ export default function AdminSpotChangesPage() {
         </ul>
       )}
 
-      {hasMore ? (
-        <button
-          onClick={() => fetchPage(page + 1, true)}
-          disabled={status === "loadingMore"}
-          className="self-center rounded-lg border px-5 py-2 text-sm disabled:opacity-50"
-          style={{ borderColor: "var(--fieldmap-contour)" }}
-        >
-          {status === "loadingMore" ? t("loadingMore") : t("loadMore")}
-        </button>
-      ) : null}
+      <LoadMoreButton list={list} className="self-center" />
 
       {lightboxUrl ? <ImageLightbox src={lightboxUrl} alt="" onClose={() => setLightboxUrl(null)} /> : null}
     </div>
