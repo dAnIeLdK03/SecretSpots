@@ -2,15 +2,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRequireAuth } from "@/hooks/useRequireAuth";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter, Link } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { getErrorMessage } from "@/lib/apiClient";
 import { getAdminReports, dismissReport, deleteReportedContent } from "@/lib/adminApi";
 import type { AdminReport } from "@/lib/adminApi";
 import { formatRelativeTime } from "@/lib/relativeTime";
 import { useLocale } from "next-intl";
-import { UserRole } from "@/lib/userRole";
 
 const PAGE_SIZE = 20;
 
@@ -18,9 +15,6 @@ export default function AdminReportsPage() {
   const t = useTranslations("AdminReports");
   const tReports = useTranslations("Reports");
   const locale = useLocale();
-  const router = useRouter();
-  const isAuthenticated = useRequireAuth();
-  const user = useAuthStore((state) => state.user);
 
   const [includeResolved, setIncludeResolved] = useState(false);
   const [items, setItems] = useState<AdminReport[]>([]);
@@ -29,12 +23,6 @@ export default function AdminReportsPage() {
   const [status, setStatus] = useState<"loading" | "idle" | "loadingMore">("loading");
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isAuthenticated && user && user.role !== UserRole.Admin) {
-      router.replace("/");
-    }
-  }, [isAuthenticated, user, router]);
 
   const fetchPage = useCallback(
     (pageNum: number, append: boolean) => {
@@ -53,11 +41,9 @@ export default function AdminReportsPage() {
   );
 
   useEffect(() => {
-    if (isAuthenticated && user?.role === UserRole.Admin) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- kicking off the initial fetch on mount, no user event to attach to
-      void fetchPage(1, false);
-    }
-  }, [isAuthenticated, user?.role, fetchPage]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- kicking off the initial fetch on mount, no user event to attach to
+    void fetchPage(1, false);
+  }, [fetchPage]);
 
   async function handleDismiss(id: string) {
     setBusyId(id);
@@ -86,10 +72,6 @@ export default function AdminReportsPage() {
     } finally {
       setBusyId(null);
     }
-  }
-
-  if (!isAuthenticated || user?.role !== UserRole.Admin) {
-    return null;
   }
 
   const hasMore = items.length < totalCount;

@@ -3,9 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowRight, Check, ExternalLink, FilePenLine, Trash2, User, X } from "lucide-react";
-import { useRequireAuth } from "@/hooks/useRequireAuth";
-import { useAuthStore } from "@/store/useAuthStore";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { getErrorMessage } from "@/lib/apiClient";
 import {
   approveSpotChangeRequest,
@@ -15,7 +13,6 @@ import {
 } from "@/lib/adminApi";
 import type { AdminSpotChangeRequest } from "@/lib/adminApi";
 import { formatRelativeTime } from "@/lib/relativeTime";
-import { UserRole } from "@/lib/userRole";
 import { ImageLightbox } from "@/components/ImageLightbox";
 
 const PAGE_SIZE = 20;
@@ -95,10 +92,6 @@ export default function AdminSpotChangesPage() {
   const t = useTranslations("AdminSpotChanges");
   const tSpots = useTranslations("Spots");
   const locale = useLocale();
-  const router = useRouter();
-  const isAuthenticated = useRequireAuth();
-  const user = useAuthStore((state) => state.user);
-  const isAdmin = isAuthenticated && user?.role === UserRole.Admin;
 
   const [items, setItems] = useState<AdminSpotChangeRequest[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -109,12 +102,6 @@ export default function AdminSpotChangesPage() {
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isAuthenticated && user && user.role !== UserRole.Admin) {
-      router.replace("/");
-    }
-  }, [isAuthenticated, user, router]);
 
   const fetchPage = useCallback(
     (pageNum: number, append: boolean) => {
@@ -133,11 +120,9 @@ export default function AdminSpotChangesPage() {
   );
 
   useEffect(() => {
-    if (isAdmin) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- kicking off the initial fetch on mount, no user event to attach to
-      void fetchPage(1, false);
-    }
-  }, [isAdmin, fetchPage]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- kicking off the initial fetch on mount, no user event to attach to
+    void fetchPage(1, false);
+  }, [fetchPage]);
 
   function removeFromList(id: string) {
     setItems((prev) => prev.filter((r) => r.id !== id));
@@ -169,10 +154,6 @@ export default function AdminSpotChangesPage() {
     } finally {
       setBusyId(null);
     }
-  }
-
-  if (!isAdmin) {
-    return null;
   }
 
   const hasMore = items.length < totalCount;

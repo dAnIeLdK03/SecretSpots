@@ -3,16 +3,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { Check, ExternalLink, MapPin, RotateCcw, Search, ShieldCheck, Trash2, User, X, ZoomIn } from "lucide-react";
-import { useRequireAuth } from "@/hooks/useRequireAuth";
-import { useAuthStore } from "@/store/useAuthStore";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { getErrorMessage } from "@/lib/apiClient";
 import { approveSpot, getAdminSpotCounts, getAdminSpots, rejectSpot } from "@/lib/adminApi";
 import type { AdminSpot, AdminSpotCounts } from "@/lib/adminApi";
 import { SPOT_MODERATION_STATUSES } from "@/lib/spotsApi";
 import type { SpotModerationStatus } from "@/lib/spotsApi";
 import { formatRelativeTime } from "@/lib/relativeTime";
-import { UserRole } from "@/lib/userRole";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { ImageLightbox } from "@/components/ImageLightbox";
 import { ModerationStatusBadge } from "@/components/ModerationStatusBadge";
@@ -33,10 +30,6 @@ export default function AdminSpotsPage() {
   const tSpots = useTranslations("Spots");
   const locale = useLocale();
   const format = useFormatter();
-  const router = useRouter();
-  const isAuthenticated = useRequireAuth();
-  const user = useAuthStore((state) => state.user);
-  const isAdmin = isAuthenticated && user?.role === UserRole.Admin;
 
   const [statusFilter, setStatusFilter] = useState<SpotModerationStatus>("Pending");
   const [search, setSearch] = useState("");
@@ -52,12 +45,6 @@ export default function AdminSpotsPage() {
   const [busyIds, setBusyIds] = useState<Set<string>>(new Set());
   const [rejectingSpot, setRejectingSpot] = useState<AdminSpot | null>(null);
   const [lightboxSpot, setLightboxSpot] = useState<AdminSpot | null>(null);
-
-  useEffect(() => {
-    if (isAuthenticated && user && user.role !== UserRole.Admin) {
-      router.replace("/");
-    }
-  }, [isAuthenticated, user, router]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => setDebouncedSearch(search.trim()), SEARCH_DEBOUNCE_MS);
@@ -89,15 +76,13 @@ export default function AdminSpotsPage() {
   );
 
   useEffect(() => {
-    if (isAdmin) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- kicking off the initial fetch on mount, no user event to attach to
-      void fetchPage(1, false);
-    }
-  }, [isAdmin, fetchPage]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- kicking off the initial fetch on mount, no user event to attach to
+    void fetchPage(1, false);
+  }, [fetchPage]);
 
   useEffect(() => {
-    if (isAdmin) refreshCounts();
-  }, [isAdmin, refreshCounts]);
+    refreshCounts();
+  }, [refreshCounts]);
 
   // Every action moves a spot out of the currently filtered status, so it leaves this list.
   function removeFromList(id: string) {
@@ -140,10 +125,6 @@ export default function AdminSpotsPage() {
     } finally {
       setBusy(id, false);
     }
-  }
-
-  if (!isAdmin) {
-    return null;
   }
 
   const hasMore = items.length < totalCount;

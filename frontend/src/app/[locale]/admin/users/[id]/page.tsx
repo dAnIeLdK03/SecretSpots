@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
-import { useRequireAuth } from "@/hooks/useRequireAuth";
-import { useAuthStore } from "@/store/useAuthStore";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { ApiError, getErrorMessage } from "@/lib/apiClient";
 import { getAdminUser } from "@/lib/adminApi";
 import type { AdminUserActivity, AdminUserDetails } from "@/lib/adminApi";
@@ -44,20 +42,9 @@ function AdminUserDetailsContent({ id }: { id: string }) {
   const t = useTranslations("AdminUserDetails");
   const tUsers = useTranslations("AdminUsers");
   const format = useFormatter();
-  const router = useRouter();
-  const isAuthenticated = useRequireAuth();
-  const currentUser = useAuthStore((state) => state.user);
-  const isAdmin = currentUser?.role === UserRole.Admin;
   const [state, setState] = useState<LoadState>({ status: "loading" });
 
   useEffect(() => {
-    if (isAuthenticated && currentUser && !isAdmin) {
-      router.replace("/");
-    }
-  }, [isAuthenticated, currentUser, isAdmin, router]);
-
-  useEffect(() => {
-    if (!isAuthenticated || !isAdmin) return;
     const controller = new AbortController();
 
     getAdminUser(id, controller.signal)
@@ -72,11 +59,7 @@ function AdminUserDetailsContent({ id }: { id: string }) {
       });
 
     return () => controller.abort();
-  }, [id, isAuthenticated, isAdmin, t]);
-
-  if (!isAuthenticated || !isAdmin) {
-    return null;
-  }
+  }, [id, t]);
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 p-8">
