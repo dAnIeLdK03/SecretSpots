@@ -43,9 +43,9 @@ public static class AdminSpotsEndpoints
         group.MapPost("/{id:guid}/approve", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
             {
                 var result = await sender.Send(new ApproveSpot.Command(id), cancellationToken);
-                return result.ToOkOrProblem();
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
             })
-            .Produces<SpotResponse>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -55,9 +55,9 @@ public static class AdminSpotsEndpoints
             {
                 var command = new RejectSpot.Command(id, body.Reason);
                 var result = await sender.Send(command, cancellationToken);
-                return result.ToOkOrProblem();
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
             })
-            .Produces<SpotResponse>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status204NoContent)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)

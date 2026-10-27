@@ -35,27 +35,9 @@ public static class GetSpot
                 return Result<SpotResponse>.Failure(Error.NotFound(SpotsMessageKeys.NotFound, localizer));
             }
 
-            var creatorDisplayName = await db.Users
-                .Where(u => u.Id == spot.CreatedByUserId)
-                .Select(u => u.DisplayName)
-                .SingleOrDefaultAsync(cancellationToken) ?? string.Empty;
+            var creatorDisplayName = await db.Users.GetDisplayNameAsync(spot.CreatedByUserId, cancellationToken);
 
-            return Result<SpotResponse>.Success(new SpotResponse(
-                spot.Id,
-                spot.Name,
-                spot.Description,
-                spot.Category,
-                spot.PhotoUrls,
-                spot.Location.Y,
-                spot.Location.X,
-                spot.CreatedByUserId,
-                creatorDisplayName,
-                spot.AverageRating,
-                spot.RatingsCount,
-                spot.CreatedAt,
-                spot.ModerationStatus,
-                spot.RejectionReason,
-                spot.ScheduledDeletionAt));
+            return Result<SpotResponse>.Success(SpotResponse.From(spot, creatorDisplayName));
         }
     }
 }

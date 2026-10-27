@@ -107,19 +107,7 @@ public static class SearchSpots
             var page = ordered
                 .Skip((query.Page - 1) * query.PageSize)
                 .Take(query.PageSize)
-                .Select(s => new SpotSearchResultResponse(
-                    s.Id,
-                    s.Name,
-                    s.Description,
-                    s.Category,
-                    s.PhotoUrls[0],
-                    s.Location.Y,
-                    s.Location.X,
-                    s.CreatedByUserId,
-                    s.CreatedAt,
-                    s.ModerationStatus,
-                    s.RejectionReason,
-                    s.ScheduledDeletionAt))
+                .Select(SpotSearchResultResponse.From)
                 .ToList();
 
             // Clamped to what's actually reachable via pagination — reporting the true (uncapped)
