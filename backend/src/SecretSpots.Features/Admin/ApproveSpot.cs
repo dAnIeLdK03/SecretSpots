@@ -7,24 +7,23 @@ using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
-using SecretSpots.Features.Spots;
 using SecretSpots.Features.Notifications;
 
 namespace SecretSpots.Features.Admin;
 
 public static class ApproveSpot
 {
-    public record Command(Guid SpotId) : IRequest<Result<SpotResponse>>;
+    public record Command(Guid SpotId) : IRequest<Result<Unit>>;
 
     public class Handler(IAppDbContext db, IUserContext userContext, IStringLocalizer<SharedResources> localizer, ILogger<Handler> logger)
-        : IRequestHandler<Command, Result<SpotResponse>>
+        : IRequestHandler<Command, Result<Unit>>
     {
-        public async Task<Result<SpotResponse>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<Unit>> Handle(Command command, CancellationToken cancellationToken)
         {
             var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
             if (spot is null)
             {
-                return Result<SpotResponse>.Failure(Error.NotFound(AdminMessageKeys.SpotNotFound, localizer));
+                return Result<Unit>.Failure(Error.NotFound(AdminMessageKeys.SpotNotFound, localizer));
             }
 
             // Approving a Rejected spot undoes the rejection — the creator hears it as a restore.
@@ -49,27 +48,7 @@ public static class ApproveSpot
 
             logger.LogInformation(AdminLogMessages.SpotApproved, spot.Id, userContext.UserId);
 
-            var creatorDisplayName = await db.Users
-                .Where(u => u.Id == spot.CreatedByUserId)
-                .Select(u => u.DisplayName)
-                .SingleOrDefaultAsync(cancellationToken) ?? string.Empty;
-
-            return Result<SpotResponse>.Success(new SpotResponse(
-                spot.Id,
-                spot.Name,
-                spot.Description,
-                spot.Category,
-                spot.PhotoUrls,
-                spot.Location.Y,
-                spot.Location.X,
-                spot.CreatedByUserId,
-                creatorDisplayName,
-                spot.AverageRating,
-                spot.RatingsCount,
-                spot.CreatedAt,
-                spot.ModerationStatus,
-                spot.RejectionReason,
-                spot.ScheduledDeletionAt));
+            return Result<Unit>.Success(Unit.Value);
         }
     }
 }

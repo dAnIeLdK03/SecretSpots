@@ -127,27 +127,9 @@ public static class CreateSpot
             logger.LogInformation(SpotsLogMessages.SpotCreated, spot.Id, spot.Category, spot.CreatedByUserId);
             logger.LogInformation(SpotsLogMessages.NearbyUsersNotified, nearbyUserIds.Count, spot.Id);
 
-            var creatorDisplayName = await db.Users
-                .Where(u => u.Id == spot.CreatedByUserId)
-                .Select(u => u.DisplayName)
-                .SingleOrDefaultAsync(cancellationToken) ?? string.Empty;
+            var creatorDisplayName = await db.Users.GetDisplayNameAsync(spot.CreatedByUserId, cancellationToken);
 
-            return Result<SpotResponse>.Success(new SpotResponse(
-                spot.Id,
-                spot.Name,
-                spot.Description,
-                spot.Category,
-                spot.PhotoUrls,
-                location.Y,
-                location.X,
-                spot.CreatedByUserId,
-                creatorDisplayName,
-                spot.AverageRating,
-                spot.RatingsCount,
-                spot.CreatedAt,
-                spot.ModerationStatus,
-                spot.RejectionReason,
-                spot.ScheduledDeletionAt));
+            return Result<SpotResponse>.Success(SpotResponse.From(spot, creatorDisplayName));
         }
     }
 }

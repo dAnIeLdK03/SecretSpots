@@ -17,4 +17,21 @@ public record AdminSpotResponse(
     DateTimeOffset CreatedAt,
     SpotModerationStatus ModerationStatus,
     string? RejectionReason,
-    DateTimeOffset? ScheduledDeletionAt);
+    DateTimeOffset? ScheduledDeletionAt)
+{
+    // Same in-memory-only caveat as SpotSearchResultResponse.From.
+    public static AdminSpotResponse From(Spot spot, string creatorDisplayName) => new(
+        spot.Id,
+        spot.Name,
+        spot.Description,
+        spot.Category,
+        spot.PhotoUrls[0],
+        spot.Location.Y,
+        spot.Location.X,
+        spot.CreatedByUserId,
+        creatorDisplayName,
+        spot.CreatedAt,
+        spot.ModerationStatus,
+        spot.RejectionReason,
+        spot.ScheduledDeletionAt);
+}

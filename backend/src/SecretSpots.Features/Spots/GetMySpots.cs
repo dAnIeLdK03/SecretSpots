@@ -42,19 +42,7 @@ public static class GetMySpots
                 .ToPagedResponseAsync(
                     query.Page,
                     query.PageSize,
-                    s => new SpotSearchResultResponse(
-                        s.Id,
-                        s.Name,
-                        s.Description,
-                        s.Category,
-                        s.PhotoUrls[0],
-                        s.Location.Y,
-                        s.Location.X,
-                        s.CreatedByUserId,
-                        s.CreatedAt,
-                        s.ModerationStatus,
-                        s.RejectionReason,
-                        s.ScheduledDeletionAt),
+                    SpotSearchResultResponse.From,
                     cancellationToken);
         }
     }

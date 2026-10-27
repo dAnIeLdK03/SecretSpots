@@ -69,20 +69,7 @@ public static class GetAdminSpots
                 .ToPagedResponseAsync(
                     query.Page,
                     query.PageSize,
-                    x => new AdminSpotResponse(
-                        x.spot.Id,
-                        x.spot.Name,
-                        x.spot.Description,
-                        x.spot.Category,
-                        x.spot.PhotoUrls[0],
-                        x.spot.Location.Y,
-                        x.spot.Location.X,
-                        x.spot.CreatedByUserId,
-                        x.DisplayName,
-                        x.spot.CreatedAt,
-                        x.spot.ModerationStatus,
-                        x.spot.RejectionReason,
-                        x.spot.ScheduledDeletionAt),
+                    x => AdminSpotResponse.From(x.spot, x.DisplayName),
                     cancellationToken);
         }
     }

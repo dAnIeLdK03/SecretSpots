@@ -17,4 +17,22 @@ public record SpotResponse(
     DateTimeOffset CreatedAt,
     SpotModerationStatus ModerationStatus,
     string? RejectionReason,
-    DateTimeOffset? ScheduledDeletionAt);
+    DateTimeOffset? ScheduledDeletionAt)
+{
+    public static SpotResponse From(Spot spot, string creatorDisplayName) => new(
+        spot.Id,
+        spot.Name,
+        spot.Description,
+        spot.Category,
+        spot.PhotoUrls,
+        spot.Location.Y,
+        spot.Location.X,
+        spot.CreatedByUserId,
+        creatorDisplayName,
+        spot.AverageRating,
+        spot.RatingsCount,
+        spot.CreatedAt,
+        spot.ModerationStatus,
+        spot.RejectionReason,
+        spot.ScheduledDeletionAt);
+}
