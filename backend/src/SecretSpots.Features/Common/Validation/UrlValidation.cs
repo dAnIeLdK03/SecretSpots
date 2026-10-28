@@ -24,7 +24,7 @@ public static class UrlValidation
     // ownerUserId requires the key's first path segment (UploadPhoto writes every object under
     // "{userId}/...") to match the caller — without this, any authenticated user could copy
     // someone else's public photo URL (a fully legitimate own-bucket URL) into their own spot,
-    // then edit/delete that spot to have UpdateSpot/SpotDeletionCleanup delete the *original*
+    // then edit/delete that spot to have SpotPhotoCleanup delete the *original*
     // owner's R2 object out from under their still-live spot/check-in.
     public static bool IsOwnPhotoUrl(string value, string publicBaseUrl, Guid ownerUserId)
     {

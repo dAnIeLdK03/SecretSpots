@@ -100,7 +100,7 @@ public static class SubmitSpotEdit
                 },
                 cancellationToken);
 
-            await SpotChangeRequestPhotos.DeleteUnusedAsync(
+            await SpotPhotoCleanup.DeleteUnusedAsync(
                 photoStorage, replacedPhotoUrls, spot.PhotoUrls.Concat(photoUrls), spot.Id, logger, cancellationToken);
 
             logger.LogInformation(SpotsLogMessages.SpotEditRequested, spot.Id, userContext.UserId);

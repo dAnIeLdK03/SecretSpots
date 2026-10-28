@@ -38,7 +38,7 @@ public static class SubmitSpotDeletion
             var (request, replacedPhotoUrls) = await PendingSpotChangeRequests.SubmitAsync(
                 db, spot, userContext.UserId, SpotChangeRequestType.Deletion, _ => { }, cancellationToken);
 
-            await SpotChangeRequestPhotos.DeleteUnusedAsync(
+            await SpotPhotoCleanup.DeleteUnusedAsync(
                 photoStorage, replacedPhotoUrls, spot.PhotoUrls, spot.Id, logger, cancellationToken);
 
             logger.LogInformation(SpotsLogMessages.SpotDeletionRequested, spot.Id, userContext.UserId);
