@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SecretSpots.Domain;
+using SecretSpots.Features.Common.Hosting;
 
 namespace SecretSpots.Features.Common.Persistence;
 
@@ -13,31 +13,13 @@ namespace SecretSpots.Features.Common.Persistence;
 public class TokenCleanupService(
     IServiceScopeFactory scopeFactory,
     IOptions<TokenCleanupOptions> options,
-    ILogger<TokenCleanupService> logger) : BackgroundService
+    ILogger<TokenCleanupService> logger) : PeriodicBackgroundService(scopeFactory, logger)
 {
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override TimeSpan Interval => TimeSpan.FromHours(options.Value.IntervalHours);
+
+    protected override async Task RunOnceAsync(IServiceProvider services, CancellationToken cancellationToken)
     {
-        var interval = TimeSpan.FromHours(options.Value.IntervalHours);
-
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            await CleanupAsync(stoppingToken);
-
-            try
-            {
-                await Task.Delay(interval, stoppingToken);
-            }
-            catch (OperationCanceledException)
-            {
-                break;
-            }
-        }
-    }
-
-    private async Task CleanupAsync(CancellationToken cancellationToken)
-    {
-        using var scope = scopeFactory.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
+        var db = services.GetRequiredService<IAppDbContext>();
 
         var now = DateTimeOffset.UtcNow;
 
@@ -63,7 +45,7 @@ public class TokenCleanupService(
 
         if (deletedRefreshTokens > 0 || deletedResetTokens > 0 || deletedExternalAuthTransactions > 0)
         {
-            logger.LogInformation(
+            Logger.LogInformation(
                 TokenCleanupLogMessages.TokensCleanedUp,
                 deletedRefreshTokens, deletedResetTokens, deletedExternalAuthTransactions);
         }
