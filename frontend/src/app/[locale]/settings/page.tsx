@@ -75,23 +75,17 @@ export default function SettingsPage() {
       <h1 className="text-3xl font-semibold">{t("title")}</h1>
 
       {user && !user.isEmailVerified ? (
-        <div
-          className="flex flex-col gap-2 rounded-2xl border border-amber-500/40 p-5"
-          style={{ backgroundColor: "var(--fieldmap-card)" }}
-        >
+        <div className="flex flex-col gap-2 rounded-2xl border border-amber-500/40 p-5 bg-card">
           <p className="text-sm">{tAuth("emailNotVerifiedBanner")}</p>
           {resendSent ? (
-            <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-              {tAuth("resendVerificationSuccess")}
-            </p>
+            <p className="text-sm text-dim">{tAuth("resendVerificationSuccess")}</p>
           ) : (
             <>
               {resendError ? <p className="text-sm text-red-700 dark:text-red-400">{resendError}</p> : null}
               <button
                 onClick={handleResendVerification}
                 disabled={resending}
-                className="w-fit rounded border px-4 py-2 text-sm disabled:opacity-50"
-                style={{ borderColor: "var(--fieldmap-contour)" }}
+                className="w-fit rounded border px-4 py-2 text-sm disabled:opacity-50 border-contour"
               >
                 {resending ? tAuth("resendVerificationSending") : tAuth("resendVerificationButton")}
               </button>
@@ -100,14 +94,12 @@ export default function SettingsPage() {
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-2 rounded-2xl p-5" style={{ backgroundColor: "var(--fieldmap-card)" }}>
-        <h2 className="text-sm font-semibold uppercase" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("languageSectionTitle")}
-        </h2>
+      <div className="flex flex-col gap-2 rounded-2xl p-5 bg-card">
+        <h2 className="text-sm font-semibold uppercase text-dim">{t("languageSectionTitle")}</h2>
         <LocaleSwitcher />
       </div>
 
-      <div className="flex flex-col gap-2 rounded-2xl border border-red-700/40 p-5" style={{ backgroundColor: "var(--fieldmap-card)" }}>
+      <div className="flex flex-col gap-2 rounded-2xl border border-red-700/40 p-5 bg-card">
         <h2 className="text-sm font-semibold uppercase text-red-700 dark:text-red-400">{t("dangerZoneSectionTitle")}</h2>
         {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
         <button

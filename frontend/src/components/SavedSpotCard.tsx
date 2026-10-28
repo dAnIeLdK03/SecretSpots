@@ -11,16 +11,15 @@ export function SavedSpotCard({ spot }: { spot: SavedSpotResponse }) {
   return (
     <Link
       href={`/spots/${spot.spotId}`}
-      className="group flex flex-col overflow-hidden rounded-xl border shadow-sm transition hover:shadow-md"
-      style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-card)" }}
+      className="group flex flex-col overflow-hidden rounded-xl border shadow-sm transition hover:shadow-md border-contour bg-card"
     >
       <div className="relative h-32 w-full">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={spot.photoUrl} alt={spot.spotName} className="h-full w-full object-cover" />
       </div>
-      <div className="flex flex-1 flex-col gap-1 p-4" style={{ color: "var(--fieldmap-ink)" }}>
+      <div className="flex flex-1 flex-col gap-1 p-4 text-ink">
         <h3 className="font-semibold">{spot.spotName}</h3>
-        <div className="flex items-center gap-1 text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+        <div className="flex items-center gap-1 text-xs text-dim">
           <CategoryIcon category={spot.category} size={12} />
           {t(`category.${spot.category}`)}
         </div>

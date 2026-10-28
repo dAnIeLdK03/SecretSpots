@@ -70,22 +70,18 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
         aria-modal="true"
         aria-label={t("modalTitle")}
         tabIndex={-1}
-        className="w-full max-w-sm rounded-lg p-6 outline-none"
-        style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+        className="w-full max-w-sm rounded-lg p-6 outline-none bg-paper-light text-ink"
       >
         {result ? (
           <div className="flex flex-col gap-4">
             <h2 className="text-lg font-semibold">{t("successTitle")}</h2>
             <p>{t("crystalsAwardedMessage", { count: result.crystalsAwarded })}</p>
-            <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-              {t("newBalanceLabel")}: {result.newCrystalBalance}
-            </p>
+            <p className="text-sm text-dim">{t("newBalanceLabel")}: {result.newCrystalBalance}</p>
             <div className="flex justify-end">
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded px-4 py-2"
-                style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
+                className="rounded px-4 py-2 bg-trail text-paper-light"
               >
                 {t("closeButton")}
               </button>
@@ -100,16 +96,14 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded px-4 py-2"
-                style={{ color: "var(--fieldmap-dim)" }}
+                className="rounded px-4 py-2 text-dim"
               >
                 {t("cancelButton")}
               </button>
               <button
                 type="submit"
                 disabled={submitting || !photoUrl}
-                className="rounded px-4 py-2 disabled:opacity-50"
-                style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
+                className="rounded px-4 py-2 disabled:opacity-50 bg-trail text-paper-light"
               >
                 {submitting ? t("submitting") : t("submitButton")}
               </button>

@@ -40,9 +40,7 @@ function PhotoStrip({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-        {label}
-      </span>
+      <span className="text-xs text-dim">{label}</span>
       <div className="flex flex-wrap gap-2">
         {photoUrls.map((url) => (
           <button
@@ -79,14 +77,10 @@ function PhotoStrip({
 function ChangedField({ label, from, to }: { label: string; from: string; to: string }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-        {label}
-      </span>
+      <span className="text-xs text-dim">{label}</span>
       <div className="grid grid-cols-1 items-start gap-2 text-sm sm:grid-cols-[1fr_auto_1fr]">
-        <p className="break-words line-through" style={{ color: "var(--fieldmap-dim)" }}>
-          {from}
-        </p>
-        <ArrowRight size={14} className="hidden sm:block" style={{ color: "var(--fieldmap-dim)" }} />
+        <p className="break-words line-through text-dim">{from}</p>
+        <ArrowRight size={14} className="hidden sm:block text-dim" />
         <p className="font-medium break-words">{to}</p>
       </div>
     </div>
@@ -137,31 +131,23 @@ export default function AdminSpotChangesPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 md:p-8">
-      <div className="border-b pb-4" style={{ borderColor: "var(--fieldmap-contour)" }}>
+      <div className="border-b pb-4 border-contour">
         <h1 className="flex items-center gap-2 text-2xl font-semibold">
-          <FilePenLine size={24} style={{ color: "var(--fieldmap-trail)" }} />
+          <FilePenLine size={24} className="text-trail" />
           {t("title")}
           {status !== "loading" ? (
-            <span className="text-base font-normal" style={{ color: "var(--fieldmap-dim)" }}>
-              ({totalCount})
-            </span>
+            <span className="text-base font-normal text-dim">({totalCount})</span>
           ) : null}
         </h1>
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("subtitle")}
-        </p>
+        <p className="text-sm text-dim">{t("subtitle")}</p>
       </div>
 
       {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
 
       {status === "loading" ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("loading")}
-        </p>
+        <p className="text-sm text-dim">{t("loading")}</p>
       ) : items.length === 0 ? (
-        <p className="rounded-xl p-8 text-center text-sm" style={{ backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-dim)" }}>
-          {t("empty")}
-        </p>
+        <p className="rounded-xl p-8 text-center text-sm bg-card text-dim">{t("empty")}</p>
       ) : (
         <ul className="flex flex-col gap-4">
           {items.map((request) => {
@@ -178,12 +164,9 @@ export default function AdminSpotChangesPage() {
             return (
               <li
                 key={request.id}
-                className="flex flex-col gap-4 rounded-xl border p-4"
-                style={{
-                  backgroundColor: "var(--fieldmap-card)",
-                  borderColor: isDeletion ? "rgba(239, 68, 68, 0.35)" : "var(--fieldmap-contour)",
-                  opacity: busy ? 0.6 : 1,
-                }}
+                className={`flex flex-col gap-4 rounded-xl border bg-card p-4 ${
+                  isDeletion ? "border-red-500/35" : "border-contour"
+                } ${busy ? "opacity-60" : ""}`}
               >
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div className="flex flex-wrap items-center gap-2">
@@ -193,10 +176,7 @@ export default function AdminSpotChangesPage() {
                         {t("typeDeletion")}
                       </span>
                     ) : (
-                      <span
-                        className="flex items-center gap-1 rounded px-2 py-0.5 font-semibold"
-                        style={{ backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-ink)" }}
-                      >
+                      <span className="flex items-center gap-1 rounded px-2 py-0.5 font-semibold bg-contour text-ink">
                         <FilePenLine size={12} />
                         {t("typeEdit")}
                       </span>
@@ -205,12 +185,11 @@ export default function AdminSpotChangesPage() {
                       {request.currentName}
                       <ExternalLink size={12} />
                     </Link>
-                    <span style={{ color: "var(--fieldmap-dim)" }}>• {formatRelativeTime(request.createdAt, locale)}</span>
+                    <span className="text-dim">• {formatRelativeTime(request.createdAt, locale)}</span>
                   </div>
                   <Link
                     href={`/admin/users/${request.requestedByUserId}`}
-                    className="flex items-center gap-1 hover:underline"
-                    style={{ color: "var(--fieldmap-dim)" }}
+                    className="flex items-center gap-1 hover:underline text-dim"
                   >
                     <User size={12} />
                     {request.requestedByDisplayName}
@@ -248,9 +227,7 @@ export default function AdminSpotChangesPage() {
                     ) : null}
                     {photosChanged ? (
                       <div className="flex flex-col gap-2">
-                        <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-                          {t("photosLabel")}
-                        </span>
+                        <span className="text-xs text-dim">{t("photosLabel")}</span>
                         <p className="text-sm font-medium">
                           {removedPhotos.size === 0 && addedPhotos.size === 0
                             ? t("photosReordered")
@@ -279,7 +256,7 @@ export default function AdminSpotChangesPage() {
                   </div>
                 )}
 
-                <div className="border-t pt-3" style={{ borderColor: "var(--fieldmap-contour)" }}>
+                <div className="border-t pt-3 border-contour">
                   {rejectingId === request.id ? (
                     <div className="flex flex-col gap-2">
                       <textarea
@@ -289,15 +266,13 @@ export default function AdminSpotChangesPage() {
                         placeholder={t("rejectionReasonPlaceholder")}
                         rows={3}
                         autoFocus
-                        className="rounded-lg border px-3 py-2 text-sm"
-                        style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+                        className="rounded-lg border px-3 py-2 text-sm border-contour bg-paper-light text-ink"
                       />
                       <div className="flex flex-wrap justify-end gap-2 text-sm">
                         <button
                           onClick={() => setRejectingId(null)}
                           disabled={busy}
-                          className="rounded-lg px-4 py-2 disabled:opacity-50"
-                          style={{ color: "var(--fieldmap-dim)" }}
+                          className="rounded-lg px-4 py-2 disabled:opacity-50 text-dim"
                         >
                           {t("cancelButton")}
                         </button>
@@ -326,8 +301,7 @@ export default function AdminSpotChangesPage() {
                       <button
                         onClick={() => handleApprove(request)}
                         disabled={busy}
-                        className="flex items-center gap-2 rounded-lg px-4 py-2 font-medium shadow-sm transition hover:opacity-90 disabled:opacity-50"
-                        style={{ backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }}
+                        className="flex items-center gap-2 rounded-lg px-4 py-2 font-medium shadow-sm transition hover:opacity-90 disabled:opacity-50 bg-ink text-paper-light"
                       >
                         <Check size={16} />
                         {isDeletion ? t("approveDeletionButton") : t("approveEditButton")}

@@ -114,18 +114,13 @@ export default function AdminSpotsPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 md:p-8">
-      <div
-        className="flex flex-col justify-between gap-4 border-b pb-4 md:flex-row md:items-center"
-        style={{ borderColor: "var(--fieldmap-contour)" }}
-      >
+      <div className="flex flex-col justify-between gap-4 border-b pb-4 md:flex-row md:items-center border-contour">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-semibold">
-            <ShieldCheck size={24} style={{ color: "var(--fieldmap-trail)" }} />
+            <ShieldCheck size={24} className="text-trail" />
             {t("title")}
           </h1>
-          <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-            {t("subtitle")}
-          </p>
+          <p className="text-sm text-dim">{t("subtitle")}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -133,8 +128,7 @@ export default function AdminSpotsPage() {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as SpotModerationStatus)}
             aria-label={t("statusFilterLabel")}
-            className="rounded-lg border px-3 py-2 text-sm"
-            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-card)" }}
+            className="rounded-lg border px-3 py-2 text-sm border-contour bg-card"
           >
             {SPOT_MODERATION_STATUSES.map((s) => (
               <option key={s} value={s}>
@@ -151,8 +145,7 @@ export default function AdminSpotsPage() {
       <label className="relative block">
         <Search
           size={16}
-          className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
-          style={{ color: "var(--fieldmap-dim)" }}
+          className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-dim"
         />
         <input
           type="search"
@@ -160,19 +153,16 @@ export default function AdminSpotsPage() {
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("searchPlaceholder", { status: t(`status.${statusFilter}`).toLowerCase() })}
           aria-label={t("searchLabel")}
-          className="w-full rounded-lg border py-2 pr-3 pl-9 text-sm"
-          style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-card)" }}
+          className="w-full rounded-lg border py-2 pr-3 pl-9 text-sm border-contour bg-card"
         />
       </label>
 
       {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
 
       {status === "loading" ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("loading")}
-        </p>
+        <p className="text-sm text-dim">{t("loading")}</p>
       ) : items.length === 0 ? (
-        <p className="rounded-xl p-8 text-center text-sm" style={{ backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-dim)" }}>
+        <p className="rounded-xl p-8 text-center text-sm bg-card text-dim">
           {debouncedSearch ? t("noSearchResults", { query: debouncedSearch }) : t("empty")}
         </p>
       ) : (
@@ -182,20 +172,16 @@ export default function AdminSpotsPage() {
             return (
               <li
                 key={spot.id}
-                className="rounded-xl border p-4 transition"
-                style={{
-                  backgroundColor: "var(--fieldmap-card)",
-                  borderColor: spot.moderationStatus === "Rejected" ? "rgba(239, 68, 68, 0.35)" : "var(--fieldmap-contour)",
-                  opacity: busy ? 0.6 : 1,
-                }}
+                className={`rounded-xl border bg-card p-4 transition ${
+                  spot.moderationStatus === "Rejected" ? "border-red-500/35" : "border-contour"
+                } ${busy ? "opacity-60" : ""}`}
               >
                 <div className="flex flex-col items-start gap-4 md:flex-row">
                   <button
                     type="button"
                     onClick={() => setLightboxSpot(spot)}
                     aria-label={t("enlargePhoto")}
-                    className="group relative h-32 w-full shrink-0 overflow-hidden rounded-lg border md:w-48"
-                    style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-contour)" }}
+                    className="group relative h-32 w-full shrink-0 overflow-hidden rounded-lg border md:w-48 border-contour bg-contour"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -213,16 +199,15 @@ export default function AdminSpotsPage() {
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex flex-wrap items-center gap-2 text-xs">
                         <ModerationStatusBadge status={spot.moderationStatus} />
-                        <span className="flex items-center gap-1" style={{ color: "var(--fieldmap-dim)" }}>
+                        <span className="flex items-center gap-1 text-dim">
                           <CategoryIcon category={spot.category} size={12} />
                           {tSpots(`category.${spot.category}`)}
                         </span>
-                        <span style={{ color: "var(--fieldmap-dim)" }}>• {formatRelativeTime(spot.createdAt, locale)}</span>
+                        <span className="text-dim">• {formatRelativeTime(spot.createdAt, locale)}</span>
                       </div>
                       <Link
                         href={`/admin/users/${spot.createdByUserId}`}
-                        className="flex items-center gap-1 text-xs hover:underline"
-                        style={{ color: "var(--fieldmap-dim)" }}
+                        className="flex items-center gap-1 text-xs hover:underline text-dim"
                       >
                         <User size={12} />
                         {spot.createdByDisplayName}
@@ -231,9 +216,7 @@ export default function AdminSpotsPage() {
 
                     <div className="space-y-1">
                       <h2 className="text-lg font-semibold break-words">{spot.name}</h2>
-                      <p className="line-clamp-2 text-sm break-words" style={{ color: "var(--fieldmap-dim)" }}>
-                        {spot.description}
-                      </p>
+                      <p className="line-clamp-2 text-sm break-words text-dim">{spot.description}</p>
                     </div>
 
                     {spot.rejectionReason || spot.scheduledDeletionAt ? (
@@ -253,7 +236,7 @@ export default function AdminSpotsPage() {
                       </div>
                     ) : null}
 
-                    <div className="flex flex-wrap items-center gap-4 pt-1 text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+                    <div className="flex flex-wrap items-center gap-4 pt-1 text-xs text-dim">
                       <Link
                         href={`/map?lat=${spot.latitude}&lng=${spot.longitude}&spot=${spot.id}`}
                         className="flex items-center gap-1 hover:underline"
@@ -263,8 +246,7 @@ export default function AdminSpotsPage() {
                       </Link>
                       <Link
                         href={`/spots/${spot.id}`}
-                        className="flex items-center gap-1 hover:underline"
-                        style={{ color: "var(--fieldmap-trail)" }}
+                        className="flex items-center gap-1 hover:underline text-trail"
                       >
                         <ExternalLink size={12} />
                         {t("viewSpotLink")}
@@ -273,15 +255,13 @@ export default function AdminSpotsPage() {
                   </div>
 
                   <div
-                    className="flex w-full justify-end gap-2 border-t pt-3 md:w-auto md:flex-col md:border-t-0 md:pt-0"
-                    style={{ borderColor: "var(--fieldmap-contour)" }}
+                    className="flex w-full justify-end gap-2 border-t pt-3 md:w-auto md:flex-col md:border-t-0 md:pt-0 border-contour"
                   >
                     {spot.moderationStatus !== "Approved" ? (
                       <button
                         onClick={() => handleApprove(spot.id)}
                         disabled={busy}
-                        className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 disabled:opacity-50 md:flex-none"
-                        style={{ backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 disabled:opacity-50 md:flex-none bg-ink text-paper-light"
                       >
                         {/* Approving a Rejected spot undoes the rejection, so it reads as a restore. */}
                         {spot.moderationStatus === "Rejected" ? (

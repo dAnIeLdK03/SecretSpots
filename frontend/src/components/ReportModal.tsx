@@ -47,8 +47,7 @@ export function ReportModal({ onClose, onSubmit }: ReportModalProps) {
         aria-modal="true"
         aria-label={t("modalTitle")}
         tabIndex={-1}
-        className="w-full max-w-sm rounded-lg p-6 outline-none"
-        style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+        className="w-full max-w-sm rounded-lg p-6 outline-none bg-paper-light text-ink"
       >
         {submitted ? (
           <>
@@ -57,8 +56,7 @@ export function ReportModal({ onClose, onSubmit }: ReportModalProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded px-4 py-2 text-sm"
-                style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
+                className="rounded px-4 py-2 text-sm bg-trail text-paper-light"
               >
                 {t("closeButton")}
               </button>
@@ -69,9 +67,7 @@ export function ReportModal({ onClose, onSubmit }: ReportModalProps) {
             <h2 className="mb-4 text-lg font-semibold">{t("modalTitle")}</h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <fieldset className="flex flex-col gap-2">
-                <legend className="mb-1 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-                  {t("reasonLabel")}
-                </legend>
+                <legend className="mb-1 text-sm text-dim">{t("reasonLabel")}</legend>
                 {REPORT_REASONS.map((r) => (
                   <label key={r} className="flex items-center gap-2 text-sm">
                     <input type="radio" name="reason" value={r} checked={reason === r} onChange={() => setReason(r)} />
@@ -80,28 +76,22 @@ export function ReportModal({ onClose, onSubmit }: ReportModalProps) {
                 ))}
               </fieldset>
               <label className="flex flex-col gap-1">
-                <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-                  {t("detailsLabel")}
-                </span>
+                <span className="text-sm text-dim">{t("detailsLabel")}</span>
                 <textarea
                   value={details}
                   onChange={(e) => setDetails(e.target.value)}
                   maxLength={MAX_DETAILS_LENGTH}
                   rows={3}
-                  className="rounded border px-3 py-2 text-sm"
-                  style={{ borderColor: "var(--fieldmap-contour)" }}
+                  className="rounded border px-3 py-2 text-sm border-contour"
                 />
               </label>
               {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
               <div className="flex justify-end gap-2">
-                <button type="button" onClick={onClose} style={{ color: "var(--fieldmap-dim)" }}>
-                  {t("cancelButton")}
-                </button>
+                <button type="button" onClick={onClose} className="text-dim">{t("cancelButton")}</button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded px-4 py-2 text-sm disabled:opacity-50"
-                  style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
+                  className="rounded px-4 py-2 text-sm disabled:opacity-50 bg-trail text-paper-light"
                 >
                   {submitting ? t("submitting") : t("submitButton")}
                 </button>

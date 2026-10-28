@@ -19,8 +19,7 @@ function SpotTile({ spot }: { spot: SpotSearchResult }) {
   return (
     <Link
       href={`/spots/${spot.id}`}
-      className="relative block aspect-square w-40 shrink-0 snap-start overflow-hidden rounded-xl sm:w-48"
-      style={{ backgroundColor: "var(--fieldmap-contour)" }}
+      className="relative block aspect-square w-40 shrink-0 snap-start overflow-hidden rounded-xl sm:w-48 bg-contour"
     >
       {!imageFailed ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -80,14 +79,12 @@ export function AdminUserSpotsCarousel({ userId }: { userId: string }) {
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl p-4" style={{ backgroundColor: "var(--fieldmap-card)" }}>
+    <section className="flex flex-col gap-3 rounded-2xl p-4 bg-card">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-sm font-semibold">
           {t("spotsHeading")}
           {status !== "loading" && !error ? (
-            <span className="ml-1 font-normal" style={{ color: "var(--fieldmap-dim)" }}>
-              ({totalCount})
-            </span>
+            <span className="ml-1 font-normal text-dim">({totalCount})</span>
           ) : null}
         </h2>
         {items.length > 0 ? (
@@ -115,13 +112,9 @@ export function AdminUserSpotsCarousel({ userId }: { userId: string }) {
       {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
 
       {status === "loading" ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("loading")}
-        </p>
+        <p className="text-sm text-dim">{t("loading")}</p>
       ) : items.length === 0 && !error ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("spotsEmpty")}
-        </p>
+        <p className="text-sm text-dim">{t("spotsEmpty")}</p>
       ) : (
         <div ref={scrollerRef} onScroll={handleScroll} className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2">
           {items.map((spot) => (
@@ -129,8 +122,7 @@ export function AdminUserSpotsCarousel({ userId }: { userId: string }) {
           ))}
           {status === "loadingMore" ? (
             <div
-              className="flex aspect-square w-40 shrink-0 items-center justify-center rounded-xl text-sm sm:w-48"
-              style={{ backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-dim)" }}
+              className="flex aspect-square w-40 shrink-0 items-center justify-center rounded-xl text-sm sm:w-48 bg-contour text-dim"
             >
               {t("loading")}
             </div>

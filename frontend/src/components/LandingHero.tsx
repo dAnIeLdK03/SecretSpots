@@ -32,19 +32,14 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
   }, [searchTerm, onSearch]);
 
   return (
-    <div
-      className="relative overflow-hidden"
-      style={{ backgroundColor: "var(--fieldmap-paper)", color: "var(--fieldmap-ink)" }}
-    >
+    <div className="relative overflow-hidden bg-paper text-ink">
       <header className="relative z-10 flex items-center justify-between gap-4 px-6 py-4">
         <div className="flex items-center gap-2 text-lg font-semibold tracking-tight">
           SecretSpots
         </div>
 
         <nav className="hidden items-center gap-6 text-sm sm:flex">
-          <Link href="/" className="border-b-2 pb-1" style={{ borderColor: "var(--fieldmap-trail)" }}>
-            {t("exploreNav")}
-          </Link>
+          <Link href="/" className="border-b-2 pb-1 border-trail">{t("exploreNav")}</Link>
           <Link href="/map" className="opacity-70 hover:opacity-100">
             {t("mapNav")}
           </Link>
@@ -78,8 +73,7 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
               </Link>
               <Link
                 href="/register"
-                className="rounded-full border px-4 py-2 text-sm whitespace-nowrap hover:bg-black/5 dark:hover:bg-white/5"
-                style={{ borderColor: "var(--fieldmap-ink)" }}
+                className="rounded-full border px-4 py-2 text-sm whitespace-nowrap hover:bg-black/5 dark:hover:bg-white/5 border-ink"
               >
                 {tAuth("registerTitle")}
               </Link>
@@ -96,11 +90,9 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
               className="text-4xl leading-tight font-extrabold uppercase [transform:scaleX(0.94)] [transform-origin:left] sm:text-5xl"
             >
               {t("heroTitlePrefix")}
-              <span style={{ color: "var(--fieldmap-trail)" }}>{t("heroTitleAccent")}</span>
+              <span className="text-trail">{t("heroTitleAccent")}</span>
             </h1>
-            <p className="mt-4 max-w-md" style={{ color: "var(--fieldmap-dim)" }}>
-              {t("heroSubtitle")}
-            </p>
+            <p className="mt-4 max-w-md text-dim">{t("heroSubtitle")}</p>
 
             <form
               onSubmit={(e) => {
@@ -121,8 +113,7 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
               <button
                 type="submit"
                 aria-label={t("searchButtonLabel")}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-                style={{ backgroundColor: "var(--fieldmap-trail)", color: "#f1eddc" }}
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-trail text-[#f1eddc]"
               >
                 →
               </button>

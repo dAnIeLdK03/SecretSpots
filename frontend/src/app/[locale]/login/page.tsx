@@ -50,13 +50,13 @@ export default function LoginPage() {
     <AuthSplitLayout title={t("loginWelcomeTitle")} subtitle={t("loginWelcomeSubtitle")}>
       <h2 className="text-2xl font-semibold">{t("loginTitle")}</h2>
       {restoredUser && !chooseAnother ? (
-        <div className="flex w-full max-w-sm flex-col gap-3 rounded-md border p-4" style={{ borderColor: "var(--fieldmap-contour)" }}>
+        <div className="flex w-full max-w-sm flex-col gap-3 rounded-md border p-4 border-contour">
           <p className="text-sm">{t("continueAs", { name: restoredUser.displayName })}</p>
           <div className="flex gap-2">
-            <Link href="/account" className="rounded px-4 py-2 text-sm" style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}>
+            <Link href="/account" className="rounded px-4 py-2 text-sm bg-trail text-paper-light">
               {t("continueButton")}
             </Link>
-            <button type="button" onClick={handleUseAnother} className="rounded border px-4 py-2 text-sm" style={{ borderColor: "var(--fieldmap-contour)" }}>
+            <button type="button" onClick={handleUseAnother} className="rounded border px-4 py-2 text-sm border-contour">
               {t("useAnotherAccount")}
             </button>
           </div>
@@ -64,32 +64,26 @@ export default function LoginPage() {
       ) : null}
       <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
         <label className="flex flex-col gap-1">
-          <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-            {t("emailLabel")}
-          </span>
+          <span className="text-sm text-dim">{t("emailLabel")}</span>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded border px-3 py-2"
-            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
+            className="rounded border px-3 py-2 border-contour bg-paper-light"
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-            {t("passwordLabel")}
-          </span>
+          <span className="text-sm text-dim">{t("passwordLabel")}</span>
           <input
             type="password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="rounded border px-3 py-2"
-            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
+            className="rounded border px-3 py-2 border-contour bg-paper-light"
           />
         </label>
-        <div className="flex items-center justify-between text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+        <div className="flex items-center justify-between text-sm text-dim">
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -106,14 +100,13 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded px-4 py-2 disabled:opacity-50"
-          style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
+          className="rounded px-4 py-2 disabled:opacity-50 bg-trail text-paper-light"
         >
           {submitting ? t("loginSubmitting") : t("loginButton")}
         </button>
       </form>
       <ExternalAuthButtons />
-      <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+      <p className="text-sm text-dim">
         {t("noAccountYet")}{" "}
         <Link href="/register" className="underline">
           {t("registerLink")}

@@ -96,19 +96,16 @@ export default function LandingPage() {
     );
 
   return (
-    <div className="flex-1" style={{ backgroundColor: "var(--fieldmap-paper)", color: "var(--fieldmap-ink)" }}>
+    <div className="flex-1 bg-paper text-ink">
       <LandingHero onSearch={handleSearch} />
 
       <div className="mx-auto max-w-6xl px-6 py-10">
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => handleCategoryChange("All")}
-            className="rounded-full px-4 py-2 text-sm font-medium"
-            style={
-              categoryFilter === "All"
-                ? { backgroundColor: "var(--fieldmap-trail)", color: "#f1eddc" }
-                : { backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-ink)" }
-            }
+            className={`rounded-full px-4 py-2 text-sm font-medium ${
+              categoryFilter === "All" ? "bg-trail text-[#f1eddc]" : "bg-card text-ink"
+            }`}
           >
             {t("allSpotsFilter")}
           </button>
@@ -116,12 +113,9 @@ export default function LandingPage() {
             <button
               key={category}
               onClick={() => handleCategoryChange(category)}
-              className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium"
-              style={
-                categoryFilter === category
-                  ? { backgroundColor: "var(--fieldmap-trail)", color: "#f1eddc" }
-                  : { backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-ink)" }
-              }
+              className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium ${
+                categoryFilter === category ? "bg-trail text-[#f1eddc]" : "bg-card text-ink"
+              }`}
             >
               <CategoryIcon category={category} size={14} />
               {tSpots(`category.${category}`)}
@@ -134,7 +128,7 @@ export default function LandingPage() {
             <h2 className="text-2xl font-semibold">
               {isSearching ? t("searchResultsTitle", { term: searchTerm ?? "" }) : t("featuredTitle")}
             </h2>
-            <p className="mt-1 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+            <p className="mt-1 text-sm text-dim">
               {isSearching
                 ? hasExactMatch
                   ? t("searchResultsSubtitle")
@@ -144,17 +138,14 @@ export default function LandingPage() {
           </div>
           <Link
             href="/map"
-            className="rounded px-4 py-2 text-sm font-medium"
-            style={{ backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper)" }}
+            className="rounded px-4 py-2 text-sm font-medium bg-ink text-paper"
           >
             {t("exploreMapButton")}
           </Link>
         </div>
 
         {items.length === 0 ? (
-          <p className="mt-8 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-            {isSearching ? t("noSearchResults") : t("noSpotsYet")}
-          </p>
+          <p className="mt-8 text-sm text-dim">{isSearching ? t("noSearchResults") : t("noSpotsYet")}</p>
         ) : (
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {items.map((spot) => (
@@ -168,8 +159,7 @@ export default function LandingPage() {
             <button
               onClick={handleLoadMore}
               disabled={loadingMore}
-              className="rounded border px-4 py-2 text-sm disabled:opacity-50"
-              style={{ borderColor: "var(--fieldmap-contour)" }}
+              className="rounded border px-4 py-2 text-sm disabled:opacity-50 border-contour"
             >
               {t("loadMoreSpots")}
             </button>
@@ -177,7 +167,7 @@ export default function LandingPage() {
         ) : null}
       </div>
 
-      <div className="px-6 py-10" style={{ backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper)" }}>
+      <div className="px-6 py-10 bg-ink text-paper">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="text-center sm:text-left">
             <h3 className="text-lg font-semibold">{t("ctaTitle")}</h3>
@@ -185,8 +175,7 @@ export default function LandingPage() {
           </div>
           <Link
             href="/map"
-            className="rounded-full px-5 py-3 text-sm font-medium whitespace-nowrap"
-            style={{ backgroundColor: "var(--fieldmap-trail)", color: "#f1eddc" }}
+            className="rounded-full px-5 py-3 text-sm font-medium whitespace-nowrap bg-trail text-[#f1eddc]"
           >
             {t("addASpot")}
           </Link>

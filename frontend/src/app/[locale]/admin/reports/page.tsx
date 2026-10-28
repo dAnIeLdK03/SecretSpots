@@ -61,7 +61,7 @@ export default function AdminReportsPage() {
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 p-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
-        <label className="flex items-center gap-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+        <label className="flex items-center gap-2 text-sm text-dim">
           <input
             type="checkbox"
             checked={includeResolved}
@@ -74,22 +74,17 @@ export default function AdminReportsPage() {
       {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
 
       {status === "loading" ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("loading")}
-        </p>
+        <p className="text-sm text-dim">{t("loading")}</p>
       ) : items.length === 0 ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("empty")}
-        </p>
+        <p className="text-sm text-dim">{t("empty")}</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {items.map((report) => (
             <li
               key={report.id}
-              className="flex flex-col gap-2 rounded-2xl p-4"
-              style={{ backgroundColor: "var(--fieldmap-card)" }}
+              className="flex flex-col gap-2 rounded-2xl p-4 bg-card"
             >
-              <div className="flex flex-wrap items-center justify-between gap-2 text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-dim">
                 <span>
                   {report.contentType === "Spot" ? t("contentTypeSpot") : t("contentTypeComment")} ·{" "}
                   {tReports(`reason.${report.reason}`)} · {formatRelativeTime(report.createdAt, locale)}
@@ -105,19 +100,13 @@ export default function AdminReportsPage() {
                 ) : null}
               </div>
 
-              <p className="text-sm" style={{ color: "var(--fieldmap-ink)" }}>
-                {report.contentPreview ?? t("contentDeleted")}
-              </p>
+              <p className="text-sm text-ink">{report.contentPreview ?? t("contentDeleted")}</p>
 
               {report.details ? (
-                <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-                  {t("detailsLabel")}: {report.details}
-                </p>
+                <p className="text-sm text-dim">{t("detailsLabel")}: {report.details}</p>
               ) : null}
 
-              <p className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-                {t("reporterLabel")}: {report.reporterDisplayName}
-              </p>
+              <p className="text-xs text-dim">{t("reporterLabel")}: {report.reporterDisplayName}</p>
 
               <div className="flex flex-wrap items-center gap-3 text-sm">
                 {report.relatedSpotId ? (
@@ -131,8 +120,7 @@ export default function AdminReportsPage() {
                     <button
                       onClick={() => handleDismiss(report.id)}
                       disabled={busyId === report.id}
-                      className="rounded border px-3 py-1 disabled:opacity-50"
-                      style={{ borderColor: "var(--fieldmap-contour)" }}
+                      className="rounded border px-3 py-1 disabled:opacity-50 border-contour"
                     >
                       {t("dismissButton")}
                     </button>

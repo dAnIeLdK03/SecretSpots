@@ -5,9 +5,7 @@ export default function Loading() {
 
   return (
     <div className="flex flex-1 items-center justify-center p-8">
-      <p role="status" className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-        {t("loading")}
-      </p>
+      <p role="status" className="text-sm text-dim">{t("loading")}</p>
     </div>
   );
 }

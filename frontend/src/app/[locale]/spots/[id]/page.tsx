@@ -90,9 +90,7 @@ function SpotDetailContent({ id }: { id: string }) {
   if (state.status === "loading") {
     return (
       <div className="flex flex-1 items-center justify-center p-8">
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("loading")}
-        </p>
+        <p className="text-sm text-dim">{t("loading")}</p>
       </div>
     );
   }
@@ -101,9 +99,7 @@ function SpotDetailContent({ id }: { id: string }) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">
         <h1 className="text-xl font-semibold">{t("notFoundTitle")}</h1>
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("notFoundMessage")}
-        </p>
+        <p className="text-sm text-dim">{t("notFoundMessage")}</p>
       </div>
     );
   }
@@ -176,10 +172,7 @@ function SpotDetailContent({ id }: { id: string }) {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-4 p-8">
-      <div
-        className="flex flex-col gap-4 rounded-2xl p-4 shadow-sm md:flex-row"
-        style={{ backgroundColor: "var(--fieldmap-card)" }}
-      >
+      <div className="flex flex-col gap-4 rounded-2xl p-4 shadow-sm md:flex-row bg-card">
         <div className="md:w-96 md:flex-shrink-0">
           <PhotoSlider photos={spot.photoUrls} alt={spot.name} />
         </div>
@@ -205,8 +198,7 @@ function SpotDetailContent({ id }: { id: string }) {
           ) : null}
           {isOwner && pendingRequest ? (
             <div
-              className="flex flex-wrap items-center justify-between gap-2 rounded border px-3 py-2 text-sm"
-              style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+              className="flex flex-wrap items-center justify-between gap-2 rounded border px-3 py-2 text-sm border-contour bg-paper-light text-ink"
             >
               <p>{pendingRequest.type === "Deletion" ? t("deletionPendingNotice") : t("editPendingNotice")}</p>
               <button
@@ -234,19 +226,12 @@ function SpotDetailContent({ id }: { id: string }) {
           <SpotRatingSummary averageRating={spot.averageRating} ratingsCount={spot.ratingsCount} />
 
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--fieldmap-dim)" }}>
-              {t("descriptionLabel")}
-            </h2>
-            <p className="text-sm" style={{ color: "var(--fieldmap-ink)" }}>
-              {spot.description}
-            </p>
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-dim">{t("descriptionLabel")}</h2>
+            <p className="text-sm text-ink">{spot.description}</p>
           </div>
 
-          <dl
-            className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2 border-t pt-3 text-sm"
-            style={{ borderColor: "var(--fieldmap-contour)" }}
-          >
-            <dt className="flex items-center gap-2" style={{ color: "var(--fieldmap-dim)" }}>
+          <dl className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2 border-t pt-3 text-sm border-contour">
+            <dt className="flex items-center gap-2 text-dim">
               <Tag size={16} />
               {t("categoryLabel")}
             </dt>
@@ -255,19 +240,19 @@ function SpotDetailContent({ id }: { id: string }) {
               {t(`category.${spot.category}`)}
             </dd>
 
-            <dt className="flex items-center gap-2" style={{ color: "var(--fieldmap-dim)" }}>
+            <dt className="flex items-center gap-2 text-dim">
               <Avatar name={spot.createdByDisplayName} size={20} />
               {t("authorLabel")}
             </dt>
             <dd>@{spot.createdByDisplayName}</dd>
 
-            <dt className="flex items-center gap-2" style={{ color: "var(--fieldmap-dim)" }}>
+            <dt className="flex items-center gap-2 text-dim">
               <Clock size={16} />
               {t("createdAtLabel")}
             </dt>
             <dd>{formatRelativeTime(spot.createdAt, locale)}</dd>
 
-            <dt className="flex items-center gap-2" style={{ color: "var(--fieldmap-dim)" }}>
+            <dt className="flex items-center gap-2 text-dim">
               <MapPin size={16} />
               {t("locationLabel")}
             </dt>
@@ -277,14 +262,13 @@ function SpotDetailContent({ id }: { id: string }) {
               </span>
               <Link
                 href={`/map?lat=${spot.latitude}&lng=${spot.longitude}&spot=${spot.id}`}
-                className="underline"
-                style={{ color: "var(--fieldmap-trail)" }}
+                className="underline text-trail"
               >
                 {t("viewOnMap")}
               </Link>
             </dd>
 
-            <dt className="flex items-center gap-2" style={{ color: "var(--fieldmap-dim)" }}>
+            <dt className="flex items-center gap-2 text-dim">
               <Navigation size={16} />
               {t("directionsLabel")}
             </dt>
@@ -298,8 +282,7 @@ function SpotDetailContent({ id }: { id: string }) {
               {!isOwner && (
                 <button
                   onClick={handleCheckInClick}
-                  className="rounded px-4 py-2 text-sm"
-                  style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
+                  className="rounded px-4 py-2 text-sm bg-trail text-paper-light"
                 >
                   {tCheckIns("checkInButton")}
                 </button>
@@ -308,8 +291,7 @@ function SpotDetailContent({ id }: { id: string }) {
               {!isOwner && (
                 <button
                   onClick={handleReportClick}
-                  className="rounded border px-4 py-2 text-sm"
-                  style={{ borderColor: "var(--fieldmap-contour)", color: "var(--fieldmap-dim)" }}
+                  className="rounded border px-4 py-2 text-sm border-contour text-dim"
                 >
                   {t("reportButton")}
                 </button>
@@ -319,8 +301,7 @@ function SpotDetailContent({ id }: { id: string }) {
                 <div className="ml-auto flex items-center gap-2">
                   <button
                     onClick={() => setShowEditModal(true)}
-                    className="rounded border px-4 py-2 text-sm"
-                    style={{ borderColor: "var(--fieldmap-contour)" }}
+                    className="rounded border px-4 py-2 text-sm border-contour"
                   >
                     {t("editButton")}
                   </button>
@@ -336,7 +317,7 @@ function SpotDetailContent({ id }: { id: string }) {
             </div>
             {error ? <p className="mt-2 text-sm text-red-700 dark:text-red-400">{error}</p> : null}
             {showLoginPrompt ? (
-              <p className="mt-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+              <p className="mt-2 text-sm text-dim">
                 {tCheckIns("loginRequiredToCheckIn")}{" "}
                 <Link href="/login" className="underline">
                   {tAuth("loginTitle")}
@@ -344,7 +325,7 @@ function SpotDetailContent({ id }: { id: string }) {
               </p>
             ) : null}
             {showReportLoginPrompt ? (
-              <p className="mt-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+              <p className="mt-2 text-sm text-dim">
                 {t("loginRequiredToReport")}{" "}
                 <Link href="/login" className="underline">
                   {tAuth("loginTitle")}

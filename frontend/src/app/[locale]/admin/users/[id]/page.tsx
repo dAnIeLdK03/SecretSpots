@@ -30,9 +30,7 @@ const ACTIVITY_FIELDS: (keyof AdminUserActivity)[] = [
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col">
-      <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-        {label}
-      </span>
+      <span className="text-xs text-dim">{label}</span>
       <span className="text-sm">{value}</span>
     </div>
   );
@@ -67,20 +65,15 @@ function AdminUserDetailsContent({ id }: { id: string }) {
         href="/admin/users"
         aria-label={t("backToUsers")}
         title={t("backToUsers")}
-        className="self-start text-2xl leading-none hover:opacity-70"
-        style={{ color: "var(--fieldmap-dim)" }}
+        className="self-start text-2xl leading-none hover:opacity-70 text-dim"
       >
         ←
       </Link>
 
       {state.status === "loading" ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("loading")}
-        </p>
+        <p className="text-sm text-dim">{t("loading")}</p>
       ) : state.status === "notFound" ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("notFound")}
-        </p>
+        <p className="text-sm text-dim">{t("notFound")}</p>
       ) : state.status === "error" ? (
         <p className="text-sm text-red-700 dark:text-red-400">{state.message}</p>
       ) : (
@@ -88,18 +81,15 @@ function AdminUserDetailsContent({ id }: { id: string }) {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h1 className="text-2xl font-semibold">{state.user.displayName}</h1>
             <span
-              className="rounded-full px-3 py-1 text-xs font-medium"
-              style={
-                state.user.role === UserRole.Admin
-                  ? { backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }
-                  : { backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-ink)" }
-              }
+              className={`rounded-full px-3 py-1 text-xs font-medium ${
+                state.user.role === UserRole.Admin ? "bg-trail text-paper-light" : "bg-contour text-ink"
+              }`}
             >
               {state.user.role === UserRole.Admin ? tUsers("roleAdmin") : tUsers("roleUser")}
             </span>
           </div>
 
-          <section className="flex flex-col gap-3 rounded-2xl p-4" style={{ backgroundColor: "var(--fieldmap-card)" }}>
+          <section className="flex flex-col gap-3 rounded-2xl p-4 bg-card">
             <h2 className="text-sm font-semibold">{t("accountHeading")}</h2>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Field label={t("email")} value={state.user.email} />
@@ -119,7 +109,7 @@ function AdminUserDetailsContent({ id }: { id: string }) {
             </div>
           </section>
 
-          <section className="flex flex-col gap-3 rounded-2xl p-4" style={{ backgroundColor: "var(--fieldmap-card)" }}>
+          <section className="flex flex-col gap-3 rounded-2xl p-4 bg-card">
             <h2 className="text-sm font-semibold">{t("activityHeading")}</h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {ACTIVITY_FIELDS.map((field) => (

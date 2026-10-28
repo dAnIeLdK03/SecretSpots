@@ -65,9 +65,7 @@ function BusinessDetailContent({ id }: { id: string }) {
 
   if (state.status === "loading") {
     return (
-      <p className="p-8 text-center text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-        {t("loading")}
-      </p>
+      <p className="p-8 text-center text-sm text-dim">{t("loading")}</p>
     );
   }
 
@@ -75,7 +73,7 @@ function BusinessDetailContent({ id }: { id: string }) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">
         <h1 className="text-xl font-semibold">{t("notFoundTitle")}</h1>
-        <p style={{ color: "var(--fieldmap-dim)" }}>{t("notFoundMessage")}</p>
+        <p className="text-dim">{t("notFoundMessage")}</p>
       </div>
     );
   }
@@ -93,17 +91,13 @@ function BusinessDetailContent({ id }: { id: string }) {
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
       <div>
         <h1 className="text-2xl font-semibold">{business.name}</h1>
-        <p className="mt-2 whitespace-pre-wrap text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {business.description}
-        </p>
+        <p className="mt-2 whitespace-pre-wrap text-sm text-dim">{business.description}</p>
       </div>
 
       <div>
         <h2 className="mb-3 text-lg font-semibold">{t("rewardsTitle")}</h2>
         {rewards.length === 0 ? (
-          <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-            {t("noRewardsYet")}
-          </p>
+          <p className="text-sm text-dim">{t("noRewardsYet")}</p>
         ) : (
           <>
             <ul className="flex flex-col gap-3">
@@ -116,8 +110,7 @@ function BusinessDetailContent({ id }: { id: string }) {
               <button
                 onClick={handleLoadMoreRewards}
                 disabled={loadingMoreRewards}
-                className="mt-3 w-full rounded border px-4 py-2 text-center text-sm disabled:opacity-50"
-                style={{ borderColor: "var(--fieldmap-contour)", color: "var(--fieldmap-dim)" }}
+                className="mt-3 w-full rounded border px-4 py-2 text-center text-sm disabled:opacity-50 border-contour text-dim"
               >
                 {loadingMoreRewards ? t("loadingMoreRewards") : t("loadMoreRewards")}
               </button>

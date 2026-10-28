@@ -64,44 +64,31 @@ export default function BusinessesPage() {
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 p-6">
       <div>
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
-        <p className="mt-1 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("subtitle")}
-        </p>
+        <p className="mt-1 text-sm text-dim">{t("subtitle")}</p>
         {crystalBalance !== undefined ? (
-          <p className="mt-3 inline-block rounded-full px-3 py-1 text-sm font-medium" style={{ backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-ink)" }}>
+          <p className="mt-3 inline-block rounded-full px-3 py-1 text-sm font-medium bg-card text-ink">
             {t("yourBalance", { value: crystalBalance })}
           </p>
         ) : null}
       </div>
 
       {loading ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("loading")}
-        </p>
+        <p className="text-sm text-dim">{t("loading")}</p>
       ) : loadError ? (
         <p className="text-sm text-red-700 dark:text-red-400">{loadError}</p>
       ) : businesses.length === 0 ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("noBusinessesNearby")}
-        </p>
+        <p className="text-sm text-dim">{t("noBusinessesNearby")}</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {businesses.map((business) => (
             <li key={business.id}>
               <Link
                 href={`/businesses/${business.id}`}
-                className="group flex flex-col gap-1 rounded-xl border p-4 shadow-sm transition hover:shadow-md"
-                style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-card)" }}
+                className="group flex flex-col gap-1 rounded-xl border p-4 shadow-sm transition hover:shadow-md border-contour bg-card"
               >
-                <h2 className="font-semibold" style={{ color: "var(--fieldmap-ink)" }}>
-                  {business.name}
-                </h2>
-                <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-                  {business.description}
-                </p>
-                <p className="mt-1 text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-                  {formatDistance(business.distanceKm, t)}
-                </p>
+                <h2 className="font-semibold text-ink">{business.name}</h2>
+                <p className="text-sm text-dim">{business.description}</p>
+                <p className="mt-1 text-xs text-dim">{formatDistance(business.distanceKm, t)}</p>
               </Link>
             </li>
           ))}

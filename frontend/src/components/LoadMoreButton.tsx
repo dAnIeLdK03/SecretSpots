@@ -13,8 +13,7 @@ export function LoadMoreButton({ list, className = "" }: { list: PagedList<{ id:
     <button
       onClick={list.loadMore}
       disabled={list.status !== "idle"}
-      className={`rounded-lg border px-5 py-2 text-sm disabled:opacity-50 ${className}`}
-      style={{ borderColor: "var(--fieldmap-contour)" }}
+      className={`rounded-lg border px-5 py-2 text-sm disabled:opacity-50 ${className} border-contour`}
     >
       {list.status === "loadingMore" ? t("loadingMore") : t("loadMore")}
     </button>

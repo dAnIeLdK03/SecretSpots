@@ -55,10 +55,9 @@ export function RejectSpotModal({ spotName, isRemoval, busy, onConfirm, onClose 
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
-        className="w-full max-w-md rounded-xl p-6 shadow-2xl outline-none"
-        style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+        className="w-full max-w-md rounded-xl p-6 shadow-2xl outline-none bg-paper-light text-ink"
       >
-        <div className="mb-3 flex items-center justify-between gap-2 border-b pb-3" style={{ borderColor: "var(--fieldmap-contour)" }}>
+        <div className="mb-3 flex items-center justify-between gap-2 border-b pb-3 border-contour">
           <h2 className="flex items-center gap-2 text-lg font-semibold">
             <CircleAlert size={18} className="text-red-700 dark:text-red-400" />
             {title}
@@ -67,14 +66,13 @@ export function RejectSpotModal({ spotName, isRemoval, busy, onConfirm, onClose 
             type="button"
             onClick={onClose}
             aria-label={t("closeLabel")}
-            className="rounded-full p-1 hover:bg-black/5 dark:hover:bg-white/5"
-            style={{ color: "var(--fieldmap-dim)" }}
+            className="rounded-full p-1 hover:bg-black/5 dark:hover:bg-white/5 text-dim"
           >
             <X size={18} />
           </button>
         </div>
 
-        <p className="mb-4 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+        <p className="mb-4 text-sm text-dim">
           {t(isRemoval ? "removeModalDescription" : "rejectModalDescription", { name: spotName })}
         </p>
 
@@ -83,11 +81,9 @@ export function RejectSpotModal({ spotName, isRemoval, busy, onConfirm, onClose 
             {PRESET_REASONS.map((value) => (
               <label
                 key={value}
-                className="flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2.5 text-sm"
-                style={{
-                  borderColor: preset === value ? "var(--fieldmap-ink)" : "var(--fieldmap-contour)",
-                  backgroundColor: "var(--fieldmap-card)",
-                }}
+                className={`flex cursor-pointer items-center gap-2 rounded-lg border bg-card px-3 py-2.5 text-sm ${
+                  preset === value ? "border-ink" : "border-contour"
+                }`}
               >
                 <input
                   type="radio"
@@ -108,12 +104,9 @@ export function RejectSpotModal({ spotName, isRemoval, busy, onConfirm, onClose 
               maxLength={detailsMaxLength}
               placeholder={isOther ? t("rejectionReasonPlaceholder") : t("rejectionDetailsPlaceholder")}
               rows={3}
-              className="rounded-lg border px-3 py-2 text-sm"
-              style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-ink)" }}
+              className="rounded-lg border px-3 py-2 text-sm border-contour bg-card text-ink"
             />
-            <span className="self-end text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-              {details.length}/{detailsMaxLength}
-            </span>
+            <span className="self-end text-xs text-dim">{details.length}/{detailsMaxLength}</span>
           </div>
 
           <div className="flex gap-3">
@@ -121,8 +114,7 @@ export function RejectSpotModal({ spotName, isRemoval, busy, onConfirm, onClose 
               type="button"
               onClick={onClose}
               disabled={busy}
-              className="flex-1 rounded-lg border px-4 py-2 text-sm font-medium disabled:opacity-50"
-              style={{ borderColor: "var(--fieldmap-contour)" }}
+              className="flex-1 rounded-lg border px-4 py-2 text-sm font-medium disabled:opacity-50 border-contour"
             >
               {t("cancelButton")}
             </button>

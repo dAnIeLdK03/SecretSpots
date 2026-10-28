@@ -41,57 +41,47 @@ export default function RegisterPage() {
       <h2 className="text-2xl font-semibold">{t("registerTitle")}</h2>
       <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
         <label className="flex flex-col gap-1">
-          <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-            {t("displayNameLabel")}
-          </span>
+          <span className="text-sm text-dim">{t("displayNameLabel")}</span>
           <input
             type="text"
             required
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            className="rounded border px-3 py-2"
-            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
+            className="rounded border px-3 py-2 border-contour bg-paper-light"
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-            {t("emailLabel")}
-          </span>
+          <span className="text-sm text-dim">{t("emailLabel")}</span>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded border px-3 py-2"
-            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
+            className="rounded border px-3 py-2 border-contour bg-paper-light"
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-            {t("passwordLabel")}
-          </span>
+          <span className="text-sm text-dim">{t("passwordLabel")}</span>
           <input
             type="password"
             required
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="rounded border px-3 py-2"
-            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
+            className="rounded border px-3 py-2 border-contour bg-paper-light"
           />
         </label>
         {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
         <button
           type="submit"
           disabled={submitting}
-          className="rounded px-4 py-2 disabled:opacity-50"
-          style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
+          className="rounded px-4 py-2 disabled:opacity-50 bg-trail text-paper-light"
         >
           {submitting ? t("registerSubmitting") : t("registerButton")}
         </button>
       </form>
       <ExternalAuthButtons />
-      <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+      <p className="text-sm text-dim">
         {t("alreadyHaveAccount")}{" "}
         <Link href="/login" className="underline">
           {t("loginLink")}

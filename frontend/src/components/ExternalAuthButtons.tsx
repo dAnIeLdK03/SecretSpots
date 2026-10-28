@@ -41,11 +41,9 @@ export function ExternalAuthButtons() {
   return (
     <div className="flex w-full max-w-sm flex-col items-center gap-3">
       <div className="flex w-full items-center gap-3">
-        <hr className="flex-1" style={{ borderColor: "var(--fieldmap-contour)" }} />
-        <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("orDivider")}
-        </span>
-        <hr className="flex-1" style={{ borderColor: "var(--fieldmap-contour)" }} />
+        <hr className="flex-1 border-contour" />
+        <span className="text-xs text-dim">{t("orDivider")}</span>
+        <hr className="flex-1 border-contour" />
       </div>
       <div className="flex gap-3">
         <a
@@ -67,9 +65,7 @@ export function ExternalAuthButtons() {
       </div>
       {/* Google/Facebook always sign in as whichever account is active in the browser — neither
           platform lets a third-party site force an account switch or sign the user out. */}
-      <p className="max-w-xs text-center text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-        {t("externalAuthAccountHint")}
-      </p>
+      <p className="max-w-xs text-center text-xs text-dim">{t("externalAuthAccountHint")}</p>
     </div>
   );
 }

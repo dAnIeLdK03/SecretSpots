@@ -26,9 +26,7 @@ function MySpotsList() {
 
   if (status === "loading") {
     return (
-      <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-        {t("loading")}
-      </p>
+      <p className="text-sm text-dim">{t("loading")}</p>
     );
   }
 
@@ -38,7 +36,7 @@ function MySpotsList() {
 
   if (items.length === 0) {
     return (
-      <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+      <p className="text-sm text-dim">
         {t("empty")}{" "}
         <Link href="/map" className="underline">
           {t("emptyAddLink")}

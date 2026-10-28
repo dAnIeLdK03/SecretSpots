@@ -30,7 +30,18 @@
   }
 }
 
+/* Field Map tokens as Tailwind colors: text-dim, bg-card, border-contour, ...
+   "inline" keeps the var() reference, so dark mode swaps them automatically. */
 @theme inline {
+  --color-paper: var(--fieldmap-paper);
+  --color-paper-light: var(--fieldmap-paper-light);
+  --color-ink: var(--fieldmap-ink);
+  --color-contour: var(--fieldmap-contour);
+  --color-trail: var(--fieldmap-trail);
+  --color-dim: var(--fieldmap-dim);
+  --color-card: var(--fieldmap-card);
+  --color-gold: var(--fieldmap-gold);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);

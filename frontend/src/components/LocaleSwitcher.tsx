@@ -19,13 +19,12 @@ export function LocaleSwitcher() {
     <div role="group" aria-label={t("languageLabel")} className="flex items-center gap-1 text-sm">
       {routing.locales.map((locale, index) => (
         <div key={locale} className="flex items-center gap-1">
-          {index > 0 ? <span style={{ color: "var(--fieldmap-contour)" }}>|</span> : null}
+          {index > 0 ? <span className="text-contour">|</span> : null}
           <button
             onClick={() => router.replace(pathname, { locale })}
             disabled={locale === activeLocale}
             aria-current={locale === activeLocale ? "true" : undefined}
-            className={locale === activeLocale ? "font-semibold" : "underline opacity-60 hover:opacity-100"}
-            style={{ color: "var(--fieldmap-ink)" }}
+            className={`text-ink ${locale === activeLocale ? "font-semibold" : "underline opacity-60 hover:opacity-100"}`}
           >
             {LOCALE_LABELS[locale]}
           </button>

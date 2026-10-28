@@ -49,18 +49,14 @@ export function VerifyEmailClient() {
       <h2 className="text-2xl font-semibold">{t("verifyEmailTitle")}</h2>
 
       {state === "verifying" ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("verifyEmailVerifying")}
-        </p>
+        <p className="text-sm text-dim">{t("verifyEmailVerifying")}</p>
       ) : state === "success" ? (
-        <p className="max-w-sm text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("verifyEmailSuccess")}
-        </p>
+        <p className="max-w-sm text-sm text-dim">{t("verifyEmailSuccess")}</p>
       ) : (
         <p className="text-sm text-red-700 dark:text-red-400">{error ?? t("unknownError")}</p>
       )}
 
-      <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+      <p className="text-sm text-dim">
         <Link href={authStatus === "authenticated" ? "/account" : "/login"} className="underline">
           {authStatus === "authenticated" ? t("backToAccount") : t("backToLogin")}
         </Link>

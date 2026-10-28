@@ -70,21 +70,17 @@ export function MultiPhotoUpload({ label, photoUrls, onChange, maxCount = 5, dar
 
   const canAddMore = photoUrls.length < maxCount;
 
-  const labelClass = dark ? "text-zinc-300" : "";
-  const labelStyle = dark ? undefined : { color: "var(--fieldmap-dim)" };
-  const moveButtonClass = dark ? "text-zinc-300" : "";
-  const moveButtonStyle = dark ? undefined : { color: "var(--fieldmap-dim)" };
+  const labelClass = dark ? "text-zinc-300" : "text-dim";
+  const moveButtonClass = dark ? "text-zinc-300" : "text-dim";
   const removeButtonClass = dark ? "text-red-400" : "text-red-700 dark:text-red-400";
   const fileInputClass = dark
     ? "rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white file:mr-2 file:rounded-full file:border-0 file:bg-white/10 file:px-3 file:py-1 file:text-white"
-    : "rounded border px-3 py-2 text-sm";
-  const fileInputStyle = dark ? undefined : { borderColor: "var(--fieldmap-contour)" };
-  const mutedTextClass = dark ? "text-zinc-400" : "";
-  const mutedTextStyle = dark ? undefined : { color: "var(--fieldmap-dim)" };
+    : "rounded border border-contour px-3 py-2 text-sm";
+  const mutedTextClass = dark ? "text-zinc-400" : "text-dim";
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={inputId} className={`text-sm ${labelClass}`} style={labelStyle}>
+      <label htmlFor={inputId} className={`text-sm ${labelClass}`}>
         {label}
       </label>
 
@@ -102,7 +98,6 @@ export function MultiPhotoUpload({ label, photoUrls, onChange, maxCount = 5, dar
                     disabled={index === 0}
                     aria-label={t("moveLeft")}
                     className={`${moveButtonClass} disabled:opacity-30`}
-                    style={moveButtonStyle}
                   >
                     ◀
                   </button>
@@ -112,7 +107,6 @@ export function MultiPhotoUpload({ label, photoUrls, onChange, maxCount = 5, dar
                     disabled={index === photoUrls.length - 1}
                     aria-label={t("moveRight")}
                     className={`${moveButtonClass} disabled:opacity-30`}
-                    style={moveButtonStyle}
                   >
                     ▶
                   </button>
@@ -135,16 +129,15 @@ export function MultiPhotoUpload({ label, photoUrls, onChange, maxCount = 5, dar
           multiple
           onChange={(e) => void handleFilesChange(e)}
           className={fileInputClass}
-          style={fileInputStyle}
         />
       ) : (
-        <p className={`text-xs ${mutedTextClass}`} style={mutedTextStyle}>
+        <p className={`text-xs ${mutedTextClass}`}>
           {t("maxPhotosReached")}
         </p>
       )}
 
       {uploading ? (
-        <p className={`text-sm ${labelClass}`} style={labelStyle}>
+        <p className={`text-sm ${labelClass}`}>
           {t("uploading")}
         </p>
       ) : null}
