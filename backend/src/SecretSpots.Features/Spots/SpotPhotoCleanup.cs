@@ -3,26 +3,22 @@ using SecretSpots.Features.Common.Storage;
 
 namespace SecretSpots.Features.Spots;
 
-// Photos uploaded for an Edit request live in R2 before anyone approves them. Whenever a proposal
-// is dropped (rejected, cancelled, replaced by a newer one, or its spot deleted), the uploads
-// that never made it onto the spot have to be cleaned up here, or they'd be orphaned forever.
-public static class SpotChangeRequestPhotos
+// The one place spot photos are deleted from storage: a deleted spot's photos, the photos an
+// approved edit removes, and uploads from a change request that never made it onto the spot
+// (rejected, cancelled, replaced by a newer one, or its spot deleted) — which would otherwise be
+// orphaned forever.
+public static class SpotPhotoCleanup
 {
-    public static async Task DeleteUnusedAsync(
+    // Best-effort — a storage hiccup shouldn't fail the request or deletion that triggered it.
+    // Worst case an orphaned object lingers in storage; it doesn't block anything.
+    public static async Task DeleteAsync(
         IPhotoStorage photoStorage,
-        IEnumerable<string>? proposedPhotoUrls,
-        IEnumerable<string> photoUrlsStillInUse,
+        IEnumerable<string> photoUrls,
         Guid spotId,
         ILogger logger,
         CancellationToken cancellationToken)
     {
-        if (proposedPhotoUrls is null)
-        {
-            return;
-        }
-
-        // Best-effort, same as SpotDeletionCleanup — a storage hiccup shouldn't fail the request.
-        foreach (var photoUrl in proposedPhotoUrls.Except(photoUrlsStillInUse))
+        foreach (var photoUrl in photoUrls)
         {
             try
             {
@@ -34,4 +30,16 @@ public static class SpotChangeRequestPhotos
             }
         }
     }
+
+    // Deletes the candidates that aren't in photoUrlsStillInUse; null candidates means nothing to do.
+    public static Task DeleteUnusedAsync(
+        IPhotoStorage photoStorage,
+        IEnumerable<string>? candidatePhotoUrls,
+        IEnumerable<string> photoUrlsStillInUse,
+        Guid spotId,
+        ILogger logger,
+        CancellationToken cancellationToken) =>
+        candidatePhotoUrls is null
+            ? Task.CompletedTask
+            : DeleteAsync(photoStorage, candidatePhotoUrls.Except(photoUrlsStillInUse), spotId, logger, cancellationToken);
 }

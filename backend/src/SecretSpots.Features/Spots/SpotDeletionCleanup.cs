@@ -56,21 +56,14 @@ public static class SpotDeletionCleanup
             .Select(r => r.ProposedPhotoUrls!)
             .ToListAsync(cancellationToken);
         await db.SpotChangeRequests.Where(r => r.SpotId == spot.Id).ExecuteDeleteAsync(cancellationToken);
-        await SpotChangeRequestPhotos.DeleteUnusedAsync(
-            photoStorage, proposedPhotoUrls.SelectMany(urls => urls), spot.PhotoUrls, spot.Id, logger, cancellationToken);
 
-        // Best-effort — a storage hiccup shouldn't stop the spot/account deletion. Worst case an
-        // orphaned object lingers in R2; it doesn't block anything.
-        foreach (var photoUrl in spot.PhotoUrls)
-        {
-            try
-            {
-                await photoStorage.DeleteAsync(photoUrl, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                logger.LogWarning(ex, SpotsLogMessages.SpotPhotoDeleteFailed, photoUrl, spot.Id);
-            }
-        }
+        // The spot's own photos plus any pending uploads — Distinct because a proposal usually
+        // keeps some of the spot's current photos.
+        await SpotPhotoCleanup.DeleteAsync(
+            photoStorage,
+            spot.PhotoUrls.Concat(proposedPhotoUrls.SelectMany(urls => urls)).Distinct(),
+            spot.Id,
+            logger,
+            cancellationToken);
     }
 }

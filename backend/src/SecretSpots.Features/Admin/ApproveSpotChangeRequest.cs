@@ -67,7 +67,7 @@ public static class ApproveSpotChangeRequest
 
             await db.SaveChangesAsync(cancellationToken);
 
-            await SpotChangeRequestPhotos.DeleteUnusedAsync(
+            await SpotPhotoCleanup.DeleteUnusedAsync(
                 photoStorage, removedPhotoUrls, spot.PhotoUrls, spot.Id, logger, cancellationToken);
 
             logger.LogInformation(AdminLogMessages.SpotChangeRequestApproved, request.Id, request.Type, spot.Id, userContext.UserId);
