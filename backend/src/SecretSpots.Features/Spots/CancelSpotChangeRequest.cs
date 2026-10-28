@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using SecretSpots.Domain;
@@ -25,19 +24,15 @@ public static class CancelSpotChangeRequest
     {
         public async Task<Result<Unit>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
-            if (spot is null)
+            var owned = await SpotOwnership.LoadOwnedAsync(db, command.SpotId, userContext, localizer, cancellationToken);
+            if (!owned.IsSuccess)
             {
-                return Result<Unit>.Failure(Error.NotFound(SpotsMessageKeys.NotFound, localizer));
+                return Result<Unit>.Failure(owned.Error);
             }
 
-            if (spot.CreatedByUserId != userContext.UserId)
-            {
-                return Result<Unit>.Failure(Error.Forbidden(SpotsMessageKeys.NotYourSpot, localizer));
-            }
+            var spot = owned.Value;
 
-            var request = await db.SpotChangeRequests.SingleOrDefaultAsync(
-                r => r.SpotId == spot.Id && r.Status == SpotChangeRequestStatus.Pending, cancellationToken);
+            var request = await PendingSpotChangeRequests.FindAsync(db, spot.Id, cancellationToken);
             if (request is null)
             {
                 return Result<Unit>.Failure(Error.NotFound(SpotsMessageKeys.ChangeRequestNotFound, localizer));
