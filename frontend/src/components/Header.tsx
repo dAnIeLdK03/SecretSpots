@@ -57,10 +57,7 @@ export function Header() {
   }
 
   return (
-    <header
-      className="flex items-center justify-between border-b px-6 py-4"
-      style={{ borderColor: "var(--fieldmap-contour)" }}
-    >
+    <header className="flex items-center justify-between border-b px-6 py-4 border-contour">
       <Link href="/" className="text-lg font-semibold">
         {t("appName")}
       </Link>
@@ -70,8 +67,7 @@ export function Header() {
           <Link
             key={href}
             href={href}
-            className={pathname === href ? "border-b-2 pb-1" : "opacity-70 hover:opacity-100"}
-            style={pathname === href ? { borderColor: "var(--fieldmap-trail)" } : undefined}
+            className={pathname === href ? "border-b-2 border-trail pb-1" : "opacity-70 hover:opacity-100"}
           >
             {label}
           </Link>
@@ -97,15 +93,13 @@ export function Header() {
               <button
                 onClick={() => setIsMenuOpen((open) => !open)}
                 aria-label={t("menuLabel")}
-                className="rounded-full p-2 hover:bg-black/5 dark:hover:bg-white/5"
-                style={{ color: "var(--fieldmap-dim)" }}
+                className="rounded-full p-2 hover:bg-black/5 dark:hover:bg-white/5 text-dim"
               >
                 ☰
               </button>
               {isMenuOpen && (
                 <div
-                  className="absolute right-0 top-full z-10 mt-2 w-48 rounded-md border p-3 shadow-lg"
-                  style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
+                  className="absolute right-0 top-full z-10 mt-2 w-48 rounded-md border p-3 shadow-lg border-contour bg-paper-light"
                 >
                   <nav className="flex flex-col gap-3 text-sm">
                     <Link href="/login" onClick={closeMenu}>

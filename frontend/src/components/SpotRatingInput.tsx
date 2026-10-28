@@ -62,12 +62,9 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
   const displayValue = hoverValue ?? selected ?? 0;
 
   return (
-    <div className="flex flex-col gap-2 rounded-2xl p-5 shadow-sm" style={{ backgroundColor: "var(--fieldmap-card)" }}>
-      <span
-        className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide"
-        style={{ color: "var(--fieldmap-dim)" }}
-      >
-        <Star size={14} style={{ color: "var(--fieldmap-gold)" }} fill="var(--fieldmap-gold)" />
+    <div className="flex flex-col gap-2 rounded-2xl p-5 shadow-sm bg-card">
+      <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-dim">
+        <Star size={14} className="text-gold" fill="var(--fieldmap-gold)" />
         {t("rateThisSpotLabel")}
       </span>
 
@@ -86,7 +83,7 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
               >
                 <Star
                   size={28}
-                  style={{ color: "var(--fieldmap-gold)" }}
+                  className="text-gold"
                   fill={value <= displayValue ? "var(--fieldmap-gold)" : "none"}
                 />
               </button>
@@ -94,15 +91,14 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
           </div>
 
           {selected ? (
-            <div className="flex items-center gap-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+            <div className="flex items-center gap-2 text-sm text-dim">
               <span>{t("yourRating", { value: selected })}</span>
               {selected !== myRating ? (
                 <button
                   type="button"
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className="underline disabled:opacity-50"
-                  style={{ color: "var(--fieldmap-trail)" }}
+                  className="underline disabled:opacity-50 text-trail"
                 >
                   {submitting ? t("submitting") : t("submitButton")}
                 </button>
@@ -112,7 +108,7 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
           {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
         </>
       ) : (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+        <p className="text-sm text-dim">
           {t("loginRequiredToRate")}{" "}
           <Link href="/login" className="underline">
             {tAuth("loginTitle")}

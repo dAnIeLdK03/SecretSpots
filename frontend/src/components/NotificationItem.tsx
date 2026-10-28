@@ -59,14 +59,13 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
     <button
       onClick={handleClick}
       className={`flex w-full items-start gap-3 px-4 py-3 text-left text-sm ${
-        notification.isRead ? "" : "bg-blue-50 dark:bg-blue-950 font-medium"
+        notification.isRead ? "text-dim" : "bg-blue-50 dark:bg-blue-950 font-medium"
       }`}
-      style={notification.isRead ? { color: "var(--fieldmap-dim)" } : undefined}
     >
       <span aria-hidden="true">{TYPE_ICONS[notification.type]}</span>
       <span className="flex-1">
         <span className="block">{notification.message}</span>
-        <span className="mt-1 block text-xs font-normal" style={{ color: "var(--fieldmap-dim)" }}>
+        <span className="mt-1 block text-xs font-normal text-dim">
           {formatRelativeTime(notification.createdAt, locale)}
         </span>
       </span>

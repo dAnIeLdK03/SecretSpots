@@ -42,24 +42,15 @@ export const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropd
     return createPortal(
       <div
         ref={ref}
-        className="fixed z-50 max-h-96 w-80 overflow-y-auto rounded-md border shadow-lg"
-        style={{
-          top: position.top,
-          right: position.right,
-          borderColor: "var(--fieldmap-contour)",
-          backgroundColor: "var(--fieldmap-paper-light)",
-        }}
+        className="fixed z-50 max-h-96 w-80 overflow-y-auto rounded-md border border-contour bg-paper-light shadow-lg"
+        style={{ top: position.top, right: position.right }}
       >
-        <div
-          className="flex items-center justify-between border-b px-4 py-2"
-          style={{ borderColor: "var(--fieldmap-contour)" }}
-        >
+        <div className="flex items-center justify-between border-b px-4 py-2 border-contour">
           <span className="text-sm font-semibold">{t("title")}</span>
           {hasUnread ? (
             <button
               onClick={() => markAllAsRead()}
-              className="text-xs underline"
-              style={{ color: "var(--fieldmap-dim)" }}
+              className="text-xs underline text-dim"
             >
               {t("markAllAsRead")}
             </button>
@@ -67,15 +58,11 @@ export const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropd
         </div>
 
         {status === "loading" ? (
-          <p className="px-4 py-6 text-center text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-            {t("loading")}
-          </p>
+          <p className="px-4 py-6 text-center text-sm text-dim">{t("loading")}</p>
         ) : items.length === 0 ? (
-          <p className="px-4 py-6 text-center text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-            {t("empty")}
-          </p>
+          <p className="px-4 py-6 text-center text-sm text-dim">{t("empty")}</p>
         ) : (
-          <ul className="divide-y divide-[var(--fieldmap-contour)]">
+          <ul className="divide-y divide-contour">
             {items.map((notification) => (
               <li key={notification.id}>
                 <NotificationItem notification={notification} onNavigate={onNavigate} />
@@ -88,8 +75,7 @@ export const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropd
           <button
             onClick={() => loadMore()}
             disabled={status === "loadingMore"}
-            className="w-full border-t px-4 py-2 text-center text-sm disabled:opacity-50"
-            style={{ borderColor: "var(--fieldmap-contour)", color: "var(--fieldmap-dim)" }}
+            className="w-full border-t px-4 py-2 text-center text-sm disabled:opacity-50 border-contour text-dim"
           >
             {status === "loadingMore" ? t("loadingMore") : t("loadMore")}
           </button>

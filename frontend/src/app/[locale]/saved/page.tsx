@@ -33,13 +33,9 @@ export default function SavedSpotsPage() {
       <h1 className="text-2xl font-semibold">{t("pageTitle")}</h1>
 
       {status === "loading" ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("loading")}
-        </p>
+        <p className="text-sm text-dim">{t("loading")}</p>
       ) : items.length === 0 ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("empty")}
-        </p>
+        <p className="text-sm text-dim">{t("empty")}</p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           {items.map((spot) => (
@@ -52,8 +48,7 @@ export default function SavedSpotsPage() {
         <button
           onClick={() => loadMore()}
           disabled={status === "loadingMore"}
-          className="self-center rounded border px-4 py-2 text-sm disabled:opacity-50"
-          style={{ borderColor: "var(--fieldmap-contour)" }}
+          className="self-center rounded border px-4 py-2 text-sm disabled:opacity-50 border-contour"
         >
           {status === "loadingMore" ? t("loadingMore") : t("loadMore")}
         </button>

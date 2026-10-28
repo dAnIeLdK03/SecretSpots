@@ -58,9 +58,7 @@ export function CallbackClient() {
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
-      <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-        {t("completingSignIn")}
-      </p>
+      <p className="text-sm text-dim">{t("completingSignIn")}</p>
     </div>
   );
 }

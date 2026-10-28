@@ -91,13 +91,10 @@ export function MapSearchBox({ onSelect }: MapSearchBoxProps) {
         <ul
           id={listId}
           role="listbox"
-          className="absolute top-full left-0 z-20 mt-1 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded shadow-lg"
-          style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+          className="absolute top-full left-0 z-20 mt-1 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded shadow-lg bg-paper-light text-ink"
         >
           {results.length === 0 ? (
-            <li className="px-3 py-2 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-              {t("mapSearchNoResults")}
-            </li>
+            <li className="px-3 py-2 text-sm text-dim">{t("mapSearchNoResults")}</li>
           ) : (
             results.map((spot) => (
               <li key={spot.id} role="option" aria-selected="false">

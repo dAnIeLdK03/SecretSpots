@@ -15,13 +15,11 @@ export function RedemptionHistoryItem({ redemption }: { redemption: MyRedemption
         <Link href={`/businesses/${redemption.businessId}`} className="font-medium underline">
           {redemption.rewardTitle}
         </Link>
-        <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+        <span className="text-xs text-dim">
           {redemption.businessName} · {formatRelativeTime(redemption.createdAt, locale)}
         </span>
       </span>
-      <span className="whitespace-nowrap" style={{ color: "var(--fieldmap-dim)" }}>
-        -{redemption.crystalsSpent} {t("crystalsUnit")}
-      </span>
+      <span className="whitespace-nowrap text-dim">-{redemption.crystalsSpent} {t("crystalsUnit")}</span>
     </li>
   );
 }

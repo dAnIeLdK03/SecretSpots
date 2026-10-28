@@ -48,51 +48,47 @@ export function EditSpotModal({ spot, onClose, onSubmitted }: EditSpotModalProps
                 aria-modal="true"
                 aria-label={t("editTitle")}
                 tabIndex={-1}
-                className="w-full max-w-sm rounded-lg p-6 outline-none"
-                style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+                className="w-full max-w-sm rounded-lg p-6 outline-none bg-paper-light text-ink"
             >
                 <h2 className="mb-1 text-lg font-semibold">{t("editTitle")}</h2>
-                <p className="mb-4 text-xs" style={{ color: "var(--fieldmap-dim)" }}>{t("editReviewNotice")}</p>
+                <p className="mb-4 text-xs text-dim">{t("editReviewNotice")}</p>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <label className="flex flex-col gap-1">
-                        <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>{t("nameLabel")}</span>
+                        <span className="text-sm text-dim">{t("nameLabel")}</span>
                         <input
                             type="text"
                             required
                             maxLength={100}
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="rounded border px-3 py-2"
-                            style={{ borderColor: "var(--fieldmap-contour)" }}
+                            className="rounded border px-3 py-2 border-contour"
                         />
                     </label>
                     <label className="flex flex-col gap-1">
-                        <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>{t("descriptionLabel")}</span>
+                        <span className="text-sm text-dim">{t("descriptionLabel")}</span>
                         <textarea
                             required
                             maxLength={2000}
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
-                            className="rounded border px-3 py-2"
-                            style={{ borderColor: "var(--fieldmap-contour)" }}
+                            className="rounded border px-3 py-2 border-contour"
                         />
                     </label>
                     <label className="flex flex-col gap-1">
-                        <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>{t("categoryLabel")}</span>
+                        <span className="text-sm text-dim">{t("categoryLabel")}</span>
                         <CategorySelect value={category} onChange={setCategory} />
                     </label>
                     <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} />
                     {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
                     <div className="flex justify-end gap-2">
-                        <button type="button" onClick={onClose} className="rounded px-4 py-2" style={{ color: "var(--fieldmap-dim)" }}>
+                        <button type="button" onClick={onClose} className="rounded px-4 py-2 text-dim">
                             {t("cancelButton")}
                         </button>
                         <button
                             type="submit"
                             disabled={submitting || photoUrls.length === 0}
-                            className="rounded px-4 py-2 disabled:opacity-50"
-                            style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
+                            className="rounded px-4 py-2 disabled:opacity-50 bg-trail text-paper-light"
                         >
                             {submitting ? t("saving") : t("submitForReviewButton")}
                         </button>

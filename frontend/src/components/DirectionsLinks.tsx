@@ -36,13 +36,10 @@ export function DirectionsLinks({ latitude, longitude, className, forcedLight = 
   const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
   const wazeUrl = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
 
-  const menuStyle = forcedLight
-    ? { borderColor: "#e4e4e7", backgroundColor: "#fff" }
-    : { borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" };
+  const menuClassName = forcedLight ? "border-[#e4e4e7] bg-white" : "border-contour bg-paper-light";
   const itemClassName = forcedLight
     ? "block rounded px-3 py-1.5 text-sm whitespace-nowrap text-zinc-700 hover:bg-black/5"
-    : "block rounded px-3 py-1.5 text-sm whitespace-nowrap hover:bg-black/5 dark:hover:bg-white/5";
-  const itemStyle = forcedLight ? undefined : { color: "var(--fieldmap-ink)" };
+    : "block rounded px-3 py-1.5 text-sm whitespace-nowrap text-ink hover:bg-black/5 dark:hover:bg-white/5";
 
   return (
     <div ref={containerRef} className={`relative inline-block ${className ?? ""}`}>
@@ -51,8 +48,7 @@ export function DirectionsLinks({ latitude, longitude, className, forcedLight = 
         onClick={() => setOpen((wasOpen) => !wasOpen)}
         aria-haspopup="true"
         aria-expanded={open}
-        className="underline"
-        style={{ color: "var(--fieldmap-trail)" }}
+        className="text-trail underline"
       >
         {t("directionsButton")}
       </button>
@@ -60,8 +56,7 @@ export function DirectionsLinks({ latitude, longitude, className, forcedLight = 
       {open ? (
         <div
           role="menu"
-          className="absolute top-full left-0 z-20 mt-1 flex flex-col gap-0.5 rounded-md border p-1 shadow-lg"
-          style={menuStyle}
+          className={`absolute top-full left-0 z-20 mt-1 flex flex-col gap-0.5 rounded-md border p-1 shadow-lg ${menuClassName}`}
         >
           <a
             href={googleMapsUrl}
@@ -70,7 +65,6 @@ export function DirectionsLinks({ latitude, longitude, className, forcedLight = 
             role="menuitem"
             onClick={() => setOpen(false)}
             className={itemClassName}
-            style={itemStyle}
           >
             {t("directionsGoogleMaps")}
           </a>
@@ -81,7 +75,6 @@ export function DirectionsLinks({ latitude, longitude, className, forcedLight = 
             role="menuitem"
             onClick={() => setOpen(false)}
             className={itemClassName}
-            style={itemStyle}
           >
             {t("directionsWaze")}
           </a>

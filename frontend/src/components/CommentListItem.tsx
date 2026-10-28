@@ -63,15 +63,14 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
 
   if (editing) {
     return (
-      <li className="rounded p-3 text-sm" style={{ backgroundColor: "var(--fieldmap-paper-light)" }}>
+      <li className="rounded p-3 text-sm bg-paper-light">
         <form onSubmit={handleSaveEdit} className="flex flex-col gap-2">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={2}
             aria-label={t("editCommentLabel")}
-            className="w-full rounded border p-2 text-sm"
-            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
+            className="w-full rounded border p-2 text-sm border-contour bg-paper-light"
           />
           {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
           <div className="flex justify-end gap-2">
@@ -82,15 +81,14 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
                 setText(comment.text);
                 setError(null);
               }}
-              style={{ color: "var(--fieldmap-dim)" }}
+              className="text-dim"
             >
               {t("cancelButton")}
             </button>
             <button
               type="submit"
               disabled={submitting || !text.trim()}
-              className="rounded px-3 py-1 disabled:opacity-50"
-              style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
+              className="rounded px-3 py-1 disabled:opacity-50 bg-trail text-paper-light"
             >
               {submitting ? t("saving") : t("saveButton")}
             </button>
@@ -101,16 +99,11 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
   }
 
   return (
-    <li
-      className="flex items-start justify-between gap-3 rounded p-3 text-sm"
-      style={{ backgroundColor: "var(--fieldmap-paper-light)" }}
-    >
+    <li className="flex items-start justify-between gap-3 rounded p-3 text-sm bg-paper-light">
       <div className="flex flex-col gap-1">
-        <span className="font-medium" style={{ color: "var(--fieldmap-trail)" }}>
-          {comment.authorDisplayName}
-        </span>
-        <p style={{ color: "var(--fieldmap-ink)" }}>{comment.text}</p>
-        <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
+        <span className="font-medium text-trail">{comment.authorDisplayName}</span>
+        <p className="text-ink">{comment.text}</p>
+        <span className="text-xs text-dim">
           {formatRelativeTime(comment.createdAt, locale)}
           {comment.updatedAt ? ` · ${t("editedLabel")}` : ""}
         </span>
@@ -118,7 +111,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
       </div>
       {isAuthor ? (
         <div className="flex shrink-0 gap-2 text-xs">
-          <button onClick={() => setEditing(true)} style={{ color: "var(--fieldmap-dim)" }}>
+          <button onClick={() => setEditing(true)} className="text-dim">
             {t("editButton")}
           </button>
           <button onClick={handleDelete} disabled={deleting} className="text-red-700 dark:text-red-400 disabled:opacity-50">
@@ -127,7 +120,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
         </div>
       ) : (
         <div className="flex shrink-0 gap-2 text-xs">
-          <button onClick={() => setShowReportModal(true)} style={{ color: "var(--fieldmap-dim)" }}>
+          <button onClick={() => setShowReportModal(true)} className="text-dim">
             {t("reportButton")}
           </button>
         </div>

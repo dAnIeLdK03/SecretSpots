@@ -53,11 +53,11 @@ export function CategorySelect({ value, onChange, dark = false }: CategorySelect
 
   const triggerClasses = dark
     ? "flex w-full items-center justify-between gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-white focus:border-emerald-400 focus:outline-none"
-    : "flex w-full items-center justify-between gap-2 rounded border px-3 py-2";
+    : "flex w-full items-center justify-between gap-2 rounded border border-contour bg-paper-light px-3 py-2";
 
   const menuClasses = dark
     ? "absolute z-10 mt-1 max-h-64 overflow-y-auto rounded-lg border border-white/15 bg-zinc-900 py-1 shadow-lg"
-    : "absolute z-10 mt-1 max-h-64 overflow-y-auto rounded border py-1 shadow-lg";
+    : "absolute z-10 mt-1 max-h-64 overflow-y-auto rounded border border-contour bg-paper-light py-1 shadow-lg";
 
   return (
     <div className="relative">
@@ -66,7 +66,6 @@ export function CategorySelect({ value, onChange, dark = false }: CategorySelect
         type="button"
         onClick={() => setIsOpen((open) => !open)}
         className={triggerClasses}
-        style={dark ? undefined : { borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -74,17 +73,14 @@ export function CategorySelect({ value, onChange, dark = false }: CategorySelect
           <CategoryIcon category={value} size={16} />
           {t(`category.${value}`)}
         </span>
-        <ChevronDown size={16} className={dark ? "text-zinc-400" : ""} style={dark ? undefined : { color: "var(--fieldmap-dim)" }} />
+        <ChevronDown size={16} className={dark ? "text-zinc-400" : "text-dim"} />
       </button>
       {isOpen ? (
         <div
           ref={menuRef}
           role="listbox"
           className={menuClasses}
-          style={{
-            width: menuWidth ?? undefined,
-            ...(dark ? {} : { borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }),
-          }}
+          style={{ width: menuWidth ?? undefined }}
         >
           {SPOT_CATEGORIES.map((c) => {
             const isSelected = c === value;
@@ -101,9 +97,8 @@ export function CategorySelect({ value, onChange, dark = false }: CategorySelect
                 className={
                   dark
                     ? `flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-white/10 ${isSelected ? "text-emerald-400" : "text-white"}`
-                    : "flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:opacity-80"
+                    : `flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:opacity-80 ${isSelected ? "text-trail" : "text-ink"}`
                 }
-                style={dark ? undefined : { color: isSelected ? "var(--fieldmap-trail)" : "var(--fieldmap-ink)" }}
               >
                 <CategoryIcon category={c} size={16} />
                 <span className="flex-1">{t(`category.${c}`)}</span>

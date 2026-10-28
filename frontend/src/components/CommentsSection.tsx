@@ -45,13 +45,8 @@ export function CommentsSection({ spotId }: { spotId: string }) {
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg p-4" style={{ backgroundColor: "var(--fieldmap-card)" }}>
-      <h2
-        className="border-b pb-2 text-lg font-semibold"
-        style={{ borderColor: "var(--fieldmap-contour)" }}
-      >
-        {t("title")}
-      </h2>
+    <div className="flex flex-col gap-3 rounded-lg p-4 bg-card">
+      <h2 className="border-b pb-2 text-lg font-semibold border-contour">{t("title")}</h2>
 
       {authStatus === "authenticated" ? (
         <form onSubmit={handleSubmit} className="flex flex-col gap-2">
@@ -61,23 +56,21 @@ export function CommentsSection({ spotId }: { spotId: string }) {
             placeholder={t("placeholder")}
             aria-label={t("placeholder")}
             rows={2}
-            className="w-full rounded border p-2 text-sm"
-            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
+            className="w-full rounded border p-2 text-sm border-contour bg-paper-light"
           />
           {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
           <div className="flex justify-end">
             <button
               type="submit"
               disabled={submitting || !text.trim()}
-              className="rounded px-4 py-2 text-sm disabled:opacity-50"
-              style={{ backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }}
+              className="rounded px-4 py-2 text-sm disabled:opacity-50 bg-trail text-paper-light"
             >
               {submitting ? t("submitting") : t("submitButton")}
             </button>
           </div>
         </form>
       ) : (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+        <p className="text-sm text-dim">
           {t("loginRequiredToComment")}{" "}
           <Link href="/login" className="underline">
             {tAuth("loginTitle")}
@@ -86,13 +79,9 @@ export function CommentsSection({ spotId }: { spotId: string }) {
       )}
 
       {status === "loading" ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("loading")}
-        </p>
+        <p className="text-sm text-dim">{t("loading")}</p>
       ) : items.length === 0 ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("empty")}
-        </p>
+        <p className="text-sm text-dim">{t("empty")}</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {items.map((comment) => (
@@ -105,8 +94,7 @@ export function CommentsSection({ spotId }: { spotId: string }) {
         <button
           onClick={() => loadMore(spotId)}
           disabled={status === "loadingMore"}
-          className="self-center rounded border px-4 py-2 text-sm disabled:opacity-50"
-          style={{ borderColor: "var(--fieldmap-contour)" }}
+          className="self-center rounded border px-4 py-2 text-sm disabled:opacity-50 border-contour"
         >
           {status === "loadingMore" ? t("loadingMore") : t("loadMore")}
         </button>

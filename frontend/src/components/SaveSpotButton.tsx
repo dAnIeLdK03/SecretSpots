@@ -52,12 +52,9 @@ export function SaveSpotButton({ spotId }: { spotId: string }) {
       onClick={handleToggle}
       disabled={submitting}
       aria-pressed={saved}
-      className="inline-flex items-center gap-2 rounded px-4 py-2 text-sm disabled:opacity-50"
-      style={
-        saved
-          ? { backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }
-          : { backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-ink)" }
-      }
+      className={`inline-flex items-center gap-2 rounded px-4 py-2 text-sm disabled:opacity-50 ${
+        saved ? "bg-trail text-paper-light" : "bg-contour text-ink"
+      }`}
     >
       <Bookmark size={16} fill={saved ? "currentColor" : "none"} />
       {saved ? t("savedButton") : t("saveButton")}

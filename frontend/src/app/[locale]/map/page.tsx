@@ -208,16 +208,12 @@ function MapPageContent() {
     <div className="relative flex-1">
       <div className="absolute top-4 left-4 z-10 flex flex-col items-start gap-2">
         <MapSearchBox onSelect={handleSearchSelect} />
-        <label
-          className="flex items-center gap-2 rounded px-3 py-2 text-sm shadow"
-          style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
-        >
+        <label className="flex items-center gap-2 rounded px-3 py-2 text-sm shadow bg-paper-light text-ink">
           <span>{t("radiusLabel")}</span>
           <select
             value={radiusKm}
             onChange={(e) => handleRadiusChange(Number(e.target.value))}
-            className="rounded border px-2 py-1"
-            style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-paper-light)" }}
+            className="rounded border px-2 py-1 border-contour bg-paper-light"
           >
             {RADIUS_OPTIONS.map((r) => (
               <option key={r} value={r}>
@@ -229,8 +225,7 @@ function MapPageContent() {
         <button
           onClick={handleUseMyLocation}
           disabled={locating}
-          className="rounded px-3 py-2 text-left text-sm shadow disabled:opacity-50"
-          style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
+          className="rounded px-3 py-2 text-left text-sm shadow disabled:opacity-50 bg-paper-light text-ink"
         >
           {locating ? t("locating") : t("useMyLocation")}
         </button>
@@ -240,10 +235,7 @@ function MapPageContent() {
         ) : null}
 
         {!loadError && spots.length < totalNearbyCount ? (
-          <div
-            className="rounded px-3 py-2 text-sm shadow"
-            style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-dim)" }}
-          >
+          <div className="rounded px-3 py-2 text-sm shadow bg-paper-light text-dim">
             {t("moreSpotsNearby", { shown: spots.length, total: totalNearbyCount })}
           </div>
         ) : null}
@@ -252,8 +244,7 @@ function MapPageContent() {
       {showSearchHere ? (
         <button
           onClick={() => void search({ lat: viewState.latitude, lng: viewState.longitude }, radiusKm)}
-          className="absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded px-4 py-2 text-sm shadow"
-          style={{ backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }}
+          className="absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded px-4 py-2 text-sm shadow bg-ink text-paper-light"
         >
           {t("searchThisArea")}
         </button>
@@ -263,22 +254,16 @@ function MapPageContent() {
         <button
           onClick={handleToggleAddSpot}
           aria-pressed={placingSpot}
-          className="absolute right-6 bottom-6 z-10 rounded-full px-4 py-3 text-sm shadow-lg"
-          style={
-            placingSpot
-              ? { backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)", boxShadow: "0 0 0 4px rgba(181,74,36,0.25)" }
-              : { backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }
-          }
+          className={`absolute right-6 bottom-6 z-10 rounded-full px-4 py-3 text-sm text-paper-light ${
+            placingSpot ? "bg-trail shadow-[0_0_0_4px_rgba(181,74,36,0.25)]" : "bg-ink shadow-lg"
+          }`}
         >
           {placingSpot ? t("tapMapToPlace") : t("addAtMyLocation")}
         </button>
       )}
 
       {showLoginPrompt ? (
-        <div
-          className="absolute bottom-6 left-6 z-10 rounded px-4 py-3 text-sm shadow"
-          style={{ backgroundColor: "var(--fieldmap-paper-light)", color: "var(--fieldmap-ink)" }}
-        >
+        <div className="absolute bottom-6 left-6 z-10 rounded px-4 py-3 text-sm shadow bg-paper-light text-ink">
           {t("loginRequiredToCreate")}{" "}
           <Link href="/login" className="underline">
             {tAuth("loginTitle")}

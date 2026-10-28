@@ -42,19 +42,15 @@ export function RewardCard({ reward }: { reward: RewardResponse }) {
 
   return (
     <li
-      className={`flex flex-col gap-2 rounded-md border p-4 ${reward.isActive ? "" : "opacity-60"}`}
-      style={{ borderColor: "var(--fieldmap-contour)" }}
+      className={`flex flex-col gap-2 rounded-md border p-4 ${reward.isActive ? "" : "opacity-60"} border-contour`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="font-medium">{reward.title}</h3>
-          <p className="mt-1 text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-            {reward.description}
-          </p>
+          <p className="mt-1 text-sm text-dim">{reward.description}</p>
         </div>
         <span
-          className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium"
-          style={{ backgroundColor: "var(--fieldmap-card)", color: "var(--fieldmap-ink)" }}
+          className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium bg-card text-ink"
         >
           <Gem size={14} />
           {reward.crystalCost}
@@ -64,18 +60,16 @@ export function RewardCard({ reward }: { reward: RewardResponse }) {
       {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
 
       {!reward.isActive ? (
-        <span className="text-sm font-medium" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("rewardUnavailable")}
-        </span>
+        <span className="text-sm font-medium text-dim">{t("rewardUnavailable")}</span>
       ) : !isAuthenticated ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+        <p className="text-sm text-dim">
           {t("loginRequiredToRedeem")}{" "}
           <Link href="/login" className="underline">
             {t("loginLink")}
           </Link>
         </p>
       ) : redeemed ? (
-        <span className="inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: "var(--fieldmap-trail)" }}>
+        <span className="inline-flex items-center gap-1.5 text-sm font-medium text-trail">
           <Check size={16} />
           {t("redeemedLabel")}
         </span>
@@ -84,8 +78,7 @@ export function RewardCard({ reward }: { reward: RewardResponse }) {
           type="button"
           onClick={handleRedeem}
           disabled={redeeming || !canAfford}
-          className="self-start rounded px-4 py-2 text-sm disabled:opacity-50"
-          style={{ backgroundColor: "var(--fieldmap-ink)", color: "var(--fieldmap-paper-light)" }}
+          className="self-start rounded px-4 py-2 text-sm disabled:opacity-50 bg-ink text-paper-light"
         >
           {redeeming ? t("redeeming") : canAfford ? t("redeemButton") : t("insufficientBalance")}
         </button>

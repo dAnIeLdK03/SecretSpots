@@ -43,42 +43,31 @@ export default function AdminUsersPage() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder={t("searchPlaceholder")}
-        className="rounded-md border px-3 py-2 text-sm"
-        style={{ borderColor: "var(--fieldmap-contour)", backgroundColor: "var(--fieldmap-card)" }}
+        className="rounded-md border px-3 py-2 text-sm border-contour bg-card"
       />
 
       {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
 
       {status === "loading" ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("loading")}
-        </p>
+        <p className="text-sm text-dim">{t("loading")}</p>
       ) : items.length === 0 ? (
-        <p className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
-          {t("empty")}
-        </p>
+        <p className="text-sm text-dim">{t("empty")}</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {items.map((item) => (
             <li key={item.id}>
               <Link
                 href={`/admin/users/${item.id}`}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-2xl p-4 hover:opacity-80"
-                style={{ backgroundColor: "var(--fieldmap-card)" }}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-2xl p-4 hover:opacity-80 bg-card"
               >
                 <div className="flex flex-col">
                   <span className="text-sm font-medium">{item.displayName}</span>
-                  <span className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-                    {item.email}
-                  </span>
+                  <span className="text-xs text-dim">{item.email}</span>
                 </div>
                 <span
-                  className="rounded-full px-3 py-1 text-xs font-medium"
-                  style={
-                    item.role === UserRole.Admin
-                      ? { backgroundColor: "var(--fieldmap-trail)", color: "var(--fieldmap-paper-light)" }
-                      : { backgroundColor: "var(--fieldmap-contour)", color: "var(--fieldmap-ink)" }
-                  }
+                  className={`rounded-full px-3 py-1 text-xs font-medium ${
+                    item.role === UserRole.Admin ? "bg-trail text-paper-light" : "bg-contour text-ink"
+                  }`}
                 >
                   {item.role === UserRole.Admin ? t("roleAdmin") : t("roleUser")}
                 </span>

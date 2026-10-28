@@ -21,12 +21,12 @@ export function SpotRatingSummary({ averageRating, ratingsCount }: SpotRatingSum
           <Star
             key={value}
             size={18}
-            style={{ color: "var(--fieldmap-gold)" }}
+            className="text-gold"
             fill={value <= roundedAverage ? "var(--fieldmap-gold)" : "none"}
           />
         ))}
       </div>
-      <span className="text-sm" style={{ color: "var(--fieldmap-dim)" }}>
+      <span className="text-sm text-dim">
         {ratingsCount > 0
           ? t("summary", { average: averageRating.toFixed(1), count: ratingsCount })
           : t("noRatingsYet")}

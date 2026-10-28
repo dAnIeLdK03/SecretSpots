@@ -86,13 +86,10 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
         onClick={() => setIsOpen((open) => !open)}
         aria-label={t("menuLabel")}
         aria-expanded={isOpen}
-        className="flex items-center gap-1.5 rounded-full border py-1 pr-2 pl-1 hover:bg-black/5 dark:hover:bg-white/5"
-        style={{ borderColor: "var(--fieldmap-contour)" }}
+        className="flex items-center gap-1.5 rounded-full border py-1 pr-2 pl-1 hover:bg-black/5 dark:hover:bg-white/5 border-contour"
       >
         <Avatar name={displayName} size={28} />
-        <span aria-hidden="true" className="text-xs" style={{ color: "var(--fieldmap-dim)" }}>
-          ▾
-        </span>
+        <span aria-hidden="true" className="text-xs text-dim">▾</span>
       </button>
 
       {isOpen &&
@@ -100,19 +97,11 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
         createPortal(
           <div
             ref={menuRef}
-            className="fixed z-50 w-64 rounded-md border py-2 text-sm shadow-lg"
-            style={{
-              top: position.top,
-              right: position.right,
-              borderColor: "var(--fieldmap-contour)",
-              backgroundColor: "var(--fieldmap-paper-light)",
-            }}
+            className="fixed z-50 w-64 rounded-md border border-contour bg-paper-light py-2 text-sm shadow-lg"
+            style={{ top: position.top, right: position.right }}
           >
             {mobileNavItems.length > 0 && (
-              <nav
-                className="mb-2 flex flex-col border-b pb-2 sm:hidden"
-                style={{ borderColor: "var(--fieldmap-contour)" }}
-              >
+              <nav className="mb-2 flex flex-col border-b pb-2 sm:hidden border-contour">
                 {mobileNavItems.map((item) => (
                   <Link key={item.href} href={item.href} onClick={closeMenu} className="px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
                     {item.label}
@@ -130,7 +119,7 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
               {t("settingsLabel")}
             </Link>
 
-            <div className="my-2 border-b" style={{ borderColor: "var(--fieldmap-contour)" }} />
+            <div className="my-2 border-b border-contour" />
 
             <Link href="/account" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
               {tAuth("profileLabel")}
