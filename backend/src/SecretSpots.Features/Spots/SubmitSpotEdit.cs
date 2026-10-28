@@ -1,5 +1,4 @@
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,7 +11,6 @@ using SecretSpots.Features.Common.Results;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Common.Storage;
 using SecretSpots.Features.Common.Validation;
-using SecretSpots.Features.Notifications;
 
 namespace SecretSpots.Features.Spots;
 
@@ -68,16 +66,13 @@ public static class SubmitSpotEdit
     {
         public async Task<Result<SpotChangeRequestResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == command.SpotId, cancellationToken);
-            if (spot is null)
+            var owned = await SpotOwnership.LoadOwnedAsync(db, command.SpotId, userContext, localizer, cancellationToken);
+            if (!owned.IsSuccess)
             {
-                return Result<SpotChangeRequestResponse>.Failure(Error.NotFound(SpotsMessageKeys.NotFound, localizer));
+                return Result<SpotChangeRequestResponse>.Failure(owned.Error);
             }
 
-            if (spot.CreatedByUserId != userContext.UserId)
-            {
-                return Result<SpotChangeRequestResponse>.Failure(Error.Forbidden(SpotsMessageKeys.NotYourSpot, localizer));
-            }
+            var spot = owned.Value;
 
             var name = command.Name.Trim();
             var description = command.Description.Trim();
@@ -91,38 +86,19 @@ public static class SubmitSpotEdit
                 return Result<SpotChangeRequestResponse>.Failure(Error.BadRequest(SpotsMessageKeys.NoChanges, localizer));
             }
 
-            var request = await db.SpotChangeRequests.SingleOrDefaultAsync(
-                r => r.SpotId == spot.Id && r.Status == SpotChangeRequestStatus.Pending, cancellationToken);
-
-            var replacedPhotoUrls = request?.ProposedPhotoUrls;
-
-            if (request is null)
-            {
-                request = new SpotChangeRequest
+            var (request, replacedPhotoUrls) = await PendingSpotChangeRequests.SubmitAsync(
+                db,
+                spot,
+                userContext.UserId,
+                SpotChangeRequestType.Edit,
+                r =>
                 {
-                    Id = Guid.NewGuid(),
-                    SpotId = spot.Id,
-                    RequestedByUserId = userContext.UserId,
-                };
-                db.SpotChangeRequests.Add(request);
-
-                // Only for a brand-new request — replacing a pending one doesn't re-page admins.
-                await AdminNotifier.AddForAllAdminsAsync(
-                    db, NotificationType.SpotChangeRequestSubmitted, spot.Id, spot.Name, cancellationToken);
-            }
-            else
-            {
-                // Replacing the pending request — it goes back to the end of the review queue.
-                request.CreatedAt = DateTimeOffset.UtcNow;
-            }
-
-            request.Type = SpotChangeRequestType.Edit;
-            request.ProposedName = name;
-            request.ProposedDescription = description;
-            request.ProposedCategory = command.Category;
-            request.ProposedPhotoUrls = photoUrls;
-
-            await db.SaveChangesAsync(cancellationToken);
+                    r.ProposedName = name;
+                    r.ProposedDescription = description;
+                    r.ProposedCategory = command.Category;
+                    r.ProposedPhotoUrls = photoUrls;
+                },
+                cancellationToken);
 
             await SpotChangeRequestPhotos.DeleteUnusedAsync(
                 photoStorage, replacedPhotoUrls, spot.PhotoUrls.Concat(photoUrls), spot.Id, logger, cancellationToken);

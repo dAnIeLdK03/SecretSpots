@@ -19,16 +19,13 @@ public static class GetMySpotChangeRequest
     {
         public async Task<Result<SpotChangeRequestResponse>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var spot = await db.Spots.SingleOrDefaultAsync(s => s.Id == query.SpotId, cancellationToken);
-            if (spot is null)
+            var owned = await SpotOwnership.LoadOwnedAsync(db, query.SpotId, userContext, localizer, cancellationToken);
+            if (!owned.IsSuccess)
             {
-                return Result<SpotChangeRequestResponse>.Failure(Error.NotFound(SpotsMessageKeys.NotFound, localizer));
+                return Result<SpotChangeRequestResponse>.Failure(owned.Error);
             }
 
-            if (spot.CreatedByUserId != userContext.UserId)
-            {
-                return Result<SpotChangeRequestResponse>.Failure(Error.Forbidden(SpotsMessageKeys.NotYourSpot, localizer));
-            }
+            var spot = owned.Value;
 
             var request = await db.SpotChangeRequests
                 .Where(r => r.SpotId == spot.Id)

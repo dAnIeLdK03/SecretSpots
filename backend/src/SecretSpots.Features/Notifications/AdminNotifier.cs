@@ -6,10 +6,11 @@ namespace SecretSpots.Features.Notifications;
 
 // Pages every admin with an in-app notification about something waiting in an admin queue
 // (reports, new spots, spot change requests). Only adds the rows — the caller saves them
-// together with the change that triggered them.
+// together with the change that triggered them — and returns them, so a caller that hits a
+// conflict on save can take them back out.
 public static class AdminNotifier
 {
-    public static async Task AddForAllAdminsAsync(
+    public static async Task<IReadOnlyList<Notification>> AddForAllAdminsAsync(
         IAppDbContext db,
         NotificationType type,
         Guid relatedSpotId,
@@ -21,13 +22,16 @@ public static class AdminNotifier
             .Select(u => u.Id)
             .ToListAsync(cancellationToken);
 
-        db.Notifications.AddRange(adminIds.Select(adminId => new Notification
+        var notifications = adminIds.Select(adminId => new Notification
         {
             Id = Guid.NewGuid(),
             UserId = adminId,
             Type = type,
             RelatedSpotId = relatedSpotId,
             RelatedSpotName = relatedSpotName,
-        }));
+        }).ToList();
+
+        db.Notifications.AddRange(notifications);
+        return notifications;
     }
 }
