@@ -15,7 +15,13 @@ export function SavedSpotCard({ spot }: { spot: SavedSpotResponse }) {
     >
       <div className="relative h-32 w-full">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={spot.photoUrl} alt={spot.spotName} className="h-full w-full object-cover" />
+        <img
+          src={spot.photoUrl}
+          alt={spot.spotName}
+          loading="lazy"
+          decoding="async"
+          className="h-full w-full object-cover"
+        />
       </div>
       <div className="flex flex-1 flex-col gap-1 p-4 text-ink">
         <h3 className="font-semibold">{spot.spotName}</h3>

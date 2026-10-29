@@ -26,6 +26,8 @@ function SpotTile({ spot }: { spot: SpotSearchResult }) {
         <img
           src={spot.photoUrl}
           alt={spot.name}
+          loading="lazy"
+          decoding="async"
           onError={() => setImageFailed(true)}
           className="h-full w-full object-cover transition hover:scale-105"
         />

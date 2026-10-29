@@ -56,6 +56,8 @@ function PhotoStrip({
             <img
               src={url}
               alt=""
+              loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover"
               style={{ opacity: highlight.has(url) && highlightTone === "removed" ? 0.5 : 1 }}
             />
