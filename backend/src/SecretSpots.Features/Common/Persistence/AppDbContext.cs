@@ -136,6 +136,41 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<SpotChangeRequest>()
             .HasIndex(r => new { r.Status, r.CreatedAt });
 
+        // There are no DB-level foreign keys, so EF doesn't index the *Id columns on its own —
+        // these cover the lookups that would otherwise scan the whole table.
+
+        // Check-in cooldown / first-visit checks and spot deletion (SpotId prefix).
+        modelBuilder.Entity<CheckIn>()
+            .HasIndex(c => new { c.SpotId, c.UserId, c.CreatedAt });
+
+        // My check-ins (newest first), admin counts, account deletion.
+        modelBuilder.Entity<CheckIn>()
+            .HasIndex(c => new { c.UserId, c.CreatedAt });
+
+        // My spots (newest first), admin user counts/filter, account deletion.
+        modelBuilder.Entity<Spot>()
+            .HasIndex(s => new { s.CreatedByUserId, s.CreatedAt });
+
+        // Revoking all of a user's sessions (refresh reuse, password reset, role change, deletion).
+        modelBuilder.Entity<RefreshToken>()
+            .HasIndex(r => r.UserId);
+
+        // Resolving every report on a piece of content when it's deleted.
+        modelBuilder.Entity<Report>()
+            .HasIndex(r => new { r.ContentType, r.ContentId });
+
+        modelBuilder.Entity<RewardRedemption>()
+            .HasIndex(r => new { r.UserId, r.CreatedAt });
+
+        modelBuilder.Entity<Reward>()
+            .HasIndex(r => r.BusinessId);
+
+        modelBuilder.Entity<Comment>()
+            .HasIndex(c => c.UserId);
+
+        modelBuilder.Entity<Rating>()
+            .HasIndex(r => r.UserId);
+
         base.OnModelCreating(modelBuilder);
     }
 }
