@@ -50,7 +50,9 @@ public static class DeleteReportedContent
                 if (spot is not null)
                 {
                     contentOwnerUserId = spot.CreatedByUserId;
-                    await SpotDeletionCleanup.DeleteAsync(db, photoStorage, spot, logger, cancellationToken);
+                    await SpotDeletionCleanup.DeleteAsync(
+                        db, photoStorage, spot, logger, cancellationToken,
+                        ReportResolutionAction.ContentDeleted, userContext.UserId);
                 }
             }
             else
@@ -97,10 +99,6 @@ public static class DeleteReportedContent
 
             logger.LogInformation(
                 ReportsLogMessages.ReportedContentDeleted, report.ContentType, report.ContentId, userContext.UserId, report.Id);
-
-            if (notification is not null)
-            {
-            }
 
             return Result<Unit>.Success(Unit.Value);
         }
