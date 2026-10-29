@@ -68,6 +68,19 @@ public static class ExternalAuthCallback
                 return Result<string>.Success(ErrorRedirect("email_required"));
             }
 
+            // An unverified provider email is only trusted for a brand-new account: linking it to an
+            // existing one would let anyone who can put that address on a provider account sign in as
+            // its owner, and creating a second user would collide on the unique email index (a 500).
+            if (!isKnownLogin && !userInfo.EmailVerified)
+            {
+                var normalizedEmail = userInfo.Email.Trim().ToLowerInvariant();
+                if (await db.Users.AnyAsync(u => u.Email == normalizedEmail, cancellationToken))
+                {
+                    logger.LogWarning(AuthLogMessages.ExternalAuthEmailInUse, command.Provider);
+                    return Result<string>.Success(ErrorRedirect("email_in_use"));
+                }
+            }
+
             var user = await FindOrCreateUserAsync(userInfo, command.Provider, cancellationToken);
 
             transaction!.Status = ExternalAuthTransactionStatus.Completed;

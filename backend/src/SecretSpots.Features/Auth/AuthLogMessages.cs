@@ -10,6 +10,7 @@ internal static class AuthLogMessages
     public const string UserProfileRetrieved = "User {UserId} retrieved their profile.";
     public const string ExternalAuthDenied = "External auth with {Provider} was denied or cancelled by the user.";
     public const string ExternalAuthEmailMissing = "External auth with {Provider} rejected: provider returned no email for a new link.";
+    public const string ExternalAuthEmailInUse = "External auth with {Provider} rejected: unverified email belongs to an existing account.";
     public const string ExternalAuthInvalidState = "External auth callback for {Provider} had an invalid or expired state.";
     public const string ExternalAuthProviderExchangeFailed = "External auth code exchange with {Provider} failed.";
     public const string ExternalAuthCompleted = "User {UserId} completed external auth with {Provider}.";

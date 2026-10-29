@@ -6,12 +6,21 @@ using SecretSpots.Features.Common.Storage;
 
 namespace SecretSpots.Features.Spots;
 
-// Shared by ApproveSpotChangeRequest (an approved deletion request) and DeleteAccount (deleting an account deletes every spot it created) —
-// keeps the cascade logic in one place so the two can't drift apart.
+// Shared by ApproveSpotChangeRequest (an approved deletion request), DeleteAccount (deleting an account deletes every
+// spot it created) and DeleteReportedContent (an admin removing a reported spot) — keeps the cascade logic in one
+// place so they can't drift apart.
 public static class SpotDeletionCleanup
 {
+    // Open reports on the spot/its comments are resolved as deleted by the author unless the caller is an admin
+    // acting on a report, who passes ContentDeleted and their own id instead.
     public static async Task DeleteAsync(
-        IAppDbContext db, IPhotoStorage photoStorage, Spot spot, ILogger logger, CancellationToken cancellationToken)
+        IAppDbContext db,
+        IPhotoStorage photoStorage,
+        Spot spot,
+        ILogger logger,
+        CancellationToken cancellationToken,
+        ReportResolutionAction reportResolution = ReportResolutionAction.ContentDeletedByAuthor,
+        Guid? resolvedByUserId = null)
     {
         db.Spots.Remove(spot);
         await db.SaveChangesAsync(cancellationToken);
@@ -39,7 +48,8 @@ public static class SpotDeletionCleanup
             .Where(r => r.ResolvedAt == null)
             .ExecuteUpdateAsync(r => r
                 .SetProperty(x => x.ResolvedAt, DateTimeOffset.UtcNow)
-                .SetProperty(x => x.ResolutionAction, ReportResolutionAction.ContentDeletedByAuthor), cancellationToken);
+                .SetProperty(x => x.ResolvedByUserId, resolvedByUserId)
+                .SetProperty(x => x.ResolutionAction, reportResolution), cancellationToken);
 
         // Comment/Rating/SavedSpot/CheckIn have a required (non-nullable) SpotId, so unlike
         // Notification.RelatedSpotId there's no "clear the link" option — the rows themselves
