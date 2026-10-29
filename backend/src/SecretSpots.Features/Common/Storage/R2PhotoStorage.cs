@@ -8,6 +8,10 @@ namespace SecretSpots.Features.Common.Storage;
 
 public class R2PhotoStorage : IPhotoStorage, IDisposable
 {
+    // Every key is a fresh {userId}/{guid}.webp and is never overwritten (a replaced photo gets a new
+    // key), so a URL's content can't change and browsers/CDN may cache it for good.
+    private const string PhotoCacheControl = "public, max-age=31536000, immutable";
+
     private readonly AmazonS3Client _client;
     private readonly R2Options _options;
 
@@ -34,6 +38,7 @@ public class R2PhotoStorage : IPhotoStorage, IDisposable
             InputStream = content,
             ContentType = contentType,
         };
+        request.Headers.CacheControl = PhotoCacheControl;
 
         await _client.PutObjectAsync(request, cancellationToken);
 
