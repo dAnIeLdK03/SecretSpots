@@ -187,6 +187,8 @@ export default function AdminSpotsPage() {
                     <img
                       src={spot.photoUrl}
                       alt={spot.name}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     <span className="pointer-events-none absolute inset-0 flex items-center justify-center gap-1 bg-black/30 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
