@@ -85,6 +85,10 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId", "CreatedAt");
+
+                    b.HasIndex("SpotId", "UserId", "CreatedAt");
+
                     b.ToTable("CheckIns");
                 });
 
@@ -114,6 +118,8 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("SpotId", "CreatedAt");
 
@@ -347,6 +353,8 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.HasIndex("SpotId", "UserId")
                         .IsUnique();
 
@@ -382,6 +390,8 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
 
                     b.HasIndex("Token")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
                 });
@@ -421,6 +431,8 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ContentType", "ContentId");
+
                     b.HasIndex("ReporterUserId", "ContentType", "ContentId")
                         .IsUnique();
 
@@ -455,6 +467,8 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BusinessId");
+
                     b.ToTable("Rewards");
                 });
 
@@ -488,6 +502,8 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId", "CreatedAt");
 
                     b.ToTable("RewardRedemptions");
                 });
@@ -609,6 +625,8 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Name"), "gin");
                     NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("Name"), new[] { "gin_trgm_ops" });
+
+                    b.HasIndex("CreatedByUserId", "CreatedAt");
 
                     b.ToTable("Spots");
                 });
