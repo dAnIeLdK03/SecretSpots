@@ -1,0 +1,8 @@
+# Bulk formatting commits that `git blame` should skip. GitHub's blame view reads this file
+# automatically; locally run once: git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# Only works for commits that land on main unchanged — merge these PRs with a merge commit, not
+# squash/rebase, or the hash below no longer exists on main.
+
+# Format frontend with Prettier
+be29ca4b2594722a09580e3b36498c418aeec359

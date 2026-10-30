@@ -82,7 +82,20 @@ export SECRETSPOTS_TEST_CONNECTION_STRING="Host=localhost;Port=5432;Database=sec
 dotnet test
 ```
 
-И двете трябва да минават чисто, преди да отвориш PR.
+```bash
+cd frontend
+npm run lint
+npm run format:check   # npm run format поправя
+npx tsc --noEmit
+```
+
+Всичко трябва да минава чисто, преди да отвориш PR — CI пуска същите проверки.
+
+Еднократно, за да не показва `git blame` масовото форматиране:
+
+```bash
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+```
 
 ## E2E тестове (Playwright)
 
