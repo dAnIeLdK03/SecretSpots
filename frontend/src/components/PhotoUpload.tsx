@@ -51,7 +51,9 @@ export function PhotoUpload({ label, value, onChange, required = true }: PhotoUp
 
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={inputId} className="text-sm text-dim">{label}</label>
+      <label htmlFor={inputId} className="text-sm text-dim">
+        {label}
+      </label>
       {previewSrc ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={previewSrc} alt="" className="h-32 w-full rounded object-cover" />
@@ -63,11 +65,9 @@ export function PhotoUpload({ label, value, onChange, required = true }: PhotoUp
         accept="image/*"
         required={required && !value}
         onChange={(e) => void handleFileChange(e)}
-        className="rounded border px-3 py-2 text-sm border-contour"
+        className="rounded border border-contour px-3 py-2 text-sm"
       />
-      {uploading ? (
-        <p className="text-sm text-dim">{t("uploading")}</p>
-      ) : null}
+      {uploading ? <p className="text-sm text-dim">{t("uploading")}</p> : null}
       {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
     </div>
   );

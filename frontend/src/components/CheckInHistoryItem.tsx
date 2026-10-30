@@ -17,7 +17,9 @@ export function CheckInHistoryItem({ checkIn }: { checkIn: MyCheckInResponse }) 
         </Link>
         <span className="text-xs text-dim">{formatRelativeTime(checkIn.createdAt, locale)}</span>
       </span>
-      <span className="whitespace-nowrap text-dim">+{checkIn.crystalsAwarded} {t("crystalsUnit")}</span>
+      <span className="whitespace-nowrap text-dim">
+        +{checkIn.crystalsAwarded} {t("crystalsUnit")}
+      </span>
     </li>
   );
 }

@@ -43,7 +43,7 @@ export default function AdminUsersPage() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder={t("searchPlaceholder")}
-        className="rounded-md border px-3 py-2 text-sm border-contour bg-card"
+        className="rounded-md border border-contour bg-card px-3 py-2 text-sm"
       />
 
       {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
@@ -58,7 +58,7 @@ export default function AdminUsersPage() {
             <li key={item.id}>
               <Link
                 href={`/admin/users/${item.id}`}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-2xl p-4 hover:opacity-80 bg-card"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-card p-4 hover:opacity-80"
               >
                 <div className="flex flex-col">
                   <span className="text-sm font-medium">{item.displayName}</span>

@@ -11,7 +11,7 @@ export function SavedSpotCard({ spot }: { spot: SavedSpotResponse }) {
   return (
     <Link
       href={`/spots/${spot.spotId}`}
-      className="group flex flex-col overflow-hidden rounded-xl border shadow-sm transition hover:shadow-md border-contour bg-card"
+      className="group flex flex-col overflow-hidden rounded-xl border border-contour bg-card shadow-sm transition hover:shadow-md"
     >
       <div className="relative h-32 w-full">
         {/* eslint-disable-next-line @next/next/no-img-element */}

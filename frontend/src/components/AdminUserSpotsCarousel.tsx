@@ -19,7 +19,7 @@ function SpotTile({ spot }: { spot: SpotSearchResult }) {
   return (
     <Link
       href={`/spots/${spot.id}`}
-      className="relative block aspect-square w-40 shrink-0 snap-start overflow-hidden rounded-xl sm:w-48 bg-contour"
+      className="relative block aspect-square w-40 shrink-0 snap-start overflow-hidden rounded-xl bg-contour sm:w-48"
     >
       {!imageFailed ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -81,13 +81,11 @@ export function AdminUserSpotsCarousel({ userId }: { userId: string }) {
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl p-4 bg-card">
+    <section className="flex flex-col gap-3 rounded-2xl bg-card p-4">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-sm font-semibold">
           {t("spotsHeading")}
-          {status !== "loading" && !error ? (
-            <span className="ml-1 font-normal text-dim">({totalCount})</span>
-          ) : null}
+          {status !== "loading" && !error ? <span className="ml-1 font-normal text-dim">({totalCount})</span> : null}
         </h2>
         {items.length > 0 ? (
           <div className="flex gap-1">
@@ -118,14 +116,16 @@ export function AdminUserSpotsCarousel({ userId }: { userId: string }) {
       ) : items.length === 0 && !error ? (
         <p className="text-sm text-dim">{t("spotsEmpty")}</p>
       ) : (
-        <div ref={scrollerRef} onScroll={handleScroll} className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2">
+        <div
+          ref={scrollerRef}
+          onScroll={handleScroll}
+          className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2"
+        >
           {items.map((spot) => (
             <SpotTile key={spot.id} spot={spot} />
           ))}
           {status === "loadingMore" ? (
-            <div
-              className="flex aspect-square w-40 shrink-0 items-center justify-center rounded-xl text-sm sm:w-48 bg-contour text-dim"
-            >
+            <div className="flex aspect-square w-40 shrink-0 items-center justify-center rounded-xl bg-contour text-sm text-dim sm:w-48">
               {t("loading")}
             </div>
           ) : null}

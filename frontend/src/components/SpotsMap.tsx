@@ -113,18 +113,14 @@ export function SpotsMap({
           >
             <div className="flex w-64 flex-col gap-1.5 text-sm text-zinc-900">
               <span className="pr-4 font-semibold">{selectedSpot.name}</span>
-              <span className="w-fit rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 flex items-center gap-1">
+              <span className="flex w-fit items-center gap-1 rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">
                 <CategoryIcon category={selectedSpot.category} />
                 {t(`category.${selectedSpot.category}`)}
               </span>
               <p className="line-clamp-2 text-zinc-700">{selectedSpot.description}</p>
               <div className="mt-0.5 aspect-video w-full overflow-hidden rounded-lg">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={selectedSpot.photoUrl}
-                  alt={selectedSpot.name}
-                  className="h-full w-full object-cover"
-                />
+                <img src={selectedSpot.photoUrl} alt={selectedSpot.name} className="h-full w-full object-cover" />
               </div>
               <div className="mt-0.5 flex items-center justify-between">
                 <span className="text-xs text-zinc-500">{formatDistance(selectedSpot.distanceKm, t)}</span>

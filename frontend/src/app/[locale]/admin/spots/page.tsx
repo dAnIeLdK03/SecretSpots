@@ -26,7 +26,6 @@ const STATUS_COUNT_KEYS: Record<SpotModerationStatus, keyof AdminSpotCounts> = {
   Rejected: "rejected",
 };
 
-
 export default function AdminSpotsPage() {
   const t = useTranslations("AdminSpots");
   const tSpots = useTranslations("Spots");
@@ -114,7 +113,7 @@ export default function AdminSpotsPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 md:p-8">
-      <div className="flex flex-col justify-between gap-4 border-b pb-4 md:flex-row md:items-center border-contour">
+      <div className="flex flex-col justify-between gap-4 border-b border-contour pb-4 md:flex-row md:items-center">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-semibold">
             <ShieldCheck size={24} className="text-trail" />
@@ -128,7 +127,7 @@ export default function AdminSpotsPage() {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as SpotModerationStatus)}
             aria-label={t("statusFilterLabel")}
-            className="rounded-lg border px-3 py-2 text-sm border-contour bg-card"
+            className="rounded-lg border border-contour bg-card px-3 py-2 text-sm"
           >
             {SPOT_MODERATION_STATUSES.map((s) => (
               <option key={s} value={s}>
@@ -138,22 +137,18 @@ export default function AdminSpotsPage() {
               </option>
             ))}
           </select>
-
         </div>
       </div>
 
       <label className="relative block">
-        <Search
-          size={16}
-          className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-dim"
-        />
+        <Search size={16} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-dim" />
         <input
           type="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("searchPlaceholder", { status: t(`status.${statusFilter}`).toLowerCase() })}
           aria-label={t("searchLabel")}
-          className="w-full rounded-lg border py-2 pr-3 pl-9 text-sm border-contour bg-card"
+          className="w-full rounded-lg border border-contour bg-card py-2 pr-3 pl-9 text-sm"
         />
       </label>
 
@@ -162,7 +157,7 @@ export default function AdminSpotsPage() {
       {status === "loading" ? (
         <p className="text-sm text-dim">{t("loading")}</p>
       ) : items.length === 0 ? (
-        <p className="rounded-xl p-8 text-center text-sm bg-card text-dim">
+        <p className="rounded-xl bg-card p-8 text-center text-sm text-dim">
           {debouncedSearch ? t("noSearchResults", { query: debouncedSearch }) : t("empty")}
         </p>
       ) : (
@@ -181,7 +176,7 @@ export default function AdminSpotsPage() {
                     type="button"
                     onClick={() => setLightboxSpot(spot)}
                     aria-label={t("enlargePhoto")}
-                    className="group relative h-32 w-full shrink-0 overflow-hidden rounded-lg border md:w-48 border-contour bg-contour"
+                    className="group relative h-32 w-full shrink-0 overflow-hidden rounded-lg border border-contour bg-contour md:w-48"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -209,7 +204,7 @@ export default function AdminSpotsPage() {
                       </div>
                       <Link
                         href={`/admin/users/${spot.createdByUserId}`}
-                        className="flex items-center gap-1 text-xs hover:underline text-dim"
+                        className="flex items-center gap-1 text-xs text-dim hover:underline"
                       >
                         <User size={12} />
                         {spot.createdByDisplayName}
@@ -231,7 +226,10 @@ export default function AdminSpotsPage() {
                         {spot.scheduledDeletionAt ? (
                           <p>
                             {t("scheduledDeletionLabel", {
-                              date: format.dateTime(new Date(spot.scheduledDeletionAt), { dateStyle: "medium", timeStyle: "short" }),
+                              date: format.dateTime(new Date(spot.scheduledDeletionAt), {
+                                dateStyle: "medium",
+                                timeStyle: "short",
+                              }),
                             })}
                           </p>
                         ) : null}
@@ -246,24 +244,19 @@ export default function AdminSpotsPage() {
                         <MapPin size={12} />
                         {t("viewOnMapLink")}
                       </Link>
-                      <Link
-                        href={`/spots/${spot.id}`}
-                        className="flex items-center gap-1 hover:underline text-trail"
-                      >
+                      <Link href={`/spots/${spot.id}`} className="flex items-center gap-1 text-trail hover:underline">
                         <ExternalLink size={12} />
                         {t("viewSpotLink")}
                       </Link>
                     </div>
                   </div>
 
-                  <div
-                    className="flex w-full justify-end gap-2 border-t pt-3 md:w-auto md:flex-col md:border-t-0 md:pt-0 border-contour"
-                  >
+                  <div className="flex w-full justify-end gap-2 border-t border-contour pt-3 md:w-auto md:flex-col md:border-t-0 md:pt-0">
                     {spot.moderationStatus !== "Approved" ? (
                       <button
                         onClick={() => handleApprove(spot.id)}
                         disabled={busy}
-                        className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium shadow-sm transition hover:opacity-90 disabled:opacity-50 md:flex-none bg-ink text-paper-light"
+                        className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-ink px-4 py-2.5 text-sm font-medium text-paper-light shadow-sm transition hover:opacity-90 disabled:opacity-50 md:flex-none"
                       >
                         {/* Approving a Rejected spot undoes the rejection, so it reads as a restore. */}
                         {spot.moderationStatus === "Rejected" ? (

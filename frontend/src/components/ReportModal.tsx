@@ -47,17 +47,13 @@ export function ReportModal({ onClose, onSubmit }: ReportModalProps) {
         aria-modal="true"
         aria-label={t("modalTitle")}
         tabIndex={-1}
-        className="w-full max-w-sm rounded-lg p-6 outline-none bg-paper-light text-ink"
+        className="w-full max-w-sm rounded-lg bg-paper-light p-6 text-ink outline-none"
       >
         {submitted ? (
           <>
             <p className="text-sm">{t("submittedMessage")}</p>
             <div className="mt-4 flex justify-end">
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded px-4 py-2 text-sm bg-trail text-paper-light"
-              >
+              <button type="button" onClick={onClose} className="rounded bg-trail px-4 py-2 text-sm text-paper-light">
                 {t("closeButton")}
               </button>
             </div>
@@ -82,16 +78,18 @@ export function ReportModal({ onClose, onSubmit }: ReportModalProps) {
                   onChange={(e) => setDetails(e.target.value)}
                   maxLength={MAX_DETAILS_LENGTH}
                   rows={3}
-                  className="rounded border px-3 py-2 text-sm border-contour"
+                  className="rounded border border-contour px-3 py-2 text-sm"
                 />
               </label>
               {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
               <div className="flex justify-end gap-2">
-                <button type="button" onClick={onClose} className="text-dim">{t("cancelButton")}</button>
+                <button type="button" onClick={onClose} className="text-dim">
+                  {t("cancelButton")}
+                </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded px-4 py-2 text-sm disabled:opacity-50 bg-trail text-paper-light"
+                  className="rounded bg-trail px-4 py-2 text-sm text-paper-light disabled:opacity-50"
                 >
                   {submitting ? t("submitting") : t("submitButton")}
                 </button>

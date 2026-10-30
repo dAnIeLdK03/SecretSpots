@@ -59,7 +59,7 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
     <button
       onClick={handleClick}
       className={`flex w-full items-start gap-3 px-4 py-3 text-left text-sm ${
-        notification.isRead ? "text-dim" : "bg-blue-50 dark:bg-blue-950 font-medium"
+        notification.isRead ? "text-dim" : "bg-blue-50 font-medium dark:bg-blue-950"
       }`}
     >
       <span aria-hidden="true">{TYPE_ICONS[notification.type]}</span>
@@ -69,9 +69,7 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
           {formatRelativeTime(notification.createdAt, locale)}
         </span>
       </span>
-      {!notification.isRead && (
-        <span aria-hidden="true" className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue-600" />
-      )}
+      {!notification.isRead && <span aria-hidden="true" className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue-600" />}
     </button>
   );
 }

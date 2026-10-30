@@ -25,9 +25,7 @@ function MySpotsList() {
   const { items, status } = list;
 
   if (status === "loading") {
-    return (
-      <p className="text-sm text-dim">{t("loading")}</p>
-    );
+    return <p className="text-sm text-dim">{t("loading")}</p>;
   }
 
   if (list.error && items.length === 0) {

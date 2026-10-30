@@ -41,17 +41,13 @@ export function RewardCard({ reward }: { reward: RewardResponse }) {
   }
 
   return (
-    <li
-      className={`flex flex-col gap-2 rounded-md border p-4 ${reward.isActive ? "" : "opacity-60"} border-contour`}
-    >
+    <li className={`flex flex-col gap-2 rounded-md border p-4 ${reward.isActive ? "" : "opacity-60"} border-contour`}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="font-medium">{reward.title}</h3>
           <p className="mt-1 text-sm text-dim">{reward.description}</p>
         </div>
-        <span
-          className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium bg-card text-ink"
-        >
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-card px-3 py-1 text-sm font-medium whitespace-nowrap text-ink">
           <Gem size={14} />
           {reward.crystalCost}
         </span>
@@ -78,7 +74,7 @@ export function RewardCard({ reward }: { reward: RewardResponse }) {
           type="button"
           onClick={handleRedeem}
           disabled={redeeming || !canAfford}
-          className="self-start rounded px-4 py-2 text-sm disabled:opacity-50 bg-ink text-paper-light"
+          className="self-start rounded bg-ink px-4 py-2 text-sm text-paper-light disabled:opacity-50"
         >
           {redeeming ? t("redeeming") : canAfford ? t("redeemButton") : t("insufficientBalance")}
         </button>

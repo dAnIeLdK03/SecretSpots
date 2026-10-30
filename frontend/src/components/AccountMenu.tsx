@@ -77,7 +77,6 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
     logout().catch((err) => Sentry.captureException(err));
   }
 
-
   return (
     <div className="relative">
       <button
@@ -86,10 +85,12 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
         onClick={() => setIsOpen((open) => !open)}
         aria-label={t("menuLabel")}
         aria-expanded={isOpen}
-        className="flex items-center gap-1.5 rounded-full border py-1 pr-2 pl-1 hover:bg-black/5 dark:hover:bg-white/5 border-contour"
+        className="flex items-center gap-1.5 rounded-full border border-contour py-1 pr-2 pl-1 hover:bg-black/5 dark:hover:bg-white/5"
       >
         <Avatar name={displayName} size={28} />
-        <span aria-hidden="true" className="text-xs text-dim">▾</span>
+        <span aria-hidden="true" className="text-xs text-dim">
+          ▾
+        </span>
       </button>
 
       {isOpen &&
@@ -101,9 +102,14 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
             style={{ top: position.top, right: position.right }}
           >
             {mobileNavItems.length > 0 && (
-              <nav className="mb-2 flex flex-col border-b pb-2 sm:hidden border-contour">
+              <nav className="mb-2 flex flex-col border-b border-contour pb-2 sm:hidden">
                 {mobileNavItems.map((item) => (
-                  <Link key={item.href} href={item.href} onClick={closeMenu} className="px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={closeMenu}
+                    className="px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5"
+                  >
                     {item.label}
                   </Link>
                 ))}
@@ -115,17 +121,29 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
                 {tHome("addASpot")}
               </Link>
             )}
-            <Link href="/settings" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
+            <Link
+              href="/settings"
+              onClick={closeMenu}
+              className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5"
+            >
               {t("settingsLabel")}
             </Link>
 
             <div className="my-2 border-b border-contour" />
 
-            <Link href="/account" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
+            <Link
+              href="/account"
+              onClick={closeMenu}
+              className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5"
+            >
               {tAuth("profileLabel")}
             </Link>
             {!isAdmin && (
-              <Link href="/my-spots" onClick={closeMenu} className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5">
+              <Link
+                href="/my-spots"
+                onClick={closeMenu}
+                className="block px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5"
+              >
                 {t("mySpotsLabel")}
               </Link>
             )}
@@ -161,7 +179,10 @@ export function AccountMenu({ displayName, mobileNavItems = [] }: AccountMenuPro
                 </Link>
               </>
             )}
-            <button onClick={handleLogout} className="block w-full px-4 py-2 text-left hover:bg-black/5 dark:hover:bg-white/5">
+            <button
+              onClick={handleLogout}
+              className="block w-full px-4 py-2 text-left hover:bg-black/5 dark:hover:bg-white/5"
+            >
               {tAuth("logoutButton")}
             </button>
           </div>,

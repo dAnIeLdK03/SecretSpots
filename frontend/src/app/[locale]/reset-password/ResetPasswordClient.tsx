@@ -58,7 +58,7 @@ export function ResetPasswordClient() {
               minLength={8}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="rounded border px-3 py-2 border-contour bg-paper-light"
+              className="rounded border border-contour bg-paper-light px-3 py-2"
             />
           </label>
           <label className="flex flex-col gap-1">
@@ -69,14 +69,14 @@ export function ResetPasswordClient() {
               minLength={8}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="rounded border px-3 py-2 border-contour bg-paper-light"
+              className="rounded border border-contour bg-paper-light px-3 py-2"
             />
           </label>
           {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
           <button
             type="submit"
             disabled={submitting}
-            className="rounded px-4 py-2 disabled:opacity-50 bg-trail text-paper-light"
+            className="rounded bg-trail px-4 py-2 text-paper-light disabled:opacity-50"
           >
             {submitting ? t("resetPasswordSubmitting") : t("resetPasswordButton")}
           </button>

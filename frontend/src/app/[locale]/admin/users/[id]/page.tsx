@@ -65,7 +65,7 @@ function AdminUserDetailsContent({ id }: { id: string }) {
         href="/admin/users"
         aria-label={t("backToUsers")}
         title={t("backToUsers")}
-        className="self-start text-2xl leading-none hover:opacity-70 text-dim"
+        className="self-start text-2xl leading-none text-dim hover:opacity-70"
       >
         ←
       </Link>
@@ -89,14 +89,11 @@ function AdminUserDetailsContent({ id }: { id: string }) {
             </span>
           </div>
 
-          <section className="flex flex-col gap-3 rounded-2xl p-4 bg-card">
+          <section className="flex flex-col gap-3 rounded-2xl bg-card p-4">
             <h2 className="text-sm font-semibold">{t("accountHeading")}</h2>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Field label={t("email")} value={state.user.email} />
-              <Field
-                label={t("emailVerified")}
-                value={state.user.isEmailVerified ? t("yes") : t("no")}
-              />
+              <Field label={t("emailVerified")} value={state.user.isEmailVerified ? t("yes") : t("no")} />
               <Field
                 label={t("registeredAt")}
                 value={format.dateTime(new Date(state.user.createdAt), { dateStyle: "medium" })}
@@ -109,7 +106,7 @@ function AdminUserDetailsContent({ id }: { id: string }) {
             </div>
           </section>
 
-          <section className="flex flex-col gap-3 rounded-2xl p-4 bg-card">
+          <section className="flex flex-col gap-3 rounded-2xl bg-card p-4">
             <h2 className="text-sm font-semibold">{t("activityHeading")}</h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {ACTIVITY_FIELDS.map((field) => (

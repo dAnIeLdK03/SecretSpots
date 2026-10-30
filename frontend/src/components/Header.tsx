@@ -57,7 +57,7 @@ export function Header() {
   }
 
   return (
-    <header className="flex items-center justify-between border-b px-6 py-4 border-contour">
+    <header className="flex items-center justify-between border-b border-contour px-6 py-4">
       <Link href="/" className="text-lg font-semibold">
         {t("appName")}
       </Link>
@@ -93,14 +93,12 @@ export function Header() {
               <button
                 onClick={() => setIsMenuOpen((open) => !open)}
                 aria-label={t("menuLabel")}
-                className="rounded-full p-2 hover:bg-black/5 dark:hover:bg-white/5 text-dim"
+                className="rounded-full p-2 text-dim hover:bg-black/5 dark:hover:bg-white/5"
               >
                 ☰
               </button>
               {isMenuOpen && (
-                <div
-                  className="absolute right-0 top-full z-10 mt-2 w-48 rounded-md border p-3 shadow-lg border-contour bg-paper-light"
-                >
+                <div className="absolute top-full right-0 z-10 mt-2 w-48 rounded-md border border-contour bg-paper-light p-3 shadow-lg">
                   <nav className="flex flex-col gap-3 text-sm">
                     <Link href="/login" onClick={closeMenu}>
                       {tAuth("loginTitle")}

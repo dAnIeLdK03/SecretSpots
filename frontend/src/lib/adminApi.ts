@@ -65,7 +65,12 @@ export interface AdminUsersPageResponse {
   totalCount: number;
 }
 
-export function getAdminUsers(page: number, pageSize: number, q?: string, signal?: AbortSignal): Promise<AdminUsersPageResponse> {
+export function getAdminUsers(
+  page: number,
+  pageSize: number,
+  q?: string,
+  signal?: AbortSignal,
+): Promise<AdminUsersPageResponse> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
   if (q) params.set("q", q);
   return apiFetch<AdminUsersPageResponse>(`/admin/users?${params.toString()}`, { signal });

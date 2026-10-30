@@ -29,10 +29,7 @@ function BusinessDetailContent({ id }: { id: string }) {
   useEffect(() => {
     const controller = new AbortController();
 
-    Promise.all([
-      getBusiness(id, controller.signal),
-      getBusinessRewards(id, 1, PAGE_SIZE, controller.signal),
-    ])
+    Promise.all([getBusiness(id, controller.signal), getBusinessRewards(id, 1, PAGE_SIZE, controller.signal)])
       .then(([business, rewardsPageResult]) => {
         setState({ status: "success", business });
         setRewards(rewardsPageResult.items);
@@ -64,9 +61,7 @@ function BusinessDetailContent({ id }: { id: string }) {
   }
 
   if (state.status === "loading") {
-    return (
-      <p className="p-8 text-center text-sm text-dim">{t("loading")}</p>
-    );
+    return <p className="p-8 text-center text-sm text-dim">{t("loading")}</p>;
   }
 
   if (state.status === "notFound") {
@@ -79,9 +74,7 @@ function BusinessDetailContent({ id }: { id: string }) {
   }
 
   if (state.status === "error") {
-    return (
-      <p className="p-8 text-center text-sm text-red-700 dark:text-red-400">{state.message}</p>
-    );
+    return <p className="p-8 text-center text-sm text-red-700 dark:text-red-400">{state.message}</p>;
   }
 
   const { business } = state;
@@ -91,7 +84,7 @@ function BusinessDetailContent({ id }: { id: string }) {
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
       <div>
         <h1 className="text-2xl font-semibold">{business.name}</h1>
-        <p className="mt-2 whitespace-pre-wrap text-sm text-dim">{business.description}</p>
+        <p className="mt-2 text-sm whitespace-pre-wrap text-dim">{business.description}</p>
       </div>
 
       <div>
@@ -110,7 +103,7 @@ function BusinessDetailContent({ id }: { id: string }) {
               <button
                 onClick={handleLoadMoreRewards}
                 disabled={loadingMoreRewards}
-                className="mt-3 w-full rounded border px-4 py-2 text-center text-sm disabled:opacity-50 border-contour text-dim"
+                className="mt-3 w-full rounded border border-contour px-4 py-2 text-center text-sm text-dim disabled:opacity-50"
               >
                 {loadingMoreRewards ? t("loadingMoreRewards") : t("loadMoreRewards")}
               </button>

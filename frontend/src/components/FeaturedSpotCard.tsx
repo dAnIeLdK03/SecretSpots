@@ -33,7 +33,7 @@ export function FeaturedSpotCard({ spot, moderationStatus }: FeaturedSpotCardPro
   return (
     <Link
       href={`/spots/${spot.id}`}
-      className="group flex min-w-0 flex-col overflow-hidden rounded-xl border shadow-sm transition hover:shadow-md border-contour bg-card"
+      className="group flex min-w-0 flex-col overflow-hidden rounded-xl border border-contour bg-card shadow-sm transition hover:shadow-md"
     >
       <div className="relative h-40 w-full shrink-0 overflow-hidden bg-contour">
         {!imageFailed ? (
@@ -47,9 +47,7 @@ export function FeaturedSpotCard({ spot, moderationStatus }: FeaturedSpotCardPro
             className="h-full w-full object-cover"
           />
         ) : null}
-        <span
-          className="absolute top-2 left-2 flex items-center gap-1.5 rounded-full bg-[rgba(241,237,220,0.9)] px-2 py-1 text-xs font-semibold text-ink"
-        >
+        <span className="absolute top-2 left-2 flex items-center gap-1.5 rounded-full bg-[rgba(241,237,220,0.9)] px-2 py-1 text-xs font-semibold text-ink">
           <CategoryIcon category={spot.category} size={12} />
           {t(`category.${spot.category}`)}
         </span>
@@ -69,7 +67,10 @@ export function FeaturedSpotCard({ spot, moderationStatus }: FeaturedSpotCardPro
             {spot.scheduledDeletionAt ? (
               <span>
                 {t("scheduledDeletionNotice", {
-                  date: format.dateTime(new Date(spot.scheduledDeletionAt), { dateStyle: "medium", timeStyle: "short" }),
+                  date: format.dateTime(new Date(spot.scheduledDeletionAt), {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  }),
                 })}
               </span>
             ) : null}

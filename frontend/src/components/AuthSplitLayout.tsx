@@ -14,9 +14,7 @@ interface AuthSplitLayoutProps {
 export function AuthSplitLayout({ title, subtitle, children }: AuthSplitLayoutProps) {
   return (
     <div className="flex flex-1 flex-col sm:flex-row">
-      <div
-        className="relative flex min-h-[220px] flex-col items-center justify-center overflow-hidden px-10 py-12 text-center sm:w-2/5 sm:min-h-full bg-ink text-paper-light"
-      >
+      <div className="relative flex min-h-[220px] flex-col items-center justify-center overflow-hidden bg-ink px-10 py-12 text-center text-paper-light sm:min-h-full sm:w-2/5">
         <div className="absolute inset-0 opacity-40 [filter:invert(1)]">
           <HeroContourBackground />
         </div>
@@ -27,7 +25,7 @@ export function AuthSplitLayout({ title, subtitle, children }: AuthSplitLayoutPr
         </div>
       </div>
 
-      <div className="relative flex flex-1 flex-col items-center justify-center gap-6 p-8 bg-paper text-ink">
+      <div className="relative flex flex-1 flex-col items-center justify-center gap-6 bg-paper p-8 text-ink">
         <div className="absolute top-4 right-4">
           <LocaleSwitcher />
         </div>

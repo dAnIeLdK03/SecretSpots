@@ -119,12 +119,7 @@ async function doFetch(path: string, options: RequestInit = {}, isRetry = false)
     },
   });
 
-  if (
-    response.status === 401 &&
-    accessToken &&
-    !isRetry &&
-    !AUTH_ENDPOINTS_EXEMPT_FROM_REFRESH.includes(path)
-  ) {
+  if (response.status === 401 && accessToken && !isRetry && !AUTH_ENDPOINTS_EXEMPT_FROM_REFRESH.includes(path)) {
     try {
       await refreshSession();
     } catch {

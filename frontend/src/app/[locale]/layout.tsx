@@ -44,11 +44,8 @@ export default async function LocaleLayout({
   }
 
   return (
-    <html
-      lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="h-full flex flex-col">
+    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <body className="flex h-full flex-col">
         <NextIntlClientProvider>
           <AuthProvider>
             <Header />
@@ -56,11 +53,7 @@ export default async function LocaleLayout({
           </AuthProvider>
         </NextIntlClientProvider>
         {umamiSrc && umamiWebsiteId && (
-          <Script
-            src={umamiSrc}
-            data-website-id={umamiWebsiteId}
-            strategy="afterInteractive"
-          />
+          <Script src={umamiSrc} data-website-id={umamiWebsiteId} strategy="afterInteractive" />
         )}
       </body>
     </html>

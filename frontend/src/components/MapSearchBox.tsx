@@ -91,7 +91,7 @@ export function MapSearchBox({ onSelect }: MapSearchBoxProps) {
         <ul
           id={listId}
           role="listbox"
-          className="absolute top-full left-0 z-20 mt-1 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded shadow-lg bg-paper-light text-ink"
+          className="absolute top-full left-0 z-20 mt-1 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded bg-paper-light text-ink shadow-lg"
         >
           {results.length === 0 ? (
             <li className="px-3 py-2 text-sm text-dim">{t("mapSearchNoResults")}</li>

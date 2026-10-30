@@ -50,13 +50,17 @@ export default function LoginPage() {
     <AuthSplitLayout title={t("loginWelcomeTitle")} subtitle={t("loginWelcomeSubtitle")}>
       <h2 className="text-2xl font-semibold">{t("loginTitle")}</h2>
       {restoredUser && !chooseAnother ? (
-        <div className="flex w-full max-w-sm flex-col gap-3 rounded-md border p-4 border-contour">
+        <div className="flex w-full max-w-sm flex-col gap-3 rounded-md border border-contour p-4">
           <p className="text-sm">{t("continueAs", { name: restoredUser.displayName })}</p>
           <div className="flex gap-2">
-            <Link href="/account" className="rounded px-4 py-2 text-sm bg-trail text-paper-light">
+            <Link href="/account" className="rounded bg-trail px-4 py-2 text-sm text-paper-light">
               {t("continueButton")}
             </Link>
-            <button type="button" onClick={handleUseAnother} className="rounded border px-4 py-2 text-sm border-contour">
+            <button
+              type="button"
+              onClick={handleUseAnother}
+              className="rounded border border-contour px-4 py-2 text-sm"
+            >
               {t("useAnotherAccount")}
             </button>
           </div>
@@ -70,7 +74,7 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded border px-3 py-2 border-contour bg-paper-light"
+            className="rounded border border-contour bg-paper-light px-3 py-2"
           />
         </label>
         <label className="flex flex-col gap-1">
@@ -80,16 +84,12 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="rounded border px-3 py-2 border-contour bg-paper-light"
+            className="rounded border border-contour bg-paper-light px-3 py-2"
           />
         </label>
         <div className="flex items-center justify-between text-sm text-dim">
           <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-            />
+            <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
             {t("rememberMeLabel")}
           </label>
           <Link href="/forgot-password" className="underline">
@@ -100,7 +100,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded px-4 py-2 disabled:opacity-50 bg-trail text-paper-light"
+          className="rounded bg-trail px-4 py-2 text-paper-light disabled:opacity-50"
         >
           {submitting ? t("loginSubmitting") : t("loginButton")}
         </button>

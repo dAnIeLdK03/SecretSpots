@@ -6,10 +6,5 @@ import { randomInt, randomUUID } from "node:crypto";
 // credential — see GitGuardian findings on earlier commits of this file).
 export function randomTestPassword(): string {
   const pick = (chars: string) => chars[randomInt(chars.length)];
-  return [
-    pick("ABCDEFGHJKLMNPQRSTUVWXYZ"),
-    pick("abcdefghijkmnpqrstuvwxyz"),
-    pick("23456789"),
-    randomUUID(),
-  ].join("");
+  return [pick("ABCDEFGHJKLMNPQRSTUVWXYZ"), pick("abcdefghijkmnpqrstuvwxyz"), pick("23456789"), randomUUID()].join("");
 }
