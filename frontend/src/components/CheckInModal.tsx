@@ -10,6 +10,7 @@ import { PhotoUpload } from "@/components/PhotoUpload";
 import { CHECKIN_GEOLOCATION_OPTIONS } from "@/lib/geolocationOptions";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
 import { trackEvent } from "@/lib/analytics";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 interface CheckInModalProps {
   spotId: string;
@@ -89,7 +90,7 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <h2 className="text-lg font-semibold">{t("modalTitle")}</h2>
             <PhotoUpload label={t("photoLabel")} value={photoUrl} onChange={setPhotoUrl} />
-            {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+            {error ? <ErrorMessage>{error}</ErrorMessage> : null}
             <div className="flex justify-end gap-2">
               <button type="button" onClick={onClose} className="rounded px-4 py-2 text-dim">
                 {t("cancelButton")}

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { useSavedSpotsListStore } from "@/store/useSavedSpotsListStore";
 import { SavedSpotCard } from "@/components/SavedSpotCard";
+import { StatusMessage } from "@/components/StatusMessage";
 
 export default function SavedSpotsPage() {
   const t = useTranslations("SavedSpots");
@@ -33,7 +34,7 @@ export default function SavedSpotsPage() {
       <h1 className="text-2xl font-semibold">{t("pageTitle")}</h1>
 
       {status === "loading" ? (
-        <p className="text-sm text-dim">{t("loading")}</p>
+        <StatusMessage>{t("loading")}</StatusMessage>
       ) : items.length === 0 ? (
         <p className="text-sm text-dim">{t("empty")}</p>
       ) : (

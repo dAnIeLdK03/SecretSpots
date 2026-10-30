@@ -9,12 +9,14 @@ import { searchSpots, SPOT_CATEGORIES } from "@/lib/spotsApi";
 import type { SpotCategory, SpotSearchResult } from "@/lib/spotsApi";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { trackEvent } from "@/lib/analytics";
+import { LiveAnnouncement } from "@/components/LiveAnnouncement";
 
 const PAGE_SIZE = 4;
 
 export default function LandingPage() {
   const t = useTranslations("Home");
   const tSpots = useTranslations("Spots");
+  const tCommon = useTranslations("Common");
   const [categoryFilter, setCategoryFilter] = useState<SpotCategory | "All">("All");
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [items, setItems] = useState<SpotSearchResult[]>([]);
@@ -98,6 +100,9 @@ export default function LandingPage() {
   return (
     <div className="flex-1 bg-paper text-ink">
       <LandingHero onSearch={handleSearch} />
+      <LiveAnnouncement
+        message={isSearching || categoryFilter !== "All" ? tCommon("resultsCount", { count: totalCount }) : ""}
+      />
 
       <div className="mx-auto max-w-6xl px-6 py-10">
         <div className="flex flex-wrap gap-2">

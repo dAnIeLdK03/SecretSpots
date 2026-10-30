@@ -1,7 +1,8 @@
 {
   "Common": {
     "loadMore": "Load more",
-    "loadingMore": "Loading..."
+    "loadingMore": "Loading...",
+    "resultsCount": "{count, plural, =0 {No results} one {# result} other {# results}}"
   },
   "Layout": {
     "appName": "SecretSpots",
@@ -380,7 +381,8 @@
     "photosSummary": "{removed, plural, =0 {} one {# photo removed} other {# photos removed}}{removed, plural, =0 {} other {{added, plural, =0 {} other {, }}}}{added, plural, =0 {} one {# photo added} other {# photos added}}",
     "photosReordered": "Photo order changed",
     "photoRemovedBadge": "Removed",
-    "photoAddedBadge": "New"
+    "photoAddedBadge": "New",
+    "photoAlt": "Photo {number} of {spot}"
   },
   "SavedSpots": {
     "pageTitle": "Saved spots",

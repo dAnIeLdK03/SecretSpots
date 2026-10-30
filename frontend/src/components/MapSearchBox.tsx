@@ -6,6 +6,7 @@ import { searchSpots } from "@/lib/spotsApi";
 import type { SpotSearchResult } from "@/lib/spotsApi";
 import { CategoryIcon } from "./CategoryIcon";
 import { trackEvent } from "@/lib/analytics";
+import { LiveAnnouncement } from "@/components/LiveAnnouncement";
 
 const MAX_RESULTS = 5;
 const DEBOUNCE_MS = 300;
@@ -16,6 +17,7 @@ interface MapSearchBoxProps {
 
 export function MapSearchBox({ onSelect }: MapSearchBoxProps) {
   const t = useTranslations("Spots");
+  const tCommon = useTranslations("Common");
   const listId = useId();
   const [term, setTerm] = useState("");
   const [results, setResults] = useState<SpotSearchResult[]>([]);
@@ -62,6 +64,7 @@ export function MapSearchBox({ onSelect }: MapSearchBoxProps) {
 
   return (
     <div className="relative w-44 max-w-[calc(100vw-2rem)]">
+      <LiveAnnouncement message={showList ? tCommon("resultsCount", { count: results.length }) : ""} />
       <input
         type="search"
         value={term}

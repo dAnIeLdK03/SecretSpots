@@ -8,6 +8,8 @@ import { getErrorMessage } from "@/lib/apiClient";
 import { useGeolocationStore } from "@/store/useGeolocationStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Link } from "@/i18n/navigation";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StatusMessage } from "@/components/StatusMessage";
 
 const SOFIA_CENTER = { lat: 42.6977, lng: 23.3219 };
 const RADIUS_KM = 20;
@@ -73,9 +75,9 @@ export default function BusinessesPage() {
       </div>
 
       {loading ? (
-        <p className="text-sm text-dim">{t("loading")}</p>
+        <StatusMessage>{t("loading")}</StatusMessage>
       ) : loadError ? (
-        <p className="text-sm text-red-700 dark:text-red-400">{loadError}</p>
+        <ErrorMessage>{loadError}</ErrorMessage>
       ) : businesses.length === 0 ? (
         <p className="text-sm text-dim">{t("noBusinessesNearby")}</p>
       ) : (

@@ -16,6 +16,8 @@ import { formatRelativeTime } from "@/lib/relativeTime";
 import { ImageLightbox } from "@/components/ImageLightbox";
 import { LoadMoreButton } from "@/components/LoadMoreButton";
 import { usePagedList } from "@/hooks/usePagedList";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StatusMessage } from "@/components/StatusMessage";
 
 const PAGE_SIZE = 20;
 
@@ -28,6 +30,7 @@ function PhotoStrip({
   highlightLabel,
   highlightTone,
   label,
+  photoAlt,
   onOpen,
 }: {
   photoUrls: string[];
@@ -36,17 +39,22 @@ function PhotoStrip({
   highlightLabel?: string;
   highlightTone?: "removed" | "added";
   label: string;
-  onOpen: (url: string) => void;
+  // Accessible name for the photo at a 1-based position, e.g. "Photo 2 of Krushuna".
+  photoAlt: (position: number) => string;
+  onOpen: (photo: { url: string; alt: string }) => void;
 }) {
   return (
     <div className="flex flex-col gap-1">
       <span className="text-xs text-dim">{label}</span>
       <div className="flex flex-wrap gap-2">
-        {photoUrls.map((url) => (
+        {photoUrls.map((url, index) => (
           <button
             key={url}
             type="button"
-            onClick={() => onOpen(url)}
+            onClick={() => onOpen({ url, alt: photoAlt(index + 1) })}
+            aria-label={
+              highlight.has(url) && highlightLabel ? `${photoAlt(index + 1)}, ${highlightLabel}` : photoAlt(index + 1)
+            }
             className="relative h-20 w-20 overflow-hidden rounded-md border-2"
             style={{
               borderColor: !highlight.has(url) ? "transparent" : highlightTone === "removed" ? "#ef4444" : "#16a34a",
@@ -98,7 +106,7 @@ export default function AdminSpotChangesPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
-  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+  const [lightboxPhoto, setLightboxPhoto] = useState<{ url: string; alt: string } | null>(null);
 
   const list = usePagedList<AdminSpotChangeRequest>(fetchChangeRequests);
   const { items, totalCount, status } = list;
@@ -143,10 +151,10 @@ export default function AdminSpotChangesPage() {
         <p className="text-sm text-dim">{t("subtitle")}</p>
       </div>
 
-      {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+      {error ? <ErrorMessage>{error}</ErrorMessage> : null}
 
       {status === "loading" ? (
-        <p className="text-sm text-dim">{t("loading")}</p>
+        <StatusMessage>{t("loading")}</StatusMessage>
       ) : items.length === 0 ? (
         <p className="rounded-xl bg-card p-8 text-center text-sm text-dim">{t("empty")}</p>
       ) : (
@@ -207,7 +215,8 @@ export default function AdminSpotChangesPage() {
                       photoUrls={request.currentPhotoUrls}
                       highlight={new Set()}
                       label={t("currentPhotosLabel")}
-                      onOpen={setLightboxUrl}
+                      photoAlt={(number) => t("photoAlt", { number, spot: request.currentName })}
+                      onOpen={setLightboxPhoto}
                     />
                   </div>
                 ) : (
@@ -244,7 +253,8 @@ export default function AdminSpotChangesPage() {
                             highlightLabel={t("photoRemovedBadge")}
                             highlightTone="removed"
                             label={t("currentPhotosLabel")}
-                            onOpen={setLightboxUrl}
+                            photoAlt={(number) => t("photoAlt", { number, spot: request.currentName })}
+                            onOpen={setLightboxPhoto}
                           />
                           <PhotoStrip
                             photoUrls={proposedPhotos}
@@ -252,7 +262,8 @@ export default function AdminSpotChangesPage() {
                             highlightLabel={t("photoAddedBadge")}
                             highlightTone="added"
                             label={t("proposedPhotosLabel")}
-                            onOpen={setLightboxUrl}
+                            photoAlt={(number) => t("photoAlt", { number, spot: request.currentName })}
+                            onOpen={setLightboxPhoto}
                           />
                         </div>
                       </div>
@@ -321,7 +332,9 @@ export default function AdminSpotChangesPage() {
 
       <LoadMoreButton list={list} className="self-center" />
 
-      {lightboxUrl ? <ImageLightbox src={lightboxUrl} alt="" onClose={() => setLightboxUrl(null)} /> : null}
+      {lightboxPhoto ? (
+        <ImageLightbox src={lightboxPhoto.url} alt={lightboxPhoto.alt} onClose={() => setLightboxPhoto(null)} />
+      ) : null}
     </div>
   );
 }

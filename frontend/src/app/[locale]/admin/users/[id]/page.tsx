@@ -9,6 +9,8 @@ import { getAdminUser } from "@/lib/adminApi";
 import type { AdminUserActivity, AdminUserDetails } from "@/lib/adminApi";
 import { UserRole } from "@/lib/userRole";
 import { AdminUserSpotsCarousel } from "@/components/AdminUserSpotsCarousel";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StatusMessage } from "@/components/StatusMessage";
 
 type LoadState =
   | { status: "loading" }
@@ -71,11 +73,11 @@ function AdminUserDetailsContent({ id }: { id: string }) {
       </Link>
 
       {state.status === "loading" ? (
-        <p className="text-sm text-dim">{t("loading")}</p>
+        <StatusMessage>{t("loading")}</StatusMessage>
       ) : state.status === "notFound" ? (
         <p className="text-sm text-dim">{t("notFound")}</p>
       ) : state.status === "error" ? (
-        <p className="text-sm text-red-700 dark:text-red-400">{state.message}</p>
+        <ErrorMessage>{state.message}</ErrorMessage>
       ) : (
         <>
           <div className="flex flex-wrap items-center justify-between gap-2">

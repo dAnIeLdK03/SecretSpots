@@ -24,6 +24,8 @@ import { SpotRatingSummary } from "@/components/SpotRatingSummary";
 import { Link } from "@/i18n/navigation";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { trackEvent } from "@/lib/analytics";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StatusMessage } from "@/components/StatusMessage";
 
 type LoadState =
   | { status: "loading" }
@@ -90,7 +92,7 @@ function SpotDetailContent({ id }: { id: string }) {
   if (state.status === "loading") {
     return (
       <div className="flex flex-1 items-center justify-center p-8">
-        <p className="text-sm text-dim">{t("loading")}</p>
+        <StatusMessage>{t("loading")}</StatusMessage>
       </div>
     );
   }
@@ -107,7 +109,7 @@ function SpotDetailContent({ id }: { id: string }) {
   if (state.status === "error") {
     return (
       <div className="flex flex-1 items-center justify-center p-8">
-        <p className="text-sm text-red-700 dark:text-red-400">{state.message}</p>
+        <ErrorMessage>{state.message}</ErrorMessage>
       </div>
     );
   }
@@ -313,7 +315,7 @@ function SpotDetailContent({ id }: { id: string }) {
                 </div>
               )}
             </div>
-            {error ? <p className="mt-2 text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+            {error ? <ErrorMessage className="mt-2">{error}</ErrorMessage> : null}
             {showLoginPrompt ? (
               <p className="mt-2 text-sm text-dim">
                 {tCheckIns("loginRequiredToCheckIn")}{" "}

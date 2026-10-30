@@ -8,6 +8,8 @@ import { getAdminSpots } from "@/lib/adminApi";
 import type { SpotSearchResult } from "@/lib/spotsApi";
 import { ModerationStatusBadge } from "@/components/ModerationStatusBadge";
 import { usePagedList } from "@/hooks/usePagedList";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StatusMessage } from "@/components/StatusMessage";
 
 const PAGE_SIZE = 20;
 // How close (in px) to the right edge the scroll position has to get before the next page loads.
@@ -109,10 +111,10 @@ export function AdminUserSpotsCarousel({ userId }: { userId: string }) {
         ) : null}
       </div>
 
-      {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+      {error ? <ErrorMessage>{error}</ErrorMessage> : null}
 
       {status === "loading" ? (
-        <p className="text-sm text-dim">{t("loading")}</p>
+        <StatusMessage>{t("loading")}</StatusMessage>
       ) : items.length === 0 && !error ? (
         <p className="text-sm text-dim">{t("spotsEmpty")}</p>
       ) : (
@@ -125,7 +127,10 @@ export function AdminUserSpotsCarousel({ userId }: { userId: string }) {
             <SpotTile key={spot.id} spot={spot} />
           ))}
           {status === "loadingMore" ? (
-            <div className="flex aspect-square w-40 shrink-0 items-center justify-center rounded-xl bg-contour text-sm text-dim sm:w-48">
+            <div
+              role="status"
+              className="flex aspect-square w-40 shrink-0 items-center justify-center rounded-xl bg-contour text-sm text-dim sm:w-48"
+            >
               {t("loading")}
             </div>
           ) : null}

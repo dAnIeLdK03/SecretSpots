@@ -16,6 +16,9 @@ import { ModerationStatusBadge } from "@/components/ModerationStatusBadge";
 import { RejectSpotModal } from "@/components/RejectSpotModal";
 import { LoadMoreButton } from "@/components/LoadMoreButton";
 import { usePagedList } from "@/hooks/usePagedList";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StatusMessage } from "@/components/StatusMessage";
+import { LiveAnnouncement } from "@/components/LiveAnnouncement";
 
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 300;
@@ -28,6 +31,7 @@ const STATUS_COUNT_KEYS: Record<SpotModerationStatus, keyof AdminSpotCounts> = {
 
 export default function AdminSpotsPage() {
   const t = useTranslations("AdminSpots");
+  const tCommon = useTranslations("Common");
   const tSpots = useTranslations("Spots");
   const locale = useLocale();
   const format = useFormatter();
@@ -151,11 +155,14 @@ export default function AdminSpotsPage() {
           className="w-full rounded-lg border border-contour bg-card py-2 pr-3 pl-9 text-sm"
         />
       </label>
+      <LiveAnnouncement
+        message={debouncedSearch && status === "idle" ? tCommon("resultsCount", { count: list.totalCount }) : ""}
+      />
 
-      {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+      {error ? <ErrorMessage>{error}</ErrorMessage> : null}
 
       {status === "loading" ? (
-        <p className="text-sm text-dim">{t("loading")}</p>
+        <StatusMessage>{t("loading")}</StatusMessage>
       ) : items.length === 0 ? (
         <p className="rounded-xl bg-card p-8 text-center text-sm text-dim">
           {debouncedSearch ? t("noSearchResults", { query: debouncedSearch }) : t("empty")}

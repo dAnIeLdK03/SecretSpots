@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { resetPassword } from "@/lib/authApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 export function ResetPasswordClient() {
   const t = useTranslations("Auth");
@@ -45,7 +46,7 @@ export function ResetPasswordClient() {
       <h2 className="text-2xl font-semibold">{t("resetPasswordTitle")}</h2>
 
       {!token ? (
-        <p className="text-sm text-red-700 dark:text-red-400">{t("unknownError")}</p>
+        <ErrorMessage>{t("unknownError")}</ErrorMessage>
       ) : submitted ? (
         <p className="max-w-sm text-sm text-dim">{t("resetPasswordSuccess")}</p>
       ) : (
@@ -72,7 +73,7 @@ export function ResetPasswordClient() {
               className="rounded border border-contour bg-paper-light px-3 py-2"
             />
           </label>
-          {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+          {error ? <ErrorMessage>{error}</ErrorMessage> : null}
           <button
             type="submit"
             disabled={submitting}

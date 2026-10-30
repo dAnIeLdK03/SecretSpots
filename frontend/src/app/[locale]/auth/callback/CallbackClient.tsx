@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { exchangeExternalAuthCode, establishSession } from "@/lib/authApi";
 import { getErrorMessage } from "@/lib/apiClient";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 const KNOWN_ERROR_CODES = ["cancelled", "invalid_state", "provider_error", "email_required", "email_in_use"] as const;
 
@@ -46,7 +47,7 @@ export function CallbackClient() {
   if (error) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
-        <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+        <ErrorMessage>{error}</ErrorMessage>
         <button type="button" onClick={() => router.push("/login")} className="rounded px-4 py-2 text-sm underline">
           {t("loginLink")}
         </button>

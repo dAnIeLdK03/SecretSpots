@@ -12,6 +12,8 @@ import { getErrorMessage } from "@/lib/apiClient";
 import { getMySpots } from "@/lib/spotsApi";
 import type { SpotSearchResult } from "@/lib/spotsApi";
 import { UserRole } from "@/lib/userRole";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StatusMessage } from "@/components/StatusMessage";
 
 const PAGE_SIZE = 20;
 
@@ -25,11 +27,11 @@ function MySpotsList() {
   const { items, status } = list;
 
   if (status === "loading") {
-    return <p className="text-sm text-dim">{t("loading")}</p>;
+    return <StatusMessage>{t("loading")}</StatusMessage>;
   }
 
   if (list.error && items.length === 0) {
-    return <p className="text-sm text-red-700 dark:text-red-400">{getErrorMessage(list.error, t("unknownError"))}</p>;
+    return <ErrorMessage>{getErrorMessage(list.error, t("unknownError"))}</ErrorMessage>;
   }
 
   if (items.length === 0) {
