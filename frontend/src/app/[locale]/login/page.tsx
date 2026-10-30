@@ -53,7 +53,7 @@ export default function LoginPage() {
         <div className="flex w-full max-w-sm flex-col gap-3 rounded-md border border-contour p-4">
           <p className="text-sm">{t("continueAs", { name: restoredUser.displayName })}</p>
           <div className="flex gap-2">
-            <Link href="/account" className="rounded bg-trail px-4 py-2 text-sm text-paper-light">
+            <Link href="/account" className="rounded bg-trail px-4 py-2 text-sm text-on-trail">
               {t("continueButton")}
             </Link>
             <button
@@ -100,7 +100,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded bg-trail px-4 py-2 text-paper-light disabled:opacity-50"
+          className="rounded bg-trail px-4 py-2 text-on-trail disabled:opacity-50"
         >
           {submitting ? t("loginSubmitting") : t("loginButton")}
         </button>

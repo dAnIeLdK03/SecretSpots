@@ -88,7 +88,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
             <button
               type="submit"
               disabled={submitting || !text.trim()}
-              className="rounded bg-trail px-3 py-1 text-paper-light disabled:opacity-50"
+              className="rounded bg-trail px-3 py-1 text-on-trail disabled:opacity-50"
             >
               {submitting ? t("saving") : t("saveButton")}
             </button>
@@ -101,7 +101,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
   return (
     <li className="flex items-start justify-between gap-3 rounded bg-paper-light p-3 text-sm">
       <div className="flex flex-col gap-1">
-        <span className="font-medium text-trail">{comment.authorDisplayName}</span>
+        <span className="font-medium text-link">{comment.authorDisplayName}</span>
         <p className="text-ink">{comment.text}</p>
         <span className="text-xs text-dim">
           {formatRelativeTime(comment.createdAt, locale)}

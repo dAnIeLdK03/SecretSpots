@@ -88,7 +88,7 @@ export function EditSpotModal({ spot, onClose, onSubmitted }: EditSpotModalProps
             <button
               type="submit"
               disabled={submitting || photoUrls.length === 0}
-              className="rounded bg-trail px-4 py-2 text-paper-light disabled:opacity-50"
+              className="rounded bg-trail px-4 py-2 text-on-trail disabled:opacity-50"
             >
               {submitting ? t("saving") : t("submitForReviewButton")}
             </button>

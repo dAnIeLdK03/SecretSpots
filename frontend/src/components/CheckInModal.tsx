@@ -80,7 +80,7 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
               {t("newBalanceLabel")}: {result.newCrystalBalance}
             </p>
             <div className="flex justify-end">
-              <button type="button" onClick={onClose} className="rounded bg-trail px-4 py-2 text-paper-light">
+              <button type="button" onClick={onClose} className="rounded bg-trail px-4 py-2 text-on-trail">
                 {t("closeButton")}
               </button>
             </div>
@@ -97,7 +97,7 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
               <button
                 type="submit"
                 disabled={submitting || !photoUrl}
-                className="rounded bg-trail px-4 py-2 text-paper-light disabled:opacity-50"
+                className="rounded bg-trail px-4 py-2 text-on-trail disabled:opacity-50"
               >
                 {submitting ? t("submitting") : t("submitButton")}
               </button>

@@ -66,7 +66,7 @@ export default function AdminUsersPage() {
                 </div>
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-medium ${
-                    item.role === UserRole.Admin ? "bg-trail text-paper-light" : "bg-contour text-ink"
+                    item.role === UserRole.Admin ? "bg-trail text-on-trail" : "bg-contour text-ink"
                   }`}
                 >
                   {item.role === UserRole.Admin ? t("roleAdmin") : t("roleUser")}

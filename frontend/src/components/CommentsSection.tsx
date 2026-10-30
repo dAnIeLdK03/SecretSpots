@@ -63,7 +63,7 @@ export function CommentsSection({ spotId }: { spotId: string }) {
             <button
               type="submit"
               disabled={submitting || !text.trim()}
-              className="rounded bg-trail px-4 py-2 text-sm text-paper-light disabled:opacity-50"
+              className="rounded bg-trail px-4 py-2 text-sm text-on-trail disabled:opacity-50"
             >
               {submitting ? t("submitting") : t("submitButton")}
             </button>

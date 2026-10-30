@@ -94,7 +94,7 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
                   type="button"
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className="text-trail underline disabled:opacity-50"
+                  className="text-link underline disabled:opacity-50"
                 >
                   {submitting ? t("submitting") : t("submitButton")}
                 </button>

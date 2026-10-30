@@ -48,7 +48,7 @@ export function DirectionsLinks({ latitude, longitude, className, forcedLight = 
         onClick={() => setOpen((wasOpen) => !wasOpen)}
         aria-haspopup="true"
         aria-expanded={open}
-        className="text-trail underline"
+        className={`underline ${forcedLight ? "text-[#913b1d]" : "text-link"}`}
       >
         {t("directionsButton")}
       </button>

@@ -244,7 +244,7 @@ export default function AdminSpotsPage() {
                         <MapPin size={12} />
                         {t("viewOnMapLink")}
                       </Link>
-                      <Link href={`/spots/${spot.id}`} className="flex items-center gap-1 text-trail hover:underline">
+                      <Link href={`/spots/${spot.id}`} className="flex items-center gap-1 text-link hover:underline">
                         <ExternalLink size={12} />
                         {t("viewSpotLink")}
                       </Link>

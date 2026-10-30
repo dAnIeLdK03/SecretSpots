@@ -35,7 +35,7 @@ export default function AboutPage() {
         <p className="text-sm text-ink">{t("missionBody")}</p>
       </div>
 
-      <Link href="/map" className="self-center rounded bg-trail px-6 py-3 text-sm font-medium text-paper-light">
+      <Link href="/map" className="self-center rounded bg-trail px-6 py-3 text-sm font-medium text-on-trail">
         {t("ctaButton")}
       </Link>
     </div>

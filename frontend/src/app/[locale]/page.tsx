@@ -104,7 +104,7 @@ export default function LandingPage() {
           <button
             onClick={() => handleCategoryChange("All")}
             className={`rounded-full px-4 py-2 text-sm font-medium ${
-              categoryFilter === "All" ? "bg-trail text-[#f1eddc]" : "bg-card text-ink"
+              categoryFilter === "All" ? "bg-trail text-on-trail" : "bg-card text-ink"
             }`}
           >
             {t("allSpotsFilter")}
@@ -114,7 +114,7 @@ export default function LandingPage() {
               key={category}
               onClick={() => handleCategoryChange(category)}
               className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium ${
-                categoryFilter === category ? "bg-trail text-[#f1eddc]" : "bg-card text-ink"
+                categoryFilter === category ? "bg-trail text-on-trail" : "bg-card text-ink"
               }`}
             >
               <CategoryIcon category={category} size={14} />
@@ -172,7 +172,7 @@ export default function LandingPage() {
           </div>
           <Link
             href="/map"
-            className="rounded-full bg-trail px-5 py-3 text-sm font-medium whitespace-nowrap text-[#f1eddc]"
+            className="rounded-full bg-trail px-5 py-3 text-sm font-medium whitespace-nowrap text-on-trail"
           >
             {t("addASpot")}
           </Link>
