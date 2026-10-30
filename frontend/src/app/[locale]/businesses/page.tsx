@@ -66,7 +66,7 @@ export default function BusinessesPage() {
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
         <p className="mt-1 text-sm text-dim">{t("subtitle")}</p>
         {crystalBalance !== undefined ? (
-          <p className="mt-3 inline-block rounded-full px-3 py-1 text-sm font-medium bg-card text-ink">
+          <p className="mt-3 inline-block rounded-full bg-card px-3 py-1 text-sm font-medium text-ink">
             {t("yourBalance", { value: crystalBalance })}
           </p>
         ) : null}
@@ -84,7 +84,7 @@ export default function BusinessesPage() {
             <li key={business.id}>
               <Link
                 href={`/businesses/${business.id}`}
-                className="group flex flex-col gap-1 rounded-xl border p-4 shadow-sm transition hover:shadow-md border-contour bg-card"
+                className="group flex flex-col gap-1 rounded-xl border border-contour bg-card p-4 shadow-sm transition hover:shadow-md"
               >
                 <h2 className="font-semibold text-ink">{business.name}</h2>
                 <p className="text-sm text-dim">{business.description}</p>

@@ -208,12 +208,12 @@ function MapPageContent() {
     <div className="relative flex-1">
       <div className="absolute top-4 left-4 z-10 flex flex-col items-start gap-2">
         <MapSearchBox onSelect={handleSearchSelect} />
-        <label className="flex items-center gap-2 rounded px-3 py-2 text-sm shadow bg-paper-light text-ink">
+        <label className="flex items-center gap-2 rounded bg-paper-light px-3 py-2 text-sm text-ink shadow">
           <span>{t("radiusLabel")}</span>
           <select
             value={radiusKm}
             onChange={(e) => handleRadiusChange(Number(e.target.value))}
-            className="rounded border px-2 py-1 border-contour bg-paper-light"
+            className="rounded border border-contour bg-paper-light px-2 py-1"
           >
             {RADIUS_OPTIONS.map((r) => (
               <option key={r} value={r}>
@@ -225,17 +225,19 @@ function MapPageContent() {
         <button
           onClick={handleUseMyLocation}
           disabled={locating}
-          className="rounded px-3 py-2 text-left text-sm shadow disabled:opacity-50 bg-paper-light text-ink"
+          className="rounded bg-paper-light px-3 py-2 text-left text-sm text-ink shadow disabled:opacity-50"
         >
           {locating ? t("locating") : t("useMyLocation")}
         </button>
 
         {loadError ? (
-          <div className="rounded bg-red-50 dark:bg-red-950 px-3 py-2 text-sm text-red-700 dark:text-red-400 shadow">{loadError}</div>
+          <div className="rounded bg-red-50 px-3 py-2 text-sm text-red-700 shadow dark:bg-red-950 dark:text-red-400">
+            {loadError}
+          </div>
         ) : null}
 
         {!loadError && spots.length < totalNearbyCount ? (
-          <div className="rounded px-3 py-2 text-sm shadow bg-paper-light text-dim">
+          <div className="rounded bg-paper-light px-3 py-2 text-sm text-dim shadow">
             {t("moreSpotsNearby", { shown: spots.length, total: totalNearbyCount })}
           </div>
         ) : null}
@@ -244,7 +246,7 @@ function MapPageContent() {
       {showSearchHere ? (
         <button
           onClick={() => void search({ lat: viewState.latitude, lng: viewState.longitude }, radiusKm)}
-          className="absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded px-4 py-2 text-sm shadow bg-ink text-paper-light"
+          className="absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded bg-ink px-4 py-2 text-sm text-paper-light shadow"
         >
           {t("searchThisArea")}
         </button>
@@ -263,7 +265,7 @@ function MapPageContent() {
       )}
 
       {showLoginPrompt ? (
-        <div className="absolute bottom-6 left-6 z-10 rounded px-4 py-3 text-sm shadow bg-paper-light text-ink">
+        <div className="absolute bottom-6 left-6 z-10 rounded bg-paper-light px-4 py-3 text-sm text-ink shadow">
           {t("loginRequiredToCreate")}{" "}
           <Link href="/login" className="underline">
             {tAuth("loginTitle")}

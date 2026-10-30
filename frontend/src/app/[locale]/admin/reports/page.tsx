@@ -62,11 +62,7 @@ export default function AdminReportsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
         <label className="flex items-center gap-2 text-sm text-dim">
-          <input
-            type="checkbox"
-            checked={includeResolved}
-            onChange={(e) => setIncludeResolved(e.target.checked)}
-          />
+          <input type="checkbox" checked={includeResolved} onChange={(e) => setIncludeResolved(e.target.checked)} />
           {t("includeResolvedLabel")}
         </label>
       </div>
@@ -80,10 +76,7 @@ export default function AdminReportsPage() {
       ) : (
         <ul className="flex flex-col gap-3">
           {items.map((report) => (
-            <li
-              key={report.id}
-              className="flex flex-col gap-2 rounded-2xl p-4 bg-card"
-            >
+            <li key={report.id} className="flex flex-col gap-2 rounded-2xl bg-card p-4">
               <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-dim">
                 <span>
                   {report.contentType === "Spot" ? t("contentTypeSpot") : t("contentTypeComment")} ·{" "}
@@ -103,10 +96,14 @@ export default function AdminReportsPage() {
               <p className="text-sm text-ink">{report.contentPreview ?? t("contentDeleted")}</p>
 
               {report.details ? (
-                <p className="text-sm text-dim">{t("detailsLabel")}: {report.details}</p>
+                <p className="text-sm text-dim">
+                  {t("detailsLabel")}: {report.details}
+                </p>
               ) : null}
 
-              <p className="text-xs text-dim">{t("reporterLabel")}: {report.reporterDisplayName}</p>
+              <p className="text-xs text-dim">
+                {t("reporterLabel")}: {report.reporterDisplayName}
+              </p>
 
               <div className="flex flex-wrap items-center gap-3 text-sm">
                 {report.relatedSpotId ? (
@@ -120,7 +117,7 @@ export default function AdminReportsPage() {
                     <button
                       onClick={() => handleDismiss(report.id)}
                       disabled={busyId === report.id}
-                      className="rounded border px-3 py-1 disabled:opacity-50 border-contour"
+                      className="rounded border border-contour px-3 py-1 disabled:opacity-50"
                     >
                       {t("dismissButton")}
                     </button>
@@ -128,7 +125,7 @@ export default function AdminReportsPage() {
                       <button
                         onClick={() => handleDeleteContent(report)}
                         disabled={busyId === report.id}
-                        className="rounded border border-red-300 dark:border-red-800 px-3 py-1 text-red-700 dark:text-red-400 disabled:opacity-50"
+                        className="rounded border border-red-300 px-3 py-1 text-red-700 disabled:opacity-50 dark:border-red-800 dark:text-red-400"
                       >
                         {t("deleteContentButton")}
                       </button>

@@ -48,7 +48,7 @@ export default function SavedSpotsPage() {
         <button
           onClick={() => loadMore()}
           disabled={status === "loadingMore"}
-          className="self-center rounded border px-4 py-2 text-sm disabled:opacity-50 border-contour"
+          className="self-center rounded border border-contour px-4 py-2 text-sm disabled:opacity-50"
         >
           {status === "loadingMore" ? t("loadingMore") : t("loadMore")}
         </button>

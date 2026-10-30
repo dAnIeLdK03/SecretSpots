@@ -136,10 +136,7 @@ export default function LandingPage() {
                 : t("featuredSubtitle")}
             </p>
           </div>
-          <Link
-            href="/map"
-            className="rounded px-4 py-2 text-sm font-medium bg-ink text-paper"
-          >
+          <Link href="/map" className="rounded bg-ink px-4 py-2 text-sm font-medium text-paper">
             {t("exploreMapButton")}
           </Link>
         </div>
@@ -159,7 +156,7 @@ export default function LandingPage() {
             <button
               onClick={handleLoadMore}
               disabled={loadingMore}
-              className="rounded border px-4 py-2 text-sm disabled:opacity-50 border-contour"
+              className="rounded border border-contour px-4 py-2 text-sm disabled:opacity-50"
             >
               {t("loadMoreSpots")}
             </button>
@@ -167,7 +164,7 @@ export default function LandingPage() {
         ) : null}
       </div>
 
-      <div className="px-6 py-10 bg-ink text-paper">
+      <div className="bg-ink px-6 py-10 text-paper">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="text-center sm:text-left">
             <h3 className="text-lg font-semibold">{t("ctaTitle")}</h3>
@@ -175,7 +172,7 @@ export default function LandingPage() {
           </div>
           <Link
             href="/map"
-            className="rounded-full px-5 py-3 text-sm font-medium whitespace-nowrap bg-trail text-[#f1eddc]"
+            className="rounded-full bg-trail px-5 py-3 text-sm font-medium whitespace-nowrap text-[#f1eddc]"
           >
             {t("addASpot")}
           </Link>

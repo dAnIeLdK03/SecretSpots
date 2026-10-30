@@ -45,8 +45,8 @@ export function CommentsSection({ spotId }: { spotId: string }) {
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg p-4 bg-card">
-      <h2 className="border-b pb-2 text-lg font-semibold border-contour">{t("title")}</h2>
+    <div className="flex flex-col gap-3 rounded-lg bg-card p-4">
+      <h2 className="border-b border-contour pb-2 text-lg font-semibold">{t("title")}</h2>
 
       {authStatus === "authenticated" ? (
         <form onSubmit={handleSubmit} className="flex flex-col gap-2">
@@ -56,14 +56,14 @@ export function CommentsSection({ spotId }: { spotId: string }) {
             placeholder={t("placeholder")}
             aria-label={t("placeholder")}
             rows={2}
-            className="w-full rounded border p-2 text-sm border-contour bg-paper-light"
+            className="w-full rounded border border-contour bg-paper-light p-2 text-sm"
           />
           {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
           <div className="flex justify-end">
             <button
               type="submit"
               disabled={submitting || !text.trim()}
-              className="rounded px-4 py-2 text-sm disabled:opacity-50 bg-trail text-paper-light"
+              className="rounded bg-trail px-4 py-2 text-sm text-paper-light disabled:opacity-50"
             >
               {submitting ? t("submitting") : t("submitButton")}
             </button>
@@ -94,7 +94,7 @@ export function CommentsSection({ spotId }: { spotId: string }) {
         <button
           onClick={() => loadMore(spotId)}
           disabled={status === "loadingMore"}
-          className="self-center rounded border px-4 py-2 text-sm disabled:opacity-50 border-contour"
+          className="self-center rounded border border-contour px-4 py-2 text-sm disabled:opacity-50"
         >
           {status === "loadingMore" ? t("loadingMore") : t("loadMore")}
         </button>

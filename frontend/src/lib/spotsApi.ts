@@ -165,16 +165,16 @@ export interface SpotSearchPageResponse {
 }
 
 export function searchSpots(
-  params: {q?: string; category?: SpotCategory; page?: number; pageSize?: number},
+  params: { q?: string; category?: SpotCategory; page?: number; pageSize?: number },
   signal?: AbortSignal,
-) : Promise<SpotSearchPageResponse> {
+): Promise<SpotSearchPageResponse> {
   const searchParams = new URLSearchParams();
-  if(params.q) searchParams.set("q", params.q);
-  if(params.category) searchParams.set("category", params.category);
-  if(params.page) searchParams.set("page", String(params.page));
-  if(params.pageSize) searchParams.set("pageSize", String(params.pageSize));
+  if (params.q) searchParams.set("q", params.q);
+  if (params.category) searchParams.set("category", params.category);
+  if (params.page) searchParams.set("page", String(params.page));
+  if (params.pageSize) searchParams.set("pageSize", String(params.pageSize));
 
-  return apiFetch<SpotSearchPageResponse>(`/spots/search?${searchParams.toString()}`, {signal});
+  return apiFetch<SpotSearchPageResponse>(`/spots/search?${searchParams.toString()}`, { signal });
 }
 
 export function getMySpots(page: number, pageSize: number, signal?: AbortSignal): Promise<SpotSearchPageResponse> {

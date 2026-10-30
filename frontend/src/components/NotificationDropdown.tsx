@@ -16,72 +16,70 @@ interface NotificationDropdownProps {
 // regular DOM content regardless of CSS z-index — a plain in-place dropdown ends up rendered
 // behind the map on the /map page even with a higher stack level. Escaping to body sidesteps
 // that entirely.
-export const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropdownProps>(
-  function NotificationDropdown({ anchorRef, onNavigate }, ref) {
-    const t = useTranslations("Notifications");
-    const items = useNotificationsStore((state) => state.items);
-    const status = useNotificationsStore((state) => state.status);
-    const totalCount = useNotificationsStore((state) => state.totalCount);
-    const loadMore = useNotificationsStore((state) => state.loadMore);
-    const markAllAsRead = useNotificationsStore((state) => state.markAllAsRead);
-    const hasUnread = items.some((n) => !n.isRead);
+export const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropdownProps>(function NotificationDropdown(
+  { anchorRef, onNavigate },
+  ref,
+) {
+  const t = useTranslations("Notifications");
+  const items = useNotificationsStore((state) => state.items);
+  const status = useNotificationsStore((state) => state.status);
+  const totalCount = useNotificationsStore((state) => state.totalCount);
+  const loadMore = useNotificationsStore((state) => state.loadMore);
+  const markAllAsRead = useNotificationsStore((state) => state.markAllAsRead);
+  const hasUnread = items.some((n) => !n.isRead);
 
-    const [position, setPosition] = useState<{ top: number; right: number } | null>(null);
+  const [position, setPosition] = useState<{ top: number; right: number } | null>(null);
 
-    useLayoutEffect(() => {
-      const anchor = anchorRef.current;
-      if (!anchor) return;
-      const rect = anchor.getBoundingClientRect();
-      setPosition({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
-    }, [anchorRef]);
+  useLayoutEffect(() => {
+    const anchor = anchorRef.current;
+    if (!anchor) return;
+    const rect = anchor.getBoundingClientRect();
+    setPosition({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
+  }, [anchorRef]);
 
-    const hasMore = items.length < totalCount;
+  const hasMore = items.length < totalCount;
 
-    if (!position) return null;
+  if (!position) return null;
 
-    return createPortal(
-      <div
-        ref={ref}
-        className="fixed z-50 max-h-96 w-80 overflow-y-auto rounded-md border border-contour bg-paper-light shadow-lg"
-        style={{ top: position.top, right: position.right }}
-      >
-        <div className="flex items-center justify-between border-b px-4 py-2 border-contour">
-          <span className="text-sm font-semibold">{t("title")}</span>
-          {hasUnread ? (
-            <button
-              onClick={() => markAllAsRead()}
-              className="text-xs underline text-dim"
-            >
-              {t("markAllAsRead")}
-            </button>
-          ) : null}
-        </div>
-
-        {status === "loading" ? (
-          <p className="px-4 py-6 text-center text-sm text-dim">{t("loading")}</p>
-        ) : items.length === 0 ? (
-          <p className="px-4 py-6 text-center text-sm text-dim">{t("empty")}</p>
-        ) : (
-          <ul className="divide-y divide-contour">
-            {items.map((notification) => (
-              <li key={notification.id}>
-                <NotificationItem notification={notification} onNavigate={onNavigate} />
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {hasMore && (
-          <button
-            onClick={() => loadMore()}
-            disabled={status === "loadingMore"}
-            className="w-full border-t px-4 py-2 text-center text-sm disabled:opacity-50 border-contour text-dim"
-          >
-            {status === "loadingMore" ? t("loadingMore") : t("loadMore")}
+  return createPortal(
+    <div
+      ref={ref}
+      className="fixed z-50 max-h-96 w-80 overflow-y-auto rounded-md border border-contour bg-paper-light shadow-lg"
+      style={{ top: position.top, right: position.right }}
+    >
+      <div className="flex items-center justify-between border-b border-contour px-4 py-2">
+        <span className="text-sm font-semibold">{t("title")}</span>
+        {hasUnread ? (
+          <button onClick={() => markAllAsRead()} className="text-xs text-dim underline">
+            {t("markAllAsRead")}
           </button>
-        )}
-      </div>,
-      document.body,
-    );
-  },
-);
+        ) : null}
+      </div>
+
+      {status === "loading" ? (
+        <p className="px-4 py-6 text-center text-sm text-dim">{t("loading")}</p>
+      ) : items.length === 0 ? (
+        <p className="px-4 py-6 text-center text-sm text-dim">{t("empty")}</p>
+      ) : (
+        <ul className="divide-y divide-contour">
+          {items.map((notification) => (
+            <li key={notification.id}>
+              <NotificationItem notification={notification} onNavigate={onNavigate} />
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {hasMore && (
+        <button
+          onClick={() => loadMore()}
+          disabled={status === "loadingMore"}
+          className="w-full border-t border-contour px-4 py-2 text-center text-sm text-dim disabled:opacity-50"
+        >
+          {status === "loadingMore" ? t("loadingMore") : t("loadMore")}
+        </button>
+      )}
+    </div>,
+    document.body,
+  );
+});

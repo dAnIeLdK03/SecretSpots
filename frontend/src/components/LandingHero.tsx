@@ -34,12 +34,12 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
   return (
     <div className="relative overflow-hidden bg-paper text-ink">
       <header className="relative z-10 flex items-center justify-between gap-4 px-6 py-4">
-        <div className="flex items-center gap-2 text-lg font-semibold tracking-tight">
-          SecretSpots
-        </div>
+        <div className="flex items-center gap-2 text-lg font-semibold tracking-tight">SecretSpots</div>
 
         <nav className="hidden items-center gap-6 text-sm sm:flex">
-          <Link href="/" className="border-b-2 pb-1 border-trail">{t("exploreNav")}</Link>
+          <Link href="/" className="border-b-2 border-trail pb-1">
+            {t("exploreNav")}
+          </Link>
           <Link href="/map" className="opacity-70 hover:opacity-100">
             {t("mapNav")}
           </Link>
@@ -73,7 +73,7 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
               </Link>
               <Link
                 href="/register"
-                className="rounded-full border px-4 py-2 text-sm whitespace-nowrap hover:bg-black/5 dark:hover:bg-white/5 border-ink"
+                className="rounded-full border border-ink px-4 py-2 text-sm whitespace-nowrap hover:bg-black/5 dark:hover:bg-white/5"
               >
                 {tAuth("registerTitle")}
               </Link>
@@ -86,9 +86,7 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
         <div className="relative">
           <HeroContourBackground />
           <div className="relative">
-            <h1
-              className="text-4xl leading-tight font-extrabold uppercase [transform:scaleX(0.94)] [transform-origin:left] sm:text-5xl"
-            >
+            <h1 className="[transform-origin:left] [transform:scaleX(0.94)] text-4xl leading-tight font-extrabold uppercase sm:text-5xl">
               {t("heroTitlePrefix")}
               <span className="text-trail">{t("heroTitleAccent")}</span>
             </h1>

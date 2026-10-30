@@ -131,16 +131,10 @@ export function MultiPhotoUpload({ label, photoUrls, onChange, maxCount = 5, dar
           className={fileInputClass}
         />
       ) : (
-        <p className={`text-xs ${mutedTextClass}`}>
-          {t("maxPhotosReached")}
-        </p>
+        <p className={`text-xs ${mutedTextClass}`}>{t("maxPhotosReached")}</p>
       )}
 
-      {uploading ? (
-        <p className={`text-sm ${labelClass}`}>
-          {t("uploading")}
-        </p>
-      ) : null}
+      {uploading ? <p className={`text-sm ${labelClass}`}>{t("uploading")}</p> : null}
       {error ? <p className={`text-sm ${removeButtonClass}`}>{error}</p> : null}
     </div>
   );

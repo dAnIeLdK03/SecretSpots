@@ -81,8 +81,8 @@ function ChangedField({ label, from, to }: { label: string; from: string; to: st
     <div className="flex flex-col gap-1">
       <span className="text-xs text-dim">{label}</span>
       <div className="grid grid-cols-1 items-start gap-2 text-sm sm:grid-cols-[1fr_auto_1fr]">
-        <p className="break-words line-through text-dim">{from}</p>
-        <ArrowRight size={14} className="hidden sm:block text-dim" />
+        <p className="break-words text-dim line-through">{from}</p>
+        <ArrowRight size={14} className="hidden text-dim sm:block" />
         <p className="font-medium break-words">{to}</p>
       </div>
     </div>
@@ -105,7 +105,8 @@ export default function AdminSpotChangesPage() {
   const error = actionError ?? (list.error ? getErrorMessage(list.error, t("unknownError")) : null);
 
   async function handleApprove(request: AdminSpotChangeRequest) {
-    if (request.type === "Deletion" && !window.confirm(t("approveDeletionConfirm", { name: request.currentName }))) return;
+    if (request.type === "Deletion" && !window.confirm(t("approveDeletionConfirm", { name: request.currentName })))
+      return;
 
     setBusyId(request.id);
     try {
@@ -133,13 +134,11 @@ export default function AdminSpotChangesPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 md:p-8">
-      <div className="border-b pb-4 border-contour">
+      <div className="border-b border-contour pb-4">
         <h1 className="flex items-center gap-2 text-2xl font-semibold">
           <FilePenLine size={24} className="text-trail" />
           {t("title")}
-          {status !== "loading" ? (
-            <span className="text-base font-normal text-dim">({totalCount})</span>
-          ) : null}
+          {status !== "loading" ? <span className="text-base font-normal text-dim">({totalCount})</span> : null}
         </h1>
         <p className="text-sm text-dim">{t("subtitle")}</p>
       </div>
@@ -149,7 +148,7 @@ export default function AdminSpotChangesPage() {
       {status === "loading" ? (
         <p className="text-sm text-dim">{t("loading")}</p>
       ) : items.length === 0 ? (
-        <p className="rounded-xl p-8 text-center text-sm bg-card text-dim">{t("empty")}</p>
+        <p className="rounded-xl bg-card p-8 text-center text-sm text-dim">{t("empty")}</p>
       ) : (
         <ul className="flex flex-col gap-4">
           {items.map((request) => {
@@ -178,12 +177,15 @@ export default function AdminSpotChangesPage() {
                         {t("typeDeletion")}
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1 rounded px-2 py-0.5 font-semibold bg-contour text-ink">
+                      <span className="flex items-center gap-1 rounded bg-contour px-2 py-0.5 font-semibold text-ink">
                         <FilePenLine size={12} />
                         {t("typeEdit")}
                       </span>
                     )}
-                    <Link href={`/spots/${request.spotId}`} className="flex items-center gap-1 font-semibold hover:underline">
+                    <Link
+                      href={`/spots/${request.spotId}`}
+                      className="flex items-center gap-1 font-semibold hover:underline"
+                    >
                       {request.currentName}
                       <ExternalLink size={12} />
                     </Link>
@@ -191,7 +193,7 @@ export default function AdminSpotChangesPage() {
                   </div>
                   <Link
                     href={`/admin/users/${request.requestedByUserId}`}
-                    className="flex items-center gap-1 hover:underline text-dim"
+                    className="flex items-center gap-1 text-dim hover:underline"
                   >
                     <User size={12} />
                     {request.requestedByDisplayName}
@@ -258,7 +260,7 @@ export default function AdminSpotChangesPage() {
                   </div>
                 )}
 
-                <div className="border-t pt-3 border-contour">
+                <div className="border-t border-contour pt-3">
                   {rejectingId === request.id ? (
                     <div className="flex flex-col gap-2">
                       <textarea
@@ -268,13 +270,13 @@ export default function AdminSpotChangesPage() {
                         placeholder={t("rejectionReasonPlaceholder")}
                         rows={3}
                         autoFocus
-                        className="rounded-lg border px-3 py-2 text-sm border-contour bg-paper-light text-ink"
+                        className="rounded-lg border border-contour bg-paper-light px-3 py-2 text-sm text-ink"
                       />
                       <div className="flex flex-wrap justify-end gap-2 text-sm">
                         <button
                           onClick={() => setRejectingId(null)}
                           disabled={busy}
-                          className="rounded-lg px-4 py-2 disabled:opacity-50 text-dim"
+                          className="rounded-lg px-4 py-2 text-dim disabled:opacity-50"
                         >
                           {t("cancelButton")}
                         </button>
@@ -303,7 +305,7 @@ export default function AdminSpotChangesPage() {
                       <button
                         onClick={() => handleApprove(request)}
                         disabled={busy}
-                        className="flex items-center gap-2 rounded-lg px-4 py-2 font-medium shadow-sm transition hover:opacity-90 disabled:opacity-50 bg-ink text-paper-light"
+                        className="flex items-center gap-2 rounded-lg bg-ink px-4 py-2 font-medium text-paper-light shadow-sm transition hover:opacity-90 disabled:opacity-50"
                       >
                         <Check size={16} />
                         {isDeletion ? t("approveDeletionButton") : t("approveEditButton")}

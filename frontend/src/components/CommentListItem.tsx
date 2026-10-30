@@ -63,14 +63,14 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
 
   if (editing) {
     return (
-      <li className="rounded p-3 text-sm bg-paper-light">
+      <li className="rounded bg-paper-light p-3 text-sm">
         <form onSubmit={handleSaveEdit} className="flex flex-col gap-2">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={2}
             aria-label={t("editCommentLabel")}
-            className="w-full rounded border p-2 text-sm border-contour bg-paper-light"
+            className="w-full rounded border border-contour bg-paper-light p-2 text-sm"
           />
           {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
           <div className="flex justify-end gap-2">
@@ -88,7 +88,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
             <button
               type="submit"
               disabled={submitting || !text.trim()}
-              className="rounded px-3 py-1 disabled:opacity-50 bg-trail text-paper-light"
+              className="rounded bg-trail px-3 py-1 text-paper-light disabled:opacity-50"
             >
               {submitting ? t("saving") : t("saveButton")}
             </button>
@@ -99,7 +99,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
   }
 
   return (
-    <li className="flex items-start justify-between gap-3 rounded p-3 text-sm bg-paper-light">
+    <li className="flex items-start justify-between gap-3 rounded bg-paper-light p-3 text-sm">
       <div className="flex flex-col gap-1">
         <span className="font-medium text-trail">{comment.authorDisplayName}</span>
         <p className="text-ink">{comment.text}</p>
@@ -114,7 +114,11 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
           <button onClick={() => setEditing(true)} className="text-dim">
             {t("editButton")}
           </button>
-          <button onClick={handleDelete} disabled={deleting} className="text-red-700 dark:text-red-400 disabled:opacity-50">
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="text-red-700 disabled:opacity-50 dark:text-red-400"
+          >
             {t("deleteButton")}
           </button>
         </div>
@@ -125,9 +129,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
           </button>
         </div>
       )}
-      {showReportModal ? (
-        <ReportModal onClose={() => setShowReportModal(false)} onSubmit={handleReportSubmit} />
-      ) : null}
+      {showReportModal ? <ReportModal onClose={() => setShowReportModal(false)} onSubmit={handleReportSubmit} /> : null}
     </li>
   );
 }

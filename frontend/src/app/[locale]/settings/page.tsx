@@ -75,7 +75,7 @@ export default function SettingsPage() {
       <h1 className="text-3xl font-semibold">{t("title")}</h1>
 
       {user && !user.isEmailVerified ? (
-        <div className="flex flex-col gap-2 rounded-2xl border border-amber-500/40 p-5 bg-card">
+        <div className="flex flex-col gap-2 rounded-2xl border border-amber-500/40 bg-card p-5">
           <p className="text-sm">{tAuth("emailNotVerifiedBanner")}</p>
           {resendSent ? (
             <p className="text-sm text-dim">{tAuth("resendVerificationSuccess")}</p>
@@ -85,7 +85,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleResendVerification}
                 disabled={resending}
-                className="w-fit rounded border px-4 py-2 text-sm disabled:opacity-50 border-contour"
+                className="w-fit rounded border border-contour px-4 py-2 text-sm disabled:opacity-50"
               >
                 {resending ? tAuth("resendVerificationSending") : tAuth("resendVerificationButton")}
               </button>
@@ -94,13 +94,15 @@ export default function SettingsPage() {
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-2 rounded-2xl p-5 bg-card">
-        <h2 className="text-sm font-semibold uppercase text-dim">{t("languageSectionTitle")}</h2>
+      <div className="flex flex-col gap-2 rounded-2xl bg-card p-5">
+        <h2 className="text-sm font-semibold text-dim uppercase">{t("languageSectionTitle")}</h2>
         <LocaleSwitcher />
       </div>
 
-      <div className="flex flex-col gap-2 rounded-2xl border border-red-700/40 p-5 bg-card">
-        <h2 className="text-sm font-semibold uppercase text-red-700 dark:text-red-400">{t("dangerZoneSectionTitle")}</h2>
+      <div className="flex flex-col gap-2 rounded-2xl border border-red-700/40 bg-card p-5">
+        <h2 className="text-sm font-semibold text-red-700 uppercase dark:text-red-400">
+          {t("dangerZoneSectionTitle")}
+        </h2>
         {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
         <button
           onClick={handleDeleteAccount}

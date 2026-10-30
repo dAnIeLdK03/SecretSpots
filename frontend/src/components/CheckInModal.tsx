@@ -70,19 +70,17 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
         aria-modal="true"
         aria-label={t("modalTitle")}
         tabIndex={-1}
-        className="w-full max-w-sm rounded-lg p-6 outline-none bg-paper-light text-ink"
+        className="w-full max-w-sm rounded-lg bg-paper-light p-6 text-ink outline-none"
       >
         {result ? (
           <div className="flex flex-col gap-4">
             <h2 className="text-lg font-semibold">{t("successTitle")}</h2>
             <p>{t("crystalsAwardedMessage", { count: result.crystalsAwarded })}</p>
-            <p className="text-sm text-dim">{t("newBalanceLabel")}: {result.newCrystalBalance}</p>
+            <p className="text-sm text-dim">
+              {t("newBalanceLabel")}: {result.newCrystalBalance}
+            </p>
             <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded px-4 py-2 bg-trail text-paper-light"
-              >
+              <button type="button" onClick={onClose} className="rounded bg-trail px-4 py-2 text-paper-light">
                 {t("closeButton")}
               </button>
             </div>
@@ -93,17 +91,13 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
             <PhotoUpload label={t("photoLabel")} value={photoUrl} onChange={setPhotoUrl} />
             {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
             <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded px-4 py-2 text-dim"
-              >
+              <button type="button" onClick={onClose} className="rounded px-4 py-2 text-dim">
                 {t("cancelButton")}
               </button>
               <button
                 type="submit"
                 disabled={submitting || !photoUrl}
-                className="rounded px-4 py-2 disabled:opacity-50 bg-trail text-paper-light"
+                className="rounded bg-trail px-4 py-2 text-paper-light disabled:opacity-50"
               >
                 {submitting ? t("submitting") : t("submitButton")}
               </button>

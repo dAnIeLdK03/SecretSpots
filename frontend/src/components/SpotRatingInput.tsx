@@ -62,8 +62,8 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
   const displayValue = hoverValue ?? selected ?? 0;
 
   return (
-    <div className="flex flex-col gap-2 rounded-2xl p-5 shadow-sm bg-card">
-      <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-dim">
+    <div className="flex flex-col gap-2 rounded-2xl bg-card p-5 shadow-sm">
+      <span className="flex items-center gap-2 text-xs font-semibold tracking-wide text-dim uppercase">
         <Star size={14} className="text-gold" fill="var(--fieldmap-gold)" />
         {t("rateThisSpotLabel")}
       </span>
@@ -81,11 +81,7 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
                 aria-label={t("rateWithStars", { count: value })}
                 className="disabled:opacity-50"
               >
-                <Star
-                  size={28}
-                  className="text-gold"
-                  fill={value <= displayValue ? "var(--fieldmap-gold)" : "none"}
-                />
+                <Star size={28} className="text-gold" fill={value <= displayValue ? "var(--fieldmap-gold)" : "none"} />
               </button>
             ))}
           </div>
@@ -98,7 +94,7 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
                   type="button"
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className="underline disabled:opacity-50 text-trail"
+                  className="text-trail underline disabled:opacity-50"
                 >
                   {submitting ? t("submitting") : t("submitButton")}
                 </button>

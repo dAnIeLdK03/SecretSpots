@@ -73,7 +73,7 @@ export default function AccountPage() {
             <button
               onClick={() => loadMore()}
               disabled={status === "loadingMore"}
-              className="w-full border-t px-4 py-2 text-center text-sm disabled:opacity-50 border-contour text-dim"
+              className="w-full border-t border-contour px-4 py-2 text-center text-sm text-dim disabled:opacity-50"
             >
               {status === "loadingMore" ? tHistory("loadingMore") : tHistory("loadMore")}
             </button>
@@ -100,7 +100,7 @@ export default function AccountPage() {
             <button
               onClick={() => loadMoreRedemptions()}
               disabled={redemptionStatus === "loadingMore"}
-              className="w-full border-t px-4 py-2 text-center text-sm disabled:opacity-50 border-contour text-dim"
+              className="w-full border-t border-contour px-4 py-2 text-center text-sm text-dim disabled:opacity-50"
             >
               {redemptionStatus === "loadingMore" ? tRewards("loadingMore") : tRewards("loadMore")}
             </button>

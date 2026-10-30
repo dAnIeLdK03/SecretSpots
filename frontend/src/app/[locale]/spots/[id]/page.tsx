@@ -172,7 +172,7 @@ function SpotDetailContent({ id }: { id: string }) {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-4 p-8">
-      <div className="flex flex-col gap-4 rounded-2xl p-4 shadow-sm md:flex-row bg-card">
+      <div className="flex flex-col gap-4 rounded-2xl bg-card p-4 shadow-sm md:flex-row">
         <div className="md:w-96 md:flex-shrink-0">
           <PhotoSlider photos={spot.photoUrls} alt={spot.name} />
         </div>
@@ -180,7 +180,7 @@ function SpotDetailContent({ id }: { id: string }) {
         <div className="flex flex-1 flex-col gap-3">
           {/* Only the creator can load a Rejected spot at all (GetSpot 404s for everyone else). */}
           {isOwner && spot.moderationStatus === "Rejected" ? (
-            <div className="rounded border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950 px-3 py-2 text-sm text-red-700 dark:text-red-400">
+            <div className="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
               <p className="font-medium">{t("rejectedNotice")}</p>
               {spot.rejectionReason ? (
                 <p>
@@ -190,16 +190,17 @@ function SpotDetailContent({ id }: { id: string }) {
               {spot.scheduledDeletionAt ? (
                 <p>
                   {t("scheduledDeletionNotice", {
-                    date: format.dateTime(new Date(spot.scheduledDeletionAt), { dateStyle: "medium", timeStyle: "short" }),
+                    date: format.dateTime(new Date(spot.scheduledDeletionAt), {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }),
                   })}
                 </p>
               ) : null}
             </div>
           ) : null}
           {isOwner && pendingRequest ? (
-            <div
-              className="flex flex-wrap items-center justify-between gap-2 rounded border px-3 py-2 text-sm border-contour bg-paper-light text-ink"
-            >
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded border border-contour bg-paper-light px-3 py-2 text-sm text-ink">
               <p>{pendingRequest.type === "Deletion" ? t("deletionPendingNotice") : t("editPendingNotice")}</p>
               <button
                 onClick={handleCancelChangeRequest}
@@ -211,7 +212,7 @@ function SpotDetailContent({ id }: { id: string }) {
             </div>
           ) : null}
           {isOwner && changeRequest?.status === "Rejected" ? (
-            <div className="rounded border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950 px-3 py-2 text-sm text-red-700 dark:text-red-400">
+            <div className="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
               <p className="font-medium">
                 {changeRequest.type === "Deletion" ? t("deletionRejectedNotice") : t("editRejectedNotice")}
               </p>
@@ -226,11 +227,11 @@ function SpotDetailContent({ id }: { id: string }) {
           <SpotRatingSummary averageRating={spot.averageRating} ratingsCount={spot.ratingsCount} />
 
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-dim">{t("descriptionLabel")}</h2>
+            <h2 className="text-xs font-semibold tracking-wide text-dim uppercase">{t("descriptionLabel")}</h2>
             <p className="text-sm text-ink">{spot.description}</p>
           </div>
 
-          <dl className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2 border-t pt-3 text-sm border-contour">
+          <dl className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2 border-t border-contour pt-3 text-sm">
             <dt className="flex items-center gap-2 text-dim">
               <Tag size={16} />
               {t("categoryLabel")}
@@ -262,7 +263,7 @@ function SpotDetailContent({ id }: { id: string }) {
               </span>
               <Link
                 href={`/map?lat=${spot.latitude}&lng=${spot.longitude}&spot=${spot.id}`}
-                className="underline text-trail"
+                className="text-trail underline"
               >
                 {t("viewOnMap")}
               </Link>
@@ -280,10 +281,7 @@ function SpotDetailContent({ id }: { id: string }) {
           <div>
             <div className="flex flex-wrap items-center gap-2">
               {!isOwner && (
-                <button
-                  onClick={handleCheckInClick}
-                  className="rounded px-4 py-2 text-sm bg-trail text-paper-light"
-                >
+                <button onClick={handleCheckInClick} className="rounded bg-trail px-4 py-2 text-sm text-paper-light">
                   {tCheckIns("checkInButton")}
                 </button>
               )}
@@ -291,7 +289,7 @@ function SpotDetailContent({ id }: { id: string }) {
               {!isOwner && (
                 <button
                   onClick={handleReportClick}
-                  className="rounded border px-4 py-2 text-sm border-contour text-dim"
+                  className="rounded border border-contour px-4 py-2 text-sm text-dim"
                 >
                   {t("reportButton")}
                 </button>
@@ -301,14 +299,14 @@ function SpotDetailContent({ id }: { id: string }) {
                 <div className="ml-auto flex items-center gap-2">
                   <button
                     onClick={() => setShowEditModal(true)}
-                    className="rounded border px-4 py-2 text-sm border-contour"
+                    className="rounded border border-contour px-4 py-2 text-sm"
                   >
                     {t("editButton")}
                   </button>
                   <button
                     onClick={handleDeleteClick}
                     disabled={deleting || pendingRequest?.type === "Deletion"}
-                    className="rounded border border-red-300 dark:border-red-800 px-4 py-2 text-sm text-red-700 dark:text-red-400 disabled:opacity-50"
+                    className="rounded border border-red-300 px-4 py-2 text-sm text-red-700 disabled:opacity-50 dark:border-red-800 dark:text-red-400"
                   >
                     {t("deleteButton")}
                   </button>
@@ -346,9 +344,7 @@ function SpotDetailContent({ id }: { id: string }) {
       <CommentsSection spotId={spot.id} />
 
       {showCheckInModal ? <CheckInModal spotId={spot.id} onClose={() => setShowCheckInModal(false)} /> : null}
-      {showReportModal ? (
-        <ReportModal onClose={() => setShowReportModal(false)} onSubmit={handleReportSubmit} />
-      ) : null}
+      {showReportModal ? <ReportModal onClose={() => setShowReportModal(false)} onSubmit={handleReportSubmit} /> : null}
       {showEditModal ? (
         <EditSpotModal
           spot={spot}

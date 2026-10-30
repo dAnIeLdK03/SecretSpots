@@ -32,7 +32,9 @@ export function CallbackClient() {
   }, [errorCode, code, router, t]);
 
   const providerErrorKey = errorCode
-    ? ((KNOWN_ERROR_CODES as readonly string[]).includes(errorCode) ? errorCode : "provider_error")
+    ? (KNOWN_ERROR_CODES as readonly string[]).includes(errorCode)
+      ? errorCode
+      : "provider_error"
     : null;
 
   const error = providerErrorKey
@@ -45,11 +47,7 @@ export function CallbackClient() {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
         <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
-        <button
-          type="button"
-          onClick={() => router.push("/login")}
-          className="rounded px-4 py-2 text-sm underline"
-        >
+        <button type="button" onClick={() => router.push("/login")} className="rounded px-4 py-2 text-sm underline">
           {t("loginLink")}
         </button>
       </div>

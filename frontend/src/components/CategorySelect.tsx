@@ -76,12 +76,7 @@ export function CategorySelect({ value, onChange, dark = false }: CategorySelect
         <ChevronDown size={16} className={dark ? "text-zinc-400" : "text-dim"} />
       </button>
       {isOpen ? (
-        <div
-          ref={menuRef}
-          role="listbox"
-          className={menuClasses}
-          style={{ width: menuWidth ?? undefined }}
-        >
+        <div ref={menuRef} role="listbox" className={menuClasses} style={{ width: menuWidth ?? undefined }}>
           {SPOT_CATEGORIES.map((c) => {
             const isSelected = c === value;
             return (

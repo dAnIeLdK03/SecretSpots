@@ -1,0 +1,9 @@
+# Generated or third-party — not ours to format.
+.next/
+node_modules/
+playwright-report/
+test-results/
+public/
+package-lock.json
+next-env.d.ts
+tsconfig.tsbuildinfo

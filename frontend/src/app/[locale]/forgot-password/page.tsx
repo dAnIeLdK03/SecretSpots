@@ -44,14 +44,14 @@ export default function ForgotPasswordPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded border px-3 py-2 border-contour bg-paper-light"
+              className="rounded border border-contour bg-paper-light px-3 py-2"
             />
           </label>
           {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
           <button
             type="submit"
             disabled={submitting}
-            className="rounded px-4 py-2 disabled:opacity-50 bg-trail text-paper-light"
+            className="rounded bg-trail px-4 py-2 text-paper-light disabled:opacity-50"
           >
             {submitting ? t("forgotPasswordSubmitting") : t("forgotPasswordButton")}
           </button>

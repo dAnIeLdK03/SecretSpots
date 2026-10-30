@@ -100,7 +100,11 @@ export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: Cre
           <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} dark />
           {error ? <p className="text-sm text-red-400">{error}</p> : null}
           <div className="mt-2 flex justify-end gap-2">
-            <button type="button" onClick={onClose} className="rounded-full px-4 py-2 text-sm text-zinc-300 hover:text-white">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-full px-4 py-2 text-sm text-zinc-300 hover:text-white"
+            >
               {t("cancelButton")}
             </button>
             <button

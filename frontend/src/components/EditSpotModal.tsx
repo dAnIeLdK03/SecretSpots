@@ -11,90 +11,90 @@ import { CategorySelect } from "@/components/CategorySelect";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
 
 interface EditSpotModalProps {
-    spot: SpotResponse;
-    onClose: () => void;
-    // The edit isn't applied yet — it's a change request waiting for an admin.
-    onSubmitted: (request: SpotChangeRequest) => void;
+  spot: SpotResponse;
+  onClose: () => void;
+  // The edit isn't applied yet — it's a change request waiting for an admin.
+  onSubmitted: (request: SpotChangeRequest) => void;
 }
 
 export function EditSpotModal({ spot, onClose, onSubmitted }: EditSpotModalProps) {
-    const t = useTranslations("Spots");
-    const [name, setName] = useState(spot.name);
-    const [description, setDescription] = useState(spot.description);
-    const [category, setCategory] = useState<SpotCategory>(spot.category);
-    const [photoUrls, setPhotoUrls] = useState<string[]>(spot.photoUrls);
-    const [error, setError] = useState<string | null>(null);
-    const [submitting, setSubmitting] = useState(false);
-    const { containerRef, handleOverlayClick } = useModalDismiss(onClose);
+  const t = useTranslations("Spots");
+  const [name, setName] = useState(spot.name);
+  const [description, setDescription] = useState(spot.description);
+  const [category, setCategory] = useState<SpotCategory>(spot.category);
+  const [photoUrls, setPhotoUrls] = useState<string[]>(spot.photoUrls);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const { containerRef, handleOverlayClick } = useModalDismiss(onClose);
 
-    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        setError(null);
-        setSubmitting(true);
-        try {
-            const request = await updateSpot(spot.id, { name, description, category, photoUrls });
-            onSubmitted(request);
-        } catch (err) {
-            setError(getErrorMessage(err, t("unknownError")));
-            setSubmitting(false);
-        }
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    try {
+      const request = await updateSpot(spot.id, { name, description, category, photoUrls });
+      onSubmitted(request);
+    } catch (err) {
+      setError(getErrorMessage(err, t("unknownError")));
+      setSubmitting(false);
     }
+  }
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={handleOverlayClick}>
-            <div
-                ref={containerRef}
-                role="dialog"
-                aria-modal="true"
-                aria-label={t("editTitle")}
-                tabIndex={-1}
-                className="w-full max-w-sm rounded-lg p-6 outline-none bg-paper-light text-ink"
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={handleOverlayClick}>
+      <div
+        ref={containerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t("editTitle")}
+        tabIndex={-1}
+        className="w-full max-w-sm rounded-lg bg-paper-light p-6 text-ink outline-none"
+      >
+        <h2 className="mb-1 text-lg font-semibold">{t("editTitle")}</h2>
+        <p className="mb-4 text-xs text-dim">{t("editReviewNotice")}</p>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <label className="flex flex-col gap-1">
+            <span className="text-sm text-dim">{t("nameLabel")}</span>
+            <input
+              type="text"
+              required
+              maxLength={100}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="rounded border border-contour px-3 py-2"
+            />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-sm text-dim">{t("descriptionLabel")}</span>
+            <textarea
+              required
+              maxLength={2000}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              className="rounded border border-contour px-3 py-2"
+            />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-sm text-dim">{t("categoryLabel")}</span>
+            <CategorySelect value={category} onChange={setCategory} />
+          </label>
+          <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} />
+          {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={onClose} className="rounded px-4 py-2 text-dim">
+              {t("cancelButton")}
+            </button>
+            <button
+              type="submit"
+              disabled={submitting || photoUrls.length === 0}
+              className="rounded bg-trail px-4 py-2 text-paper-light disabled:opacity-50"
             >
-                <h2 className="mb-1 text-lg font-semibold">{t("editTitle")}</h2>
-                <p className="mb-4 text-xs text-dim">{t("editReviewNotice")}</p>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    <label className="flex flex-col gap-1">
-                        <span className="text-sm text-dim">{t("nameLabel")}</span>
-                        <input
-                            type="text"
-                            required
-                            maxLength={100}
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="rounded border px-3 py-2 border-contour"
-                        />
-                    </label>
-                    <label className="flex flex-col gap-1">
-                        <span className="text-sm text-dim">{t("descriptionLabel")}</span>
-                        <textarea
-                            required
-                            maxLength={2000}
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            rows={3}
-                            className="rounded border px-3 py-2 border-contour"
-                        />
-                    </label>
-                    <label className="flex flex-col gap-1">
-                        <span className="text-sm text-dim">{t("categoryLabel")}</span>
-                        <CategorySelect value={category} onChange={setCategory} />
-                    </label>
-                    <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} />
-                    {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
-                    <div className="flex justify-end gap-2">
-                        <button type="button" onClick={onClose} className="rounded px-4 py-2 text-dim">
-                            {t("cancelButton")}
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={submitting || photoUrls.length === 0}
-                            className="rounded px-4 py-2 disabled:opacity-50 bg-trail text-paper-light"
-                        >
-                            {submitting ? t("saving") : t("submitForReviewButton")}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
+              {submitting ? t("saving") : t("submitForReviewButton")}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }

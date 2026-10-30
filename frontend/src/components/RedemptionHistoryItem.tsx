@@ -19,7 +19,9 @@ export function RedemptionHistoryItem({ redemption }: { redemption: MyRedemption
           {redemption.businessName} · {formatRelativeTime(redemption.createdAt, locale)}
         </span>
       </span>
-      <span className="whitespace-nowrap text-dim">-{redemption.crystalsSpent} {t("crystalsUnit")}</span>
+      <span className="whitespace-nowrap text-dim">
+        -{redemption.crystalsSpent} {t("crystalsUnit")}
+      </span>
     </li>
   );
 }
