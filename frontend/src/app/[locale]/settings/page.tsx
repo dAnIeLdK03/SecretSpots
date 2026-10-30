@@ -10,6 +10,7 @@ import { useNotificationsStore } from "@/store/useNotificationsStore";
 import { useCheckInsHistoryStore } from "@/store/useCheckInsHistoryStore";
 import { deleteAccount, resendEmailVerification } from "@/lib/authApi";
 import { getErrorMessage } from "@/lib/apiClient";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 export default function SettingsPage() {
   const t = useTranslations("Settings");
@@ -81,7 +82,7 @@ export default function SettingsPage() {
             <p className="text-sm text-dim">{tAuth("resendVerificationSuccess")}</p>
           ) : (
             <>
-              {resendError ? <p className="text-sm text-red-700 dark:text-red-400">{resendError}</p> : null}
+              {resendError ? <ErrorMessage>{resendError}</ErrorMessage> : null}
               <button
                 onClick={handleResendVerification}
                 disabled={resending}
@@ -103,7 +104,7 @@ export default function SettingsPage() {
         <h2 className="text-sm font-semibold text-red-700 uppercase dark:text-red-400">
           {t("dangerZoneSectionTitle")}
         </h2>
-        {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+        {error ? <ErrorMessage>{error}</ErrorMessage> : null}
         <button
           onClick={handleDeleteAccount}
           disabled={deleting}

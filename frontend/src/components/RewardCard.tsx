@@ -9,6 +9,7 @@ import type { RewardResponse } from "@/lib/rewardsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { Link } from "@/i18n/navigation";
 import { trackEvent } from "@/lib/analytics";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 export function RewardCard({ reward }: { reward: RewardResponse }) {
   const t = useTranslations("Rewards");
@@ -53,7 +54,7 @@ export function RewardCard({ reward }: { reward: RewardResponse }) {
         </span>
       </div>
 
-      {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+      {error ? <ErrorMessage>{error}</ErrorMessage> : null}
 
       {!reward.isActive ? (
         <span className="text-sm font-medium text-dim">{t("rewardUnavailable")}</span>

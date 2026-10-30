@@ -10,6 +10,8 @@ import { formatRelativeTime } from "@/lib/relativeTime";
 import { usePagedList } from "@/hooks/usePagedList";
 import { LoadMoreButton } from "@/components/LoadMoreButton";
 import { useLocale } from "next-intl";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StatusMessage } from "@/components/StatusMessage";
 
 const PAGE_SIZE = 20;
 
@@ -67,10 +69,10 @@ export default function AdminReportsPage() {
         </label>
       </div>
 
-      {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+      {error ? <ErrorMessage>{error}</ErrorMessage> : null}
 
       {status === "loading" ? (
-        <p className="text-sm text-dim">{t("loading")}</p>
+        <StatusMessage>{t("loading")}</StatusMessage>
       ) : items.length === 0 ? (
         <p className="text-sm text-dim">{t("empty")}</p>
       ) : (

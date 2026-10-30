@@ -7,6 +7,7 @@ import { getErrorMessage, ApiError } from "@/lib/apiClient";
 import { REPORT_REASONS } from "@/lib/reportsApi";
 import type { ReportReason } from "@/lib/reportsApi";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 const MAX_DETAILS_LENGTH = 500;
 
@@ -81,7 +82,7 @@ export function ReportModal({ onClose, onSubmit }: ReportModalProps) {
                   className="rounded border border-contour px-3 py-2 text-sm"
                 />
               </label>
-              {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+              {error ? <ErrorMessage>{error}</ErrorMessage> : null}
               <div className="flex justify-end gap-2">
                 <button type="button" onClick={onClose} className="text-dim">
                   {t("cancelButton")}

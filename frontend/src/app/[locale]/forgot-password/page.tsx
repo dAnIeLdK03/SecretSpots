@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { requestPasswordReset } from "@/lib/authApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 export default function ForgotPasswordPage() {
   const t = useTranslations("Auth");
@@ -47,7 +48,7 @@ export default function ForgotPasswordPage() {
               className="rounded border border-contour bg-paper-light px-3 py-2"
             />
           </label>
-          {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+          {error ? <ErrorMessage>{error}</ErrorMessage> : null}
           <button
             type="submit"
             disabled={submitting}

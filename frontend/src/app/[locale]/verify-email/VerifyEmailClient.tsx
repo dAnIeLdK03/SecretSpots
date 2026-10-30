@@ -8,6 +8,7 @@ import { verifyEmail, getCurrentUser } from "@/lib/authApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { useAuthStore } from "@/store/useAuthStore";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 type VerifyState = "verifying" | "success" | "error";
 
@@ -53,7 +54,7 @@ export function VerifyEmailClient() {
       ) : state === "success" ? (
         <p className="max-w-sm text-sm text-dim">{t("verifyEmailSuccess")}</p>
       ) : (
-        <p className="text-sm text-red-700 dark:text-red-400">{error ?? t("unknownError")}</p>
+        <ErrorMessage>{error ?? t("unknownError")}</ErrorMessage>
       )}
 
       <p className="text-sm text-dim">

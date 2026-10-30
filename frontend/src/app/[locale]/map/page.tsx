@@ -231,7 +231,10 @@ function MapPageContent() {
         </button>
 
         {loadError ? (
-          <div className="rounded bg-red-50 px-3 py-2 text-sm text-red-700 shadow dark:bg-red-950 dark:text-red-400">
+          <div
+            role="alert"
+            className="rounded bg-red-50 px-3 py-2 text-sm text-red-700 shadow dark:bg-red-950 dark:text-red-400"
+          >
             {loadError}
           </div>
         ) : null}

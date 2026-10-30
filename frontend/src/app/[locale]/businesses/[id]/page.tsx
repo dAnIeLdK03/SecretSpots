@@ -9,6 +9,8 @@ import { getBusinessRewards } from "@/lib/rewardsApi";
 import type { RewardResponse } from "@/lib/rewardsApi";
 import { ApiError, getErrorMessage } from "@/lib/apiClient";
 import { RewardCard } from "@/components/RewardCard";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StatusMessage } from "@/components/StatusMessage";
 
 const PAGE_SIZE = 20;
 
@@ -61,7 +63,7 @@ function BusinessDetailContent({ id }: { id: string }) {
   }
 
   if (state.status === "loading") {
-    return <p className="p-8 text-center text-sm text-dim">{t("loading")}</p>;
+    return <StatusMessage className="p-8 text-center">{t("loading")}</StatusMessage>;
   }
 
   if (state.status === "notFound") {
@@ -74,7 +76,7 @@ function BusinessDetailContent({ id }: { id: string }) {
   }
 
   if (state.status === "error") {
-    return <p className="p-8 text-center text-sm text-red-700 dark:text-red-400">{state.message}</p>;
+    return <ErrorMessage className="p-8 text-center">{state.message}</ErrorMessage>;
   }
 
   const { business } = state;

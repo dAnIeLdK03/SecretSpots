@@ -8,6 +8,7 @@ import { rateSpot, fetchMyRating } from "@/lib/ratingsApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { Link } from "@/i18n/navigation";
 import { trackEvent } from "@/lib/analytics";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 const STAR_VALUES = [1, 2, 3, 4, 5];
 
@@ -101,7 +102,7 @@ export function SpotRatingInput({ spotId, onRated }: SpotRatingInputProps) {
               ) : null}
             </div>
           ) : null}
-          {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+          {error ? <ErrorMessage>{error}</ErrorMessage> : null}
         </>
       ) : (
         <p className="text-sm text-dim">

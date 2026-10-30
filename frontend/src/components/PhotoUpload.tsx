@@ -5,6 +5,7 @@ import type { ChangeEvent } from "react";
 import { useTranslations } from "next-intl";
 import { uploadPhoto } from "@/lib/photosApi";
 import { getErrorMessage } from "@/lib/apiClient";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 interface PhotoUploadProps {
   label: string;
@@ -68,7 +69,7 @@ export function PhotoUpload({ label, value, onChange, required = true }: PhotoUp
         className="rounded border border-contour px-3 py-2 text-sm"
       />
       {uploading ? <p className="text-sm text-dim">{t("uploading")}</p> : null}
-      {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+      {error ? <ErrorMessage>{error}</ErrorMessage> : null}
     </div>
   );
 }

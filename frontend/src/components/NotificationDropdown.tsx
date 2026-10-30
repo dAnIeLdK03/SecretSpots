@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { useNotificationsStore } from "@/store/useNotificationsStore";
 import { NotificationItem } from "@/components/NotificationItem";
+import { StatusMessage } from "@/components/StatusMessage";
 
 interface NotificationDropdownProps {
   anchorRef: RefObject<HTMLElement | null>;
@@ -57,7 +58,7 @@ export const NotificationDropdown = forwardRef<HTMLDivElement, NotificationDropd
       </div>
 
       {status === "loading" ? (
-        <p className="px-4 py-6 text-center text-sm text-dim">{t("loading")}</p>
+        <StatusMessage className="px-4 py-6 text-center">{t("loading")}</StatusMessage>
       ) : items.length === 0 ? (
         <p className="px-4 py-6 text-center text-sm text-dim">{t("empty")}</p>
       ) : (

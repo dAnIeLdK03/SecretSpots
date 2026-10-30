@@ -12,6 +12,7 @@ import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 import { ExternalAuthButtons } from "@/components/ExternalAuthButtons";
 import { useDraftState, clearDraftState } from "@/hooks/useDraftState";
 import { trackEvent } from "@/lib/analytics";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 export default function LoginPage() {
   const t = useTranslations("Auth");
@@ -96,7 +97,7 @@ export default function LoginPage() {
             {t("forgotPasswordLink")}
           </Link>
         </div>
-        {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+        {error ? <ErrorMessage>{error}</ErrorMessage> : null}
         <button
           type="submit"
           disabled={submitting}

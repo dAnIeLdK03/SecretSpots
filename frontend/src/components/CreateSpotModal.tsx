@@ -10,6 +10,7 @@ import { MultiPhotoUpload } from "@/components/MultiPhotoUpload";
 import { CategorySelect } from "@/components/CategorySelect";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
 import { trackEvent } from "@/lib/analytics";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 interface CreateSpotModalProps {
   latitude: number;
@@ -98,7 +99,7 @@ export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: Cre
             <CategorySelect value={category} onChange={setCategory} dark />
           </label>
           <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} dark />
-          {error ? <p className="text-sm text-red-400">{error}</p> : null}
+          {error ? <ErrorMessage dark>{error}</ErrorMessage> : null}
           <div className="mt-2 flex justify-end gap-2">
             <button
               type="button"

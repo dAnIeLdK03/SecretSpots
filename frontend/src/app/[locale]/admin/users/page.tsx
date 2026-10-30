@@ -9,12 +9,16 @@ import type { AdminUser } from "@/lib/adminApi";
 import { UserRole } from "@/lib/userRole";
 import { usePagedList } from "@/hooks/usePagedList";
 import { LoadMoreButton } from "@/components/LoadMoreButton";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StatusMessage } from "@/components/StatusMessage";
+import { LiveAnnouncement } from "@/components/LiveAnnouncement";
 
 const PAGE_SIZE = 20;
 const DEBOUNCE_MS = 300;
 
 export default function AdminUsersPage() {
   const t = useTranslations("AdminUsers");
+  const tCommon = useTranslations("Common");
 
   const [search, setSearch] = useState("");
   // What the list is actually filtered by — lags `search` by DEBOUNCE_MS so typing doesn't fire
@@ -45,11 +49,14 @@ export default function AdminUsersPage() {
         placeholder={t("searchPlaceholder")}
         className="rounded-md border border-contour bg-card px-3 py-2 text-sm"
       />
+      <LiveAnnouncement
+        message={debouncedSearch && status === "idle" ? tCommon("resultsCount", { count: list.totalCount }) : ""}
+      />
 
-      {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+      {error ? <ErrorMessage>{error}</ErrorMessage> : null}
 
       {status === "loading" ? (
-        <p className="text-sm text-dim">{t("loading")}</p>
+        <StatusMessage>{t("loading")}</StatusMessage>
       ) : items.length === 0 ? (
         <p className="text-sm text-dim">{t("empty")}</p>
       ) : (

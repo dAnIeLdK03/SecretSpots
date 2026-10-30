@@ -12,6 +12,7 @@ import { ReportModal } from "@/components/ReportModal";
 import { reportComment } from "@/lib/reportsApi";
 import type { ReportReason } from "@/lib/reportsApi";
 import { trackEvent } from "@/lib/analytics";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 export function CommentListItem({ comment }: { comment: CommentResponse }) {
   const t = useTranslations("Comments");
@@ -72,7 +73,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
             aria-label={t("editCommentLabel")}
             className="w-full rounded border border-contour bg-paper-light p-2 text-sm"
           />
-          {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+          {error ? <ErrorMessage>{error}</ErrorMessage> : null}
           <div className="flex justify-end gap-2">
             <button
               type="button"
@@ -107,7 +108,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
           {formatRelativeTime(comment.createdAt, locale)}
           {comment.updatedAt ? ` · ${t("editedLabel")}` : ""}
         </span>
-        {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+        {error ? <ErrorMessage>{error}</ErrorMessage> : null}
       </div>
       {isAuthor ? (
         <div className="flex shrink-0 gap-2 text-xs">

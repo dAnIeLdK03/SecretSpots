@@ -9,6 +9,7 @@ import { getErrorMessage } from "@/lib/apiClient";
 import { MultiPhotoUpload } from "@/components/MultiPhotoUpload";
 import { CategorySelect } from "@/components/CategorySelect";
 import { useModalDismiss } from "@/hooks/useModalDismiss";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 interface EditSpotModalProps {
   spot: SpotResponse;
@@ -80,7 +81,7 @@ export function EditSpotModal({ spot, onClose, onSubmitted }: EditSpotModalProps
             <CategorySelect value={category} onChange={setCategory} />
           </label>
           <MultiPhotoUpload label={t("photoUrlLabel")} photoUrls={photoUrls} onChange={setPhotoUrls} />
-          {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+          {error ? <ErrorMessage>{error}</ErrorMessage> : null}
           <div className="flex justify-end gap-2">
             <button type="button" onClick={onClose} className="rounded px-4 py-2 text-dim">
               {t("cancelButton")}

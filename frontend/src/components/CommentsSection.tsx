@@ -8,6 +8,8 @@ import { useSpotCommentsStore } from "@/store/useSpotCommentsStore";
 import { getErrorMessage } from "@/lib/apiClient";
 import { CommentListItem } from "@/components/CommentListItem";
 import { Link } from "@/i18n/navigation";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { StatusMessage } from "@/components/StatusMessage";
 
 export function CommentsSection({ spotId }: { spotId: string }) {
   const t = useTranslations("Comments");
@@ -58,7 +60,7 @@ export function CommentsSection({ spotId }: { spotId: string }) {
             rows={2}
             className="w-full rounded border border-contour bg-paper-light p-2 text-sm"
           />
-          {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+          {error ? <ErrorMessage>{error}</ErrorMessage> : null}
           <div className="flex justify-end">
             <button
               type="submit"
@@ -79,7 +81,7 @@ export function CommentsSection({ spotId }: { spotId: string }) {
       )}
 
       {status === "loading" ? (
-        <p className="text-sm text-dim">{t("loading")}</p>
+        <StatusMessage>{t("loading")}</StatusMessage>
       ) : items.length === 0 ? (
         <p className="text-sm text-dim">{t("empty")}</p>
       ) : (
