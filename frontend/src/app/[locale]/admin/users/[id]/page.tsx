@@ -82,7 +82,7 @@ function AdminUserDetailsContent({ id }: { id: string }) {
             <h1 className="text-2xl font-semibold">{state.user.displayName}</h1>
             <span
               className={`rounded-full px-3 py-1 text-xs font-medium ${
-                state.user.role === UserRole.Admin ? "bg-trail text-paper-light" : "bg-contour text-ink"
+                state.user.role === UserRole.Admin ? "bg-trail text-on-trail" : "bg-contour text-ink"
               }`}
             >
               {state.user.role === UserRole.Admin ? tUsers("roleAdmin") : tUsers("roleUser")}

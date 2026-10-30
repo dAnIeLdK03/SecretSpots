@@ -53,7 +53,7 @@ export function SaveSpotButton({ spotId }: { spotId: string }) {
       disabled={submitting}
       aria-pressed={saved}
       className={`inline-flex items-center gap-2 rounded px-4 py-2 text-sm disabled:opacity-50 ${
-        saved ? "bg-trail text-paper-light" : "bg-contour text-ink"
+        saved ? "bg-trail text-on-trail" : "bg-contour text-ink"
       }`}
     >
       <Bookmark size={16} fill={saved ? "currentColor" : "none"} />

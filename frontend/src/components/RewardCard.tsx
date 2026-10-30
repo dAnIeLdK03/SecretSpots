@@ -65,7 +65,7 @@ export function RewardCard({ reward }: { reward: RewardResponse }) {
           </Link>
         </p>
       ) : redeemed ? (
-        <span className="inline-flex items-center gap-1.5 text-sm font-medium text-trail">
+        <span className="inline-flex items-center gap-1.5 text-sm font-medium text-link">
           <Check size={16} />
           {t("redeemedLabel")}
         </span>

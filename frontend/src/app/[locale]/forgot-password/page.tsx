@@ -51,7 +51,7 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="rounded bg-trail px-4 py-2 text-paper-light disabled:opacity-50"
+            className="rounded bg-trail px-4 py-2 text-on-trail disabled:opacity-50"
           >
             {submitting ? t("forgotPasswordSubmitting") : t("forgotPasswordButton")}
           </button>

@@ -256,8 +256,8 @@ function MapPageContent() {
         <button
           onClick={handleToggleAddSpot}
           aria-pressed={placingSpot}
-          className={`absolute right-6 bottom-6 z-10 rounded-full px-4 py-3 text-sm text-paper-light ${
-            placingSpot ? "bg-trail shadow-[0_0_0_4px_rgba(181,74,36,0.25)]" : "bg-ink shadow-lg"
+          className={`absolute right-6 bottom-6 z-10 rounded-full px-4 py-3 text-sm ${
+            placingSpot ? "bg-trail text-on-trail ring-4 ring-trail/25" : "bg-ink text-paper-light shadow-lg"
           }`}
         >
           {placingSpot ? t("tapMapToPlace") : t("addAtMyLocation")}

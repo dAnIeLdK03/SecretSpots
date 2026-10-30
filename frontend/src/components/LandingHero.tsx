@@ -111,7 +111,7 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
               <button
                 type="submit"
                 aria-label={t("searchButtonLabel")}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-trail text-[#f1eddc]"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-trail text-on-trail"
               >
                 →
               </button>

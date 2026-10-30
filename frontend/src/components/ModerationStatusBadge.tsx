@@ -8,7 +8,7 @@ import type { SpotModerationStatus } from "@/lib/spotsApi";
 // colors so it stays readable on top of a photo as well as on a card.
 const STATUS_CLASSES: Record<SpotModerationStatus, string> = {
   Pending: "bg-contour text-ink",
-  Approved: "bg-gold text-ink",
+  Approved: "bg-gold text-[#2b2a23]",
   Rejected: "bg-[#b91c1c] text-white",
 };
 

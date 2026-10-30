@@ -53,7 +53,7 @@ export function ReportModal({ onClose, onSubmit }: ReportModalProps) {
           <>
             <p className="text-sm">{t("submittedMessage")}</p>
             <div className="mt-4 flex justify-end">
-              <button type="button" onClick={onClose} className="rounded bg-trail px-4 py-2 text-sm text-paper-light">
+              <button type="button" onClick={onClose} className="rounded bg-trail px-4 py-2 text-sm text-on-trail">
                 {t("closeButton")}
               </button>
             </div>
@@ -89,7 +89,7 @@ export function ReportModal({ onClose, onSubmit }: ReportModalProps) {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded bg-trail px-4 py-2 text-sm text-paper-light disabled:opacity-50"
+                  className="rounded bg-trail px-4 py-2 text-sm text-on-trail disabled:opacity-50"
                 >
                   {submitting ? t("submitting") : t("submitButton")}
                 </button>

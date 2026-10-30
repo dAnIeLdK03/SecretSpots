@@ -92,7 +92,7 @@ export function CategorySelect({ value, onChange, dark = false }: CategorySelect
                 className={
                   dark
                     ? `flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-white/10 ${isSelected ? "text-emerald-400" : "text-white"}`
-                    : `flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:opacity-80 ${isSelected ? "text-trail" : "text-ink"}`
+                    : `flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:opacity-80 ${isSelected ? "text-link" : "text-ink"}`
                 }
               >
                 <CategoryIcon category={c} size={16} />

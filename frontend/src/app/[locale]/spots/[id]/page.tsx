@@ -263,7 +263,7 @@ function SpotDetailContent({ id }: { id: string }) {
               </span>
               <Link
                 href={`/map?lat=${spot.latitude}&lng=${spot.longitude}&spot=${spot.id}`}
-                className="text-trail underline"
+                className="text-link underline"
               >
                 {t("viewOnMap")}
               </Link>
@@ -281,7 +281,7 @@ function SpotDetailContent({ id }: { id: string }) {
           <div>
             <div className="flex flex-wrap items-center gap-2">
               {!isOwner && (
-                <button onClick={handleCheckInClick} className="rounded bg-trail px-4 py-2 text-sm text-paper-light">
+                <button onClick={handleCheckInClick} className="rounded bg-trail px-4 py-2 text-sm text-on-trail">
                   {tCheckIns("checkInButton")}
                 </button>
               )}
