@@ -2,7 +2,8 @@
   "Common": {
     "loadMore": "Load more",
     "loadingMore": "Loading...",
-    "resultsCount": "{count, plural, =0 {No results} one {# result} other {# results}}"
+    "resultsCount": "{count, plural, =0 {No results} one {# result} other {# results}}",
+    "cancel": "Cancel"
   },
   "Layout": {
     "appName": "SecretSpots",
@@ -162,7 +163,11 @@
       "Pending": "Pending review",
       "Approved": "Approved",
       "Rejected": "Rejected"
-    }
+    },
+    "toastSpotSubmitted": "Spot sent for review",
+    "toastEditSubmitted": "Changes sent for review",
+    "toastDeletionRequested": "Deletion request sent for review",
+    "toastRequestCancelled": "Request withdrawn"
   },
   "PhotoUpload": {
     "uploading": "Uploading...",
@@ -224,7 +229,8 @@
     "deleteConfirm": "Are you sure you want to delete this comment?",
     "reportButton": "Report",
     "unknownError": "Something went wrong. Please try again.",
-    "editCommentLabel": "Edit comment"
+    "editCommentLabel": "Edit comment",
+    "toastDeleted": "Comment deleted"
   },
   "Ratings": {
     "summary": "{average} · {count} ratings",
@@ -311,7 +317,9 @@
     "dismissButton": "Dismiss",
     "deleteContentButton": "Delete content",
     "deleteContentConfirm": "Delete this {type}? This cannot be undone.",
-    "unknownError": "Something went wrong. Please try again."
+    "unknownError": "Something went wrong. Please try again.",
+    "toastDismissed": "Report dismissed",
+    "toastContentDeleted": "Content deleted"
   },
   "AdminSpots": {
     "title": "Spot moderation",
@@ -354,7 +362,11 @@
     "confirmRemoveButton": "Confirm removal",
     "searchLabel": "Search spots",
     "searchPlaceholder": "Search {status} spots by name, description or creator...",
-    "noSearchResults": "No spots match \"{query}\"."
+    "noSearchResults": "No spots match \"{query}\".",
+    "toastApproved": "Spot approved",
+    "toastRestored": "Spot restored",
+    "toastRejected": "Spot rejected",
+    "toastRemoved": "Spot removed"
   },
   "AdminSpotChanges": {
     "title": "Spot change requests",
@@ -382,7 +394,10 @@
     "photosReordered": "Photo order changed",
     "photoRemovedBadge": "Removed",
     "photoAddedBadge": "New",
-    "photoAlt": "Photo {number} of {spot}"
+    "photoAlt": "Photo {number} of {spot}",
+    "toastEditApplied": "Edit applied",
+    "toastSpotDeleted": "Spot deleted",
+    "toastRequestRejected": "Request rejected"
   },
   "SavedSpots": {
     "pageTitle": "Saved spots",
@@ -391,7 +406,9 @@
     "loading": "Loading...",
     "empty": "You haven't saved any spots yet.",
     "loadMore": "Load more",
-    "loadingMore": "Loading..."
+    "loadingMore": "Loading...",
+    "toastSaved": "Saved to your list",
+    "toastUnsaved": "Removed from saved spots"
   },
   "Home": {
     "exploreNav": "Explore",
@@ -425,7 +442,8 @@
     "deleteAccountButton": "Delete account",
     "deleteAccountConfirm": "Are you sure you want to delete your account? All your spots, comments, ratings, and data will be permanently deleted. This action cannot be undone.",
     "deleteAccountPasswordPrompt": "Enter your password to confirm (leave blank if you signed in with Google/Facebook):",
-    "deleteAccountError": "Failed to delete account. Please try again."
+    "deleteAccountError": "Failed to delete account. Please try again.",
+    "toastAccountDeleted": "Your account was deleted"
   },
   "About": {
     "title": "About SecretSpots",

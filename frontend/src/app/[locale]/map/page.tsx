@@ -14,6 +14,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { UserRole } from "@/lib/userRole";
 import { useGeolocationStore } from "@/store/useGeolocationStore";
 import { Link } from "@/i18n/navigation";
+import { useToast } from "@/hooks/useToast";
 
 const SOFIA_CENTER: MapViewState = { longitude: 23.3219, latitude: 42.6977, zoom: 12 };
 const RADIUS_OPTIONS = [1, 5, 20, 50] as const;
@@ -50,6 +51,7 @@ function MapPageContent() {
   const targetAppliedRef = useRef(false);
   const pendingSelectIdRef = useRef<string | null>(target?.spotId ?? null);
   const tAuth = useTranslations("Auth");
+  const showToast = useToast();
   const authStatus = useAuthStore((state) => state.status);
   // Admins moderate spots rather than create them (the API rejects their CreateSpot calls).
   const isAdmin = useAuthStore((state) => state.user?.role === UserRole.Admin);
@@ -202,6 +204,7 @@ function MapPageContent() {
     setSpots((prev) => [{ ...rest, photoUrl: photoUrls[0], distanceKm: 0 }, ...prev]);
     setTotalNearbyCount((prev) => prev + 1);
     setCreateModalCoords(null);
+    showToast(t("toastSpotSubmitted"));
   }
 
   return (

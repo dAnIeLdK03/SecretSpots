@@ -6,9 +6,11 @@ import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/store/useAuthStore";
 import { saveSpot, unsaveSpot, fetchIsSpotSaved } from "@/lib/savedSpotsApi";
 import { trackEvent } from "@/lib/analytics";
+import { useToast } from "@/hooks/useToast";
 
 export function SaveSpotButton({ spotId }: { spotId: string }) {
   const t = useTranslations("SavedSpots");
+  const showToast = useToast();
   const authStatus = useAuthStore((state) => state.status);
   const [saved, setSaved] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -38,6 +40,7 @@ export function SaveSpotButton({ spotId }: { spotId: string }) {
     try {
       await (nextSaved ? saveSpot(spotId) : unsaveSpot(spotId));
       setSaved(nextSaved);
+      showToast(nextSaved ? t("toastSaved") : t("toastUnsaved"));
       trackEvent("save_toggle", { spotId, saved: nextSaved });
     } catch {
       // Leave the toggle as-is on failure — the user can just try again.

@@ -13,9 +13,12 @@ import { reportComment } from "@/lib/reportsApi";
 import type { ReportReason } from "@/lib/reportsApi";
 import { trackEvent } from "@/lib/analytics";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useToast } from "@/hooks/useToast";
 
 export function CommentListItem({ comment }: { comment: CommentResponse }) {
   const t = useTranslations("Comments");
+  const showToast = useToast();
   const locale = useLocale();
   const user = useAuthStore((state) => state.user);
   const editComment = useSpotCommentsStore((state) => state.editComment);
@@ -27,6 +30,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const isAuthor = user?.id === comment.userId;
 
@@ -50,12 +54,12 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
   }
 
   async function handleDelete() {
-    if (!window.confirm(t("deleteConfirm"))) return;
-
+    setConfirmingDelete(false);
     setDeleting(true);
     setError(null);
     try {
       await removeComment(comment.id);
+      showToast(t("toastDeleted"));
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
       setDeleting(false);
@@ -116,7 +120,7 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
             {t("editButton")}
           </button>
           <button
-            onClick={handleDelete}
+            onClick={() => setConfirmingDelete(true)}
             disabled={deleting}
             className="text-red-700 disabled:opacity-50 dark:text-red-400"
           >
@@ -131,6 +135,15 @@ export function CommentListItem({ comment }: { comment: CommentResponse }) {
         </div>
       )}
       {showReportModal ? <ReportModal onClose={() => setShowReportModal(false)} onSubmit={handleReportSubmit} /> : null}
+      {confirmingDelete ? (
+        <ConfirmDialog
+          title={t("deleteButton")}
+          message={t("deleteConfirm")}
+          confirmLabel={t("deleteButton")}
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      ) : null}
     </li>
   );
 }

@@ -18,6 +18,8 @@ import { LoadMoreButton } from "@/components/LoadMoreButton";
 import { usePagedList } from "@/hooks/usePagedList";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { StatusMessage } from "@/components/StatusMessage";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useToast } from "@/hooks/useToast";
 
 const PAGE_SIZE = 20;
 
@@ -101,25 +103,27 @@ export default function AdminSpotChangesPage() {
   const t = useTranslations("AdminSpotChanges");
   const tSpots = useTranslations("Spots");
   const locale = useLocale();
+  const showToast = useToast();
 
   const [actionError, setActionError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [lightboxPhoto, setLightboxPhoto] = useState<{ url: string; alt: string } | null>(null);
+  // A deletion request waiting for the admin to confirm in the dialog.
+  const [confirmingDeletion, setConfirmingDeletion] = useState<AdminSpotChangeRequest | null>(null);
 
   const list = usePagedList<AdminSpotChangeRequest>(fetchChangeRequests);
   const { items, totalCount, status } = list;
   const error = actionError ?? (list.error ? getErrorMessage(list.error, t("unknownError")) : null);
 
   async function handleApprove(request: AdminSpotChangeRequest) {
-    if (request.type === "Deletion" && !window.confirm(t("approveDeletionConfirm", { name: request.currentName })))
-      return;
-
+    setConfirmingDeletion(null);
     setBusyId(request.id);
     try {
       await approveSpotChangeRequest(request.id);
       list.removeItem(request.id);
+      showToast(request.type === "Deletion" ? t("toastSpotDeleted") : t("toastEditApplied"));
     } catch (err) {
       setActionError(getErrorMessage(err, t("unknownError")));
     } finally {
@@ -132,6 +136,7 @@ export default function AdminSpotChangesPage() {
     try {
       await rejectSpotChangeRequest(id, rejectionReason.trim());
       list.removeItem(id);
+      showToast(t("toastRequestRejected"));
       setRejectingId(null);
     } catch (err) {
       setActionError(getErrorMessage(err, t("unknownError")));
@@ -314,7 +319,7 @@ export default function AdminSpotChangesPage() {
                         {t("rejectButton")}
                       </button>
                       <button
-                        onClick={() => handleApprove(request)}
+                        onClick={() => (isDeletion ? setConfirmingDeletion(request) : handleApprove(request))}
                         disabled={busy}
                         className="flex items-center gap-2 rounded-lg bg-ink px-4 py-2 font-medium text-paper-light shadow-sm transition hover:opacity-90 disabled:opacity-50"
                       >
@@ -331,6 +336,16 @@ export default function AdminSpotChangesPage() {
       )}
 
       <LoadMoreButton list={list} className="self-center" />
+
+      {confirmingDeletion ? (
+        <ConfirmDialog
+          title={t("approveDeletionButton")}
+          message={t("approveDeletionConfirm", { name: confirmingDeletion.currentName })}
+          confirmLabel={t("approveDeletionButton")}
+          onConfirm={() => handleApprove(confirmingDeletion)}
+          onCancel={() => setConfirmingDeletion(null)}
+        />
+      ) : null}
 
       {lightboxPhoto ? (
         <ImageLightbox src={lightboxPhoto.url} alt={lightboxPhoto.alt} onClose={() => setLightboxPhoto(null)} />
