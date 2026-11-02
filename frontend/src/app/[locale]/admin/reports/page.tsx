@@ -12,17 +12,21 @@ import { LoadMoreButton } from "@/components/LoadMoreButton";
 import { useLocale } from "next-intl";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { StatusMessage } from "@/components/StatusMessage";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useToast } from "@/hooks/useToast";
 
 const PAGE_SIZE = 20;
 
 export default function AdminReportsPage() {
   const t = useTranslations("AdminReports");
   const tReports = useTranslations("Reports");
+  const showToast = useToast();
   const locale = useLocale();
 
   const [includeResolved, setIncludeResolved] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState<AdminReport | null>(null);
 
   const fetchReports = useCallback(
     (page: number, signal: AbortSignal) => getAdminReports(page, PAGE_SIZE, includeResolved, signal),
@@ -37,6 +41,7 @@ export default function AdminReportsPage() {
     try {
       await dismissReport(id);
       list.removeItem(id);
+      showToast(t("toastDismissed"));
     } catch (err) {
       setActionError(getErrorMessage(err, t("unknownError")));
     } finally {
@@ -45,13 +50,12 @@ export default function AdminReportsPage() {
   }
 
   async function handleDeleteContent(report: AdminReport) {
-    const typeLabel = report.contentType === "Spot" ? t("contentTypeSpot") : t("contentTypeComment");
-    if (!window.confirm(t("deleteContentConfirm", { type: typeLabel }))) return;
-
+    setConfirmingDelete(null);
     setBusyId(report.id);
     try {
       await deleteReportedContent(report.id);
       list.removeItem(report.id);
+      showToast(t("toastContentDeleted"));
     } catch (err) {
       setActionError(getErrorMessage(err, t("unknownError")));
     } finally {
@@ -125,7 +129,7 @@ export default function AdminReportsPage() {
                     </button>
                     {report.contentPreview !== null ? (
                       <button
-                        onClick={() => handleDeleteContent(report)}
+                        onClick={() => setConfirmingDelete(report)}
                         disabled={busyId === report.id}
                         className="rounded border border-red-300 px-3 py-1 text-red-700 disabled:opacity-50 dark:border-red-800 dark:text-red-400"
                       >
@@ -141,6 +145,18 @@ export default function AdminReportsPage() {
       )}
 
       <LoadMoreButton list={list} />
+
+      {confirmingDelete ? (
+        <ConfirmDialog
+          title={t("deleteContentButton")}
+          message={t("deleteContentConfirm", {
+            type: confirmingDelete.contentType === "Spot" ? t("contentTypeSpot") : t("contentTypeComment"),
+          })}
+          confirmLabel={t("deleteContentButton")}
+          onConfirm={() => handleDeleteContent(confirmingDelete)}
+          onCancel={() => setConfirmingDelete(null)}
+        />
+      ) : null}
     </div>
   );
 }

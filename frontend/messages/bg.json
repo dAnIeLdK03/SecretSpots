@@ -2,7 +2,8 @@
   "Common": {
     "loadMore": "Зареди още",
     "loadingMore": "Зареждане...",
-    "resultsCount": "{count, plural, =0 {Няма резултати} one {# резултат} other {# резултата}}"
+    "resultsCount": "{count, plural, =0 {Няма резултати} one {# резултат} other {# резултата}}",
+    "cancel": "Отказ"
   },
   "Layout": {
     "appName": "SecretSpots",
@@ -162,7 +163,11 @@
       "Pending": "Чака преглед",
       "Approved": "Одобрено",
       "Rejected": "Отхвърлено"
-    }
+    },
+    "toastSpotSubmitted": "Мястото е изпратено за преглед",
+    "toastEditSubmitted": "Промените са изпратени за преглед",
+    "toastDeletionRequested": "Заявката за изтриване е изпратена за преглед",
+    "toastRequestCancelled": "Заявката е оттеглена"
   },
   "PhotoUpload": {
     "uploading": "Качване...",
@@ -224,7 +229,8 @@
     "deleteConfirm": "Сигурен/на ли си, че искаш да изтриеш този коментар?",
     "reportButton": "Докладвай",
     "unknownError": "Нещо се обърка. Опитайте отново.",
-    "editCommentLabel": "Редактирай коментар"
+    "editCommentLabel": "Редактирай коментар",
+    "toastDeleted": "Коментарът е изтрит"
   },
   "Ratings": {
     "summary": "{average} · {count} оценки",
@@ -311,7 +317,9 @@
     "dismissButton": "Отхвърли",
     "deleteContentButton": "Изтрий съдържанието",
     "deleteContentConfirm": "Да изтрия ли това {type}? Действието е необратимо.",
-    "unknownError": "Нещо се обърка. Опитайте отново."
+    "unknownError": "Нещо се обърка. Опитайте отново.",
+    "toastDismissed": "Докладът е отхвърлен",
+    "toastContentDeleted": "Съдържанието е изтрито"
   },
   "AdminSpots": {
     "title": "Модерация на места",
@@ -354,7 +362,11 @@
     "confirmRemoveButton": "Потвърди премахването",
     "searchLabel": "Търсене на места",
     "searchPlaceholder": "Търси сред {status} по име, описание или автор...",
-    "noSearchResults": "Няма места, отговарящи на „{query}“."
+    "noSearchResults": "Няма места, отговарящи на „{query}“.",
+    "toastApproved": "Мястото е одобрено",
+    "toastRestored": "Мястото е възстановено",
+    "toastRejected": "Мястото е отхвърлено",
+    "toastRemoved": "Мястото е премахнато"
   },
   "AdminSpotChanges": {
     "title": "Заявки за промяна на места",
@@ -382,7 +394,10 @@
     "photosReordered": "Променен е редът на снимките",
     "photoRemovedBadge": "Махната",
     "photoAddedBadge": "Нова",
-    "photoAlt": "Снимка {number} на {spot}"
+    "photoAlt": "Снимка {number} на {spot}",
+    "toastEditApplied": "Промяната е приложена",
+    "toastSpotDeleted": "Мястото е изтрито",
+    "toastRequestRejected": "Заявката е отхвърлена"
   },
   "SavedSpots": {
     "pageTitle": "Запазени места",
@@ -391,7 +406,9 @@
     "loading": "Зареждане...",
     "empty": "Все още нямаш запазени места.",
     "loadMore": "Зареди още",
-    "loadingMore": "Зареждане..."
+    "loadingMore": "Зареждане...",
+    "toastSaved": "Запазено в списъка ти",
+    "toastUnsaved": "Премахнато от запазените"
   },
   "Home": {
     "exploreNav": "Разгледай",
@@ -425,7 +442,8 @@
     "deleteAccountButton": "Изтрий акаунта",
     "deleteAccountConfirm": "Наистина ли искаш да изтриеш акаунта си? Всичките ти места, коментари, оценки и данни ще бъдат изтрити безвъзвратно. Това действие не може да бъде отменено.",
     "deleteAccountPasswordPrompt": "Въведи паролата си, за да потвърдиш (остави празно, ако си влязъл с Google/Facebook):",
-    "deleteAccountError": "Неуспешно изтриване на акаунта. Опитай отново."
+    "deleteAccountError": "Неуспешно изтриване на акаунта. Опитай отново.",
+    "toastAccountDeleted": "Акаунтът ти е изтрит"
   },
   "About": {
     "title": "За SecretSpots",

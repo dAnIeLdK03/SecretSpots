@@ -11,10 +11,13 @@ import { useCheckInsHistoryStore } from "@/store/useCheckInsHistoryStore";
 import { deleteAccount, resendEmailVerification } from "@/lib/authApi";
 import { getErrorMessage } from "@/lib/apiClient";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useToast } from "@/hooks/useToast";
 
 export default function SettingsPage() {
   const t = useTranslations("Settings");
   const tAuth = useTranslations("Auth");
+  const showToast = useToast();
   const router = useRouter();
   const isAuthenticated = useRequireAuth();
   const user = useAuthStore((state) => state.user);
@@ -23,6 +26,8 @@ export default function SettingsPage() {
   const resetCheckInsHistory = useCheckInsHistoryStore((state) => state.reset);
 
   const [deleting, setDeleting] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [resending, setResending] = useState(false);
   const [resendError, setResendError] = useState<string | null>(null);
@@ -41,18 +46,16 @@ export default function SettingsPage() {
     }
   }
 
+  function closeDeleteDialog() {
+    setConfirmingDelete(false);
+    setDeletePassword("");
+  }
+
   async function handleDeleteAccount() {
-    if (!window.confirm(t("deleteAccountConfirm"))) {
-      return;
-    }
-
-    // Leave blank for external-auth-only accounts (Google/Facebook) — the backend only checks
-    // it for accounts that have a password set.
-    const password = window.prompt(t("deleteAccountPasswordPrompt"));
-    if (password === null) {
-      return;
-    }
-
+    // Blank for external-auth-only accounts (Google/Facebook) — the backend only checks it for
+    // accounts that have a password set.
+    const password = deletePassword;
+    closeDeleteDialog();
     setError(null);
     setDeleting(true);
     try {
@@ -60,6 +63,7 @@ export default function SettingsPage() {
       clearSession();
       resetNotifications();
       resetCheckInsHistory();
+      showToast(t("toastAccountDeleted"));
       router.push("/");
     } catch (err) {
       setError(getErrorMessage(err, t("deleteAccountError")));
@@ -106,13 +110,34 @@ export default function SettingsPage() {
         </h2>
         {error ? <ErrorMessage>{error}</ErrorMessage> : null}
         <button
-          onClick={handleDeleteAccount}
+          onClick={() => setConfirmingDelete(true)}
           disabled={deleting}
           className="w-fit rounded-full bg-red-700 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 disabled:opacity-50"
         >
           {t("deleteAccountButton")}
         </button>
       </div>
+
+      {confirmingDelete ? (
+        <ConfirmDialog
+          title={t("deleteAccountButton")}
+          message={t("deleteAccountConfirm")}
+          confirmLabel={t("deleteAccountButton")}
+          onConfirm={handleDeleteAccount}
+          onCancel={closeDeleteDialog}
+        >
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="text-dim">{t("deleteAccountPasswordPrompt")}</span>
+            <input
+              type="password"
+              autoComplete="current-password"
+              value={deletePassword}
+              onChange={(e) => setDeletePassword(e.target.value)}
+              className="rounded border border-contour bg-paper px-3 py-2"
+            />
+          </label>
+        </ConfirmDialog>
+      ) : null}
     </div>
   );
 }

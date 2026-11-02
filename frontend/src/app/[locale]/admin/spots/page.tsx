@@ -19,6 +19,7 @@ import { usePagedList } from "@/hooks/usePagedList";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { StatusMessage } from "@/components/StatusMessage";
 import { LiveAnnouncement } from "@/components/LiveAnnouncement";
+import { useToast } from "@/hooks/useToast";
 
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 300;
@@ -32,6 +33,7 @@ const STATUS_COUNT_KEYS: Record<SpotModerationStatus, keyof AdminSpotCounts> = {
 export default function AdminSpotsPage() {
   const t = useTranslations("AdminSpots");
   const tCommon = useTranslations("Common");
+  const showToast = useToast();
   const tSpots = useTranslations("Spots");
   const locale = useLocale();
   const format = useFormatter();
@@ -89,10 +91,13 @@ export default function AdminSpotsPage() {
   }
 
   async function handleApprove(id: string) {
+    // Approving a rejected spot is a restore — same distinction the backend makes for the owner.
+    const wasRejected = items.find((spot) => spot.id === id)?.moderationStatus === "Rejected";
     setBusy(id, true);
     try {
       await approveSpot(id);
       removeFromList(id);
+      showToast(wasRejected ? t("toastRestored") : t("toastApproved"));
     } catch (err) {
       setActionError(getErrorMessage(err, t("unknownError")));
     } finally {
@@ -107,6 +112,7 @@ export default function AdminSpotsPage() {
     try {
       await rejectSpot(id, reason);
       removeFromList(id);
+      showToast(rejectingSpot.moderationStatus === "Approved" ? t("toastRemoved") : t("toastRejected"));
       setRejectingSpot(null);
     } catch (err) {
       setActionError(getErrorMessage(err, t("unknownError")));

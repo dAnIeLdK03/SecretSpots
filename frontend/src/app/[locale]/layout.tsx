@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { routing } from "@/i18n/routing";
 import { AuthProvider } from "@/components/AuthProvider";
+import { Toast } from "@/components/Toast";
 import { Header } from "@/components/Header";
 import "../globals.css";
 
@@ -50,6 +51,7 @@ export default async function LocaleLayout({
           <AuthProvider>
             <Header />
             <main className="flex flex-1 flex-col">{children}</main>
+            <Toast />
           </AuthProvider>
         </NextIntlClientProvider>
         {umamiSrc && umamiWebsiteId && (

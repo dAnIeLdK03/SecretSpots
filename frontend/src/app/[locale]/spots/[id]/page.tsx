@@ -26,6 +26,8 @@ import { CategoryIcon } from "@/components/CategoryIcon";
 import { trackEvent } from "@/lib/analytics";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { StatusMessage } from "@/components/StatusMessage";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useToast } from "@/hooks/useToast";
 
 type LoadState =
   | { status: "loading" }
@@ -41,7 +43,9 @@ function SpotDetailContent({ id }: { id: string }) {
   const format = useFormatter();
   const user = useAuthStore((state) => state.user);
   const authStatus = useAuthStore((state) => state.status);
+  const showToast = useToast();
   const [state, setState] = useState<LoadState>({ status: "loading" });
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -117,15 +121,13 @@ function SpotDetailContent({ id }: { id: string }) {
   const { spot } = state;
   const isOwner = authStatus === "authenticated" && user?.id === spot.createdByUserId;
 
-  async function handleDeleteClick() {
-    if (!window.confirm(t("deleteConfirm"))) {
-      return;
-    }
-
+  async function handleDeleteConfirmed() {
+    setConfirmingDelete(false);
     setDeleting(true);
     setError(null);
     try {
       setChangeRequest(await deleteSpot(spot.id));
+      showToast(t("toastDeletionRequested"));
       trackEvent("spot_deletion_requested", { spotId: spot.id });
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
@@ -140,6 +142,7 @@ function SpotDetailContent({ id }: { id: string }) {
     try {
       await cancelSpotChangeRequest(spot.id);
       setChangeRequest(null);
+      showToast(t("toastRequestCancelled"));
     } catch (err) {
       setError(getErrorMessage(err, t("unknownError")));
     } finally {
@@ -306,7 +309,7 @@ function SpotDetailContent({ id }: { id: string }) {
                     {t("editButton")}
                   </button>
                   <button
-                    onClick={handleDeleteClick}
+                    onClick={() => setConfirmingDelete(true)}
                     disabled={deleting || pendingRequest?.type === "Deletion"}
                     className="rounded border border-red-300 px-4 py-2 text-sm text-red-700 disabled:opacity-50 dark:border-red-800 dark:text-red-400"
                   >
@@ -346,6 +349,15 @@ function SpotDetailContent({ id }: { id: string }) {
       <CommentsSection spotId={spot.id} />
 
       {showCheckInModal ? <CheckInModal spotId={spot.id} onClose={() => setShowCheckInModal(false)} /> : null}
+      {confirmingDelete ? (
+        <ConfirmDialog
+          title={t("deleteButton")}
+          message={t("deleteConfirm")}
+          confirmLabel={t("deleteButton")}
+          onConfirm={handleDeleteConfirmed}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      ) : null}
       {showReportModal ? <ReportModal onClose={() => setShowReportModal(false)} onSubmit={handleReportSubmit} /> : null}
       {showEditModal ? (
         <EditSpotModal
@@ -354,6 +366,7 @@ function SpotDetailContent({ id }: { id: string }) {
           onSubmitted={(request) => {
             setChangeRequest(request);
             setShowEditModal(false);
+            showToast(t("toastEditSubmitted"));
           }}
         />
       ) : null}
