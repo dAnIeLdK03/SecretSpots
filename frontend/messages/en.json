@@ -3,7 +3,8 @@
     "loadMore": "Load more",
     "loadingMore": "Loading...",
     "resultsCount": "{count, plural, =0 {No results} one {# result} other {# results}}",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "close": "Close"
   },
   "Layout": {
     "appName": "SecretSpots",
@@ -114,7 +115,6 @@
     "locating": "Locating you...",
     "searchThisArea": "Search this area",
     "addAtMyLocation": "Add spot here",
-    "tapMapToPlace": "Tap the map to place it",
     "loginRequiredToCreate": "You must be logged in to add a spot.",
     "loadError": "Failed to load nearby spots.",
     "moreSpotsNearby": "Showing the closest {shown} of {total} spots. Narrow the radius to see the rest.",
@@ -167,7 +167,11 @@
     "toastSpotSubmitted": "Spot sent for review",
     "toastEditSubmitted": "Changes sent for review",
     "toastDeletionRequested": "Deletion request sent for review",
-    "toastRequestCancelled": "Request withdrawn"
+    "toastRequestCancelled": "Request withdrawn",
+    "placeAtCenter": "Place at the center",
+    "placingHint": "Click the map, or move it (arrow keys) until the crosshair is on the spot and press “Place at the center”.",
+    "mapLabel": "Map of spots",
+    "mapAttributionToggle": "Show map sources"
   },
   "PhotoUpload": {
     "uploading": "Uploading...",

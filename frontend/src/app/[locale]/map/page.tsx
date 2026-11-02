@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Crosshair } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import type { MapViewState } from "@/components/SpotsMap";
@@ -51,6 +52,7 @@ function MapPageContent() {
   const targetAppliedRef = useRef(false);
   const pendingSelectIdRef = useRef<string | null>(target?.spotId ?? null);
   const tAuth = useTranslations("Auth");
+  const tCommon = useTranslations("Common");
   const showToast = useToast();
   const authStatus = useAuthStore((state) => state.status);
   // Admins moderate spots rather than create them (the API rejects their CreateSpot calls).
@@ -190,14 +192,30 @@ function MapPageContent() {
     setCreateModalCoords({ lat, lng });
   }
 
-  function handleToggleAddSpot() {
+  function handleStartPlacing() {
     if (authStatus !== "authenticated") {
       setShowLoginPrompt(true);
       return;
     }
     setShowLoginPrompt(false);
-    setPlacingSpot((wasPlacing) => !wasPlacing);
+    setPlacingSpot(true);
   }
+
+  // The keyboard way to place a spot: pan the map (arrow keys on the focused map) until the
+  // crosshair is on the spot, then press this. Clicking the map still works too.
+  function handlePlaceAtCenter() {
+    setPlacingSpot(false);
+    setCreateModalCoords({ lat: viewState.latitude, lng: viewState.longitude });
+  }
+
+  useEffect(() => {
+    if (!placingSpot) return;
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setPlacingSpot(false);
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [placingSpot]);
 
   function handleSpotCreated(spot: SpotResponse) {
     const { photoUrls, ...rest } = spot;
@@ -258,15 +276,41 @@ function MapPageContent() {
         </button>
       ) : null}
 
-      {isAdmin ? null : (
+      {placingSpot ? (
+        <Crosshair
+          size={36}
+          strokeWidth={2.5}
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-trail drop-shadow"
+        />
+      ) : null}
+
+      {isAdmin ? null : placingSpot ? (
+        <div className="absolute right-6 bottom-6 z-10 flex max-w-xs flex-col items-end gap-2">
+          <p role="status" className="rounded bg-paper-light px-3 py-2 text-right text-sm text-ink shadow">
+            {t("placingHint")}
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPlacingSpot(false)}
+              className="rounded-full bg-paper-light px-4 py-3 text-sm text-ink shadow-lg"
+            >
+              {tCommon("cancel")}
+            </button>
+            <button
+              onClick={handlePlaceAtCenter}
+              className="rounded-full bg-trail px-4 py-3 text-sm text-on-trail ring-4 ring-trail/25"
+            >
+              {t("placeAtCenter")}
+            </button>
+          </div>
+        </div>
+      ) : (
         <button
-          onClick={handleToggleAddSpot}
-          aria-pressed={placingSpot}
-          className={`absolute right-6 bottom-6 z-10 rounded-full px-4 py-3 text-sm ${
-            placingSpot ? "bg-trail text-on-trail ring-4 ring-trail/25" : "bg-ink text-paper-light shadow-lg"
-          }`}
+          onClick={handleStartPlacing}
+          className="absolute right-6 bottom-6 z-10 rounded-full bg-ink px-4 py-3 text-sm text-paper-light shadow-lg"
         >
-          {placingSpot ? t("tapMapToPlace") : t("addAtMyLocation")}
+          {t("addAtMyLocation")}
         </button>
       )}
 
