@@ -6,6 +6,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useRouter } from "@/i18n/navigation";
 import { getNearbySpots } from "@/lib/spotsApi";
 import type { NearbySpot } from "@/lib/spotsApi";
+import { collapseAttribution } from "@/lib/mapAttribution";
 
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 const SOFIA = { longitude: 23.3219, latitude: 42.6977 };
@@ -26,6 +27,9 @@ export function HeroMap() {
       <Map
         initialViewState={{ longitude: SOFIA.longitude, latitude: SOFIA.latitude, zoom: 11 }}
         mapStyle={MAP_STYLE}
+        // Same as SpotsMap: the full credits line covered a quarter of this small preview on phones.
+        attributionControl={{ compact: true }}
+        onLoad={collapseAttribution}
         style={{ width: "100%", height: "100%" }}
         dragPan={false}
         dragRotate={false}

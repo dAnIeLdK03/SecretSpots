@@ -286,7 +286,7 @@ function MapPageContent() {
       ) : null}
 
       {isAdmin ? null : placingSpot ? (
-        <div className="absolute right-6 bottom-6 z-10 flex max-w-xs flex-col items-end gap-2">
+        <div className="absolute right-6 bottom-12 z-10 flex max-w-xs flex-col items-end gap-2">
           <p role="status" className="rounded bg-paper-light px-3 py-2 text-right text-sm text-ink shadow">
             {t("placingHint")}
           </p>
@@ -308,7 +308,7 @@ function MapPageContent() {
       ) : (
         <button
           onClick={handleStartPlacing}
-          className="absolute right-6 bottom-6 z-10 rounded-full bg-ink px-4 py-3 text-sm text-paper-light shadow-lg"
+          className="absolute right-6 bottom-12 z-10 rounded-full bg-ink px-4 py-3 text-sm text-paper-light shadow-lg"
         >
           {t("addAtMyLocation")}
         </button>

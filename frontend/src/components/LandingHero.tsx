@@ -33,7 +33,7 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
 
   return (
     <div className="relative overflow-hidden bg-paper text-ink">
-      <header className="relative z-10 flex items-center justify-between gap-4 px-6 py-4">
+      <header className="relative z-10 flex items-center justify-between gap-2 px-4 py-4 sm:gap-4 sm:px-6">
         <div className="flex items-center gap-2 text-lg font-semibold tracking-tight">SecretSpots</div>
 
         <nav className="hidden items-center gap-6 text-sm sm:flex">
@@ -51,7 +51,7 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {status === "authenticated" && user ? (
             <>
               <NotificationBell />
@@ -73,7 +73,7 @@ export function LandingHero({ onSearch }: LandingHeroProps) {
               </Link>
               <Link
                 href="/register"
-                className="rounded-full border border-ink px-4 py-2 text-sm whitespace-nowrap hover:bg-black/5 dark:hover:bg-white/5"
+                className="rounded-full border border-ink px-3 py-2 text-sm whitespace-nowrap hover:bg-black/5 sm:px-4 dark:hover:bg-white/5"
               >
                 {tAuth("registerTitle")}
               </Link>
