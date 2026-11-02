@@ -62,6 +62,16 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Keyboard focus ring for every focusable element. The link color, not trail: as a ring it needs
+   3:1 against the page, which the dark theme's orange doesn't reach. In the base layer so a
+   component can still recolor it with a focus-visible:outline-* utility. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--fieldmap-link);
+    outline-offset: 2px;
+  }
+}
+
 /* Spot preview popup on the map — the MapLibre defaults (near-invisible
    shadow, tiny unstyled × button) read as broken against the cream map
    tiles, so give it real elevation and a legible close button. */
@@ -87,6 +97,11 @@ body {
   line-height: 1;
   color: #63523d;
   transition: background-color 0.15s ease;
+}
+
+/* The popup is always white, so its focus ring uses the light theme's link color in both themes. */
+.maplibregl-popup :focus-visible {
+  outline-color: #913b1d;
 }
 
 .maplibregl-popup-close-button:hover {

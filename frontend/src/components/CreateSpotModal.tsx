@@ -20,7 +20,7 @@ interface CreateSpotModalProps {
 }
 
 const FIELD_CLASSES =
-  "rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-white placeholder:text-zinc-500 focus:border-emerald-400 focus:outline-none";
+  "rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-white placeholder:text-zinc-500 focus:border-emerald-400 focus-visible:outline-emerald-400";
 
 export function CreateSpotModal({ latitude, longitude, onClose, onCreated }: CreateSpotModalProps) {
   const t = useTranslations("Spots");
