@@ -52,7 +52,7 @@ export function CategorySelect({ value, onChange, dark = false }: CategorySelect
   }, [isOpen]);
 
   const triggerClasses = dark
-    ? "flex w-full items-center justify-between gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-white focus:border-emerald-400 focus:outline-none"
+    ? "flex w-full items-center justify-between gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-white focus:border-emerald-400 focus-visible:outline-emerald-400"
     : "flex w-full items-center justify-between gap-2 rounded border border-contour bg-paper-light px-3 py-2";
 
   const menuClasses = dark
