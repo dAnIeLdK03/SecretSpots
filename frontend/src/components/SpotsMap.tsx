@@ -9,6 +9,7 @@ import { Link } from "@/i18n/navigation";
 import type { NearbySpot } from "@/lib/spotsApi";
 import { CategoryIcon } from "./CategoryIcon";
 import { DirectionsLinks } from "./DirectionsLinks";
+import { collapseAttribution } from "@/lib/mapAttribution";
 
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 
@@ -96,6 +97,10 @@ export function SpotsMap({
         onMoveEnd={onMoveEnd}
         onClick={(evt) => onMapClick(evt.lngLat.lat, evt.lngLat.lng)}
         mapStyle={MAP_STYLE}
+        // Collapsed to the (i) button so the full credits line doesn't run under the map's own
+        // bottom-right controls on narrow screens; still one tap away, as the tile licenses require.
+        attributionControl={{ compact: true }}
+        onLoad={collapseAttribution}
         maxBounds={BULGARIA_BOUNDS}
         style={{ width: "100%", height: "100%" }}
       >
