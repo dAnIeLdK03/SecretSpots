@@ -14,6 +14,7 @@ namespace SecretSpots.Features.Spots;
 public class RejectedSpotCleanupService(
     IServiceScopeFactory scopeFactory,
     IOptions<SpotModerationOptions> options,
+    TimeProvider timeProvider,
     ILogger<RejectedSpotCleanupService> logger) : PeriodicBackgroundService(scopeFactory, logger)
 {
     protected override TimeSpan Interval => TimeSpan.FromMinutes(options.Value.CleanupIntervalMinutes);
@@ -22,7 +23,7 @@ public class RejectedSpotCleanupService(
     {
         var db = services.GetRequiredService<IAppDbContext>();
 
-        var now = DateTimeOffset.UtcNow;
+        var now = timeProvider.GetUtcNow();
 
         // The ModerationStatus check is a safety net — ApproveSpot already clears
         // ScheduledDeletionAt. Already soft-deleted spots are excluded by the global query filter.

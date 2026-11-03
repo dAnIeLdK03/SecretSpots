@@ -57,7 +57,8 @@ public class GetNotificationsHandlerTests
     }
 
     private static GetNotifications.Handler CreateHandler(IAppDbContext db, Guid userId, int readRetentionHours = 24) =>
-        new(db, new FakeUserContext(userId), TestOptionsFactory.Notifications(readRetentionHours: readRetentionHours), TestLocalizerFactory.Create());
+        new(db, new FakeUserContext(userId), TestOptionsFactory.Notifications(readRetentionHours: readRetentionHours),
+            TimeProvider.System, TestLocalizerFactory.Create());
 
     [Fact]
     public async Task Returns_only_the_current_users_notifications_newest_first()

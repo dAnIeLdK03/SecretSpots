@@ -17,10 +17,10 @@ public class SpotModerationTests
     private static ApproveSpot.Handler CreateApproveHandler(IAppDbContext db) =>
         new(db, new FakeUserContext(Guid.NewGuid(), UserRole.Admin), TestLocalizerFactory.Create(), NullLogger<ApproveSpot.Handler>.Instance);
 
-    private static RejectSpot.Handler CreateRejectHandler(IAppDbContext db) =>
+    private static RejectSpot.Handler CreateRejectHandler(IAppDbContext db, TimeProvider? time = null) =>
         new(db, new FakeUserContext(Guid.NewGuid(), UserRole.Admin),
             Options.Create(new SpotModerationOptions { RejectionGracePeriodHours = GracePeriodHours }),
-            TestLocalizerFactory.Create(), NullLogger<RejectSpot.Handler>.Instance);
+            time ?? TimeProvider.System, TestLocalizerFactory.Create(), NullLogger<RejectSpot.Handler>.Instance);
 
     private static Task<Notification[]> NotificationsForAsync(IAppDbContext db, Spot spot) =>
         db.Notifications.Where(n => n.UserId == spot.CreatedByUserId).ToArrayAsync();

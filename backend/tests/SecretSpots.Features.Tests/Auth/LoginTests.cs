@@ -42,6 +42,7 @@ public class LoginHandlerTests
             db,
             new JwtService(jwtOptions),
             jwtOptions,
+            TimeProvider.System,
             TestLocalizerFactory.Create(),
             NullLogger<Login.Handler>.Instance);
     }

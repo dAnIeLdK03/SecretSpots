@@ -18,6 +18,7 @@ public class RefreshAccessTokenHandlerTests
             db,
             new JwtService(jwtOptions),
             jwtOptions,
+            TimeProvider.System,
             TestLocalizerFactory.Create(),
             NullLogger<RefreshAccessToken.Handler>.Instance);
     }

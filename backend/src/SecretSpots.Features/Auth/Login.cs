@@ -44,6 +44,7 @@ public static class Login
         IAppDbContext db,
         IJwtService jwtService,
         IOptions<JwtOptions> jwtOptions,
+        TimeProvider timeProvider,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<AuthResult>>
@@ -76,7 +77,7 @@ public static class Login
                 return Result<AuthResult>.Failure(Error.Unauthorized(AuthMessageKeys.InvalidCredentials, localizer));
             }
 
-            var authResult = await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, command.RememberMe, cancellationToken);
+            var authResult = await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, timeProvider, user, command.RememberMe, cancellationToken);
             if (!authResult.IsSuccess)
             {
                 return Result<AuthResult>.Failure(authResult.Error);

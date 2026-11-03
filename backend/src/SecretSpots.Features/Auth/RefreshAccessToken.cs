@@ -19,6 +19,7 @@ public static class RefreshAccessToken
         IAppDbContext db,
         IJwtService jwtService,
         IOptions<JwtOptions> jwtOptions,
+        TimeProvider timeProvider,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<AuthResult>>
@@ -42,14 +43,14 @@ public static class RefreshAccessToken
                     .ToListAsync(cancellationToken);
                 foreach (var activeToken in activeTokens)
                 {
-                    activeToken.RevokedAt = DateTimeOffset.UtcNow;
+                    activeToken.RevokedAt = timeProvider.GetUtcNow();
                 }
 
                 await db.SaveChangesAsync(cancellationToken);
                 logger.LogWarning(AuthLogMessages.RefreshTokenReuseDetected, existingToken.UserId);
             }
 
-            var isUsable = existingToken is { RevokedAt: null } && existingToken.ExpiresAt > DateTimeOffset.UtcNow;
+            var isUsable = existingToken is { RevokedAt: null } && existingToken.ExpiresAt > timeProvider.GetUtcNow();
 
             if (!isUsable)
             {
@@ -59,9 +60,9 @@ public static class RefreshAccessToken
             var user = await db.Users
                 .SingleAsync(u => u.Id == existingToken!.UserId, cancellationToken);
 
-            existingToken!.RevokedAt = DateTimeOffset.UtcNow;
+            existingToken!.RevokedAt = timeProvider.GetUtcNow();
 
-            return await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, existingToken.RememberMe, cancellationToken);
+            return await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, timeProvider, user, existingToken.RememberMe, cancellationToken);
         }
     }
 }

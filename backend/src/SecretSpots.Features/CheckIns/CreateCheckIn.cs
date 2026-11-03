@@ -50,6 +50,7 @@ public static class CreateCheckIn
         IUserContext userContext,
         IOptions<CrystalsOptions> crystalsOptions,
         IOptions<CheckInOptions> checkInOptions,
+        TimeProvider timeProvider,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<CheckInResponse>>
@@ -88,7 +89,7 @@ public static class CreateCheckIn
 
             // Stops trivially farming crystals by repeatedly checking in at the same spot —
             // one crystal-earning check-in per spot per user within the cooldown window.
-            var cooldownStart = DateTimeOffset.UtcNow.AddHours(-checkInOptions.Value.CooldownHours);
+            var cooldownStart = timeProvider.GetUtcNow().AddHours(-checkInOptions.Value.CooldownHours);
             var checkedInRecently = await db.CheckIns.AnyAsync(
                 c => c.SpotId == command.SpotId && c.UserId == userContext.UserId && c.CreatedAt > cooldownStart,
                 cancellationToken);

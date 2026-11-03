@@ -11,7 +11,7 @@ public static class BeginExternalAuth
 {
     public record Command(ExternalAuthProvider Provider) : IRequest<Result<string>>;
 
-    public class Handler(IAppDbContext db, IEnumerable<IExternalAuthProvider> providers)
+    public class Handler(IAppDbContext db, IEnumerable<IExternalAuthProvider> providers, TimeProvider timeProvider)
         : IRequestHandler<Command, Result<string>>
     {
         public async Task<Result<string>> Handle(Command command, CancellationToken cancellationToken)
@@ -23,7 +23,7 @@ public static class BeginExternalAuth
                 Id = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))
                     .Replace('+', '-').Replace('/', '_').TrimEnd('='),
                 Provider = command.Provider,
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(10),
+                ExpiresAt = timeProvider.GetUtcNow().AddMinutes(10),
             };
 
             db.ExternalAuthTransactions.Add(transaction);

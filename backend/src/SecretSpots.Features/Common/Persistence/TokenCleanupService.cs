@@ -13,6 +13,7 @@ namespace SecretSpots.Features.Common.Persistence;
 public class TokenCleanupService(
     IServiceScopeFactory scopeFactory,
     IOptions<TokenCleanupOptions> options,
+    TimeProvider timeProvider,
     ILogger<TokenCleanupService> logger) : PeriodicBackgroundService(scopeFactory, logger)
 {
     protected override TimeSpan Interval => TimeSpan.FromHours(options.Value.IntervalHours);
@@ -21,7 +22,7 @@ public class TokenCleanupService(
     {
         var db = services.GetRequiredService<IAppDbContext>();
 
-        var now = DateTimeOffset.UtcNow;
+        var now = timeProvider.GetUtcNow();
 
         // A revoked/used token can never become usable again (see the isUsable checks in
         // RefreshAccessToken/ResetPassword) — deleting it doesn't need to wait for its original

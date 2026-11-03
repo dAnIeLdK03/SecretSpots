@@ -33,6 +33,7 @@ public static class GetNotifications
         IAppDbContext db,
         IUserContext userContext,
         IOptions<NotificationsOptions> notificationsOptions,
+        TimeProvider timeProvider,
         IStringLocalizer<SharedResources> localizer)
         : IRequestHandler<Query, PagedResponse<NotificationResponse>>
     {
@@ -41,7 +42,7 @@ public static class GetNotifications
             // Read notifications age out of the default listing after ReadRetentionHours —
             // unread ones are always included regardless of how old they are. The row is never
             // deleted, so this only affects what shows up here.
-            var readCutoff = DateTimeOffset.UtcNow.AddHours(-notificationsOptions.Value.ReadRetentionHours);
+            var readCutoff = timeProvider.GetUtcNow().AddHours(-notificationsOptions.Value.ReadRetentionHours);
 
             var baseQuery = db.Notifications
                 .Where(n => n.UserId == userContext.UserId && (!n.IsRead || n.ReadAt >= readCutoff));

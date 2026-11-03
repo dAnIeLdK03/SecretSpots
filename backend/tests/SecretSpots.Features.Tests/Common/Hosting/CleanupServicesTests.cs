@@ -2,7 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Time.Testing;
 using SecretSpots.Domain;
+using SecretSpots.Features.Admin;
 using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Spots;
@@ -41,6 +43,33 @@ public class CleanupServicesTests
         Assert.Null(remaining[stillInGrace.Id]);
         Assert.Null(remaining[approvedWithStaleDeadline.Id]);
         Assert.False(await db.Spots.AnyAsync(s => s.Id == expired.Id));
+    }
+
+    [Fact]
+    public async Task A_rejected_spot_survives_its_grace_period_and_is_soft_deleted_after_it()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var spot = await TestSpotFactory.SeedAsync(db, status: SpotModerationStatus.Pending);
+        var time = new FakeTimeProvider(DateTimeOffset.UtcNow);
+        await new RejectSpot.Handler(
+                db, new FakeUserContext(Guid.NewGuid(), UserRole.Admin),
+                Options.Create(new SpotModerationOptions { RejectionGracePeriodHours = 24 }),
+                time, TestLocalizerFactory.Create(), NullLogger<RejectSpot.Handler>.Instance)
+            .Handle(new RejectSpot.Command(spot.Id, "Blurry photo"), CancellationToken.None);
+        await using var services = CreateServices();
+        var cleanup = new TestableRejectedSpotCleanupService(services, time);
+
+        time.Advance(TimeSpan.FromHours(23));
+        await cleanup.RunOnceAsync();
+        db.ChangeTracker.Clear();
+        var stillThere = await db.Spots.AnyAsync(s => s.Id == spot.Id);
+        time.Advance(TimeSpan.FromHours(2));
+        await cleanup.RunOnceAsync();
+        db.ChangeTracker.Clear();
+
+        Assert.True(stillThere);
+        Assert.False(await db.Spots.AnyAsync(s => s.Id == spot.Id));
+        Assert.NotNull((await db.Spots.IgnoreQueryFilters().SingleAsync(s => s.Id == spot.Id)).DeletedAt);
     }
 
     [Fact]
@@ -84,10 +113,11 @@ public class CleanupServicesTests
     }
 
     // RunOnceAsync is protected — these expose a single run without starting the timer loop.
-    private sealed class TestableRejectedSpotCleanupService(IServiceProvider services)
+    private sealed class TestableRejectedSpotCleanupService(IServiceProvider services, TimeProvider? time = null)
         : RejectedSpotCleanupService(
             services.GetRequiredService<IServiceScopeFactory>(),
             Options.Create(new SpotModerationOptions()),
+            time ?? TimeProvider.System,
             NullLogger<RejectedSpotCleanupService>.Instance)
     {
         public async Task RunOnceAsync()
@@ -101,6 +131,7 @@ public class CleanupServicesTests
         : TokenCleanupService(
             services.GetRequiredService<IServiceScopeFactory>(),
             Options.Create(new TokenCleanupOptions()),
+            TimeProvider.System,
             NullLogger<TokenCleanupService>.Instance)
     {
         public async Task RunOnceAsync()

@@ -21,6 +21,7 @@ internal static class EmailVerificationSender
         IEmailSender emailSender,
         IOptions<EmailVerificationOptions> emailVerificationOptions,
         IStringLocalizer<SharedResources> localizer,
+        TimeProvider timeProvider,
         User user,
         CancellationToken cancellationToken)
     {
@@ -33,7 +34,7 @@ internal static class EmailVerificationSender
             Id = Guid.NewGuid(),
             UserId = user.Id,
             Token = OpaqueTokenHasher.Hash(rawToken),
-            ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(emailVerificationOptions.Value.TokenExpiryMinutes),
+            ExpiresAt = timeProvider.GetUtcNow().AddMinutes(emailVerificationOptions.Value.TokenExpiryMinutes),
         };
 
         db.EmailVerificationTokens.Add(token);
