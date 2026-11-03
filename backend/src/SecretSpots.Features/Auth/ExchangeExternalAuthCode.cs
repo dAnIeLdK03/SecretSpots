@@ -27,6 +27,7 @@ public static class ExchangeExternalAuthCode
         IAppDbContext db,
         IJwtService jwtService,
         IOptions<JwtOptions> jwtOptions,
+        TimeProvider timeProvider,
         IStringLocalizer<SharedResources> localizer)
         : IRequestHandler<Command, Result<AuthResult>>
     {
@@ -36,7 +37,7 @@ public static class ExchangeExternalAuthCode
                 .SingleOrDefaultAsync(t => t.Id == command.Code, cancellationToken);
 
             var isUsable = transaction is { Status: ExternalAuthTransactionStatus.Completed, UserId: not null }
-                && transaction.ExpiresAt > DateTimeOffset.UtcNow;
+                && transaction.ExpiresAt > timeProvider.GetUtcNow();
 
             if (!isUsable)
             {
@@ -48,7 +49,7 @@ public static class ExchangeExternalAuthCode
 
             var user = await db.Users.SingleAsync(u => u.Id == transaction.UserId!.Value, cancellationToken);
 
-            return await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, rememberMe: true, cancellationToken);
+            return await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, timeProvider, user, rememberMe: true, cancellationToken);
         }
     }
 }

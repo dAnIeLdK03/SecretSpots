@@ -20,6 +20,7 @@ public static class ExternalAuthCallback
         IEnumerable<IExternalAuthProvider> providers,
         IOptions<ExternalAuthOptions> externalAuthOptions,
         IOptions<CrystalsOptions> crystalsOptions,
+        TimeProvider timeProvider,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<string>>
     {
@@ -36,7 +37,7 @@ public static class ExternalAuthCallback
 
             var stateValid = transaction is { Status: ExternalAuthTransactionStatus.Pending }
                 && transaction.Provider == command.Provider
-                && transaction.ExpiresAt > DateTimeOffset.UtcNow;
+                && transaction.ExpiresAt > timeProvider.GetUtcNow();
 
             if (!stateValid)
             {

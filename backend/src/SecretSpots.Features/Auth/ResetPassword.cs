@@ -30,7 +30,7 @@ public static class ResetPassword
         }
     }
 
-    public class Handler(IAppDbContext db, IStringLocalizer<SharedResources> localizer, ILogger<Handler> logger)
+    public class Handler(IAppDbContext db, TimeProvider timeProvider, IStringLocalizer<SharedResources> localizer, ILogger<Handler> logger)
         : IRequestHandler<Command, Result<Unit>>
     {
         public async Task<Result<Unit>> Handle(Command command, CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ public static class ResetPassword
             var token = await db.PasswordResetTokens
                 .SingleOrDefaultAsync(t => t.Token == OpaqueTokenHasher.Hash(command.Token), cancellationToken);
 
-            var isUsable = token is { UsedAt: null } && token.ExpiresAt > DateTimeOffset.UtcNow;
+            var isUsable = token is { UsedAt: null } && token.ExpiresAt > timeProvider.GetUtcNow();
             if (!isUsable)
             {
                 return Result<Unit>.Failure(Error.BadRequest(AuthMessageKeys.PasswordResetTokenInvalidOrExpired, localizer));
@@ -46,7 +46,7 @@ public static class ResetPassword
 
             var user = await db.Users.SingleAsync(u => u.Id == token!.UserId, cancellationToken);
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(command.NewPassword, workFactor: 12);
-            token!.UsedAt = DateTimeOffset.UtcNow;
+            token!.UsedAt = timeProvider.GetUtcNow();
 
             // Reset invalidates every existing session — if someone else's password reset
             // request is what's happening here, this also kicks out whoever holds the
@@ -56,7 +56,7 @@ public static class ResetPassword
                 .ToListAsync(cancellationToken);
             foreach (var refreshToken in activeRefreshTokens)
             {
-                refreshToken.RevokedAt = DateTimeOffset.UtcNow;
+                refreshToken.RevokedAt = timeProvider.GetUtcNow();
             }
 
             await db.SaveChangesAsync(cancellationToken);

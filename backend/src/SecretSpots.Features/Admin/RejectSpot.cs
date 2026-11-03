@@ -36,6 +36,7 @@ public static class RejectSpot
         IAppDbContext db,
         IUserContext userContext,
         IOptions<SpotModerationOptions> spotModerationOptions,
+        TimeProvider timeProvider,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<Unit>>
@@ -58,7 +59,7 @@ public static class RejectSpot
             spot.RejectionReason = command.Reason.Trim();
 
             // ??= so re-rejecting (e.g. to fix the reason's wording) doesn't extend the grace period.
-            spot.ScheduledDeletionAt ??= DateTimeOffset.UtcNow.AddHours(spotModerationOptions.Value.RejectionGracePeriodHours);
+            spot.ScheduledDeletionAt ??= timeProvider.GetUtcNow().AddHours(spotModerationOptions.Value.RejectionGracePeriodHours);
 
             if (statusChanged)
             {

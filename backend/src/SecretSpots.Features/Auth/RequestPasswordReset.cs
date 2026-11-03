@@ -34,6 +34,7 @@ public static class RequestPasswordReset
         IAppDbContext db,
         IEmailSender emailSender,
         IOptions<PasswordResetOptions> passwordResetOptions,
+        TimeProvider timeProvider,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<Unit>>
@@ -62,7 +63,7 @@ public static class RequestPasswordReset
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
                 Token = OpaqueTokenHasher.Hash(rawToken),
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(passwordResetOptions.Value.TokenExpiryMinutes),
+                ExpiresAt = timeProvider.GetUtcNow().AddMinutes(passwordResetOptions.Value.TokenExpiryMinutes),
             };
 
             db.PasswordResetTokens.Add(token);

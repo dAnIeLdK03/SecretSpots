@@ -22,7 +22,7 @@ public static class VerifyEmail
         }
     }
 
-    public class Handler(IAppDbContext db, IStringLocalizer<SharedResources> localizer, ILogger<Handler> logger)
+    public class Handler(IAppDbContext db, TimeProvider timeProvider, IStringLocalizer<SharedResources> localizer, ILogger<Handler> logger)
         : IRequestHandler<Command, Result<Unit>>
     {
         public async Task<Result<Unit>> Handle(Command command, CancellationToken cancellationToken)
@@ -30,7 +30,7 @@ public static class VerifyEmail
             var token = await db.EmailVerificationTokens
                 .SingleOrDefaultAsync(t => t.Token == OpaqueTokenHasher.Hash(command.Token), cancellationToken);
 
-            var isUsable = token is { UsedAt: null } && token.ExpiresAt > DateTimeOffset.UtcNow;
+            var isUsable = token is { UsedAt: null } && token.ExpiresAt > timeProvider.GetUtcNow();
             if (!isUsable)
             {
                 return Result<Unit>.Failure(Error.BadRequest(AuthMessageKeys.EmailVerificationTokenInvalidOrExpired, localizer));
@@ -38,7 +38,7 @@ public static class VerifyEmail
 
             var user = await db.Users.SingleAsync(u => u.Id == token!.UserId, cancellationToken);
             user.IsEmailVerified = true;
-            token!.UsedAt = DateTimeOffset.UtcNow;
+            token!.UsedAt = timeProvider.GetUtcNow();
 
             await db.SaveChangesAsync(cancellationToken);
 

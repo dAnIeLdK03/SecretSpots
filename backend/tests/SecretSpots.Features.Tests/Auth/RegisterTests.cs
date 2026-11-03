@@ -68,6 +68,7 @@ public class RegisterHandlerTests
             TestOptionsFactory.Crystals(),
             new FakeEmailSender(),
             TestOptionsFactory.EmailVerification(),
+            TimeProvider.System,
             TestLocalizerFactory.Create(),
             NullLogger<Register.Handler>.Instance);
     }

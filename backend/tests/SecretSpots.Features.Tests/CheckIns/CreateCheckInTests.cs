@@ -2,6 +2,7 @@ using FluentValidation.TestHelper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Time.Testing;
 using NetTopologySuite.Geometries;
 using SecretSpots.Domain;
 using SecretSpots.Features.CheckIns;
@@ -100,12 +101,14 @@ public class CreateCheckInHandlerTests
         return spot;
     }
 
-    private static CreateCheckIn.Handler CreateHandler(IAppDbContext db, Guid userId, int checkInReward = 10) =>
+    private static CreateCheckIn.Handler CreateHandler(
+        IAppDbContext db, Guid userId, int checkInReward = 10, TimeProvider? time = null) =>
         new(
             db,
             new FakeUserContext(userId),
             TestOptionsFactory.Crystals(checkInReward: checkInReward),
             TestOptionsFactory.CheckIn(),
+            time ?? TimeProvider.System,
             TestLocalizerFactory.Create(),
             NullLogger<CreateCheckIn.Handler>.Instance);
 
@@ -199,5 +202,26 @@ public class CreateCheckInHandlerTests
         Assert.False(result.IsSuccess);
         Assert.Equal(CommonMessageKeys.CurrentUserNotFound, result.Error.Code);
         Assert.Equal(StatusCodes.Status404NotFound, result.Error.StatusCode);
+    }
+
+    [Fact]
+    public async Task A_second_checkin_at_the_same_spot_waits_for_the_cooldown()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var spot = await SeedSpotAsync(db);
+        var user = await TestUserFactory.SeedAsync(db, $"cooldown-{Guid.NewGuid():N}@example.com", "Str0ng!Passw0rd1");
+        // Starts at the real clock: the check-in's CreatedAt is still stamped by AppDbContext.
+        var time = new FakeTimeProvider(DateTimeOffset.UtcNow);
+        var handler = CreateHandler(db, user.Id, time: time);
+        var command = new CreateCheckIn.Command(spot.Id, "https://example.com/proof.jpg", SofiaLatitude, SofiaLongitude);
+        Assert.True((await handler.Handle(command, CancellationToken.None)).IsSuccess);
+
+        time.Advance(TimeSpan.FromHours(23));
+        var tooSoon = await handler.Handle(command, CancellationToken.None);
+        time.Advance(TimeSpan.FromHours(2));
+        var afterCooldown = await handler.Handle(command, CancellationToken.None);
+
+        Assert.Equal(CheckInsMessageKeys.TooSoonSinceLastCheckIn, tooSoon.Error.Code);
+        Assert.True(afterCooldown.IsSuccess);
     }
 }

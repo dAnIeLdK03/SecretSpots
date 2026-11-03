@@ -1,13 +1,14 @@
-using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Time.Testing;
 using SecretSpots.Domain;
 using SecretSpots.Features.Auth;
 using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Persistence;
 using SecretSpots.Features.Common.Security;
 using SecretSpots.Features.Tests.TestSupport;
+using System.Text.RegularExpressions;
 
 namespace SecretSpots.Features.Tests.Auth;
 
@@ -23,13 +24,14 @@ public partial class AccountRecoveryTests
     private static string TokenFrom(FakeEmailSender emailSender) =>
         TokenInLink().Match(Assert.Single(emailSender.SentEmails).HtmlBody).Groups[1].Value;
 
-    private static RequestPasswordReset.Handler CreateRequestResetHandler(IAppDbContext db, FakeEmailSender emailSender) =>
+    private static RequestPasswordReset.Handler CreateRequestResetHandler(
+        IAppDbContext db, FakeEmailSender emailSender, TimeProvider? time = null) =>
         new(db, emailSender,
-            Options.Create(new PasswordResetOptions { FrontendResetUrl = "https://test.example/reset-password" }),
-            TestLocalizerFactory.Create(), NullLogger<RequestPasswordReset.Handler>.Instance);
+            Options.Create(new PasswordResetOptions { FrontendResetUrl = "https://test.example/reset-password", TokenExpiryMinutes = 30 }),
+            time ?? TimeProvider.System, TestLocalizerFactory.Create(), NullLogger<RequestPasswordReset.Handler>.Instance);
 
-    private static ResetPassword.Handler CreateResetHandler(IAppDbContext db) =>
-        new(db, TestLocalizerFactory.Create(), NullLogger<ResetPassword.Handler>.Instance);
+    private static ResetPassword.Handler CreateResetHandler(IAppDbContext db, TimeProvider? time = null) =>
+        new(db, time ?? TimeProvider.System, TestLocalizerFactory.Create(), NullLogger<ResetPassword.Handler>.Instance);
 
     private static async Task<RefreshToken> SeedRefreshTokenAsync(IAppDbContext db, Guid userId, string rawToken)
     {
@@ -80,6 +82,22 @@ public partial class AccountRecoveryTests
         var second = await CreateResetHandler(db).Handle(new ResetPassword.Command(rawToken, "An0therPass!"), CancellationToken.None);
 
         Assert.Equal(AuthMessageKeys.PasswordResetTokenInvalidOrExpired, second.Error.Code);
+    }
+
+    [Fact]
+    public async Task A_reset_link_stops_working_after_its_expiry()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var user = await TestUserFactory.SeedAsync(db, $"reset-{Guid.NewGuid():N}@example.com", OldPassword);
+        var time = new FakeTimeProvider(DateTimeOffset.UtcNow);
+        var emailSender = new FakeEmailSender();
+        await CreateRequestResetHandler(db, emailSender, time).Handle(new RequestPasswordReset.Command(user.Email), CancellationToken.None);
+        var rawToken = TokenFrom(emailSender);
+
+        time.Advance(TimeSpan.FromMinutes(31));
+        var result = await CreateResetHandler(db, time).Handle(new ResetPassword.Command(rawToken, NewPassword), CancellationToken.None);
+
+        Assert.Equal(AuthMessageKeys.PasswordResetTokenInvalidOrExpired, result.Error.Code);
     }
 
     [Fact]
@@ -136,10 +154,10 @@ public partial class AccountRecoveryTests
         var emailSender = new FakeEmailSender();
         await new ResendEmailVerification.Handler(
                 db, new FakeUserContext(user.Id), emailSender, TestOptionsFactory.EmailVerification(),
-                TestLocalizerFactory.Create(), NullLogger<ResendEmailVerification.Handler>.Instance)
+                TimeProvider.System, TestLocalizerFactory.Create(), NullLogger<ResendEmailVerification.Handler>.Instance)
             .Handle(new ResendEmailVerification.Command(), CancellationToken.None);
         var rawToken = TokenFrom(emailSender);
-        var verify = new VerifyEmail.Handler(db, TestLocalizerFactory.Create(), NullLogger<VerifyEmail.Handler>.Instance);
+        var verify = new VerifyEmail.Handler(db, TimeProvider.System, TestLocalizerFactory.Create(), NullLogger<VerifyEmail.Handler>.Instance);
 
         var first = await verify.Handle(new VerifyEmail.Command(rawToken), CancellationToken.None);
         var second = await verify.Handle(new VerifyEmail.Command(rawToken), CancellationToken.None);
@@ -161,7 +179,7 @@ public partial class AccountRecoveryTests
 
         var result = await new ResendEmailVerification.Handler(
                 db, new FakeUserContext(user.Id), emailSender, TestOptionsFactory.EmailVerification(),
-                TestLocalizerFactory.Create(), NullLogger<ResendEmailVerification.Handler>.Instance)
+                TimeProvider.System, TestLocalizerFactory.Create(), NullLogger<ResendEmailVerification.Handler>.Instance)
             .Handle(new ResendEmailVerification.Command(), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
@@ -180,7 +198,7 @@ public partial class AccountRecoveryTests
         });
         await db.SaveChangesAsync();
 
-        var result = await new VerifyEmail.Handler(db, TestLocalizerFactory.Create(), NullLogger<VerifyEmail.Handler>.Instance)
+        var result = await new VerifyEmail.Handler(db, TimeProvider.System, TestLocalizerFactory.Create(), NullLogger<VerifyEmail.Handler>.Instance)
             .Handle(new VerifyEmail.Command(rawToken), CancellationToken.None);
 
         Assert.Equal(AuthMessageKeys.EmailVerificationTokenInvalidOrExpired, result.Error.Code);

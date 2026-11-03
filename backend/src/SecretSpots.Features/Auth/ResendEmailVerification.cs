@@ -21,6 +21,7 @@ public static class ResendEmailVerification
         IUserContext userContext,
         IEmailSender emailSender,
         IOptions<EmailVerificationOptions> emailVerificationOptions,
+        TimeProvider timeProvider,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<Unit>>
@@ -40,7 +41,7 @@ public static class ResendEmailVerification
                 return Result<Unit>.Success(Unit.Value);
             }
 
-            await EmailVerificationSender.SendAsync(db, emailSender, emailVerificationOptions, localizer, user, cancellationToken);
+            await EmailVerificationSender.SendAsync(db, emailSender, emailVerificationOptions, localizer, timeProvider, user, cancellationToken);
 
             logger.LogInformation(AuthLogMessages.EmailVerificationSent, user.Id);
 

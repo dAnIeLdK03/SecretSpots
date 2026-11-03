@@ -48,6 +48,7 @@ public static class Register
         IOptions<CrystalsOptions> crystalsOptions,
         IEmailSender emailSender,
         IOptions<EmailVerificationOptions> emailVerificationOptions,
+        TimeProvider timeProvider,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<AuthResult>>
@@ -93,7 +94,7 @@ public static class Register
                 return Result<AuthResult>.Failure(Error.Conflict(AuthMessageKeys.EmailAlreadyRegistered, localizer));
             }
 
-            var issueResult = await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, user, rememberMe: true, cancellationToken);
+            var issueResult = await AuthTokenIssuer.IssueAsync(db, jwtService, jwtOptions, timeProvider, user, rememberMe: true, cancellationToken);
             if (!issueResult.IsSuccess)
             {
                 return issueResult;
@@ -108,7 +109,7 @@ public static class Register
             // registration. The user can always ask for a resend once logged in.
             try
             {
-                await EmailVerificationSender.SendAsync(db, emailSender, emailVerificationOptions, localizer, user, cancellationToken);
+                await EmailVerificationSender.SendAsync(db, emailSender, emailVerificationOptions, localizer, timeProvider, user, cancellationToken);
             }
             catch (Exception ex)
             {

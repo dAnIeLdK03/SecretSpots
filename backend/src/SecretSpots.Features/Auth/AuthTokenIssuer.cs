@@ -15,6 +15,7 @@ internal static class AuthTokenIssuer
         IAppDbContext db,
         IJwtService jwtService,
         IOptions<JwtOptions> jwtOptions,
+        TimeProvider timeProvider,
         User user,
         bool rememberMe,
         CancellationToken cancellationToken)
@@ -29,7 +30,7 @@ internal static class AuthTokenIssuer
             Id = Guid.NewGuid(),
             UserId = user.Id,
             Token = OpaqueTokenHasher.Hash(rawRefreshToken),
-            ExpiresAt = DateTimeOffset.UtcNow.AddDays(jwtOptions.Value.RefreshTokenDays),
+            ExpiresAt = timeProvider.GetUtcNow().AddDays(jwtOptions.Value.RefreshTokenDays),
             RememberMe = rememberMe,
         };
 

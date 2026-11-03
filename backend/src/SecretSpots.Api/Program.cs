@@ -181,6 +181,9 @@ builder.Services.Configure<AdminSecurityOptions>(builder.Configuration.GetSectio
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, UserContext>();
+// The clock handlers and background jobs read "now" from, so tests can move time with FakeTimeProvider
+// instead of sleeping or back-dating rows (expiry windows, check-in cooldown, rejection grace period).
+builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddSingleton<IPhotoStorage, R2PhotoStorage>();
 

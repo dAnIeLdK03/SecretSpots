@@ -20,14 +20,14 @@ public class ExternalAuthTests
     private static ExternalAuthCallback.Handler CreateCallbackHandler(IAppDbContext db, FakeExternalAuthProvider provider) =>
         new(db, [provider],
             Options.Create(new ExternalAuthOptions { ApiBaseUrl = "https://api.test.example", FrontendCallbackUrl = FrontendCallbackUrl }),
-            TestOptionsFactory.Crystals(startingBalance: 5), NullLogger<ExternalAuthCallback.Handler>.Instance);
+            TestOptionsFactory.Crystals(startingBalance: 5), TimeProvider.System, NullLogger<ExternalAuthCallback.Handler>.Instance);
 
     private static ExchangeExternalAuthCode.Handler CreateExchangeHandler(IAppDbContext db) =>
-        new(db, new JwtService(TestOptionsFactory.Jwt()), TestOptionsFactory.Jwt(), TestLocalizerFactory.Create());
+        new(db, new JwtService(TestOptionsFactory.Jwt()), TestOptionsFactory.Jwt(), TimeProvider.System, TestLocalizerFactory.Create());
 
     private static async Task<string> BeginAsync(IAppDbContext db, FakeExternalAuthProvider provider)
     {
-        var result = await new BeginExternalAuth.Handler(db, [provider])
+        var result = await new BeginExternalAuth.Handler(db, [provider], TimeProvider.System)
             .Handle(new BeginExternalAuth.Command(provider.Provider), CancellationToken.None);
         return result.Value[(result.Value.IndexOf("state=", StringComparison.Ordinal) + "state=".Length)..];
     }
