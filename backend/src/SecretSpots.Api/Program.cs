@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
+using Sentry.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SecretSpots.Api;
@@ -59,6 +60,18 @@ builder.WebHost.UseSentry(options =>
     options.Dsn = builder.Configuration["Sentry:Dsn"];
     options.Environment = builder.Environment.EnvironmentName;
     options.SendDefaultPii = false;
+
+    // Performance traces for a share of requests (Sentry:TracesSampleRate; 0 turns them off). The
+    // platform's health probes (/health, /health/ready, /alive) hit every few seconds and say
+    // nothing about performance, so they're never sampled — they'd only eat the quota.
+    var tracesSampleRate = builder.Configuration.GetValue("Sentry:TracesSampleRate", 0.1);
+    options.TracesSampler = context =>
+    {
+        var path = new PathString(context.TryGetHttpPath());
+        var isHealthProbe = path.StartsWithSegments(Extensions.HealthEndpointPath)
+            || path.StartsWithSegments(Extensions.AlivenessEndpointPath);
+        return isHealthProbe ? 0 : tracesSampleRate;
+    };
 });
 
 // Structured console logs, both formats including logging scopes so the correlation id pushed by
