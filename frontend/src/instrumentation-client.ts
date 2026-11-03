@@ -1,10 +1,12 @@
 import * as Sentry from "@sentry/nextjs";
+import { sentryOptions } from "@/lib/sentryOptions";
 
-// Empty DSN (unset locally) makes the SDK a no-op — safe to leave wired up in every environment.
 Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT ?? process.env.NODE_ENV,
-  sendDefaultPii: false,
+  ...sentryOptions,
+  // The API is on another origin, and Sentry only adds its trace headers to same-origin requests by
+  // default; listing it links a page load to the API request (and its SQL) in one trace. The API's
+  // CORS policy already allows any request header.
+  tracePropagationTargets: process.env.NEXT_PUBLIC_API_URL ? [process.env.NEXT_PUBLIC_API_URL] : [],
 });
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
