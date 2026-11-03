@@ -44,11 +44,11 @@ public class SpotChangeRequestReviewTests
     }
 
     private static ApproveSpotChangeRequest.Handler CreateApproveHandler(IAppDbContext db, FakePhotoStorage photoStorage) =>
-        new(db, new FakeUserContext(Guid.NewGuid(), UserRole.Admin), photoStorage, TestLocalizerFactory.Create(),
+        new(db, new FakeUserContext(Guid.NewGuid(), UserRole.Admin), photoStorage, TimeProvider.System, TestLocalizerFactory.Create(),
             NullLogger<ApproveSpotChangeRequest.Handler>.Instance);
 
     private static RejectSpotChangeRequest.Handler CreateRejectHandler(IAppDbContext db, FakePhotoStorage photoStorage) =>
-        new(db, new FakeUserContext(Guid.NewGuid(), UserRole.Admin), photoStorage, TestLocalizerFactory.Create(),
+        new(db, new FakeUserContext(Guid.NewGuid(), UserRole.Admin), photoStorage, TimeProvider.System, TestLocalizerFactory.Create(),
             NullLogger<RejectSpotChangeRequest.Handler>.Instance);
 
     [Fact]

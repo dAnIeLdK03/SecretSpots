@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using SecretSpots.Domain;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -26,20 +25,8 @@ public static class ApproveSpot
                 return Result<Unit>.Failure(Error.NotFound(AdminMessageKeys.SpotNotFound, localizer));
             }
 
-            // Approving a Rejected spot undoes the rejection — the creator hears it as a restore.
-            var notificationType = spot.ModerationStatus == SpotModerationStatus.Rejected
-                ? NotificationType.SpotRestored
-                : NotificationType.SpotApproved;
-            var statusChanged = spot.ModerationStatus != SpotModerationStatus.Approved;
-
-            spot.ModerationStatus = SpotModerationStatus.Approved;
-
-            // Clear any stale rejection reason — e.g. the creator fixed the spot off-platform
-            // and an admin reconsidered. A rejection reason shouldn't linger on an Approved spot.
-            spot.RejectionReason = null;
-            spot.ScheduledDeletionAt = null;
-
-            if (statusChanged)
+            // The rules (approve vs. restore, what gets cleared) live in Spot.Approve.
+            if (spot.Approve() is { } notificationType)
             {
                 SpotOwnerNotifier.Add(db, notificationType, spot, spot.Id);
             }
