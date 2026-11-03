@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SecretSpots.Domain;
 using SecretSpots.Features.Common.Configuration;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
@@ -49,19 +48,9 @@ public static class RejectSpot
                 return Result<Unit>.Failure(Error.NotFound(AdminMessageKeys.SpotNotFound, localizer));
             }
 
-            // Rejecting an Approved spot takes it down — the creator hears it as a removal.
-            var notificationType = spot.ModerationStatus == SpotModerationStatus.Approved
-                ? NotificationType.SpotRemoved
-                : NotificationType.SpotRejected;
-            var statusChanged = spot.ModerationStatus != SpotModerationStatus.Rejected;
-
-            spot.ModerationStatus = SpotModerationStatus.Rejected;
-            spot.RejectionReason = command.Reason.Trim();
-
-            // ??= so re-rejecting (e.g. to fix the reason's wording) doesn't extend the grace period.
-            spot.ScheduledDeletionAt ??= timeProvider.GetUtcNow().AddHours(spotModerationOptions.Value.RejectionGracePeriodHours);
-
-            if (statusChanged)
+            // The rules (reject vs. remove, grace period, re-rejecting) live in Spot.Reject.
+            var gracePeriod = TimeSpan.FromHours(spotModerationOptions.Value.RejectionGracePeriodHours);
+            if (spot.Reject(command.Reason, timeProvider.GetUtcNow(), gracePeriod) is { } notificationType)
             {
                 SpotOwnerNotifier.Add(db, notificationType, spot, spot.Id);
             }

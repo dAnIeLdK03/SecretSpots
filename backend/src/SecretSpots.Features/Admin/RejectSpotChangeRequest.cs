@@ -36,6 +36,7 @@ public static class RejectSpotChangeRequest
         IAppDbContext db,
         IUserContext userContext,
         IPhotoStorage photoStorage,
+        TimeProvider timeProvider,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<Unit>>
@@ -53,16 +54,8 @@ public static class RejectSpotChangeRequest
                 return Result<Unit>.Failure(Error.NotFound(AdminMessageKeys.ChangeRequestNotFound, localizer));
             }
 
-            request.Status = SpotChangeRequestStatus.Rejected;
-            request.RejectionReason = command.Reason.Trim();
-            request.ReviewedByUserId = userContext.UserId;
-            request.ReviewedAt = DateTimeOffset.UtcNow;
-
-            SpotOwnerNotifier.Add(
-                db,
-                request.Type == SpotChangeRequestType.Deletion ? NotificationType.SpotDeletionRejected : NotificationType.SpotEditRejected,
-                spot,
-                spot.Id);
+            var notificationType = request.Reject(command.Reason, userContext.UserId, timeProvider.GetUtcNow());
+            SpotOwnerNotifier.Add(db, notificationType, spot, spot.Id);
 
             await db.SaveChangesAsync(cancellationToken);
 

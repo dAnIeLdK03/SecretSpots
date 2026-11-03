@@ -24,4 +24,40 @@ public class Spot : IHasCreatedAt
     // filter in AppDbContext hides it from every query.
     public DateTimeOffset? DeletedAt { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
+
+    // Approves the spot, or restores it if it was rejected. Returns what to tell its creator, or null
+    // when it was already approved (nothing changed for them). A rejection reason or pending
+    // deletion never lingers on an approved spot.
+    public NotificationType? Approve()
+    {
+        NotificationType? notification = ModerationStatus switch
+        {
+            SpotModerationStatus.Approved => null,
+            SpotModerationStatus.Rejected => NotificationType.SpotRestored,
+            _ => NotificationType.SpotApproved,
+        };
+
+        ModerationStatus = SpotModerationStatus.Approved;
+        RejectionReason = null;
+        ScheduledDeletionAt = null;
+        return notification;
+    }
+
+    // Rejects the spot, or takes it down if it was approved, and schedules its soft delete after the
+    // grace period. Returns what to tell its creator, or null when it was already rejected — then
+    // only the reason's wording changes and the original deadline stands (no extension by re-rejecting).
+    public NotificationType? Reject(string reason, DateTimeOffset now, TimeSpan gracePeriod)
+    {
+        NotificationType? notification = ModerationStatus switch
+        {
+            SpotModerationStatus.Rejected => null,
+            SpotModerationStatus.Approved => NotificationType.SpotRemoved,
+            _ => NotificationType.SpotRejected,
+        };
+
+        ModerationStatus = SpotModerationStatus.Rejected;
+        RejectionReason = reason.Trim();
+        ScheduledDeletionAt ??= now + gracePeriod;
+        return notification;
+    }
 }

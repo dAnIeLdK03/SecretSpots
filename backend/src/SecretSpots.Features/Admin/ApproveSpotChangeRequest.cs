@@ -21,6 +21,7 @@ public static class ApproveSpotChangeRequest
         IAppDbContext db,
         IUserContext userContext,
         IPhotoStorage photoStorage,
+        TimeProvider timeProvider,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<Unit>>
@@ -52,16 +53,8 @@ public static class ApproveSpotChangeRequest
                 return Result<Unit>.Success(Unit.Value);
             }
 
-            var removedPhotoUrls = spot.PhotoUrls.Except(request.ProposedPhotoUrls!).ToList();
-
-            spot.Name = request.ProposedName!;
-            spot.Description = request.ProposedDescription!;
-            spot.Category = request.ProposedCategory!.Value;
-            spot.PhotoUrls = request.ProposedPhotoUrls!.ToList();
-
-            request.Status = SpotChangeRequestStatus.Approved;
-            request.ReviewedByUserId = userContext.UserId;
-            request.ReviewedAt = DateTimeOffset.UtcNow;
+            // Applying the proposal and marking the request approved: SpotChangeRequest.ApplyTo.
+            var removedPhotoUrls = request.ApplyTo(spot, userContext.UserId, timeProvider.GetUtcNow());
 
             SpotOwnerNotifier.Add(db, NotificationType.SpotEditApproved, spot, spot.Id);
 
