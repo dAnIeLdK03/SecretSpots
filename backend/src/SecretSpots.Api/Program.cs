@@ -14,6 +14,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using SecretSpots.Api;
 using SecretSpots.Domain;
 using SecretSpots.Features.Admin;
@@ -42,6 +45,12 @@ using SecretSpots.Features.Spots;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+// Database work in the traces and metrics (ServiceDefaults stays database-agnostic): a span per SQL
+// command under the request that ran it (command text with $1-style placeholders, never parameter
+// values), plus Npgsql's built-in "Npgsql" meter for connection pool usage, waits and timeouts.
+builder.Services.ConfigureOpenTelemetryTracerProvider(tracing => tracing.AddNpgsql());
+builder.Services.ConfigureOpenTelemetryMeterProvider(metrics => metrics.AddMeter("Npgsql"));
 
 // No-ops when Sentry:Dsn is unset (e.g. local dev), so this is safe to leave wired up everywhere.
 // Registered before everything else so it can also capture startup failures.
