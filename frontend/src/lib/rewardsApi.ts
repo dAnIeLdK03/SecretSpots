@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/apiClient";
+import { apiFetch, type PagedResponse } from "@/lib/apiClient";
 
 export interface RewardResponse {
   id: string;
@@ -10,21 +10,14 @@ export interface RewardResponse {
   createdAt: string;
 }
 
-export interface RewardsPageResponse {
-  items: RewardResponse[];
-  page: number;
-  pageSize: number;
-  totalCount: number;
-}
-
 export function getBusinessRewards(
   businessId: string,
   page: number,
   pageSize: number,
   signal?: AbortSignal,
-): Promise<RewardsPageResponse> {
+): Promise<PagedResponse<RewardResponse>> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
-  return apiFetch<RewardsPageResponse>(`/businesses/${businessId}/rewards?${params.toString()}`, { signal });
+  return apiFetch<PagedResponse<RewardResponse>>(`/businesses/${businessId}/rewards?${params.toString()}`, { signal });
 }
 
 export interface RewardRedemptionResponse {
@@ -49,14 +42,7 @@ export interface MyRedemptionResponse {
   createdAt: string;
 }
 
-export interface RedemptionsPageResponse {
-  items: MyRedemptionResponse[];
-  page: number;
-  pageSize: number;
-  totalCount: number;
-}
-
-export function fetchMyRedemptions(page: number, pageSize: number): Promise<RedemptionsPageResponse> {
+export function fetchMyRedemptions(page: number, pageSize: number): Promise<PagedResponse<MyRedemptionResponse>> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
-  return apiFetch<RedemptionsPageResponse>(`/redemptions/me?${params.toString()}`);
+  return apiFetch<PagedResponse<MyRedemptionResponse>>(`/redemptions/me?${params.toString()}`);
 }

@@ -1,4 +1,4 @@
-import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
+import { apiFetch, apiFetchVoid, type PagedResponse } from "@/lib/apiClient";
 import type { ReportReason } from "@/lib/reportsApi";
 import type { SpotCategory, SpotChangeRequestType, SpotModerationStatus, SpotSearchResult } from "@/lib/spotsApi";
 import type { UserRole } from "@/lib/userRole";
@@ -22,25 +22,18 @@ export interface AdminReport {
   resolutionAction: ReportResolutionAction | null;
 }
 
-export interface AdminReportsPageResponse {
-  items: AdminReport[];
-  page: number;
-  pageSize: number;
-  totalCount: number;
-}
-
 export function getAdminReports(
   page: number,
   pageSize: number,
   includeResolved: boolean,
   signal?: AbortSignal,
-): Promise<AdminReportsPageResponse> {
+): Promise<PagedResponse<AdminReport>> {
   const params = new URLSearchParams({
     page: String(page),
     pageSize: String(pageSize),
     includeResolved: String(includeResolved),
   });
-  return apiFetch<AdminReportsPageResponse>(`/admin/reports?${params.toString()}`, { signal });
+  return apiFetch<PagedResponse<AdminReport>>(`/admin/reports?${params.toString()}`, { signal });
 }
 
 export function dismissReport(id: string): Promise<void> {
@@ -58,22 +51,15 @@ export interface AdminUser {
   role: UserRole;
 }
 
-export interface AdminUsersPageResponse {
-  items: AdminUser[];
-  page: number;
-  pageSize: number;
-  totalCount: number;
-}
-
 export function getAdminUsers(
   page: number,
   pageSize: number,
   q?: string,
   signal?: AbortSignal,
-): Promise<AdminUsersPageResponse> {
+): Promise<PagedResponse<AdminUser>> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
   if (q) params.set("q", q);
-  return apiFetch<AdminUsersPageResponse>(`/admin/users?${params.toString()}`, { signal });
+  return apiFetch<PagedResponse<AdminUser>>(`/admin/users?${params.toString()}`, { signal });
 }
 
 export type ExternalAuthProvider = "Google" | "Facebook";
@@ -109,13 +95,6 @@ export interface AdminSpot extends SpotSearchResult {
   createdByDisplayName: string;
 }
 
-export interface AdminSpotsPageResponse {
-  items: AdminSpot[];
-  page: number;
-  pageSize: number;
-  totalCount: number;
-}
-
 export type AdminSpotCounts = Record<"pending" | "approved" | "rejected", number>;
 
 export function getAdminSpots(
@@ -123,12 +102,12 @@ export function getAdminSpots(
   pageSize: number,
   filters: { status?: SpotModerationStatus; userId?: string; q?: string },
   signal?: AbortSignal,
-): Promise<AdminSpotsPageResponse> {
+): Promise<PagedResponse<AdminSpot>> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
   if (filters.status) params.set("status", filters.status);
   if (filters.userId) params.set("userId", filters.userId);
   if (filters.q) params.set("q", filters.q);
-  return apiFetch<AdminSpotsPageResponse>(`/admin/spots?${params.toString()}`, { signal });
+  return apiFetch<PagedResponse<AdminSpot>>(`/admin/spots?${params.toString()}`, { signal });
 }
 
 export function getAdminSpotCounts(): Promise<AdminSpotCounts> {
@@ -164,20 +143,15 @@ export interface AdminSpotChangeRequest {
   proposedPhotoUrls: string[] | null;
 }
 
-export interface AdminSpotChangeRequestsPageResponse {
-  items: AdminSpotChangeRequest[];
-  page: number;
-  pageSize: number;
-  totalCount: number;
-}
-
 export function getAdminSpotChangeRequests(
   page: number,
   pageSize: number,
   signal?: AbortSignal,
-): Promise<AdminSpotChangeRequestsPageResponse> {
+): Promise<PagedResponse<AdminSpotChangeRequest>> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
-  return apiFetch<AdminSpotChangeRequestsPageResponse>(`/admin/spot-change-requests?${params.toString()}`, { signal });
+  return apiFetch<PagedResponse<AdminSpotChangeRequest>>(`/admin/spot-change-requests?${params.toString()}`, {
+    signal,
+  });
 }
 
 export function approveSpotChangeRequest(id: string): Promise<void> {

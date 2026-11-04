@@ -1,4 +1,4 @@
-import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
+import { apiFetch, apiFetchVoid, type PagedResponse } from "@/lib/apiClient";
 import type { SpotCategory } from "@/lib/spotsApi";
 
 export interface SavedSpotResponse {
@@ -7,13 +7,6 @@ export interface SavedSpotResponse {
   photoUrl: string;
   category: SpotCategory;
   savedAt: string;
-}
-
-export interface SavedSpotsPageResponse {
-  items: SavedSpotResponse[];
-  page: number;
-  pageSize: number;
-  totalCount: number;
 }
 
 export function saveSpot(spotId: string): Promise<void> {
@@ -28,7 +21,7 @@ export function fetchIsSpotSaved(spotId: string, signal?: AbortSignal): Promise<
   return apiFetch<{ saved: boolean }>(`/spots/${spotId}/saved/me`, { signal }).then((r) => r.saved);
 }
 
-export function fetchMySavedSpots(page: number, pageSize: number): Promise<SavedSpotsPageResponse> {
+export function fetchMySavedSpots(page: number, pageSize: number): Promise<PagedResponse<SavedSpotResponse>> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
-  return apiFetch<SavedSpotsPageResponse>(`/saved-spots/me?${params.toString()}`);
+  return apiFetch<PagedResponse<SavedSpotResponse>>(`/saved-spots/me?${params.toString()}`);
 }

@@ -1,4 +1,4 @@
-import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
+import { apiFetch, apiFetchVoid, type PagedResponse } from "@/lib/apiClient";
 
 export const SPOT_CATEGORIES = [
   "Nature",
@@ -157,27 +157,24 @@ export function getSpot(id: string, signal?: AbortSignal): Promise<SpotResponse>
   return apiFetch<SpotResponse>(`/spots/${id}`, { signal });
 }
 
-export interface SpotSearchPageResponse {
-  items: SpotSearchResult[];
-  page: number;
-  pageSize: number;
-  totalCount: number;
-}
-
 export function searchSpots(
   params: { q?: string; category?: SpotCategory; page?: number; pageSize?: number },
   signal?: AbortSignal,
-): Promise<SpotSearchPageResponse> {
+): Promise<PagedResponse<SpotSearchResult>> {
   const searchParams = new URLSearchParams();
   if (params.q) searchParams.set("q", params.q);
   if (params.category) searchParams.set("category", params.category);
   if (params.page) searchParams.set("page", String(params.page));
   if (params.pageSize) searchParams.set("pageSize", String(params.pageSize));
 
-  return apiFetch<SpotSearchPageResponse>(`/spots/search?${searchParams.toString()}`, { signal });
+  return apiFetch<PagedResponse<SpotSearchResult>>(`/spots/search?${searchParams.toString()}`, { signal });
 }
 
-export function getMySpots(page: number, pageSize: number, signal?: AbortSignal): Promise<SpotSearchPageResponse> {
+export function getMySpots(
+  page: number,
+  pageSize: number,
+  signal?: AbortSignal,
+): Promise<PagedResponse<SpotSearchResult>> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
-  return apiFetch<SpotSearchPageResponse>(`/spots/mine?${params.toString()}`, { signal });
+  return apiFetch<PagedResponse<SpotSearchResult>>(`/spots/mine?${params.toString()}`, { signal });
 }
