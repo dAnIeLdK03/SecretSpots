@@ -138,6 +138,14 @@ async function doFetch(path: string, options: RequestInit = {}, isRetry = false)
   return response;
 }
 
+// Mirrors PagedResponse<T> on the backend: every paged endpoint returns this shape.
+export interface PagedResponse<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+}
+
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const response = await doFetch(path, options);
   return response.json() as Promise<T>;

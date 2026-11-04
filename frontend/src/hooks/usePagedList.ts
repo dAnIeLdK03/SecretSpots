@@ -1,11 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { PagedResponse } from "@/lib/apiClient";
 
-export interface PageOf<T> {
-  items: T[];
-  totalCount: number;
-}
+// The two fields the hook needs; any PagedResponse<T> fits.
+export type PageOf<T> = Pick<PagedResponse<T>, "items" | "totalCount">;
 
 // page is 1-based; signal aborts the request when the list is reloaded or unmounted.
 export type PageFetcher<T> = (page: number, signal: AbortSignal) => Promise<PageOf<T>>;

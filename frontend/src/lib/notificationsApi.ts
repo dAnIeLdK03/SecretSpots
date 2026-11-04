@@ -1,4 +1,4 @@
-import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
+import { apiFetch, apiFetchVoid, type PagedResponse } from "@/lib/apiClient";
 
 export type NotificationType =
   | "CrystalsEarned"
@@ -28,16 +28,9 @@ export interface NotificationResponse {
   createdAt: string;
 }
 
-export interface NotificationsPageResponse {
-  items: NotificationResponse[];
-  page: number;
-  pageSize: number;
-  totalCount: number;
-}
-
-export function fetchNotifications(page: number, pageSize: number): Promise<NotificationsPageResponse> {
+export function fetchNotifications(page: number, pageSize: number): Promise<PagedResponse<NotificationResponse>> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
-  return apiFetch<NotificationsPageResponse>(`/notifications?${params.toString()}`);
+  return apiFetch<PagedResponse<NotificationResponse>>(`/notifications?${params.toString()}`);
 }
 
 export function markNotificationRead(id: string): Promise<NotificationResponse> {

@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/apiClient";
+import { apiFetch, type PagedResponse } from "@/lib/apiClient";
 
 export interface CreateCheckInCommand {
   photoUrl: string;
@@ -31,14 +31,7 @@ export interface MyCheckInResponse {
   createdAt: string;
 }
 
-export interface CheckInsPageResponse {
-  items: MyCheckInResponse[];
-  page: number;
-  pageSize: number;
-  totalCount: number;
-}
-
-export function fetchMyCheckIns(page: number, pageSize: number): Promise<CheckInsPageResponse> {
+export function fetchMyCheckIns(page: number, pageSize: number): Promise<PagedResponse<MyCheckInResponse>> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
-  return apiFetch<CheckInsPageResponse>(`/checkins/me?${params.toString()}`);
+  return apiFetch<PagedResponse<MyCheckInResponse>>(`/checkins/me?${params.toString()}`);
 }

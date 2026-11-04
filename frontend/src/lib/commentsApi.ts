@@ -1,4 +1,4 @@
-import { apiFetch, apiFetchVoid } from "@/lib/apiClient";
+import { apiFetch, apiFetchVoid, type PagedResponse } from "@/lib/apiClient";
 
 export interface CommentResponse {
   id: string;
@@ -10,16 +10,13 @@ export interface CommentResponse {
   updatedAt: string | null;
 }
 
-export interface CommentsPageResponse {
-  items: CommentResponse[];
-  page: number;
-  pageSize: number;
-  totalCount: number;
-}
-
-export function fetchSpotComments(spotId: string, page: number, pageSize: number): Promise<CommentsPageResponse> {
+export function fetchSpotComments(
+  spotId: string,
+  page: number,
+  pageSize: number,
+): Promise<PagedResponse<CommentResponse>> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
-  return apiFetch<CommentsPageResponse>(`/spots/${spotId}/comments?${params.toString()}`);
+  return apiFetch<PagedResponse<CommentResponse>>(`/spots/${spotId}/comments?${params.toString()}`);
 }
 
 export function createComment(spotId: string, text: string): Promise<CommentResponse> {
