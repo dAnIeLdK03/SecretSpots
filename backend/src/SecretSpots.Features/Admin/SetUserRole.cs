@@ -84,26 +84,19 @@ public static class SetUserRole
 
             // Only the security contact is notified here, not the promoted user — the point is to
             // alert the project owner to a promotion they might not have made themselves, not to
-            // announce it to the account being promoted. Best-effort: the role change above is
-            // already committed, so a flaky email provider must not turn this into a 500.
+            // announce it to the account being promoted. Only queued, so the provider being down
+            // can't fail the (already committed) role change.
             if (wasPromotedToAdmin)
             {
-                try
-                {
-                    await emailSender.SendAsync(
-                        adminSecurityOptions.Value.SecurityContactEmail,
-                        localizer[AdminMessageKeys.RolePromotedToAdminEmailSubject].Value,
-                        string.Format(
-                            localizer[AdminMessageKeys.RolePromotedToAdminEmailBody].Value,
-                            user.Email,
-                            user.Id,
-                            userContext.UserId),
-                        cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogWarning(ex, AdminLogMessages.RolePromotionEmailSendFailed, user.Id);
-                }
+                await emailSender.SendAsync(
+                    adminSecurityOptions.Value.SecurityContactEmail,
+                    localizer[AdminMessageKeys.RolePromotedToAdminEmailSubject].Value,
+                    string.Format(
+                        localizer[AdminMessageKeys.RolePromotedToAdminEmailBody].Value,
+                        user.Email,
+                        user.Id,
+                        userContext.UserId),
+                    cancellationToken);
             }
 
             return Result<AdminUserResponse>.Success(new AdminUserResponse(user.Id, user.Email, user.DisplayName, user.Role));

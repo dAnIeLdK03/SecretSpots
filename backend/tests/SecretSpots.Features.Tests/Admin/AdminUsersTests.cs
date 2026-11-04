@@ -72,20 +72,6 @@ public class AdminUsersTests
     }
 
     [Fact]
-    public async Task A_failing_email_provider_does_not_undo_the_role_change()
-    {
-        await using var db = TestDbContextFactory.Create();
-        var user = await TestUserFactory.SeedAsync(db);
-
-        var result = await CreateSetRoleHandler(db, Guid.NewGuid(), new ThrowingEmailSender()).Handle(
-            new SetUserRole.Command(user.Id, UserRole.Admin), CancellationToken.None);
-
-        Assert.True(result.IsSuccess);
-        db.ChangeTracker.Clear();
-        Assert.Equal(UserRole.Admin, (await db.Users.SingleAsync(u => u.Id == user.Id)).Role);
-    }
-
-    [Fact]
     public async Task Admins_cannot_change_their_own_role()
     {
         await using var db = TestDbContextFactory.Create();
@@ -175,11 +161,5 @@ public class AdminUsersTests
             .Handle(new GetAdminUser.Query(Guid.NewGuid()), CancellationToken.None);
 
         Assert.Equal(AdminMessageKeys.UserNotFound, result.Error.Code);
-    }
-
-    private sealed class ThrowingEmailSender : IEmailSender
-    {
-        public Task SendAsync(string toEmail, string subject, string htmlBody, CancellationToken cancellationToken) =>
-            throw new InvalidOperationException("SMTP is down");
     }
 }

@@ -10,7 +10,7 @@ public interface ITestEmailInbox
     SentEmail? GetLatest(string toEmail);
 }
 
-// Development-only stand-in for the real email provider — see InMemoryEmailSender. Lets e2e
+// Development-only stand-in for the real email provider — see InMemoryEmailTransport. Lets e2e
 // tests read back what would have been sent (e.g. a password-reset link) without ever calling
 // Resend, which needs a real API key neither the local dev environment nor CI has configured.
 public class TestEmailInbox : ITestEmailInbox

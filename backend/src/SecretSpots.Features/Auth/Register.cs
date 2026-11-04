@@ -104,9 +104,9 @@ public static class Register
 
             logger.LogInformation(AuthLogMessages.UserRegistered, user.Id, user.Email);
 
-            // Best-effort — the account and tokens are already committed at this point, so a
-            // flaky email provider must not turn into a 500 on an otherwise-successful
-            // registration. The user can always ask for a resend once logged in.
+            // Best-effort — the account and tokens are already committed at this point, so failing
+            // to store the verification token must not turn into a 500 on an otherwise-successful
+            // registration (the email itself is only queued). The user can ask for a resend.
             try
             {
                 await EmailVerificationSender.SendAsync(db, emailSender, emailVerificationOptions, localizer, timeProvider, user, cancellationToken);

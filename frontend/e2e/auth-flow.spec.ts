@@ -90,11 +90,21 @@ test("forgot password lets a user set a new password and log in with it", async 
   await page.getByRole("button", { name: "Изпрати връзка" }).click();
   await expect(page.getByText("Ако имейлът съществува в системата")).toBeVisible();
 
-  // InMemoryEmailSender (Development-only, see Program.cs) captured the email instead of
-  // calling the real Resend API — read it back to pull out the reset link's token.
-  const emailResponse = await request.get(`${API_BASE_URL}/internal/test/emails?to=${encodeURIComponent(email)}`);
-  expect(emailResponse.ok()).toBe(true);
-  const { htmlBody } = (await emailResponse.json()) as { htmlBody: string };
+  // InMemoryEmailTransport (Development-only, see Program.cs) captured the email instead of
+  // calling the real Resend API — read it back to pull out the reset link's token. Emails go out
+  // from a background queue, so it may land a moment after the request returned: poll for it.
+  let htmlBody = "";
+  await expect
+    .poll(
+      async () => {
+        const emailResponse = await request.get(`${API_BASE_URL}/internal/test/emails?to=${encodeURIComponent(email)}`);
+        if (!emailResponse.ok()) return false;
+        ({ htmlBody } = (await emailResponse.json()) as { htmlBody: string });
+        return true;
+      },
+      { timeout: 5000 },
+    )
+    .toBe(true);
   const token = new URL(htmlBody.match(/href="([^"]+)"/)?.[1] ?? "").searchParams.get("token");
   expect(token).toBeTruthy();
 
