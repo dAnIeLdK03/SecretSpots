@@ -5,9 +5,9 @@ using SecretSpots.Features.Common.Configuration;
 
 namespace SecretSpots.Features.Common.Email;
 
-public class ResendEmailSender(HttpClient httpClient, IOptions<ResendOptions> options) : IEmailSender
+public class ResendEmailTransport(HttpClient httpClient, IOptions<ResendOptions> options) : IEmailTransport
 {
-    public async Task SendAsync(string toEmail, string subject, string htmlBody, CancellationToken cancellationToken)
+    public async Task SendAsync(EmailMessage message, CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "https://api.resend.com/emails")
         {
@@ -15,9 +15,9 @@ public class ResendEmailSender(HttpClient httpClient, IOptions<ResendOptions> op
             Content = JsonContent.Create(new
             {
                 from = options.Value.FromEmail,
-                to = new[] { toEmail },
-                subject,
-                html = htmlBody,
+                to = new[] { message.ToEmail },
+                subject = message.Subject,
+                html = message.HtmlBody,
             }),
         };
 

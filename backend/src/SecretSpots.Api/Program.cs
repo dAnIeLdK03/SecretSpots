@@ -192,13 +192,19 @@ builder.Services.AddHttpClient<FacebookAuthProvider>();
 builder.Services.AddScoped<IExternalAuthProvider>(sp => sp.GetRequiredService<GoogleAuthProvider>());
 builder.Services.AddScoped<IExternalAuthProvider>(sp => sp.GetRequiredService<FacebookAuthProvider>());
 
+// Handlers only queue emails (IEmailSender = EmailQueue); EmailDispatchService delivers them in the
+// background through IEmailTransport, so no request waits on the email provider.
+builder.Services.AddSingleton<EmailQueue>();
+builder.Services.AddSingleton<IEmailSender>(sp => sp.GetRequiredService<EmailQueue>());
+builder.Services.AddHostedService<EmailDispatchService>();
+
 // In Development (local dev machines and the CI e2e job), no Resend API key is configured
 // anywhere, so forgot-password would otherwise fail outright. Capturing sent emails in memory
 // instead also lets e2e tests read back a password-reset link via /internal/test/emails below.
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddSingleton<ITestEmailInbox, TestEmailInbox>();
-    builder.Services.AddSingleton<IEmailSender, InMemoryEmailSender>();
+    builder.Services.AddSingleton<IEmailTransport, InMemoryEmailTransport>();
 
     // Fills an empty local database with sample users/spots/activity on startup (see
     // SampleDataSeeder). Never registered outside Development; SampleData:Enabled=false opts out.
@@ -207,7 +213,7 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    builder.Services.AddHttpClient<IEmailSender, ResendEmailSender>();
+    builder.Services.AddHttpClient<IEmailTransport, ResendEmailTransport>();
 }
 
 // Kestrel's own default MaxRequestBodySize (~28.6MB) is looser than our actual photo size
@@ -503,7 +509,7 @@ app.MapAdminUsersEndpoints();
 app.MapAdminSpotsEndpoints();
 app.MapAdminSpotChangeRequestsEndpoints();
 
-// Lets e2e tests read back what InMemoryEmailSender captured (see registration above) instead of
+// Lets e2e tests read back what InMemoryEmailTransport captured (see registration above) instead of
 // needing a real inbox — e.g. to pull the token out of a password-reset link. Gated on
 // IsDevelopment() the same way Swagger is above, so it can never exist in Production.
 if (app.Environment.IsDevelopment())
