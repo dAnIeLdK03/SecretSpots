@@ -510,5 +510,17 @@
     "empty": "You haven't added any spots yet.",
     "emptyAddLink": "Add one on the map",
     "unknownError": "Couldn't load your spots. Please try again."
+  },
+  "AdminSpotCheckIns": {
+    "title": "Visit photos",
+    "hint": "Photos visitors took at their check-in. Add the good ones to the spot; the visitor is told.",
+    "loading": "Loading...",
+    "empty": "No visits yet.",
+    "addButton": "Add to spot",
+    "onSpotBadge": "On the spot",
+    "spotFull": "This spot already has {max} photos. Remove one through an edit first.",
+    "toastAdded": "Photo added to the spot",
+    "unknownError": "Something went wrong. Please try again.",
+    "photoAlt": "Visit photo by {name}"
   }
 }

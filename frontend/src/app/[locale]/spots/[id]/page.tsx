@@ -28,6 +28,8 @@ import { ErrorMessage } from "@/components/ErrorMessage";
 import { StatusMessage } from "@/components/StatusMessage";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useToast } from "@/hooks/useToast";
+import { AdminSpotCheckInPhotos } from "@/components/AdminSpotCheckInPhotos";
+import { UserRole } from "@/lib/userRole";
 
 type LoadState =
   | { status: "loading" }
@@ -345,6 +347,16 @@ function SpotDetailContent({ id }: { id: string }) {
           onRated={(stats) => setState({ status: "success", spot: { ...spot, ...stats } })}
         />
       )}
+
+      {user?.role === UserRole.Admin ? (
+        <AdminSpotCheckInPhotos
+          spotId={spot.id}
+          photoCount={spot.photoUrls.length}
+          onPhotoAdded={(photoUrl) =>
+            setState({ status: "success", spot: { ...spot, photoUrls: [...spot.photoUrls, photoUrl] } })
+          }
+        />
+      ) : null}
 
       <CommentsSection spotId={spot.id} />
 

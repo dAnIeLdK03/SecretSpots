@@ -161,3 +161,27 @@ export function approveSpotChangeRequest(id: string): Promise<void> {
 export function rejectSpotChangeRequest(id: string, reason: string): Promise<void> {
   return apiFetchVoid(`/admin/spot-change-requests/${id}/reject`, { method: "POST", body: JSON.stringify({ reason }) });
 }
+
+// A visit's proof photo at one spot; isOnSpot = already one of the spot's own photos.
+export interface AdminSpotCheckIn {
+  id: string;
+  userId: string;
+  userDisplayName: string;
+  photoUrl: string;
+  createdAt: string;
+  isOnSpot: boolean;
+}
+
+export function getAdminSpotCheckIns(
+  spotId: string,
+  page: number,
+  pageSize: number,
+  signal?: AbortSignal,
+): Promise<PagedResponse<AdminSpotCheckIn>> {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  return apiFetch<PagedResponse<AdminSpotCheckIn>>(`/admin/spots/${spotId}/check-ins?${params.toString()}`, { signal });
+}
+
+export function addCheckInPhotoToSpot(checkInId: string): Promise<void> {
+  return apiFetchVoid(`/admin/check-ins/${checkInId}/add-photo-to-spot`, { method: "POST" });
+}

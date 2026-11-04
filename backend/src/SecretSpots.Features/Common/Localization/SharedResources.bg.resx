@@ -408,4 +408,13 @@
   <data name="Notifications.SpotDeletionRejectedMessage" xml:space="preserve">
     <value>Заявката ти за изтриване на „{0}“ е отхвърлена. Отвори мястото, за да видиш защо.</value>
   </data>
+  <data name="Admin.CheckInNotFound" xml:space="preserve">
+    <value>Това посещение вече не съществува.</value>
+  </data>
+  <data name="Admin.SpotPhotoLimitReached" xml:space="preserve">
+    <value>Мястото вече има максималния брой снимки. Първо махни някоя.</value>
+  </data>
+  <data name="Notifications.CheckInPhotoAddedToSpotMessage" xml:space="preserve">
+    <value>Снимката от посещението ти е добавена към „{0}“.</value>
+  </data>
 </root>

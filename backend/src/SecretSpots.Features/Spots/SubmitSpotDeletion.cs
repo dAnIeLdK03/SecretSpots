@@ -39,7 +39,7 @@ public static class SubmitSpotDeletion
                 db, spot, userContext.UserId, SpotChangeRequestType.Deletion, _ => { }, cancellationToken);
 
             await SpotPhotoCleanup.DeleteUnusedAsync(
-                photoStorage, replacedPhotoUrls, spot.PhotoUrls, spot.Id, logger, cancellationToken);
+                db, photoStorage, replacedPhotoUrls, spot.PhotoUrls, spot.Id, logger, cancellationToken);
 
             logger.LogInformation(SpotsLogMessages.SpotDeletionRequested, spot.Id, userContext.UserId);
 

@@ -40,6 +40,20 @@ public static class AdminSpotsEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
+        group.MapGet("/{id:guid}/check-ins", async (
+                Guid id, int? page, int? pageSize, IOptions<AdminSpotsOptions> adminSpotsOptions,
+                ISender sender, CancellationToken cancellationToken) =>
+            {
+                var (resolvedPage, resolvedPageSize) = adminSpotsOptions.Value.ResolvePaging(page, pageSize);
+                var result = await sender.Send(new GetAdminSpotCheckIns.Query(id, resolvedPage, resolvedPageSize), cancellationToken);
+                return result.ToOkOrProblem();
+            })
+            .Produces<PagedResponse<AdminSpotCheckInResponse>>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         group.MapPost("/{id:guid}/approve", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
             {
                 var result = await sender.Send(new ApproveSpot.Command(id), cancellationToken);
@@ -59,6 +73,21 @@ public static class AdminSpotsEndpoints
             })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        // Keyed by the check-in, not the spot: the check-in already says which spot it belongs to.
+        app.MapPost("/admin/check-ins/{id:guid}/add-photo-to-spot", async (
+                Guid id, ISender sender, CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(new AddCheckInPhotoToSpot.Command(id), cancellationToken);
+                return result.IsSuccess ? Results.NoContent() : result.ToProblem();
+            })
+            .WithTags("Admin")
+            .RequireAuthorization(AuthorizationPolicies.Admin)
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);

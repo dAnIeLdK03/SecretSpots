@@ -33,7 +33,7 @@ public static class SubmitSpotEdit
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator(IStringLocalizer<SharedResources> localizer, IOptions<R2Options> r2Options, IUserContext userContext)
+        public Validator(IStringLocalizer<SharedResources> localizer)
         {
             RuleFor(c => c.Name)
                 .NotEmpty().WithMessage(localizer[SpotsMessageKeys.NameRequired].Value)
@@ -47,8 +47,9 @@ public static class SubmitSpotEdit
                 .NotEmpty().WithMessage(localizer[SpotsMessageKeys.PhotoUrlRequired].Value)
                 .Must(urls => urls.Count <= CreateSpot.MaxPhotoCount).WithMessage(localizer[SpotsMessageKeys.PhotoUrlsTooMany].Value);
 
+            // Format only here; whose photo it may be depends on the spot (see Handler).
             RuleForEach(c => c.PhotoUrls)
-                .Must(url => UrlValidation.IsOwnPhotoUrl(url, r2Options.Value.PublicBaseUrl, userContext.UserId))
+                .Must(UrlValidation.IsHttpUrl)
                 .WithMessage(localizer[SpotsMessageKeys.PhotoUrlInvalid].Value);
 
             RuleFor(c => c.Category)
@@ -60,6 +61,7 @@ public static class SubmitSpotEdit
         IAppDbContext db,
         IUserContext userContext,
         IPhotoStorage photoStorage,
+        IOptions<R2Options> r2Options,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<SpotChangeRequestResponse>>
@@ -73,6 +75,17 @@ public static class SubmitSpotEdit
             }
 
             var spot = owned.Value;
+
+            // Each photo must be the creator's own upload (see UrlValidation.IsOwnPhotoUrl) or already
+            // on the spot — an admin may have added a visitor's check-in photo, which the creator can
+            // keep or drop but not otherwise bring in.
+            var hasForeignPhoto = command.PhotoUrls.Any(url =>
+                !spot.PhotoUrls.Contains(url)
+                && !UrlValidation.IsOwnPhotoUrl(url, r2Options.Value.PublicBaseUrl, userContext.UserId));
+            if (hasForeignPhoto)
+            {
+                return Result<SpotChangeRequestResponse>.Failure(Error.BadRequest(SpotsMessageKeys.PhotoUrlInvalid, localizer));
+            }
 
             var name = command.Name.Trim();
             var description = command.Description.Trim();
@@ -101,7 +114,7 @@ public static class SubmitSpotEdit
                 cancellationToken);
 
             await SpotPhotoCleanup.DeleteUnusedAsync(
-                photoStorage, replacedPhotoUrls, spot.PhotoUrls.Concat(photoUrls), spot.Id, logger, cancellationToken);
+                db, photoStorage, replacedPhotoUrls, spot.PhotoUrls.Concat(photoUrls), spot.Id, logger, cancellationToken);
 
             logger.LogInformation(SpotsLogMessages.SpotEditRequested, spot.Id, userContext.UserId);
 

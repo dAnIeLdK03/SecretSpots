@@ -13,4 +13,6 @@ public static class AdminMessageKeys
     public const string CannotChangeOwnRole = "Admin.CannotChangeOwnRole";
     public const string RolePromotedToAdminEmailSubject = "Admin.RolePromotedToAdminEmailSubject";
     public const string RolePromotedToAdminEmailBody = "Admin.RolePromotedToAdminEmailBody";
+    public const string CheckInNotFound = "Admin.CheckInNotFound";
+    public const string SpotPhotoLimitReached = "Admin.SpotPhotoLimitReached";
 }

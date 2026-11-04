@@ -15,7 +15,7 @@ public class SubmitSpotEditValidatorTests
     private static readonly Guid ValidatorUserId = Guid.NewGuid();
 
     private readonly SubmitSpotEdit.Validator _validator =
-        new(TestLocalizerFactory.Create(), TestOptionsFactory.R2(), new FakeUserContext(ValidatorUserId));
+        new(TestLocalizerFactory.Create());
 
     private static readonly string ValidPhotoUrl = $"{TestOptionsFactory.PhotoPublicBaseUrl}/{ValidatorUserId}/a.jpg";
 
@@ -39,21 +39,10 @@ public class SubmitSpotEditValidatorTests
     [InlineData("")]
     [InlineData("not-a-url")]
     [InlineData("ftp://example.com/a.jpg")]
-    [InlineData("https://example.com/a.jpg")] // valid http(s) URL, but not this app's own photo storage
     public void PhotoUrl_is_invalid(string photoUrl)
     {
         var result = _validator.TestValidate(
             new SubmitSpotEdit.Command(Guid.NewGuid(), "Name", "Desc", SpotCategory.Nature, [photoUrl]));
-        result.ShouldHaveValidationErrorFor(c => c.PhotoUrls);
-    }
-
-    [Fact]
-    public void PhotoUrl_belonging_to_a_different_user_is_invalid()
-    {
-        var someoneElsesPhotoUrl = $"{TestOptionsFactory.PhotoPublicBaseUrl}/{Guid.NewGuid()}/a.jpg";
-
-        var result = _validator.TestValidate(
-            new SubmitSpotEdit.Command(Guid.NewGuid(), "Name", "Desc", SpotCategory.Nature, [someoneElsesPhotoUrl]));
         result.ShouldHaveValidationErrorFor(c => c.PhotoUrls);
     }
 
@@ -88,7 +77,11 @@ public class SubmitSpotEditHandlerTests
     }
 
     private static SubmitSpotEdit.Handler CreateHandler(IAppDbContext db, Guid userId, FakePhotoStorage? photoStorage = null) =>
-        new(db, new FakeUserContext(userId), photoStorage ?? new FakePhotoStorage(), TestLocalizerFactory.Create(), NullLogger<SubmitSpotEdit.Handler>.Instance);
+        new(db, new FakeUserContext(userId), photoStorage ?? new FakePhotoStorage(), TestOptionsFactory.R2(),
+            TestLocalizerFactory.Create(), NullLogger<SubmitSpotEdit.Handler>.Instance);
+
+    // A photo the given user uploaded (UploadPhoto stores every object under "{userId}/...").
+    private static string UploadBy(Guid userId, string name) => $"{TestOptionsFactory.PhotoPublicBaseUrl}/{userId}/{name}";
 
     [Fact]
     public async Task Creator_submits_a_pending_edit_without_changing_the_spot()
@@ -100,7 +93,7 @@ public class SubmitSpotEditHandlerTests
 
         var handler = CreateHandler(db, creatorId, photoStorage);
         var result = await handler.Handle(
-            new SubmitSpotEdit.Command(spot.Id, "New name", "New description", SpotCategory.Viewpoint, ["https://example.com/new.jpg"]),
+            new SubmitSpotEdit.Command(spot.Id, "New name", "New description", SpotCategory.Viewpoint, [UploadBy(creatorId, "new.jpg")]),
             CancellationToken.None);
 
         Assert.True(result.IsSuccess);
@@ -125,7 +118,7 @@ public class SubmitSpotEditHandlerTests
         var handler = CreateHandler(db, creatorId, photoStorage);
 
         await handler.Handle(
-            new SubmitSpotEdit.Command(spot.Id, "First", "Desc", SpotCategory.Nature, ["https://example.com/first.jpg"]),
+            new SubmitSpotEdit.Command(spot.Id, "First", "Desc", SpotCategory.Nature, [UploadBy(creatorId, "first.jpg")]),
             CancellationToken.None);
         var result = await handler.Handle(
             new SubmitSpotEdit.Command(spot.Id, "Second", "Desc", SpotCategory.Nature, ["https://example.com/original.jpg"]),
@@ -134,7 +127,7 @@ public class SubmitSpotEditHandlerTests
         Assert.True(result.IsSuccess);
         Assert.Equal(1, await db.SpotChangeRequests.CountAsync(r => r.SpotId == spot.Id));
         Assert.Equal("Second", (await db.SpotChangeRequests.SingleAsync(r => r.SpotId == spot.Id)).ProposedName);
-        Assert.Equal(["https://example.com/first.jpg"], photoStorage.DeletedUrls);
+        Assert.Equal([UploadBy(creatorId, "first.jpg")], photoStorage.DeletedUrls);
     }
 
     [Fact]
@@ -184,5 +177,38 @@ public class SubmitSpotEditHandlerTests
         Assert.False(result.IsSuccess);
         Assert.Equal(SpotsMessageKeys.NotYourSpot, result.Error.Code);
         Assert.Equal(StatusCodes.Status403Forbidden, result.Error.StatusCode);
+    }
+
+    [Fact]
+    public async Task Someone_elses_photo_that_is_not_on_the_spot_is_rejected()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var creatorId = Guid.NewGuid();
+        var spot = await SeedAsync(db, creatorId);
+
+        var result = await CreateHandler(db, creatorId).Handle(
+            new SubmitSpotEdit.Command(spot.Id, "Name", "Desc", SpotCategory.Nature, [UploadBy(Guid.NewGuid(), "theirs.jpg")]),
+            CancellationToken.None);
+
+        Assert.Equal(SpotsMessageKeys.PhotoUrlInvalid, result.Error.Code);
+        Assert.False(await db.SpotChangeRequests.AnyAsync(r => r.SpotId == spot.Id));
+    }
+
+    [Fact]
+    public async Task A_visitors_photo_already_on_the_spot_can_be_kept_alongside_new_uploads()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var creatorId = Guid.NewGuid();
+        var spot = await SeedAsync(db, creatorId);
+        var visitorsPhoto = UploadBy(Guid.NewGuid(), "checkin.jpg");
+        spot.PhotoUrls = [.. spot.PhotoUrls, visitorsPhoto];
+        await db.SaveChangesAsync();
+
+        var result = await CreateHandler(db, creatorId).Handle(
+            new SubmitSpotEdit.Command(spot.Id, "Renamed", "Desc", SpotCategory.Nature, [visitorsPhoto, UploadBy(creatorId, "mine.jpg")]),
+            CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal([visitorsPhoto, UploadBy(creatorId, "mine.jpg")], result.Value.ProposedPhotoUrls);
     }
 }
