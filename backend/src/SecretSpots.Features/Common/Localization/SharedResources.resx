@@ -408,4 +408,13 @@
   <data name="Notifications.SpotDeletionRejectedMessage" xml:space="preserve">
     <value>Your request to delete "{0}" was rejected. Open the spot to see why.</value>
   </data>
+  <data name="Admin.CheckInNotFound" xml:space="preserve">
+    <value>This check-in no longer exists.</value>
+  </data>
+  <data name="Admin.SpotPhotoLimitReached" xml:space="preserve">
+    <value>This spot already has the maximum number of photos. Remove one first.</value>
+  </data>
+  <data name="Notifications.CheckInPhotoAddedToSpotMessage" xml:space="preserve">
+    <value>Your check-in photo was added to "{0}".</value>
+  </data>
 </root>

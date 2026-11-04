@@ -17,7 +17,8 @@ export type NotificationType =
   | "SpotEditApproved"
   | "SpotEditRejected"
   | "SpotDeletionApproved"
-  | "SpotDeletionRejected";
+  | "SpotDeletionRejected"
+  | "CheckInPhotoAddedToSpot";
 
 export interface NotificationResponse {
   id: string;

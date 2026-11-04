@@ -1,7 +1,8 @@
 namespace SecretSpots.Features.Tests.TestSupport;
 
-// The cleanup services delete/soft-delete rows across the whole table, not just rows a test made —
-// run alone so they can't remove tokens or spots another test class is still working with.
+// Tests that touch or measure whole tables rather than just their own rows: the cleanup services
+// delete/soft-delete across the table, and the admin spot counts read it. Run alone so they can't
+// remove rows another test class is using, or see counts move under them.
 [CollectionDefinition(Name, DisableParallelization = true)]
 public class SharedDatabaseCleanupCollection
 {

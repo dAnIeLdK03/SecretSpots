@@ -10,4 +10,5 @@ internal static class AdminLogMessages
     public const string SpotChangeRequestApproved = "Change request {RequestId} ({Type}) for spot {SpotId} approved by admin {AdminUserId}.";
     public const string SpotChangeRequestRejected = "Change request {RequestId} ({Type}) for spot {SpotId} rejected by admin {AdminUserId}.";
     public const string SpotRejected = "Spot {SpotId} rejected by admin {AdminUserId}.";
+    public const string CheckInPhotoAddedToSpot = "Photo of check-in {CheckInId} added to spot {SpotId} by admin {AdminUserId}.";
 }

@@ -24,4 +24,5 @@ public static class NotificationsMessageKeys
     public const string NotFound = "Notifications.NotFound";
     public const string PageOutOfRange = "Notifications.PageOutOfRange";
     public const string PageSizeOutOfRange = "Notifications.PageSizeOutOfRange";
+    public const string CheckInPhotoAddedToSpotMessage = "Notifications.CheckInPhotoAddedToSpotMessage";
 }

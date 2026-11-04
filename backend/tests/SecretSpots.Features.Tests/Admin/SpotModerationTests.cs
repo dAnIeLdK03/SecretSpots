@@ -174,20 +174,25 @@ public class SpotModerationTests
         Assert.Equal(2, byCreatorName.TotalCount);
         Assert.All(byCreator.Items, s => Assert.Equal(creator.DisplayName, s.CreatedByDisplayName));
     }
+}
 
+// Spot counts are global, so this can't run beside tests that approve, delete or soft-delete spots
+// (e.g. an approved deletion request removing a pending spot between the two readings).
+[Collection(SharedDatabaseCleanupCollection.Name)]
+public class SpotCountTests
+{
     [Fact]
-    public async Task Admin_spot_counts_go_up_by_status()
+    public async Task Admin_spot_counts_go_up_by_one_per_status()
     {
         await using var db = TestDbContextFactory.Create();
         var handler = new GetAdminSpotCounts.Handler(db);
-        // Other test classes add spots in parallel, so only assert a lower bound on the delta.
         var before = await handler.Handle(new GetAdminSpotCounts.Query(), CancellationToken.None);
         await TestSpotFactory.SeedAsync(db, status: SpotModerationStatus.Pending);
         await TestSpotFactory.SeedAsync(db, status: SpotModerationStatus.Rejected);
 
         var after = await handler.Handle(new GetAdminSpotCounts.Query(), CancellationToken.None);
 
-        Assert.True(after.Pending >= before.Pending + 1);
-        Assert.True(after.Rejected >= before.Rejected + 1);
+        Assert.Equal(before.Pending + 1, after.Pending);
+        Assert.Equal(before.Rejected + 1, after.Rejected);
     }
 }

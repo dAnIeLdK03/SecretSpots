@@ -1,5 +1,8 @@
 import { apiFetch, apiFetchVoid, type PagedResponse } from "@/lib/apiClient";
 
+// Mirrors CreateSpot.MaxPhotoCount on the backend.
+export const MAX_SPOT_PHOTOS = 5;
+
 export const SPOT_CATEGORIES = [
   "Nature",
   "Viewpoint",

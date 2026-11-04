@@ -4,6 +4,7 @@ import { useId, useState } from "react";
 import type { ChangeEvent } from "react";
 import { useTranslations } from "next-intl";
 import { uploadPhoto } from "@/lib/photosApi";
+import { MAX_SPOT_PHOTOS } from "@/lib/spotsApi";
 
 interface MultiPhotoUploadProps {
   label: string;
@@ -16,7 +17,13 @@ interface MultiPhotoUploadProps {
   dark?: boolean;
 }
 
-export function MultiPhotoUpload({ label, photoUrls, onChange, maxCount = 5, dark = false }: MultiPhotoUploadProps) {
+export function MultiPhotoUpload({
+  label,
+  photoUrls,
+  onChange,
+  maxCount = MAX_SPOT_PHOTOS,
+  dark = false,
+}: MultiPhotoUploadProps) {
   const t = useTranslations("PhotoUpload");
   const inputId = useId();
   const [uploading, setUploading] = useState(false);
