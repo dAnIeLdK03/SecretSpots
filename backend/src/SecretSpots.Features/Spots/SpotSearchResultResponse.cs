@@ -14,7 +14,9 @@ public record SpotSearchResultResponse(
     DateTimeOffset CreatedAt,
     SpotModerationStatus ModerationStatus,
     string? RejectionReason,
-    DateTimeOffset? ScheduledDeletionAt)
+    DateTimeOffset? ScheduledDeletionAt,
+    double AverageRating,
+    int RatingsCount)
 {
     // Only callable on a materialized Spot — PhotoUrls[0] and Location.Y/.X can't be translated
     // to SQL by the Npgsql provider, so every caller projects in memory.
@@ -30,5 +32,7 @@ public record SpotSearchResultResponse(
         spot.CreatedAt,
         spot.ModerationStatus,
         spot.RejectionReason,
-        spot.ScheduledDeletionAt);
+        spot.ScheduledDeletionAt,
+        spot.AverageRating,
+        spot.RatingsCount);
 }

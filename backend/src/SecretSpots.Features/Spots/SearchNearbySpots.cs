@@ -75,7 +75,10 @@ public static class SearchNearbySpots
                     x.Spot.Location.X,
                     x.Spot.CreatedByUserId,
                     x.Spot.CreatedAt,
-                    x.DistanceMeters / 1000),
+                    x.DistanceMeters / 1000,
+                    x.Spot.ModerationStatus,
+                    x.Spot.AverageRating,
+                    x.Spot.RatingsCount),
                     cancellationToken);
 
             return new NearbySpotsResponse(result.Items, result.TotalCount);
