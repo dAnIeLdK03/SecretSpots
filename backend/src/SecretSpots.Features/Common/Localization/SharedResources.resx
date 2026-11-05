@@ -417,4 +417,7 @@
   <data name="Notifications.CheckInPhotoAddedToSpotMessage" xml:space="preserve">
     <value>Your check-in photo was added to "{0}".</value>
   </data>
+  <data name="Notifications.RejectedSpotDeletedMessage" xml:space="preserve">
+    <value>Your rejected spot "{0}" was deleted: the time to fix it has run out.</value>
+  </data>
 </root>
