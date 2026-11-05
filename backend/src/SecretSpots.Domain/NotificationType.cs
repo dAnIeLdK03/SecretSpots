@@ -22,4 +22,5 @@ public enum NotificationType
     SpotDeletionApproved,
     SpotDeletionRejected,
     CheckInPhotoAddedToSpot,
+    RejectedSpotDeleted,
 }

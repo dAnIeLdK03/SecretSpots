@@ -25,6 +25,7 @@ const TYPE_ICONS: Record<NotificationType, string> = {
   SpotDeletionApproved: "🗑️",
   SpotDeletionRejected: "❌",
   CheckInPhotoAddedToSpot: "📸",
+  RejectedSpotDeleted: "🗑️",
 };
 
 // Admin notifications open the queue they belong to rather than the spot itself.

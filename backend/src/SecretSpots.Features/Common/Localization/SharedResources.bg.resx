@@ -417,4 +417,7 @@
   <data name="Notifications.CheckInPhotoAddedToSpotMessage" xml:space="preserve">
     <value>Снимката от посещението ти е добавена към „{0}“.</value>
   </data>
+  <data name="Notifications.RejectedSpotDeletedMessage" xml:space="preserve">
+    <value>Отхвърленото ти място „{0}“ беше изтрито: срокът за корекция изтече.</value>
+  </data>
 </root>

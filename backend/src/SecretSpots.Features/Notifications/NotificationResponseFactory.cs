@@ -37,6 +37,7 @@ internal static class NotificationResponseFactory
             NotificationType.SpotDeletionApproved => SpotMessage(NotificationsMessageKeys.SpotDeletionApprovedMessage),
             NotificationType.SpotDeletionRejected => SpotMessage(NotificationsMessageKeys.SpotDeletionRejectedMessage),
             NotificationType.CheckInPhotoAddedToSpot => SpotMessage(NotificationsMessageKeys.CheckInPhotoAddedToSpotMessage),
+            NotificationType.RejectedSpotDeleted => SpotMessage(NotificationsMessageKeys.RejectedSpotDeletedMessage),
             _ => throw new ArgumentOutOfRangeException(nameof(notification), notification.Type, null),
         };
 

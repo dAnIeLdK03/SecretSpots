@@ -43,7 +43,15 @@ public class CleanupServicesTests
         Assert.Null(remaining[stillInGrace.Id]);
         Assert.Null(remaining[approvedWithStaleDeadline.Id]);
         Assert.False(await db.Spots.AnyAsync(s => s.Id == expired.Id));
+        Assert.Equal([expired.CreatedByUserId], await DeletedNotificationOwnersAsync(
+            db, expired.CreatedByUserId, stillInGrace.CreatedByUserId, approvedWithStaleDeadline.CreatedByUserId));
     }
+
+    private static Task<List<Guid>> DeletedNotificationOwnersAsync(IAppDbContext db, params Guid[] userIds) =>
+        db.Notifications
+            .Where(n => userIds.Contains(n.UserId) && n.Type == NotificationType.RejectedSpotDeleted)
+            .Select(n => n.UserId)
+            .ToListAsync();
 
     [Fact]
     public async Task A_rejected_spot_survives_its_grace_period_and_is_soft_deleted_after_it()
@@ -63,13 +71,45 @@ public class CleanupServicesTests
         await cleanup.RunOnceAsync();
         db.ChangeTracker.Clear();
         var stillThere = await db.Spots.AnyAsync(s => s.Id == spot.Id);
+        var notifiedEarly = (await DeletedNotificationOwnersAsync(db, spot.CreatedByUserId)).Count;
         time.Advance(TimeSpan.FromHours(2));
+        await cleanup.RunOnceAsync();
+        // A later run finds nothing left to delete, so it doesn't notify again.
         await cleanup.RunOnceAsync();
         db.ChangeTracker.Clear();
 
         Assert.True(stillThere);
+        Assert.Equal(0, notifiedEarly);
         Assert.False(await db.Spots.AnyAsync(s => s.Id == spot.Id));
         Assert.NotNull((await db.Spots.IgnoreQueryFilters().SingleAsync(s => s.Id == spot.Id)).DeletedAt);
+        var notification = await db.Notifications.SingleAsync(n =>
+            n.UserId == spot.CreatedByUserId && n.Type == NotificationType.RejectedSpotDeleted);
+        Assert.Null(notification.RelatedSpotId);
+        Assert.Equal(spot.Name, notification.RelatedSpotName);
+    }
+
+    [Fact]
+    public async Task A_spot_restored_within_its_grace_period_is_neither_deleted_nor_announced()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var spot = await TestSpotFactory.SeedAsync(db, status: SpotModerationStatus.Pending);
+        var time = new FakeTimeProvider(DateTimeOffset.UtcNow);
+        var admin = new FakeUserContext(Guid.NewGuid(), UserRole.Admin);
+        await new RejectSpot.Handler(
+                db, admin, Options.Create(new SpotModerationOptions { RejectionGracePeriodHours = 24 }),
+                time, TestLocalizerFactory.Create(), NullLogger<RejectSpot.Handler>.Instance)
+            .Handle(new RejectSpot.Command(spot.Id, "Blurry photo"), CancellationToken.None);
+        time.Advance(TimeSpan.FromHours(12));
+        await new ApproveSpot.Handler(db, admin, TestLocalizerFactory.Create(), NullLogger<ApproveSpot.Handler>.Instance)
+            .Handle(new ApproveSpot.Command(spot.Id), CancellationToken.None);
+        await using var services = CreateServices();
+
+        time.Advance(TimeSpan.FromHours(13));
+        await new TestableRejectedSpotCleanupService(services, time).RunOnceAsync();
+        db.ChangeTracker.Clear();
+
+        Assert.True(await db.Spots.AnyAsync(s => s.Id == spot.Id));
+        Assert.Empty(await DeletedNotificationOwnersAsync(db, spot.CreatedByUserId));
     }
 
     [Fact]
