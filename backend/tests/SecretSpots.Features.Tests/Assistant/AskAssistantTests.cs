@@ -19,6 +19,8 @@ namespace SecretSpots.Features.Tests.Assistant;
 
 public class AskAssistantTests
 {
+    private record Answer(string Text, IReadOnlyList<Guid> SpotIds);
+
     private static AssistantOptions Options(int perUser = 30, int total = 1000) => new()
     {
         Enabled = true, DailyQuestionsPerUser = perUser, DailyQuestionsTotal = total, MaxToolCallsPerQuestion = 5, TimeoutSeconds = 30,
@@ -65,8 +67,36 @@ public class AskAssistantTests
         public TimeProvider Time { get; }
         public AskAssistant.Handler Handler { get; }
 
-        public Task<Result<AssistantAnswerResponse>> AskAsync(string question = "Waterfall near Sofia?", IReadOnlyList<AskAssistant.HistoryMessage>? history = null) =>
-            Handler.Handle(new AskAssistant.Command(question, history, "en", null, null), CancellationToken.None);
+        // Every event of the last answer, in order.
+        public List<AssistantEvent> Events { get; } = [];
+
+        public Task<Result<Answer>> AskAsync(string question = "Waterfall near Sofia?", IReadOnlyList<AskAssistant.HistoryMessage>? history = null) =>
+            AskAsync(new AskAssistant.Command(question, history, "en", null, null));
+
+        // Reads the whole stream: a "done" event becomes the answer, an "error" event a 503 failure.
+        public async Task<Result<Answer>> AskAsync(AskAssistant.Command command, CancellationToken cancellationToken = default)
+        {
+            Events.Clear();
+            var started = await Handler.Handle(command, CancellationToken.None);
+            if (!started.IsSuccess)
+            {
+                return Result<Answer>.Failure(started.Error);
+            }
+
+            await foreach (var assistantEvent in started.Value.WithCancellation(cancellationToken))
+            {
+                Events.Add(assistantEvent);
+            }
+
+            var last = Events[^1];
+            return last.Type == AssistantEvent.DoneType
+                ? Result<Answer>.Success(new Answer(last.Text!, last.SpotIds!))
+                : Result<Answer>.Failure(new Error(last.Code!, last.Text!, 503));
+        }
+
+        public string StreamedText => string.Concat(Events.Where(e => e.Type == AssistantEvent.DeltaType).Select(e => e.Text));
+
+        public IEnumerable<string> Statuses => Events.Where(e => e.Type == AssistantEvent.StatusType).Select(e => e.Text!);
 
         public Task<int> QuestionsTodayAsync()
         {
@@ -99,8 +129,8 @@ public class AskAssistantTests
 
         Assert.True(result.IsSuccess);
         Assert.Equal([approved.Id], result.Value.SpotIds);
-        Assert.DoesNotContain("[spot:", result.Value.Answer);
-        Assert.StartsWith("Try Hidden falls,", result.Value.Answer);
+        Assert.DoesNotContain("[spot:", result.Value.Text);
+        Assert.StartsWith("Try Hidden falls,", result.Value.Text);
         Assert.True(HasToolResultContaining(model.Requests[1], approved.Id.ToString()));
         Assert.Equal(1, await harness.QuestionsTodayAsync());
     }
@@ -121,7 +151,55 @@ public class AskAssistantTests
         var result = await harness.AskAsync();
 
         Assert.Equal([found.Id], result.Value.SpotIds);
-        Assert.DoesNotContain("[spot:", result.Value.Answer);
+        Assert.DoesNotContain("[spot:", result.Value.Text);
+    }
+
+    [Fact]
+    public async Task Streams_a_status_for_each_tool_then_the_text_without_markers_then_the_result()
+    {
+        await using var db = TestDbContextFactory.Create();
+        var lat = Random.Shared.NextDouble() * 120 - 60;
+        var lng = Random.Shared.NextDouble() * 300 - 150;
+        var falls = await TestSpotFactory.SeedAsync(db, name: "Hidden falls", longitude: lng, latitude: lat);
+        // Steps: locate the town, search around it, read the comments, answer.
+        var model = new ScriptedChatClient((_, request) => request switch
+        {
+            0 => ScriptedChatClient.CallTool("locate_place", new() { ["name"] = "Plovdiv" }),
+            1 => ScriptedChatClient.CallTool("find_spots_near", new() { ["latitude"] = 42.1354, ["longitude"] = 24.7453, ["radiusKm"] = 30.0 }),
+            2 => ScriptedChatClient.CallTool("find_spots_near", new() { ["latitude"] = lat, ["longitude"] = lng, ["radiusKm"] = 5.0 }),
+            3 => ScriptedChatClient.CallTool("get_spot_comments", new() { ["spotId"] = falls.Id.ToString() }),
+            _ => ScriptedChatClient.Text($"Go to Hidden falls [spot:{falls.Id}], it's quiet."),
+        });
+        await using var harness = new Harness(db, Guid.NewGuid(), Options(), model);
+
+        var result = await harness.AskAsync();
+
+        Assert.Equal(
+            ["Thinking…", "Finding Plovdiv on the map…", "Looking for spots around Пловдив…", "Looking for spots nearby…", "Reading the comments on Hidden falls…"],
+            harness.Statuses);
+        Assert.True(harness.Events.Count(e => e.Type == AssistantEvent.DeltaType) > 3);
+        Assert.Equal("Go to Hidden falls, it's quiet.", harness.StreamedText);
+        Assert.Equal(harness.StreamedText, result.Value.Text);
+        Assert.Equal([falls.Id], result.Value.SpotIds);
+        Assert.Equal(AssistantEvent.DoneType, harness.Events[^1].Type);
+    }
+
+    [Fact]
+    public async Task Stopping_mid_answer_ends_the_stream_and_the_question_still_counts()
+    {
+        await using var db = TestDbContextFactory.Create();
+        using var stop = new CancellationTokenSource();
+        var model = new ScriptedChatClient((_, _) => ScriptedChatClient.Text("A long answer that the user does not wait for."))
+        {
+            OnUpdate = sent => { if (sent == 3) stop.Cancel(); },
+        };
+        await using var harness = new Harness(db, Guid.NewGuid(), Options(), model);
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+            harness.AskAsync(new AskAssistant.Command("Lakes?", null, "en", null, null), stop.Token));
+
+        Assert.DoesNotContain(harness.Events, e => e.Type is AssistantEvent.DoneType or AssistantEvent.ErrorType);
+        Assert.Equal(1, await harness.QuestionsTodayAsync());
     }
 
     [Fact]
@@ -150,10 +228,10 @@ public class AskAssistantTests
         var model = new ScriptedChatClient((_, _) => ScriptedChatClient.Text("Sure."));
         await using var harness = new Harness(db, Guid.NewGuid(), Options(), model);
 
-        await harness.Handler.Handle(new AskAssistant.Command(
+        await harness.AskAsync(new AskAssistant.Command(
             "Something near me?",
             [new(AskAssistant.UserRole, "Hi"), new(AskAssistant.AssistantRole, "Hello!")],
-            "bg", 42.13541, 24.74531), CancellationToken.None);
+            "bg", 42.13541, 24.74531));
 
         var sent = model.Requests[0];
         Assert.Equal([ChatRole.System, ChatRole.User, ChatRole.Assistant, ChatRole.User], sent.Select(m => m.Role));
@@ -238,7 +316,7 @@ public class AskAssistantTests
 
         var result = await harness.AskAsync();
 
-        Assert.Equal("Here is what I found.", result.Value.Answer);
+        Assert.Equal("Here is what I found.", result.Value.Text);
         var toolResults = model.Requests[^1].SelectMany(m => m.Contents).OfType<FunctionResultContent>().ToList();
         Assert.Equal(5, toolResults.Count(r => !JsonSerializer.Serialize(r.Result).Contains("limit", StringComparison.OrdinalIgnoreCase)));
         Assert.Equal(6, toolResults.Count);

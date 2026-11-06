@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +20,10 @@ using SecretSpots.Features.Common.Security;
 
 namespace SecretSpots.Features.Assistant;
 
-// One question to the spot discovery assistant. The client keeps the conversation and sends recent
+// One question to the spot discovery assistant, answered as a stream of AssistantEvents (progress,
+// then the text piece by piece, then the result). The client keeps the conversation and sends recent
 // turns back as plain text; nothing it sends can pose as a tool result or a system instruction.
+// Disabled and over-the-limit are ordinary failures returned before any streaming starts.
 public static partial class AskAssistant
 {
     public const string UserRole = "user";
@@ -32,7 +36,7 @@ public static partial class AskAssistant
         IReadOnlyList<HistoryMessage>? History,
         string Locale,
         double? Latitude,
-        double? Longitude) : IRequest<Result<AssistantAnswerResponse>>;
+        double? Longitude) : IRequest<Result<IAsyncEnumerable<AssistantEvent>>>;
 
     private static readonly Dictionary<string, string> LanguageNames = new() { ["bg"] = "Bulgarian", ["en"] = "English" };
 
@@ -88,14 +92,14 @@ public static partial class AskAssistant
         TimeProvider timeProvider,
         IStringLocalizer<SharedResources> localizer,
         ILogger<Handler> logger)
-        : IRequestHandler<Command, Result<AssistantAnswerResponse>>
+        : IRequestHandler<Command, Result<IAsyncEnumerable<AssistantEvent>>>
     {
-        public async Task<Result<AssistantAnswerResponse>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<IAsyncEnumerable<AssistantEvent>>> Handle(Command command, CancellationToken cancellationToken)
         {
             var options = assistantOptions.Value;
             if (!options.Enabled)
             {
-                return Result<AssistantAnswerResponse>.Failure(Error.NotFound(AssistantMessageKeys.Disabled, localizer));
+                return Result<IAsyncEnumerable<AssistantEvent>>.Failure(Error.NotFound(AssistantMessageKeys.Disabled, localizer));
             }
 
             var userId = userContext.UserId;
@@ -107,52 +111,106 @@ public static partial class AskAssistant
                 var key = outcome == AssistantUsageLimiter.Outcome.UserLimitReached
                     ? AssistantMessageKeys.DailyLimitReached
                     : AssistantMessageKeys.ServiceLimitReached;
-                return Result<AssistantAnswerResponse>.Failure(Error.TooManyRequests(key, localizer));
+                return Result<IAsyncEnumerable<AssistantEvent>>.Failure(Error.TooManyRequests(key, localizer));
             }
 
+            return Result<IAsyncEnumerable<AssistantEvent>>.Success(AnswerAsync(command, userId, today, CancellationToken.None));
+        }
+
+        // Cancelling the enumeration (the user pressed Stop / closed the page) stops the model right
+        // away. A stopped question still counts — the model already did the work — unlike one the
+        // model failed to answer, which is given back.
+        private async IAsyncEnumerable<AssistantEvent> AnswerAsync(
+            Command command, Guid userId, DateOnly today, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var options = assistantOptions.Value;
             var toolset = new AssistantToolset(tools, options.MaxToolCallsPerQuestion);
             var chatOptions = new ChatOptions { Tools = toolset.Tools, MaxOutputTokens = options.MaxOutputTokens };
+            var markers = new SpotMarkerStreamFilter();
+            var text = new StringBuilder();
+            long inputTokens = 0, outputTokens = 0;
             var stopwatch = Stopwatch.StartNew();
 
-            ChatResponse response;
-            using (var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+            yield return AssistantEvent.Status(localizer[AssistantMessageKeys.StatusThinking].Value);
+
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeout.CancelAfter(TimeSpan.FromSeconds(options.TimeoutSeconds));
+            var updates = chatClient.GetStreamingResponseAsync(BuildMessages(command), chatOptions, timeout.Token);
+            await using var enumerator = updates.GetAsyncEnumerator(timeout.Token);
+
+            Exception? failure = null;
+            while (true)
             {
-                timeout.CancelAfter(TimeSpan.FromSeconds(options.TimeoutSeconds));
+                // `yield` can't sit inside a try/catch, so only the step that talks to the model is caught.
                 try
                 {
-                    response = await chatClient.GetResponseAsync(BuildMessages(command), chatOptions, timeout.Token);
+                    if (!await enumerator.MoveNextAsync())
+                    {
+                        break;
+                    }
                 }
                 catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
                 {
-                    // Covers the provider being down, a timeout and a model that errors out: the user
-                    // gets a plain "try again" and keeps the question.
-                    logger.LogWarning(ex, AssistantLogMessages.ModelFailed, userId, stopwatch.ElapsedMilliseconds);
-                    await AssistantUsageLimiter.RefundAsync(db, userId, today, CancellationToken.None);
-                    return Result<AssistantAnswerResponse>.Failure(Error.ServiceUnavailable(AssistantMessageKeys.Unavailable, localizer));
+                    // The provider being down, the timeout, a model that errors out.
+                    failure = ex;
+                    break;
+                }
+
+                var update = enumerator.Current;
+                foreach (var content in update.Contents)
+                {
+                    switch (content)
+                    {
+                        // Sent when the model asks for a tool, i.e. before the tool runs.
+                        case FunctionCallContent call:
+                            yield return AssistantEvent.Status(AssistantStatusMessages.For(call, toolset, localizer));
+                            break;
+                        case UsageContent usage:
+                            inputTokens += usage.Details.InputTokenCount ?? 0;
+                            outputTokens += usage.Details.OutputTokenCount ?? 0;
+                            break;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(update.Text))
+                {
+                    text.Append(update.Text);
+                    if (markers.Push(update.Text) is { Length: > 0 } visible)
+                    {
+                        yield return AssistantEvent.Delta(visible);
+                    }
                 }
             }
 
-            var text = response.Text;
-            if (string.IsNullOrWhiteSpace(text))
+            if (failure is not null)
+            {
+                logger.LogWarning(failure, AssistantLogMessages.ModelFailed, userId, stopwatch.ElapsedMilliseconds);
+                await AssistantUsageLimiter.RefundAsync(db, userId, today, CancellationToken.None);
+                yield return AssistantEvent.Error(AssistantMessageKeys.Unavailable, localizer[AssistantMessageKeys.Unavailable].Value);
+                yield break;
+            }
+
+            if (markers.Flush() is { Length: > 0 } rest)
+            {
+                yield return AssistantEvent.Delta(rest);
+            }
+
+            var fullText = text.ToString();
+            if (string.IsNullOrWhiteSpace(fullText))
             {
                 logger.LogWarning(AssistantLogMessages.EmptyAnswer, userId, toolset.ToolCalls);
                 await AssistantUsageLimiter.RefundAsync(db, userId, today, CancellationToken.None);
-                return Result<AssistantAnswerResponse>.Failure(Error.ServiceUnavailable(AssistantMessageKeys.NoAnswer, localizer));
+                yield return AssistantEvent.Error(AssistantMessageKeys.NoAnswer, localizer[AssistantMessageKeys.NoAnswer].Value);
+                yield break;
             }
 
-            var spotIds = await VisibleCitedSpotsAsync(text, toolset.ReturnedSpotIds, cancellationToken);
-            var answer = SpotMarker().Replace(text, string.Empty).Trim();
+            var spotIds = await VisibleCitedSpotsAsync(fullText, toolset.ReturnedSpotIds, cancellationToken);
+            var answer = SpotMarker().Replace(fullText, string.Empty).Trim();
 
             logger.LogInformation(
-                AssistantLogMessages.Answered,
-                userId,
-                stopwatch.ElapsedMilliseconds,
-                toolset.ToolCalls,
-                spotIds.Count,
-                response.Usage?.InputTokenCount,
-                response.Usage?.OutputTokenCount);
+                AssistantLogMessages.Answered, userId, stopwatch.ElapsedMilliseconds, toolset.ToolCalls, spotIds.Count, inputTokens, outputTokens);
 
-            return Result<AssistantAnswerResponse>.Success(new AssistantAnswerResponse(answer, spotIds));
+            yield return AssistantEvent.Done(answer, spotIds);
         }
 
         // The system prompt stays fixed; the language, the location and the question travel together

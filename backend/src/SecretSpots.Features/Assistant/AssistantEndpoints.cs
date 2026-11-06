@@ -23,16 +23,16 @@ public static class AssistantEndpoints
                 }
 
                 var result = await sender.Send(command, cancellationToken);
-                return result.ToOkOrProblem();
+                return result.IsSuccess ? new AssistantEventStreamResult(result.Value) : result.ToProblem();
             })
             .WithTags("Assistant")
             .RequireAuthorization()
-            .Produces<AssistantAnswerResponse>(StatusCodes.Status200OK)
+            // A server-sent event stream of AssistantEvent: status*, delta*, then done or error.
+            .Produces<AssistantEvent>(StatusCodes.Status200OK, "text/event-stream")
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status429TooManyRequests)
-            .ProducesProblem(StatusCodes.Status503ServiceUnavailable);
+            .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         return app;
     }
