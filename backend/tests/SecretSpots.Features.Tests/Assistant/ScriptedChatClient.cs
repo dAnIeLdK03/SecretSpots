@@ -16,9 +16,37 @@ internal sealed class ScriptedChatClient(Func<IReadOnlyList<ChatMessage>, int, C
         return Task.FromResult(script(snapshot, Requests.Count - 1));
     }
 
-    public IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(
-        IEnumerable<ChatMessage> messages, ChatOptions? options = null, CancellationToken cancellationToken = default) =>
-        throw new NotSupportedException();
+    // Text goes out in pieces of TextChunkSize characters, like a real model streams it, so
+    // anything that reassembles the text (e.g. marker filtering) is exercised across boundaries.
+    public int TextChunkSize { get; init; } = 3;
+
+    // Called before each streamed update; tests use it to cancel mid-answer.
+    public Action<int>? OnUpdate { get; init; }
+
+    public async IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(
+        IEnumerable<ChatMessage> messages,
+        ChatOptions? options = null,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var response = await GetResponseAsync(messages, options, cancellationToken);
+        var sent = 0;
+        foreach (var message in response.Messages)
+        {
+            foreach (var content in message.Contents)
+            {
+                var pieces = content is TextContent text
+                    ? text.Text.Chunk(TextChunkSize).Select(chars => (AIContent)new TextContent(new string(chars)))
+                    : [content];
+                foreach (var piece in pieces)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    OnUpdate?.Invoke(sent++);
+                    await Task.Yield();
+                    yield return new ChatResponseUpdate(message.Role, [piece]) { MessageId = message.MessageId };
+                }
+            }
+        }
+    }
 
     public object? GetService(Type serviceType, object? serviceKey = null) => null;
 

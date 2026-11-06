@@ -6,11 +6,14 @@ namespace SecretSpots.Features.Assistant;
 // The AssistantTools of one question, as functions the model can call. Counts the calls — past
 // the limit a tool answers "limit reached, answer now" instead of running, so the model still
 // finishes with a proper answer (FunctionInvokingChatClient's own iteration cap would just stop
-// mid-way) — and remembers every spot id the tools returned, so cited ids can be checked.
+// mid-way) — and remembers what the tools returned: every spot id, so cited ids can be checked,
+// and the names of spots and located towns, so progress messages can name them.
 public sealed class AssistantToolset
 {
     private readonly int _maxToolCalls;
     private readonly HashSet<Guid> _returnedSpotIds = [];
+    private readonly Dictionary<Guid, string> _spotNames = [];
+    private readonly List<BulgarianPlaces.Place> _locatedPlaces = [];
     private int _toolCalls;
 
     public AssistantToolset(AssistantTools tools, int maxToolCalls)
@@ -18,11 +21,11 @@ public sealed class AssistantToolset
         _maxToolCalls = maxToolCalls;
         Tools =
         [
-            Counted(AIFunctionFactory.Create(tools.SearchSpotsAsync, "search_spots")),
-            Counted(AIFunctionFactory.Create(tools.FindSpotsNearAsync, "find_spots_near")),
-            Counted(AIFunctionFactory.Create(tools.GetSpotAsync, "get_spot")),
-            Counted(AIFunctionFactory.Create(tools.GetSpotCommentsAsync, "get_spot_comments")),
-            Counted(AIFunctionFactory.Create(tools.LocatePlaceAsync, "locate_place")),
+            Counted(AIFunctionFactory.Create(tools.SearchSpotsAsync, SearchSpots)),
+            Counted(AIFunctionFactory.Create(tools.FindSpotsNearAsync, FindSpotsNear)),
+            Counted(AIFunctionFactory.Create(tools.GetSpotAsync, GetSpot)),
+            Counted(AIFunctionFactory.Create(tools.GetSpotCommentsAsync, GetSpotComments)),
+            Counted(AIFunctionFactory.Create(tools.LocatePlaceAsync, LocatePlace)),
         ];
     }
 
@@ -42,11 +45,36 @@ public sealed class AssistantToolset
         }
     }
 
+    public const string SearchSpots = "search_spots";
+    public const string FindSpotsNear = "find_spots_near";
+    public const string GetSpot = "get_spot";
+    public const string GetSpotComments = "get_spot_comments";
+    public const string LocatePlace = "locate_place";
+
+    public string? SpotName(Guid spotId)
+    {
+        lock (_returnedSpotIds)
+        {
+            return _spotNames.GetValueOrDefault(spotId);
+        }
+    }
+
+    // The town a nearby search is centred on, if it's one locate_place returned (the model passes
+    // the coordinates back as it got them, give or take rounding).
+    public string? LocatedPlaceAt(double latitude, double longitude)
+    {
+        lock (_returnedSpotIds)
+        {
+            return _locatedPlaces
+                .FirstOrDefault(p => Math.Abs(p.Latitude - latitude) < 0.01 && Math.Abs(p.Longitude - longitude) < 0.01)?.Name;
+        }
+    }
+
     private AIFunction Counted(AIFunction function) => new CountedFunction(function, this);
 
     // Results may come back as the tool's record or already serialized to JSON, depending on how
     // the function marshals its return value — read the ids from the JSON shape either way.
-    private void RecordSpotIds(object? result)
+    private void Record(object? result)
     {
         if (result is null)
         {
@@ -61,7 +89,19 @@ public sealed class AssistantToolset
                 if (TryGetProperty(spot, "id", out var id) && id.ValueKind == JsonValueKind.String && Guid.TryParse(id.GetString(), out var spotId))
                 {
                     _returnedSpotIds.Add(spotId);
+                    if (TryGetProperty(spot, "name", out var name) && name.ValueKind == JsonValueKind.String)
+                    {
+                        _spotNames[spotId] = name.GetString()!;
+                    }
                 }
+            }
+
+            if (json.ValueKind == JsonValueKind.Object
+                && TryGetProperty(json, "latitude", out var latitude) && latitude.ValueKind == JsonValueKind.Number
+                && TryGetProperty(json, "longitude", out var longitude) && longitude.ValueKind == JsonValueKind.Number
+                && TryGetProperty(json, "name", out var placeName) && placeName.ValueKind == JsonValueKind.String)
+            {
+                _locatedPlaces.Add(new BulgarianPlaces.Place(placeName.GetString()!, latitude.GetDouble(), longitude.GetDouble()));
             }
         }
     }
@@ -112,7 +152,7 @@ public sealed class AssistantToolset
             }
 
             var result = await base.InvokeCoreAsync(arguments, cancellationToken);
-            owner.RecordSpotIds(result);
+            owner.Record(result);
             return result;
         }
     }

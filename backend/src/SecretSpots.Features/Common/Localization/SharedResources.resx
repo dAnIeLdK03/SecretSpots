@@ -453,4 +453,31 @@
   <data name="Assistant.LocationInvalid" xml:space="preserve">
     <value>The location is not valid.</value>
   </data>
+  <data name="Assistant.Status.Thinking" xml:space="preserve">
+    <value>Thinking…</value>
+  </data>
+  <data name="Assistant.Status.Searching" xml:space="preserve">
+    <value>Searching for “{0}”…</value>
+  </data>
+  <data name="Assistant.Status.SearchingNearPlace" xml:space="preserve">
+    <value>Looking for spots around {0}…</value>
+  </data>
+  <data name="Assistant.Status.SearchingNearby" xml:space="preserve">
+    <value>Looking for spots nearby…</value>
+  </data>
+  <data name="Assistant.Status.ReadingSpot" xml:space="preserve">
+    <value>Looking at {0}…</value>
+  </data>
+  <data name="Assistant.Status.ReadingSpotUnnamed" xml:space="preserve">
+    <value>Looking at a spot…</value>
+  </data>
+  <data name="Assistant.Status.ReadingComments" xml:space="preserve">
+    <value>Reading the comments on {0}…</value>
+  </data>
+  <data name="Assistant.Status.ReadingCommentsUnnamed" xml:space="preserve">
+    <value>Reading visitors' comments…</value>
+  </data>
+  <data name="Assistant.Status.Locating" xml:space="preserve">
+    <value>Finding {0} on the map…</value>
+  </data>
 </root>

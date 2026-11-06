@@ -146,6 +146,12 @@ export interface PagedResponse<T> {
   totalCount: number;
 }
 
+// The raw response, for bodies read incrementally (server-sent events). Same auth, refresh and
+// error handling as apiFetch: a non-2xx status still throws ApiError before any body is read.
+export function apiFetchResponse(path: string, options: RequestInit = {}): Promise<Response> {
+  return doFetch(path, options);
+}
+
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const response = await doFetch(path, options);
   return response.json() as Promise<T>;

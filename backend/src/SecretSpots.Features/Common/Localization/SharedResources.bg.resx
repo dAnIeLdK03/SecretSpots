@@ -453,4 +453,31 @@
   <data name="Assistant.LocationInvalid" xml:space="preserve">
     <value>Местоположението не е валидно.</value>
   </data>
+  <data name="Assistant.Status.Thinking" xml:space="preserve">
+    <value>Мисля…</value>
+  </data>
+  <data name="Assistant.Status.Searching" xml:space="preserve">
+    <value>Търся „{0}“…</value>
+  </data>
+  <data name="Assistant.Status.SearchingNearPlace" xml:space="preserve">
+    <value>Търся места около {0}…</value>
+  </data>
+  <data name="Assistant.Status.SearchingNearby" xml:space="preserve">
+    <value>Търся места наблизо…</value>
+  </data>
+  <data name="Assistant.Status.ReadingSpot" xml:space="preserve">
+    <value>Разглеждам {0}…</value>
+  </data>
+  <data name="Assistant.Status.ReadingSpotUnnamed" xml:space="preserve">
+    <value>Разглеждам място…</value>
+  </data>
+  <data name="Assistant.Status.ReadingComments" xml:space="preserve">
+    <value>Чета коментарите за {0}…</value>
+  </data>
+  <data name="Assistant.Status.ReadingCommentsUnnamed" xml:space="preserve">
+    <value>Чета коментарите на посетителите…</value>
+  </data>
+  <data name="Assistant.Status.Locating" xml:space="preserve">
+    <value>Търся {0} на картата…</value>
+  </data>
 </root>
