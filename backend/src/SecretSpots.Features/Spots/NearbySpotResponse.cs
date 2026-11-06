@@ -12,4 +12,7 @@ public record NearbySpotResponse(
     double Longitude,
     Guid CreatedByUserId,
     DateTimeOffset CreatedAt,
-    double DistanceKm);
+    double DistanceKm,
+    SpotModerationStatus ModerationStatus,
+    double AverageRating,
+    int RatingsCount);

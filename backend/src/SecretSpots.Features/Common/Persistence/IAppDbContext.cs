@@ -26,6 +26,7 @@ public interface IAppDbContext
     DbSet<Report> Reports { get; }
     DbSet<RoleChangeAudit> RoleChangeAudits { get; }
     DbSet<SpotChangeRequest> SpotChangeRequests { get; }
+    DbSet<AssistantUsage> AssistantUsages { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

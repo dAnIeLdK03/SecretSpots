@@ -20,7 +20,9 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SecretSpots.Api;
 using SecretSpots.Domain;
+using Microsoft.Extensions.AI;
 using SecretSpots.Features.Admin;
+using SecretSpots.Features.Assistant;
 using SecretSpots.Features.Auth;
 using SecretSpots.Features.Businesses;
 using SecretSpots.Features.CheckIns;
@@ -184,6 +186,16 @@ builder.Services.AddScoped<IUserContext, UserContext>();
 // The clock handlers and background jobs read "now" from, so tests can move time with FakeTimeProvider
 // instead of sleeping or back-dating rows (expiry windows, check-in cooldown, rejection grace period).
 builder.Services.AddSingleton(TimeProvider.System);
+
+// Spot discovery assistant: off unless Assistant:Enabled. Assistant:Provider/Model pick the model
+// (a local Ollama model in development, Claude in production); the Anthropic key, when used, comes
+// from Anthropic:ApiKey in user-secrets/env — never appsettings — or ANTHROPIC_API_KEY.
+builder.Services.Configure<AssistantOptions>(builder.Configuration.GetSection("Assistant"));
+builder.Services.AddScoped<AssistantTools>();
+builder.Services.AddKeyedSingleton<IChatClient>(AssistantChatClient.ServiceKey, (sp, _) => AssistantChatClient.Create(
+    sp.GetRequiredService<IOptions<AssistantOptions>>().Value,
+    builder.Configuration["Anthropic:ApiKey"],
+    sp.GetRequiredService<ILoggerFactory>()));
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddSingleton<IPhotoStorage, R2PhotoStorage>();
 
@@ -508,6 +520,7 @@ app.MapAdminReportsEndpoints();
 app.MapAdminUsersEndpoints();
 app.MapAdminSpotsEndpoints();
 app.MapAdminSpotChangeRequestsEndpoints();
+app.MapAssistantEndpoints();
 
 // Lets e2e tests read back what InMemoryEmailTransport captured (see registration above) instead of
 // needing a real inbox — e.g. to pull the token out of a password-reset link. Gated on
