@@ -20,4 +20,10 @@ public record Error(string Code, string Message, int StatusCode)
 
     public static Error Unauthorized(string code, IStringLocalizer<SharedResources> localizer) =>
         new(code, localizer[code].Value, StatusCodes.Status401Unauthorized);
+
+    public static Error TooManyRequests(string code, IStringLocalizer<SharedResources> localizer) =>
+        new(code, localizer[code].Value, StatusCodes.Status429TooManyRequests);
+
+    public static Error ServiceUnavailable(string code, IStringLocalizer<SharedResources> localizer) =>
+        new(code, localizer[code].Value, StatusCodes.Status503ServiceUnavailable);
 }

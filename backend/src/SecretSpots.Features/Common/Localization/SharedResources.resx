@@ -417,4 +417,37 @@
   <data name="Notifications.CheckInPhotoAddedToSpotMessage" xml:space="preserve">
     <value>Your check-in photo was added to "{0}".</value>
   </data>
+  <data name="Assistant.Disabled" xml:space="preserve">
+    <value>The assistant is not available.</value>
+  </data>
+  <data name="Assistant.DailyLimitReached" xml:space="preserve">
+    <value>You have used all your questions for today. Try again tomorrow.</value>
+  </data>
+  <data name="Assistant.ServiceLimitReached" xml:space="preserve">
+    <value>The assistant has answered as many questions as it can today. Try again tomorrow.</value>
+  </data>
+  <data name="Assistant.Unavailable" xml:space="preserve">
+    <value>The assistant couldn't answer right now. Try again in a little while.</value>
+  </data>
+  <data name="Assistant.NoAnswer" xml:space="preserve">
+    <value>The assistant didn't find an answer. Try asking more specifically.</value>
+  </data>
+  <data name="Assistant.QuestionRequired" xml:space="preserve">
+    <value>Type a question.</value>
+  </data>
+  <data name="Assistant.QuestionTooLong" xml:space="preserve">
+    <value>The question is too long.</value>
+  </data>
+  <data name="Assistant.HistoryTooLong" xml:space="preserve">
+    <value>The conversation is too long. Start a new one.</value>
+  </data>
+  <data name="Assistant.HistoryInvalid" xml:space="preserve">
+    <value>The conversation history is not valid.</value>
+  </data>
+  <data name="Assistant.LocaleInvalid" xml:space="preserve">
+    <value>Unsupported language.</value>
+  </data>
+  <data name="Assistant.LocationInvalid" xml:space="preserve">
+    <value>The location is not valid.</value>
+  </data>
 </root>

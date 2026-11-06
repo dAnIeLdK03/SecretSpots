@@ -11,6 +11,10 @@
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="8.0.11" />
     <!-- Same 8.0.x line as the Npgsql that EF Core 8 pulls in; a newer major would upgrade Npgsql under EF. -->
     <PackageVersion Include="Npgsql.OpenTelemetry" Version="8.0.6" />
+    <!-- Spot discovery assistant: IChatClient abstraction + providers (local Ollama, Claude) -->
+    <PackageVersion Include="Microsoft.Extensions.AI" Version="10.11.0" />
+    <PackageVersion Include="OllamaSharp" Version="5.5.2" />
+    <PackageVersion Include="Anthropic" Version="13.5.0" />
     <PackageVersion Include="NetTopologySuite" Version="2.6.0" />
     <!-- Validation -->
     <PackageVersion Include="FluentValidation" Version="12.1.1" />

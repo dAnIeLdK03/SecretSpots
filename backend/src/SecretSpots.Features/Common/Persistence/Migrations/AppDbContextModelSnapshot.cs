@@ -26,6 +26,24 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("SecretSpots.Domain.AssistantUsage", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<int>("QuestionCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId", "Date");
+
+                    b.HasIndex("Date");
+
+                    b.ToTable("AssistantUsages");
+                });
+
             modelBuilder.Entity("SecretSpots.Domain.Business", b =>
                 {
                     b.Property<Guid>("Id")

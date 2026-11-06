@@ -10,4 +10,5 @@ internal static class AssistantToolMessages
     public const string SpotNotFound = "No such spot. Use an id returned by search_spots or find_spots_near.";
     public const string UnknownPlace = "Unknown place. Ask the user for the nearest larger Bulgarian town instead.";
     public const string InvalidRequest = "The search parameters were not valid: {0}";
+    public const string ToolLimitReached = "Tool call limit for this question reached. Answer now with what you already found.";
 }

@@ -417,4 +417,37 @@
   <data name="Notifications.CheckInPhotoAddedToSpotMessage" xml:space="preserve">
     <value>Снимката от посещението ти е добавена към „{0}“.</value>
   </data>
+  <data name="Assistant.Disabled" xml:space="preserve">
+    <value>Асистентът не е наличен.</value>
+  </data>
+  <data name="Assistant.DailyLimitReached" xml:space="preserve">
+    <value>Изчерпа въпросите си за днес. Опитай отново утре.</value>
+  </data>
+  <data name="Assistant.ServiceLimitReached" xml:space="preserve">
+    <value>Асистентът отговори на максималния брой въпроси за днес. Опитай отново утре.</value>
+  </data>
+  <data name="Assistant.Unavailable" xml:space="preserve">
+    <value>Асистентът не успя да отговори. Опитай отново след малко.</value>
+  </data>
+  <data name="Assistant.NoAnswer" xml:space="preserve">
+    <value>Асистентът не намери отговор. Опитай да зададеш въпроса по-конкретно.</value>
+  </data>
+  <data name="Assistant.QuestionRequired" xml:space="preserve">
+    <value>Напиши въпрос.</value>
+  </data>
+  <data name="Assistant.QuestionTooLong" xml:space="preserve">
+    <value>Въпросът е твърде дълъг.</value>
+  </data>
+  <data name="Assistant.HistoryTooLong" xml:space="preserve">
+    <value>Разговорът е твърде дълъг. Започни нов.</value>
+  </data>
+  <data name="Assistant.HistoryInvalid" xml:space="preserve">
+    <value>Историята на разговора не е валидна.</value>
+  </data>
+  <data name="Assistant.LocaleInvalid" xml:space="preserve">
+    <value>Неподдържан език.</value>
+  </data>
+  <data name="Assistant.LocationInvalid" xml:space="preserve">
+    <value>Местоположението не е валидно.</value>
+  </data>
 </root>

@@ -26,6 +26,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Report> Reports => Set<Report>();
     public DbSet<RoleChangeAudit> RoleChangeAudits => Set<RoleChangeAudit>();
     public DbSet<SpotChangeRequest> SpotChangeRequests => Set<SpotChangeRequest>();
+    public DbSet<AssistantUsage> AssistantUsages => Set<AssistantUsage>();
 
     public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         => await Database.BeginTransactionAsync(cancellationToken);
@@ -54,6 +55,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .IsUnique();
 
         modelBuilder.Entity<CrystalWallet>().HasKey(w => w.UserId);
+
+        // One row per user per day; the Date index serves the app-wide daily total.
+        modelBuilder.Entity<AssistantUsage>().HasKey(u => new { u.UserId, u.Date });
+        modelBuilder.Entity<AssistantUsage>().HasIndex(u => u.Date);
 
         // Guards Balance against lost updates from concurrent check-ins/redemptions —
         // xmin is Postgres's built-in row-version system column, so this needs no migration.
