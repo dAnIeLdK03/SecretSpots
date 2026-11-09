@@ -6,6 +6,24 @@
     "cancel": "Cancel",
     "close": "Close"
   },
+  "Assistant": {
+    "title": "Spot assistant",
+    "openLabel": "Ask the spot assistant",
+    "placeholder": "Ask about places...",
+    "send": "Send",
+    "stop": "Stop",
+    "stopped": "Stopped",
+    "newChat": "New chat",
+    "thinking": "Thinking...",
+    "emptyHint": "Ask me where to find places in SecretSpots: by category, rating, or near a town or you.",
+    "suggestion1": "Which waterfalls are worth visiting?",
+    "suggestion2": "What is there to see near me?",
+    "suggestion3": "Show me caves with a high rating",
+    "disclaimer": "Answers come from an AI model and may be wrong. It only knows the approved spots here.",
+    "limitReached": "You have used all your questions for today. Try again tomorrow.",
+    "unavailable": "The assistant is not available right now.",
+    "genericError": "Something went wrong. Please try again."
+  },
   "Layout": {
     "appName": "SecretSpots",
     "menuLabel": "Menu",
