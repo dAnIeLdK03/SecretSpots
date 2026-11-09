@@ -7,6 +7,7 @@ import { routing } from "@/i18n/routing";
 import { AuthProvider } from "@/components/AuthProvider";
 import { Toast } from "@/components/Toast";
 import { Header } from "@/components/Header";
+import { AssistantChat } from "@/components/AssistantChat";
 import "../globals.css";
 
 // Both unset in local dev by default — the script is skipped entirely rather than pointed
@@ -52,6 +53,7 @@ export default async function LocaleLayout({
             <Header />
             <main className="flex flex-1 flex-col">{children}</main>
             <Toast />
+            <AssistantChat />
           </AuthProvider>
         </NextIntlClientProvider>
         {umamiSrc && umamiWebsiteId && (
