@@ -17,3 +17,4 @@ docker-data/
 
 ## OS
 .DS_Store
+scripts/assistant-eval/results/
