@@ -17,6 +17,9 @@ public class AssistantOptions
     public string Provider { get; set; } = AssistantProviders.Ollama;
     public string Model { get; set; } = "qwen2.5:7b-instruct";
     public string OllamaEndpoint { get; set; } = "http://localhost:11434";
+    // Context window asked of Ollama, in tokens. Its default is small, and a prompt that doesn't fit
+    // is cut from the start — the system prompt first — so the model forgets its rules and loops.
+    public int OllamaContextTokens { get; set; } = 8192;
 
     public int DailyQuestionsPerUser { get; set; } = 30;
     // Across all users — the cost ceiling once a paid model is in use.
@@ -27,6 +30,9 @@ public class AssistantOptions
     // Earlier turns the client may send back for context; assistant answers can run longer.
     public int MaxHistoryMessages { get; set; } = 10;
     public int MaxHistoryMessageLength { get; set; } = 2000;
+    // How many of those earlier turns actually reach the model (the most recent ones): a small model
+    // does better with a short history than with a long one it starts to echo.
+    public int HistoryMessagesToModel { get; set; } = 6;
 
     public int MaxOutputTokens { get; set; } = 2048;
     // A local model on a CPU can need a minute per answer; a hosted one is far faster.

@@ -2,6 +2,8 @@ using Anthropic;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using OllamaSharp;
+using OllamaSharp.Models;
+using OllamaSharp.Models.Chat;
 using SecretSpots.Features.Common.Configuration;
 
 namespace SecretSpots.Features.Assistant;
@@ -26,6 +28,15 @@ public static class AssistantChatClient
         };
 
         return WithToolLoop(model, options, loggerFactory);
+    }
+
+    // Provider-specific request settings. Only Ollama needs any: the size of its context window.
+    public static void ApplyProviderOptions(ChatOptions chatOptions, AssistantOptions options)
+    {
+        if (options.Provider == AssistantProviders.Ollama)
+        {
+            chatOptions.RawRepresentationFactory = _ => new ChatRequest { Options = new RequestOptions { NumCtx = options.OllamaContextTokens } };
+        }
     }
 
     // AssistantToolset enforces the real tool-call limit (and lets the model still answer); this cap
