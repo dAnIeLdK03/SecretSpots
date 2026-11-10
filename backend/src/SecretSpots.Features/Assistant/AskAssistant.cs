@@ -126,6 +126,7 @@ public static partial class AskAssistant
             var options = assistantOptions.Value;
             var toolset = new AssistantToolset(tools, options.MaxToolCallsPerQuestion);
             var chatOptions = new ChatOptions { Tools = toolset.Tools, MaxOutputTokens = options.MaxOutputTokens };
+            AssistantChatClient.ApplyProviderOptions(chatOptions, options);
             var markers = new SpotMarkerStreamFilter();
             var text = new StringBuilder();
             long inputTokens = 0, outputTokens = 0;
@@ -135,7 +136,7 @@ public static partial class AskAssistant
 
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             timeout.CancelAfter(TimeSpan.FromSeconds(options.TimeoutSeconds));
-            var updates = chatClient.GetStreamingResponseAsync(BuildMessages(command), chatOptions, timeout.Token);
+            var updates = chatClient.GetStreamingResponseAsync(BuildMessages(command, options.HistoryMessagesToModel), chatOptions, timeout.Token);
             await using var enumerator = updates.GetAsyncEnumerator(timeout.Token);
 
             Exception? failure = null;
@@ -215,10 +216,10 @@ public static partial class AskAssistant
 
         // The system prompt stays fixed; the language, the location and the question travel together
         // in the last user message.
-        private static List<ChatMessage> BuildMessages(Command command)
+        private static List<ChatMessage> BuildMessages(Command command, int historyMessagesToModel)
         {
             var messages = new List<ChatMessage> { new(ChatRole.System, AssistantSystemPrompt.Text) };
-            foreach (var message in command.History ?? [])
+            foreach (var message in (command.History ?? []).TakeLast(historyMessagesToModel))
             {
                 messages.Add(new ChatMessage(message.Role == AssistantRole ? ChatRole.Assistant : ChatRole.User, message.Text));
             }
