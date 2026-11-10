@@ -27,10 +27,10 @@ public class AssistantTools(ISender sender)
     // How many candidates to read before dropping unapproved/low-rated ones and keeping MaxSpots.
     private const int CandidatePageSize = 50;
 
-    [Description("Finds spots whose name or description matches the text (tolerates typos). Use it for what kind of place the user wants, e.g. \"waterfall\", \"quiet lake\".")]
+    [Description("Searches all spots by words in their name or description (tolerates typos). Use it when the user names a kind of place or a specific spot, e.g. \"waterfall\", \"quiet lake\", \"Devil's Throat\". Does not filter by location: for places near somewhere use find_spots_near. Returns up to 10 spots with their ids.")]
     public async Task<AssistantSpotsResult> SearchSpotsAsync(
-        [Description("Words describing the place, in Bulgarian or English.")] string text,
-        [Description("Optional category name to narrow the search.")] string? category = null,
+        [Description("One to three words, in Bulgarian or English, e.g. \"waterfall\" or \"водопад\". Keep it short; do not write a whole sentence.")] string text,
+        [Description("Optional category name (one of the listed categories, in English) to narrow the search.")] string? category = null,
         CancellationToken cancellationToken = default)
     {
         if (!TryParseCategory(category, out var spotCategory, out var categoryError))
@@ -55,11 +55,11 @@ public class AssistantTools(ISender sender)
         return new AssistantSpotsResult(spots);
     }
 
-    [Description("Finds spots within a radius of a point, nearest first. Use locate_place first to turn a town name into coordinates.")]
+    [Description("Finds spots within a radius of a point, nearest first, with their distance in km. Use it for \"near me\" (the user's coordinates from the context) and \"near <town>\" (call locate_place first for the coordinates). Returns up to 10 spots with their ids.")]
     public async Task<AssistantSpotsResult> FindSpotsNearAsync(
         [Description("Latitude of the centre point.")] double latitude,
         [Description("Longitude of the centre point.")] double longitude,
-        [Description("Search radius in kilometres, 1 to 99.")] double radiusKm,
+        [Description("Search radius in kilometres, 1 to 99. Use about 20 for a town, 50 for a region; widen it if nothing is found.")] double radiusKm,
         [Description("Optional category name to narrow the search.")] string? category = null,
         [Description("Optional minimum average rating, 0 to 5. Spots without ratings are left out when this is set.")] double? minRating = null,
         CancellationToken cancellationToken = default)
@@ -100,7 +100,7 @@ public class AssistantTools(ISender sender)
         return new AssistantSpotsResult(spots);
     }
 
-    [Description("Gets one spot by its id, including its coordinates.")]
+    [Description("Gets one spot by its id, including its coordinates. Use it for details about a spot you already found; the id must come from search_spots or find_spots_near.")]
     public async Task<AssistantSpotDetailsResult> GetSpotAsync(
         [Description("The spot's id, as returned by search_spots or find_spots_near.")] Guid spotId,
         CancellationToken cancellationToken = default)
@@ -117,7 +117,7 @@ public class AssistantTools(ISender sender)
             spot.Longitude);
     }
 
-    [Description("Gets the most recent visitor comments about a spot (what it's really like: crowds, paths, parking).")]
+    [Description("Gets the latest visitor comments about a spot (what it is really like: crowds, paths, parking). Use it when the user asks what visitors say; the id must come from search_spots or find_spots_near.")]
     public async Task<AssistantCommentsResult> GetSpotCommentsAsync(
         [Description("The spot's id, as returned by search_spots or find_spots_near.")] Guid spotId,
         CancellationToken cancellationToken = default)
@@ -136,7 +136,7 @@ public class AssistantTools(ISender sender)
         return new AssistantCommentsResult(comments, page.TotalCount);
     }
 
-    [Description("Turns the name of a Bulgarian town into coordinates, e.g. \"Plovdiv\" or \"гр. Пловдив\".")]
+    [Description("Turns the name of a Bulgarian town into coordinates, e.g. \"Plovdiv\" or \"гр. Пловдив\". Use it before find_spots_near when the user names a town; if the place is unknown, ask the user for a bigger nearby town.")]
     public Task<AssistantPlaceResult> LocatePlaceAsync(
         [Description("The town's name, in Bulgarian or Latin letters.")] string name)
     {
