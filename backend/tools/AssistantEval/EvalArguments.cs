@@ -3,24 +3,29 @@ using SecretSpots.Features.Common.Configuration;
 namespace AssistantEval;
 
 // Command line: `dotnet run --project tools/AssistantEval -- [list] [--connection <string>] [--provider Ollama|Anthropic]
-// [--model <name>] [--ollama-endpoint <url>] [--only <id or group>[,...]] [--out <file>] [--allow-paid]`.
+// [--model <name>[,<name>...]] [--ollama-endpoint <url>] [--only <id or group>[,...]] [--out-dir <folder>] [--allow-paid]`,
+// or `... -- compare <run.json> <run.json> [...]` to line up the results of earlier runs.
 public class EvalArguments
 {
     public bool ListOnly { get; private init; }
+    public IReadOnlyList<string> CompareFiles { get; private init; } = [];
+    public bool Compare { get; private init; }
     public string? ConnectionString { get; private init; }
     public string? Provider { get; private init; }
-    public string? Model { get; private init; }
+    // One or more models, run one after the other against the same data.
+    public IReadOnlyList<string> Models { get; private init; } = [];
     public string? OllamaEndpoint { get; private init; }
     public IReadOnlyList<string> Only { get; private init; } = [];
-    public string? OutputPath { get; private init; }
+    public string OutputDirectory { get; private init; } = ".";
     public bool AllowPaid { get; private init; }
 
     public static EvalArguments Parse(string[] args)
     {
         string? connection = Environment.GetEnvironmentVariable("ASSISTANT_EVAL_CONNECTION_STRING");
-        string? provider = null, model = null, endpoint = null, output = null;
-        List<string> only = [];
-        bool list = false, allowPaid = false;
+        string? provider = null, endpoint = null;
+        var output = ".";
+        List<string> models = [], only = [], compareFiles = [];
+        bool list = false, compare = false, allowPaid = false;
 
         for (var i = 0; i < args.Length; i++)
         {
@@ -29,13 +34,15 @@ public class EvalArguments
             switch (args[i])
             {
                 case "list": list = true; break;
+                case "compare": compare = true; break;
                 case "--connection": connection = Value(); break;
                 case "--provider": provider = Value(); break;
-                case "--model": model = Value(); break;
+                case "--model": models.AddRange(Value().Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)); break;
                 case "--ollama-endpoint": endpoint = Value(); break;
                 case "--only": only.AddRange(Value().Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)); break;
-                case "--out": output = Value(); break;
+                case "--out-dir": output = Value(); break;
                 case "--allow-paid": allowPaid = true; break;
+                case var file when compare && !file.StartsWith("--"): compareFiles.Add(file); break;
                 default: throw new ArgumentException($"Unknown argument '{args[i]}'.");
             }
         }
@@ -47,8 +54,8 @@ public class EvalArguments
 
         return new EvalArguments
         {
-            ListOnly = list, ConnectionString = connection, Provider = provider, Model = model,
-            OllamaEndpoint = endpoint, Only = only, OutputPath = output, AllowPaid = allowPaid,
+            ListOnly = list, Compare = compare, CompareFiles = compareFiles, ConnectionString = connection, Provider = provider, Models = models,
+            OllamaEndpoint = endpoint, Only = only, OutputDirectory = output, AllowPaid = allowPaid,
         };
     }
 }
