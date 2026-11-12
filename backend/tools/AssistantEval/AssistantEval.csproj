@@ -5,7 +5,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Configuration, options and DI, the same as the API uses. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Pins EF Core's Relational package to the version the rest of the solution uses; without it the
+         older one that Npgsql asks for wins and the build warns about a version conflict. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\SecretSpots.Domain\SecretSpots.Domain.csproj" />
+    <ProjectReference Include="..\..\src\SecretSpots.Features\SecretSpots.Features.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The API's own settings: page sizes and the Assistant limits the handlers validate against. -->
+    <None Include="..\..\src\SecretSpots.Api\appsettings.json" Link="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\SecretSpots.Api\appsettings.Development.json" Link="appsettings.Development.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
