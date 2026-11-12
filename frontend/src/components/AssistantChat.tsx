@@ -203,7 +203,11 @@ function AssistantChatWidget() {
             <h2 className="text-sm font-semibold">{t("title")}</h2>
             <div className="flex items-center gap-1">
               {messages.length > 0 ? (
-                <button type="button" onClick={startNewChat} className="rounded px-2 py-1 text-xs text-dim hover:text-ink">
+                <button
+                  type="button"
+                  onClick={startNewChat}
+                  className="rounded px-2 py-1 text-xs text-dim hover:text-ink"
+                >
                   {t("newChat")}
                 </button>
               ) : null}
