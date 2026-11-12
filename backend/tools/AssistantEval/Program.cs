@@ -22,6 +22,28 @@ catch (ArgumentException ex)
     return 1;
 }
 
+if (arguments.Compare)
+{
+    if (arguments.CompareFiles.Count < 2)
+    {
+        Console.Error.WriteLine("compare needs at least two run files (the .json files a run writes).");
+        return 1;
+    }
+
+    var earlierRuns = new List<EvalRun>();
+    foreach (var file in arguments.CompareFiles)
+    {
+        earlierRuns.Add(await EvalRun.LoadAsync(file));
+    }
+
+    Console.Write(EvalComparison.Summary(earlierRuns));
+    Directory.CreateDirectory(arguments.OutputDirectory);
+    var earlierPath = Path.Combine(arguments.OutputDirectory, $"assistant-eval-compare-{DateTime.UtcNow:yyyyMMdd-HHmmss}.md");
+    await File.WriteAllTextAsync(earlierPath, EvalComparison.Markdown(earlierRuns));
+    Console.WriteLine($"Comparison: {Path.GetFullPath(earlierPath)}");
+    return 0;
+}
+
 var cases = EvalCases.All
     .Where(c => arguments.Only.Count == 0 || arguments.Only.Any(o => c.Id.StartsWith(o, StringComparison.OrdinalIgnoreCase) || c.Group.Equals(o, StringComparison.OrdinalIgnoreCase)))
     .ToList();
@@ -60,16 +82,17 @@ var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.Development.json", optional: true)
     .Build();
 
-var assistantOptions = configuration.GetSection("Assistant").Get<AssistantOptions>() ?? new AssistantOptions();
-assistantOptions.Enabled = true;
-assistantOptions.Provider = arguments.Provider ?? assistantOptions.Provider;
-assistantOptions.Model = arguments.Model ?? assistantOptions.Model;
-assistantOptions.OllamaEndpoint = arguments.OllamaEndpoint ?? assistantOptions.OllamaEndpoint;
+var baseOptions = configuration.GetSection("Assistant").Get<AssistantOptions>() ?? new AssistantOptions();
+baseOptions.Enabled = true;
+baseOptions.Provider = arguments.Provider ?? baseOptions.Provider;
+baseOptions.OllamaEndpoint = arguments.OllamaEndpoint ?? baseOptions.OllamaEndpoint;
 // The limits are for real users; one run asks every question once.
-assistantOptions.DailyQuestionsPerUser = int.MaxValue;
-assistantOptions.DailyQuestionsTotal = int.MaxValue;
+baseOptions.DailyQuestionsPerUser = int.MaxValue;
+baseOptions.DailyQuestionsTotal = int.MaxValue;
 
-if (assistantOptions.Provider == AssistantProviders.Anthropic && !arguments.AllowPaid)
+var models = arguments.Models.Count > 0 ? arguments.Models : [baseOptions.Model];
+
+if (baseOptions.Provider == AssistantProviders.Anthropic && !arguments.AllowPaid)
 {
     Console.Error.WriteLine("The Anthropic provider costs money per question. Run again with --allow-paid when you want that.");
     return 1;
@@ -90,33 +113,71 @@ services.Configure<SpotSearchOptions>(configuration.GetSection("SpotSearch"));
 services.Configure<CommentOptions>(configuration.GetSection("Comments"));
 await using var provider = services.BuildServiceProvider();
 
-var handler = new AskAssistant.Handler(
-    AssistantChatClient.Create(assistantOptions, anthropicApiKey: null),
-    db,
-    provider.GetRequiredService<IUserContext>(),
-    provider.GetRequiredService<AssistantTools>(),
-    Options.Create(assistantOptions),
-    TimeProvider.System,
-    provider.GetRequiredService<Microsoft.Extensions.Localization.IStringLocalizer<SecretSpots.Features.Common.Localization.SharedResources>>(),
-    NullLogger<AskAssistant.Handler>.Instance);
-
-Console.WriteLine($"Model: {assistantOptions.Provider} / {assistantOptions.Model}. {cases.Count} questions.");
-var outcomes = new List<EvalOutcome>();
+Directory.CreateDirectory(arguments.OutputDirectory);
+var stamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
+var finished = new List<EvalRun>();
 try
 {
     await EvalDatabase.CleanAsync(db, userId);
     var spotIds = await EvalDatabase.SeedAsync(db, userId);
-    var runner = new EvalRunner(handler, spotIds);
 
-    foreach (var evalCase in cases)
+    foreach (var model in models)
     {
-        var outcome = await runner.RunAsync(evalCase);
-        outcomes.Add(outcome);
-        Console.WriteLine(EvalReport.Line(outcome));
-        foreach (var problem in outcome.Problems)
+        // The same settings for every model; only the model differs.
+        var options = new AssistantOptions
         {
-            Console.WriteLine($"    - {problem}");
+            Enabled = true,
+            Provider = baseOptions.Provider,
+            Model = model,
+            OllamaEndpoint = baseOptions.OllamaEndpoint,
+            OllamaContextTokens = baseOptions.OllamaContextTokens,
+            DailyQuestionsPerUser = baseOptions.DailyQuestionsPerUser,
+            DailyQuestionsTotal = baseOptions.DailyQuestionsTotal,
+            MaxToolCallsPerQuestion = baseOptions.MaxToolCallsPerQuestion,
+            MaxQuestionLength = baseOptions.MaxQuestionLength,
+            MaxHistoryMessages = baseOptions.MaxHistoryMessages,
+            MaxHistoryMessageLength = baseOptions.MaxHistoryMessageLength,
+            HistoryMessagesToModel = baseOptions.HistoryMessagesToModel,
+            MaxOutputTokens = baseOptions.MaxOutputTokens,
+            TimeoutSeconds = baseOptions.TimeoutSeconds,
+        };
+
+        var handler = new AskAssistant.Handler(
+            AssistantChatClient.Create(options, anthropicApiKey: null),
+            db,
+            provider.GetRequiredService<IUserContext>(),
+            provider.GetRequiredService<AssistantTools>(),
+            Options.Create(options),
+            TimeProvider.System,
+            provider.GetRequiredService<Microsoft.Extensions.Localization.IStringLocalizer<SecretSpots.Features.Common.Localization.SharedResources>>(),
+            NullLogger<AskAssistant.Handler>.Instance);
+        var runner = new EvalRunner(handler, spotIds);
+
+        var label = $"{options.Provider} {model}";
+        Console.WriteLine();
+        Console.WriteLine($"Model: {label}. {cases.Count} questions.");
+        var outcomes = new List<EvalOutcome>();
+        foreach (var evalCase in cases)
+        {
+            var outcome = await runner.RunAsync(evalCase);
+            outcomes.Add(outcome);
+            Console.WriteLine(EvalReport.Line(outcome));
+            foreach (var problem in outcome.Problems)
+            {
+                Console.WriteLine($"    - {problem}");
+            }
         }
+
+        Console.WriteLine();
+        Console.Write(EvalReport.Summary(outcomes));
+
+        var run = EvalRun.From(outcomes, label, DateTimeOffset.UtcNow);
+        finished.Add(run);
+        var fileName = Path.Combine(arguments.OutputDirectory,
+            $"assistant-eval-{string.Concat(model.Select(ch => char.IsLetterOrDigit(ch) ? ch : '-'))}-{stamp}");
+        await File.WriteAllTextAsync(fileName + ".md", EvalReport.Markdown(outcomes, label, run.At));
+        await run.SaveAsync(fileName + ".json");
+        Console.WriteLine($"Report: {Path.GetFullPath(fileName + ".md")}");
     }
 }
 finally
@@ -124,15 +185,16 @@ finally
     await EvalDatabase.CleanAsync(db, userId);
 }
 
-Console.WriteLine();
-Console.Write(EvalReport.Summary(outcomes));
+if (finished.Count > 1)
+{
+    Console.WriteLine();
+    Console.Write(EvalComparison.Summary(finished));
+    var comparePath = Path.Combine(arguments.OutputDirectory, $"assistant-eval-compare-{stamp}.md");
+    await File.WriteAllTextAsync(comparePath, EvalComparison.Markdown(finished));
+    Console.WriteLine($"Comparison: {Path.GetFullPath(comparePath)}");
+}
 
-var modelLabel = $"{assistantOptions.Provider} {assistantOptions.Model}";
-var path = arguments.OutputPath
-    ?? $"assistant-eval-{string.Concat(assistantOptions.Model.Select(ch => char.IsLetterOrDigit(ch) ? ch : '-'))}-{DateTime.UtcNow:yyyyMMdd-HHmmss}.md";
-await File.WriteAllTextAsync(path, EvalReport.Markdown(outcomes, modelLabel, DateTimeOffset.UtcNow));
-Console.WriteLine($"Report: {Path.GetFullPath(path)}");
-return outcomes.All(o => o.Passed) ? 0 : 2;
+return finished.All(r => r.Passed == r.Results.Count) ? 0 : 2;
 
 internal sealed class EvalUserContext(Guid userId) : IUserContext
 {
