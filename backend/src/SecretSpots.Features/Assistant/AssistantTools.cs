@@ -23,14 +23,16 @@ public class AssistantTools(ISender sender)
     public const double MinRadiusKm = 1;
     public const double MaxRadiusKm = 99;
     private const int MaxSearchTextLength = 200;
+    private const int MaxExcludedIds = 50;
 
     // How many candidates to read before dropping unapproved/low-rated ones and keeping MaxSpots.
     private const int CandidatePageSize = 50;
 
-    [Description("Finds spots whose name or description matches the text (tolerates typos). Use it for what kind of place the user wants, e.g. \"waterfall\", \"quiet lake\".")]
+    [Description("Searches all spots by words in their name or description (tolerates typos), or by category alone. Use it when the user names a kind of place or a specific spot, e.g. \"waterfall\", \"quiet lake\", \"Devil's Throat\". Does not filter by location: for places near somewhere use find_spots_near. Returns up to 10 spots with their ids.")]
     public async Task<AssistantSpotsResult> SearchSpotsAsync(
-        [Description("Words describing the place, in Bulgarian or English.")] string text,
-        [Description("Optional category name to narrow the search.")] string? category = null,
+        [Description("One to three words, in Bulgarian or English, e.g. \"waterfall\" or \"водопад\". Keep it short; do not write a whole sentence. May be left out when a category is given.")] string? text = null,
+        [Description("Optional category name (one of the listed categories, in English) to narrow the search. Alone, it lists the newest spots of that category.")] string? category = null,
+        [Description("Optional ids of spots to leave out, e.g. the ones already recommended when the user asks for other places.")] string[]? excludeIds = null,
         CancellationToken cancellationToken = default)
     {
         if (!TryParseCategory(category, out var spotCategory, out var categoryError))
@@ -38,7 +40,12 @@ public class AssistantTools(ISender sender)
             return new AssistantSpotsResult([], categoryError);
         }
 
-        var searchText = text.Trim();
+        var searchText = (text ?? string.Empty).Trim();
+        if (searchText.Length == 0 && spotCategory is null)
+        {
+            return new AssistantSpotsResult([], AssistantToolMessages.SearchNeedsTextOrCategory);
+        }
+
         if (searchText.Length > MaxSearchTextLength)
         {
             searchText = searchText[..MaxSearchTextLength];
@@ -47,21 +54,23 @@ public class AssistantTools(ISender sender)
         var page = await sender.Send(
             new SearchSpots.Query(searchText, spotCategory, 1, CandidatePageSize), cancellationToken);
 
+        var excluded = ParseIds(excludeIds);
         var spots = page.Items
-            .Where(s => s.ModerationStatus == SpotModerationStatus.Approved)
+            .Where(s => s.ModerationStatus == SpotModerationStatus.Approved && !excluded.Contains(s.Id))
             .Take(MaxSpots)
             .Select(s => ToAssistantSpot(s.Id, s.Name, s.Category, s.AverageRating, s.RatingsCount, null, s.Description))
             .ToList();
         return new AssistantSpotsResult(spots);
     }
 
-    [Description("Finds spots within a radius of a point, nearest first. Use locate_place first to turn a town name into coordinates.")]
+    [Description("Finds spots within a radius of a point, nearest first, with their distance in km. Use it for \"near me\" (the user's coordinates from the context) and \"near <town>\" (call locate_place first for the coordinates). Returns up to 10 spots with their ids.")]
     public async Task<AssistantSpotsResult> FindSpotsNearAsync(
         [Description("Latitude of the centre point.")] double latitude,
         [Description("Longitude of the centre point.")] double longitude,
-        [Description("Search radius in kilometres, 1 to 99.")] double radiusKm,
+        [Description("Search radius in kilometres, 1 to 99. Use about 20 for a town, 50 for a region; widen it if nothing is found.")] double radiusKm,
         [Description("Optional category name to narrow the search.")] string? category = null,
         [Description("Optional minimum average rating, 0 to 5. Spots without ratings are left out when this is set.")] double? minRating = null,
+        [Description("Optional ids of spots to leave out, e.g. the ones already recommended when the user asks for other places.")] string[]? excludeIds = null,
         CancellationToken cancellationToken = default)
     {
         if (!IsValidCoordinate(latitude, 90) || !IsValidCoordinate(longitude, 180))
@@ -91,8 +100,9 @@ public class AssistantTools(ISender sender)
             return new AssistantSpotsResult([], string.Format(AssistantToolMessages.InvalidRequest, ex.Errors.First().ErrorMessage));
         }
 
+        var excluded = ParseIds(excludeIds);
         var spots = nearby.Items
-            .Where(s => s.ModerationStatus == SpotModerationStatus.Approved)
+            .Where(s => s.ModerationStatus == SpotModerationStatus.Approved && !excluded.Contains(s.Id))
             .Where(s => minRating is null || (s.RatingsCount > 0 && s.AverageRating >= minRating))
             .Take(MaxSpots)
             .Select(s => ToAssistantSpot(s.Id, s.Name, s.Category, s.AverageRating, s.RatingsCount, s.DistanceKm, s.Description))
@@ -100,7 +110,7 @@ public class AssistantTools(ISender sender)
         return new AssistantSpotsResult(spots);
     }
 
-    [Description("Gets one spot by its id, including its coordinates.")]
+    [Description("Gets one spot by its id, including its coordinates. Use it for details about a spot you already found; the id must come from search_spots or find_spots_near.")]
     public async Task<AssistantSpotDetailsResult> GetSpotAsync(
         [Description("The spot's id, as returned by search_spots or find_spots_near.")] Guid spotId,
         CancellationToken cancellationToken = default)
@@ -117,7 +127,7 @@ public class AssistantTools(ISender sender)
             spot.Longitude);
     }
 
-    [Description("Gets the most recent visitor comments about a spot (what it's really like: crowds, paths, parking).")]
+    [Description("Gets the latest visitor comments about a spot (what it is really like: crowds, paths, parking). Use it when the user asks what visitors say; the id must come from search_spots or find_spots_near.")]
     public async Task<AssistantCommentsResult> GetSpotCommentsAsync(
         [Description("The spot's id, as returned by search_spots or find_spots_near.")] Guid spotId,
         CancellationToken cancellationToken = default)
@@ -136,7 +146,7 @@ public class AssistantTools(ISender sender)
         return new AssistantCommentsResult(comments, page.TotalCount);
     }
 
-    [Description("Turns the name of a Bulgarian town into coordinates, e.g. \"Plovdiv\" or \"гр. Пловдив\".")]
+    [Description("Turns the name of a Bulgarian town into coordinates, e.g. \"Plovdiv\" or \"гр. Пловдив\". Use it before find_spots_near when the user names a town; if the place is unknown, ask the user for a bigger nearby town.")]
     public Task<AssistantPlaceResult> LocatePlaceAsync(
         [Description("The town's name, in Bulgarian or Latin letters.")] string name)
     {
@@ -151,6 +161,11 @@ public class AssistantTools(ISender sender)
         var result = await sender.Send(new GetSpot.Query(spotId), cancellationToken);
         return result.IsSuccess && result.Value.ModerationStatus == SpotModerationStatus.Approved ? result.Value : null;
     }
+
+    // Ids typed by the model: the well-formed ones count, anything else is ignored.
+    private static HashSet<Guid> ParseIds(string[]? ids) =>
+        (ids ?? []).Take(MaxExcludedIds).Select(id => Guid.TryParse(id?.Trim(), out var parsed) ? parsed : Guid.Empty)
+            .Where(id => id != Guid.Empty).ToHashSet();
 
     private static bool IsValidCoordinate(double value, double limit) => !double.IsNaN(value) && value >= -limit && value <= limit;
 
