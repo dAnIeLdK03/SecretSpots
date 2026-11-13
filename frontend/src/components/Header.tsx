@@ -40,7 +40,6 @@ export function Header() {
     { href: "/", label: tHome("exploreNav") },
     { href: "/map", label: tHome("mapNav") },
     { href: "/saved", label: tHome("collectionsNav") },
-    { href: "/businesses", label: tHome("rewardsNav") },
     { href: "/about", label: tHome("aboutNav") },
   ];
 
