@@ -1,6 +1,6 @@
 "use client";
 
-import { Compass, Camera, Gem } from "lucide-react";
+import { Compass, Camera, MapPinPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
@@ -10,7 +10,7 @@ export default function AboutPage() {
   const steps = [
     { icon: Compass, title: t("step1Title"), description: t("step1Description") },
     { icon: Camera, title: t("step2Title"), description: t("step2Description") },
-    { icon: Gem, title: t("step3Title"), description: t("step3Description") },
+    { icon: MapPinPlus, title: t("step3Title"), description: t("step3Description") },
   ];
 
   return (

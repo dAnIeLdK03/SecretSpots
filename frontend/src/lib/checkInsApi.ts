@@ -10,8 +10,6 @@ export interface CheckInResponse {
   id: string;
   spotId: string;
   photoUrl: string;
-  crystalsAwarded: number;
-  newCrystalBalance: number;
   createdAt: string;
 }
 
@@ -27,7 +25,6 @@ export interface MyCheckInResponse {
   spotId: string;
   spotName: string;
   photoUrl: string;
-  crystalsAwarded: number;
   createdAt: string;
 }
 

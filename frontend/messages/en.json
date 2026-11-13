@@ -51,7 +51,6 @@
     "alreadyHaveAccount": "Already have an account?",
     "loginLink": "Log in",
     "accountTitle": "My account",
-    "crystalBalanceLabel": "Crystals",
     "profileLabel": "Profile",
     "logoutButton": "Log out",
     "unknownError": "Something went wrong. Please try again.",
@@ -208,8 +207,6 @@
     "submitButton": "Check in",
     "submitting": "Checking in...",
     "successTitle": "Checked in!",
-    "crystalsAwardedMessage": "You earned {count} crystals.",
-    "newBalanceLabel": "Your balance",
     "closeButton": "Close",
     "geolocationUnavailable": "Geolocation is not supported by this browser.",
     "geolocationDenied": "Location access was denied.",
@@ -229,8 +226,7 @@
     "empty": "You have no check-ins yet.",
     "loading": "Loading...",
     "loadMore": "Load more",
-    "loadingMore": "Loading...",
-    "crystalsUnit": "crystals"
+    "loadingMore": "Loading..."
   },
   "Comments": {
     "title": "Comments",
@@ -314,8 +310,7 @@
       "comments": "Comments",
       "checkIns": "Check-ins",
       "ratings": "Ratings",
-      "reportsFiled": "Reports filed",
-      "crystalBalance": "Crystals"
+      "reportsFiled": "Reports filed"
     },
     "spotsHeading": "Spots",
     "spotsEmpty": "This user hasn't added any spots.",
@@ -473,8 +468,8 @@
     "step1Description": "Browse spots shared by real explorers near you, or search for something specific.",
     "step2Title": "Check in",
     "step2Description": "Visit a spot and check in with a proof photo to confirm you were really there.",
-    "step3Title": "Earn crystals",
-    "step3Description": "Every check-in earns you crystals — a small reward for exploring the real world.",
+    "step3Title": "Share",
+    "step3Description": "Add a hidden spot of your own with a photo and a description, so other explorers can find it.",
     "missionTitle": "Why we built this",
     "missionBody": "Search engines are great at finding what everyone already knows about. SecretSpots is for everything else — the places worth a detour that only get passed around by word of mouth. No algorithm curates this list; the community does.",
     "ctaButton": "Explore the map"
