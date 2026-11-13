@@ -65,7 +65,6 @@ public class RegisterHandlerTests
             db,
             new JwtService(jwtOptions),
             jwtOptions,
-            TestOptionsFactory.Crystals(),
             new FakeEmailSender(),
             TestOptionsFactory.EmailVerification(),
             TimeProvider.System,

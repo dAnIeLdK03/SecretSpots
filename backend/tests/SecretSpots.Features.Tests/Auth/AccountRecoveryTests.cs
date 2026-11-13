@@ -227,18 +227,16 @@ public partial class AccountRecoveryTests
     }
 
     [Fact]
-    public async Task Current_user_returns_the_profile_with_the_crystal_balance()
+    public async Task Current_user_returns_the_profile()
     {
         await using var db = TestDbContextFactory.Create();
         var user = await TestUserFactory.SeedAsync(db, UserRole.User, "Profile Petar");
-        (await db.CrystalWallets.SingleAsync(w => w.UserId == user.Id)).Balance = 7;
-        await db.SaveChangesAsync();
 
         var result = await new GetCurrentUser.Handler(
                 db, new FakeUserContext(user.Id), TestLocalizerFactory.Create(), NullLogger<GetCurrentUser.Handler>.Instance)
             .Handle(new GetCurrentUser.Query(), CancellationToken.None);
 
-        Assert.Equal(new GetCurrentUser.Response(user.Id, user.Email, "Profile Petar", 7, false, UserRole.User), result.Value);
+        Assert.Equal(new GetCurrentUser.Response(user.Id, user.Email, "Profile Petar", false, UserRole.User), result.Value);
     }
 
     [Fact]

@@ -138,7 +138,6 @@ public class AdminUsersTests
         {
             UserId = user.Id, Provider = ExternalAuthProvider.Google, ProviderUserId = Guid.NewGuid().ToString(), Email = user.Email,
         });
-        (await db.CrystalWallets.SingleAsync(w => w.UserId == user.Id)).Balance = 42;
         await db.SaveChangesAsync();
 
         var result = await new GetAdminUser.Handler(db, TestLocalizerFactory.Create())
@@ -149,7 +148,7 @@ public class AdminUsersTests
         Assert.Equal("Active Ana", details.DisplayName);
         Assert.False(details.HasPassword);
         Assert.Equal([ExternalAuthProvider.Google], details.LinkedProviders);
-        Assert.Equal(new AdminUserActivityResponse(1, 2, 0, 1, 1, 1, 0, 42), details.Activity);
+        Assert.Equal(new AdminUserActivityResponse(1, 2, 0, 1, 1, 1, 0), details.Activity);
     }
 
     [Fact]

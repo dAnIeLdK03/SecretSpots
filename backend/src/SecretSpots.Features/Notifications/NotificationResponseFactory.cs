@@ -25,7 +25,7 @@ internal static class NotificationResponseFactory
             NotificationType.ReportSubmitted =>
                 localizer[NotificationsMessageKeys.ReportSubmittedMessage].Value,
             NotificationType.NewVisitorOnYourSpot =>
-                localizer[NotificationsMessageKeys.NewVisitorOnYourSpotMessage, notification.CrystalsAwarded ?? 0].Value,
+                localizer[NotificationsMessageKeys.NewVisitorOnYourSpotMessage].Value,
             NotificationType.SpotSubmittedForReview => SpotMessage(NotificationsMessageKeys.SpotSubmittedForReviewMessage),
             NotificationType.SpotChangeRequestSubmitted => SpotMessage(NotificationsMessageKeys.SpotChangeRequestSubmittedMessage),
             NotificationType.SpotApproved => SpotMessage(NotificationsMessageKeys.SpotApprovedMessage),

@@ -45,7 +45,6 @@ public static class Register
         IAppDbContext db,
         IJwtService jwtService,
         IOptions<JwtOptions> jwtOptions,
-        IOptions<CrystalsOptions> crystalsOptions,
         IEmailSender emailSender,
         IOptions<EmailVerificationOptions> emailVerificationOptions,
         TimeProvider timeProvider,
@@ -83,7 +82,6 @@ public static class Register
 
             await using var transaction = await db.BeginTransactionAsync(cancellationToken);
             db.Users.Add(user);
-            db.CrystalWallets.Add(new CrystalWallet { UserId = user.Id, Balance = crystalsOptions.Value.StartingBalance });
 
             try
             {

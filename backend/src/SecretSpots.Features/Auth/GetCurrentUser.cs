@@ -14,7 +14,7 @@ public static class GetCurrentUser
 {
     public record Query : IRequest<Result<Response>>;
 
-    public record Response(Guid Id, string Email, string DisplayName, int CrystalBalance, bool IsEmailVerified, UserRole Role);
+    public record Response(Guid Id, string Email, string DisplayName, bool IsEmailVerified, UserRole Role);
 
     public class Handler(
         IAppDbContext db,
@@ -32,14 +32,10 @@ public static class GetCurrentUser
                 return Result<Response>.Failure(Error.NotFound(AuthMessageKeys.UserNotFound, localizer));
             }
 
-            // Wallets are created alongside every user (Register/ExternalAuthCallback), so a
-            // missing one only happens for a pre-existing account the backfill missed.
-            var wallet = await db.CrystalWallets.SingleOrDefaultAsync(w => w.UserId == user.Id, cancellationToken);
-
             logger.LogInformation(AuthLogMessages.UserProfileRetrieved, user.Id);
 
             return Result<Response>.Success(
-                new Response(user.Id, user.Email, user.DisplayName, wallet?.Balance ?? 0, user.IsEmailVerified, user.Role));
+                new Response(user.Id, user.Email, user.DisplayName, user.IsEmailVerified, user.Role));
         }
     }
 }
