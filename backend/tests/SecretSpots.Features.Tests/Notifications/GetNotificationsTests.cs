@@ -38,14 +38,14 @@ public class GetNotificationsValidatorTests
 public class GetNotificationsHandlerTests
 {
     private static async Task<Notification> SeedAsync(
-        IAppDbContext db, Guid userId, int? crystalsAwarded = 10, bool isRead = false, DateTimeOffset? readAt = null)
+        IAppDbContext db, Guid userId, string? relatedSpotName = null, bool isRead = false, DateTimeOffset? readAt = null)
     {
         var notification = new Notification
         {
             Id = Guid.NewGuid(),
             UserId = userId,
-            Type = NotificationType.CrystalsEarned,
-            CrystalsAwarded = crystalsAwarded,
+            Type = NotificationType.SpotApproved,
+            RelatedSpotName = relatedSpotName,
             IsRead = isRead,
             ReadAt = readAt,
         };
@@ -104,16 +104,16 @@ public class GetNotificationsHandlerTests
     }
 
     [Fact]
-    public async Task Message_is_localized_and_includes_crystals_awarded()
+    public async Task Message_is_localized_and_names_the_spot()
     {
         await using var db = TestDbContextFactory.Create();
         var userId = Guid.NewGuid();
-        await SeedAsync(db, userId, crystalsAwarded: 15);
+        await SeedAsync(db, userId, relatedSpotName: "Vitosha Peak");
 
         var handler = CreateHandler(db, userId);
         var result = await handler.Handle(new GetNotifications.Query(1, 20), CancellationToken.None);
 
-        Assert.Contains("15", result.Items[0].Message);
+        Assert.Contains("Vitosha Peak", result.Items[0].Message);
     }
 
     [Fact]

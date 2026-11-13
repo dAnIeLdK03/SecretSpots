@@ -237,9 +237,6 @@
   <data name="Photos.ImageDimensionsTooLarge" xml:space="preserve">
     <value>The image dimensions are too large.</value>
   </data>
-  <data name="Notifications.CrystalsEarnedMessage" xml:space="preserve">
-    <value>You earned {0} crystals.</value>
-  </data>
   <data name="Notifications.NewSpotNearbyMessage" xml:space="preserve">
     <value>A new spot was added nearby.</value>
   </data>

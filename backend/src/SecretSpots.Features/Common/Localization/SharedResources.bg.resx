@@ -237,9 +237,6 @@
   <data name="Photos.ImageDimensionsTooLarge" xml:space="preserve">
     <value>Изображението има твърде голяма резолюция.</value>
   </data>
-  <data name="Notifications.CrystalsEarnedMessage" xml:space="preserve">
-    <value>Спечели {0} кристала.</value>
-  </data>
   <data name="Notifications.NewSpotNearbyMessage" xml:space="preserve">
     <value>Добавено е ново място наблизо.</value>
   </data>

@@ -16,10 +16,10 @@ public class MarkAllNotificationsAsReadTests
         var otherUserId = Guid.NewGuid();
         var alreadyReadAt = DateTimeOffset.UtcNow.AddDays(-1);
         db.Notifications.AddRange(
-            new Notification { Id = Guid.NewGuid(), UserId = userId, Type = NotificationType.CrystalsEarned },
+            new Notification { Id = Guid.NewGuid(), UserId = userId, Type = NotificationType.NewVisitorOnYourSpot },
             new Notification { Id = Guid.NewGuid(), UserId = userId, Type = NotificationType.NewSpotNearby },
             new Notification { Id = Guid.NewGuid(), UserId = userId, Type = NotificationType.SpotApproved, IsRead = true, ReadAt = alreadyReadAt },
-            new Notification { Id = Guid.NewGuid(), UserId = otherUserId, Type = NotificationType.CrystalsEarned });
+            new Notification { Id = Guid.NewGuid(), UserId = otherUserId, Type = NotificationType.NewSpotNearby });
         await db.SaveChangesAsync();
 
         var result = await new MarkAllNotificationsAsRead.Handler(

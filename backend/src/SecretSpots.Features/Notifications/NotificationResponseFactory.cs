@@ -12,8 +12,6 @@ internal static class NotificationResponseFactory
 
         var message = notification.Type switch
         {
-            NotificationType.CrystalsEarned =>
-                localizer[NotificationsMessageKeys.CrystalsEarnedMessage, notification.CrystalsAwarded ?? 0].Value,
             NotificationType.NewSpotNearby =>
                 localizer[NotificationsMessageKeys.NewSpotNearbyMessage].Value,
             NotificationType.NewCommentOnYourSpot =>

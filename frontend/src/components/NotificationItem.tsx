@@ -7,7 +7,6 @@ import { useNotificationsStore } from "@/store/useNotificationsStore";
 import type { NotificationResponse, NotificationType } from "@/lib/notificationsApi";
 
 const TYPE_ICONS: Record<NotificationType, string> = {
-  CrystalsEarned: "💎",
   NewSpotNearby: "📍",
   NewCommentOnYourSpot: "💬",
   NewRatingOnYourSpot: "⭐",

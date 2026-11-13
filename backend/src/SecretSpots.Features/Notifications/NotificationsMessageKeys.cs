@@ -4,7 +4,6 @@ namespace SecretSpots.Features.Notifications;
 // (Common/Localization) — Notifications keeps only the constants, not the translations.
 public static class NotificationsMessageKeys
 {
-    public const string CrystalsEarnedMessage = "Notifications.CrystalsEarnedMessage";
     public const string NewSpotNearbyMessage = "Notifications.NewSpotNearbyMessage";
     public const string NewCommentOnYourSpotMessage = "Notifications.NewCommentOnYourSpotMessage";
     public const string NewRatingOnYourSpotMessage = "Notifications.NewRatingOnYourSpotMessage";

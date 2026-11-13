@@ -9,8 +9,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<User> Users => Set<User>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Spot> Spots => Set<Spot>();
-    public DbSet<CrystalWallet> CrystalWallets => Set<CrystalWallet>();
-    public DbSet<CrystalTransaction> CrystalTransactions => Set<CrystalTransaction>();
     public DbSet<CheckIn> CheckIns => Set<CheckIn>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<Comment> Comments => Set<Comment>();
@@ -51,18 +49,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasIndex(u => u.Email)
             .IsUnique();
 
-        modelBuilder.Entity<CrystalWallet>().HasKey(w => w.UserId);
-
         // One row per user per day; the Date index serves the app-wide daily total.
         modelBuilder.Entity<AssistantUsage>().HasKey(u => new { u.UserId, u.Date });
         modelBuilder.Entity<AssistantUsage>().HasIndex(u => u.Date);
-
-        // Guards Balance against lost updates from concurrent check-ins/redemptions —
-        // xmin is Postgres's built-in row-version system column, so this needs no migration.
-        modelBuilder.Entity<CrystalWallet>().UseXminAsConcurrencyToken();
-
-        modelBuilder.Entity<CrystalTransaction>()
-            .HasIndex(t => new { t.UserId, t.CreatedAt });
 
         modelBuilder.Entity<RefreshToken>()
             .HasIndex(r => r.Token)
