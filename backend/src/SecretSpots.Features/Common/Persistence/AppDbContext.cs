@@ -12,9 +12,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<CrystalWallet> CrystalWallets => Set<CrystalWallet>();
     public DbSet<CrystalTransaction> CrystalTransactions => Set<CrystalTransaction>();
     public DbSet<CheckIn> CheckIns => Set<CheckIn>();
-    public DbSet<Business> Businesses => Set<Business>();
-    public DbSet<Reward> Rewards => Set<Reward>();
-    public DbSet<RewardRedemption> RewardRedemptions => Set<RewardRedemption>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<Comment> Comments => Set<Comment>();
     public DbSet<Rating> Ratings => Set<Rating>();
@@ -163,12 +160,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         // Resolving every report on a piece of content when it's deleted.
         modelBuilder.Entity<Report>()
             .HasIndex(r => new { r.ContentType, r.ContentId });
-
-        modelBuilder.Entity<RewardRedemption>()
-            .HasIndex(r => new { r.UserId, r.CreatedAt });
-
-        modelBuilder.Entity<Reward>()
-            .HasIndex(r => r.BusinessId);
 
         modelBuilder.Entity<Comment>()
             .HasIndex(c => c.UserId);

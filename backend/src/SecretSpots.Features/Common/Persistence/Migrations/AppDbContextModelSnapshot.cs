@@ -44,41 +44,6 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                     b.ToTable("AssistantUsages");
                 });
 
-            modelBuilder.Entity("SecretSpots.Domain.Business", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsPromoted")
-                        .HasColumnType("boolean");
-
-                    b.Property<Point>("Location")
-                        .IsRequired()
-                        .HasColumnType("geometry");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("OwnerUserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Businesses");
-                });
-
             modelBuilder.Entity("SecretSpots.Domain.CheckIn", b =>
                 {
                     b.Property<Guid>("Id")
@@ -455,75 +420,6 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Reports");
-                });
-
-            modelBuilder.Entity("SecretSpots.Domain.Reward", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("BusinessId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CrystalCost")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BusinessId");
-
-                    b.ToTable("Rewards");
-                });
-
-            modelBuilder.Entity("SecretSpots.Domain.RewardRedemption", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("BusinessId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("BusinessName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CrystalsSpent")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("RewardId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("RewardTitle")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId", "CreatedAt");
-
-                    b.ToTable("RewardRedemptions");
                 });
 
             modelBuilder.Entity("SecretSpots.Domain.RoleChangeAudit", b =>

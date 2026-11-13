@@ -12,9 +12,6 @@ public interface IAppDbContext
     DbSet<CrystalWallet> CrystalWallets { get; }
     DbSet<CrystalTransaction> CrystalTransactions { get; }
     DbSet<CheckIn> CheckIns { get; }
-    DbSet<Business> Businesses { get; }
-    DbSet<Reward> Rewards { get; }
-    DbSet<RewardRedemption> RewardRedemptions { get; }
     DbSet<Notification> Notifications { get; }
     DbSet<Comment> Comments { get; }
     DbSet<Rating> Ratings { get; }

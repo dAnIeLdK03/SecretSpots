@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using SecretSpots.Features.Businesses;
 using SecretSpots.Features.Common.Localization;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Common.Persistence;
@@ -45,8 +44,8 @@ public static class DeleteAccount
 
             await using var transaction = await db.BeginTransactionAsync(cancellationToken);
 
-            // Owned spots/businesses first — each already has its own cascading cleanup
-            // (comments, ratings, saved spots, check-ins, R2 photos, reward redemptions/rewards).
+            // Owned spots first — they already have their own cascading cleanup
+            // (comments, ratings, saved spots, check-ins, R2 photos).
             // IgnoreQueryFilters: deleting an account is a full purge, so soft-deleted spots go too.
             var ownedSpots = await db.Spots
                 .IgnoreQueryFilters()
@@ -55,12 +54,6 @@ public static class DeleteAccount
             foreach (var spot in ownedSpots)
             {
                 await SpotDeletionCleanup.DeleteAsync(db, photoStorage, spot, logger, cancellationToken);
-            }
-
-            var ownedBusinesses = await db.Businesses.Where(b => b.OwnerUserId == user.Id).ToListAsync(cancellationToken);
-            foreach (var business in ownedBusinesses)
-            {
-                await BusinessDeletionCleanup.DeleteAsync(db, business, cancellationToken);
             }
 
             // Ratings this user left on spots someone else owns — deleting them changes those
@@ -79,13 +72,12 @@ public static class DeleteAccount
                 await RecomputeRatingStatsAsync(db, spotId, cancellationToken);
             }
 
-            // Comments/saved spots/check-ins/redemptions/notifications left on content that's
-            // still owned by someone else (anything on this user's own spots/businesses is
-            // already gone from the cascades above).
+            // Comments/saved spots/check-ins/notifications left on content that's still owned
+            // by someone else (anything on this user's own spots is already gone from the
+            // cascade above).
             await db.Comments.Where(c => c.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
             await db.SavedSpots.Where(s => s.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
             await db.CheckIns.Where(c => c.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
-            await db.RewardRedemptions.Where(r => r.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
             await db.Notifications.Where(n => n.UserId == user.Id).ExecuteDeleteAsync(cancellationToken);
 
             // Auth-related rows tied to this account.

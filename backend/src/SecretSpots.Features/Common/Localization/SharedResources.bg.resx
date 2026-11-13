@@ -237,63 +237,6 @@
   <data name="Photos.ImageDimensionsTooLarge" xml:space="preserve">
     <value>Изображението има твърде голяма резолюция.</value>
   </data>
-  <data name="Businesses.NameRequired" xml:space="preserve">
-    <value>Името е задължително.</value>
-  </data>
-  <data name="Businesses.NameTooLong" xml:space="preserve">
-    <value>Името трябва да е най-много 100 символа.</value>
-  </data>
-  <data name="Businesses.DescriptionRequired" xml:space="preserve">
-    <value>Описанието е задължително.</value>
-  </data>
-  <data name="Businesses.DescriptionTooLong" xml:space="preserve">
-    <value>Описанието трябва да е най-много 2000 символа.</value>
-  </data>
-  <data name="Businesses.NotFound" xml:space="preserve">
-    <value>Този бизнес вече не съществува.</value>
-  </data>
-  <data name="Businesses.NotYourBusiness" xml:space="preserve">
-    <value>Не притежаваш този бизнес.</value>
-  </data>
-  <data name="Businesses.RadiusOutOfRange" xml:space="preserve">
-    <value>Радиусът трябва да е между 0 и 100 км.</value>
-  </data>
-  <data name="Rewards.TitleRequired" xml:space="preserve">
-    <value>Заглавието е задължително.</value>
-  </data>
-  <data name="Rewards.TitleTooLong" xml:space="preserve">
-    <value>Заглавието трябва да е най-много 100 символа.</value>
-  </data>
-  <data name="Rewards.DescriptionRequired" xml:space="preserve">
-    <value>Описанието е задължително.</value>
-  </data>
-  <data name="Rewards.DescriptionTooLong" xml:space="preserve">
-    <value>Описанието трябва да е най-много 2000 символа.</value>
-  </data>
-  <data name="Rewards.CrystalCostOutOfRange" xml:space="preserve">
-    <value>Цената в кристали трябва да е по-голяма от нула.</value>
-  </data>
-  <data name="Rewards.NotFound" xml:space="preserve">
-    <value>Тази оферта вече не съществува.</value>
-  </data>
-  <data name="Rewards.NotYourBusiness" xml:space="preserve">
-    <value>Не притежаваш бизнеса, на който принадлежи тази оферта.</value>
-  </data>
-  <data name="Rewards.InsufficientBalance" xml:space="preserve">
-    <value>Нямаш достатъчно кристали за тази оферта.</value>
-  </data>
-  <data name="Rewards.RewardInactive" xml:space="preserve">
-    <value>Тази награда в момента не е достъпна.</value>
-  </data>
-  <data name="Rewards.BusinessInactive" xml:space="preserve">
-    <value>Този бизнес в момента не е достъпен.</value>
-  </data>
-  <data name="Rewards.PageOutOfRange" xml:space="preserve">
-    <value>Страницата трябва да е 1 или по-голяма.</value>
-  </data>
-  <data name="Rewards.PageSizeOutOfRange" xml:space="preserve">
-    <value>Размерът на страницата трябва да е между 1 и 100.</value>
-  </data>
   <data name="Notifications.CrystalsEarnedMessage" xml:space="preserve">
     <value>Спечели {0} кристала.</value>
   </data>
