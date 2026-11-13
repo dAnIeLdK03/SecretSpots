@@ -5,14 +5,11 @@ import { useTranslations } from "next-intl";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useCheckInsHistoryStore } from "@/store/useCheckInsHistoryStore";
-import { useRedemptionsHistoryStore } from "@/store/useRedemptionsHistoryStore";
 import { CheckInHistoryItem } from "@/components/CheckInHistoryItem";
-import { RedemptionHistoryItem } from "@/components/RedemptionHistoryItem";
 
 export default function AccountPage() {
   const t = useTranslations("Auth");
   const tHistory = useTranslations("CheckInsHistory");
-  const tRewards = useTranslations("Rewards");
   const isAuthenticated = useRequireAuth();
   const user = useAuthStore((state) => state.user);
 
@@ -22,25 +19,17 @@ export default function AccountPage() {
   const loadFirstPage = useCheckInsHistoryStore((state) => state.loadFirstPage);
   const loadMore = useCheckInsHistoryStore((state) => state.loadMore);
 
-  const redemptionItems = useRedemptionsHistoryStore((state) => state.items);
-  const redemptionStatus = useRedemptionsHistoryStore((state) => state.status);
-  const redemptionTotalCount = useRedemptionsHistoryStore((state) => state.totalCount);
-  const loadFirstRedemptionsPage = useRedemptionsHistoryStore((state) => state.loadFirstPage);
-  const loadMoreRedemptions = useRedemptionsHistoryStore((state) => state.loadMore);
-
   useEffect(() => {
     if (isAuthenticated) {
       loadFirstPage();
-      loadFirstRedemptionsPage();
     }
-  }, [isAuthenticated, loadFirstPage, loadFirstRedemptionsPage]);
+  }, [isAuthenticated, loadFirstPage]);
 
   if (!isAuthenticated || !user) {
     return null;
   }
 
   const hasMore = items.length < totalCount;
-  const hasMoreRedemptions = redemptionItems.length < redemptionTotalCount;
 
   return (
     <div className="flex flex-1 flex-col items-center gap-4 p-8">
@@ -76,33 +65,6 @@ export default function AccountPage() {
               className="w-full border-t border-contour px-4 py-2 text-center text-sm text-dim disabled:opacity-50"
             >
               {status === "loadingMore" ? tHistory("loadingMore") : tHistory("loadMore")}
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="w-full max-w-sm">
-        <h2 className="mb-2 text-sm font-semibold">{tRewards("myRedemptionsTitle")}</h2>
-        <div className="rounded-md border border-contour">
-          {redemptionStatus === "loading" ? (
-            <p className="px-4 py-6 text-center text-sm text-dim">{tRewards("loading")}</p>
-          ) : redemptionItems.length === 0 ? (
-            <p className="px-4 py-6 text-center text-sm text-dim">{tRewards("noRedemptionsYet")}</p>
-          ) : (
-            <ul className="divide-y divide-contour">
-              {redemptionItems.map((redemption) => (
-                <RedemptionHistoryItem key={redemption.redemptionId} redemption={redemption} />
-              ))}
-            </ul>
-          )}
-
-          {hasMoreRedemptions && (
-            <button
-              onClick={() => loadMoreRedemptions()}
-              disabled={redemptionStatus === "loadingMore"}
-              className="w-full border-t border-contour px-4 py-2 text-center text-sm text-dim disabled:opacity-50"
-            >
-              {redemptionStatus === "loadingMore" ? tRewards("loadingMore") : tRewards("loadMore")}
             </button>
           )}
         </div>
