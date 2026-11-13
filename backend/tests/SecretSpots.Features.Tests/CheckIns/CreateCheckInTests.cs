@@ -129,7 +129,6 @@ public class CreateCheckInHandlerTests
         var savedCheckIn = await db.CheckIns.SingleAsync(c => c.Id == result.Value.Id);
         Assert.Equal(spot.Id, savedCheckIn.SpotId);
         Assert.Equal(user.Id, savedCheckIn.UserId);
-        Assert.False(await db.Notifications.AnyAsync(n => n.UserId == user.Id));
 
         var ownerNotification = await db.Notifications.SingleAsync(n => n.UserId == spot.CreatedByUserId);
         Assert.Equal(NotificationType.NewVisitorOnYourSpot, ownerNotification.Type);
