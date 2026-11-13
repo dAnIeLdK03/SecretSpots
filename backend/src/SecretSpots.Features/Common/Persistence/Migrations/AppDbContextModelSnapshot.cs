@@ -53,9 +53,6 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("CrystalsAwarded")
-                        .HasColumnType("integer");
-
                     b.Property<string>("PhotoUrl")
                         .IsRequired()
                         .HasColumnType("text");
@@ -107,57 +104,6 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
                     b.HasIndex("SpotId", "CreatedAt");
 
                     b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("SecretSpots.Domain.CrystalTransaction", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Amount")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Reason")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("RelatedCheckInId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("RelatedRedemptionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId", "CreatedAt");
-
-                    b.ToTable("CrystalTransactions");
-                });
-
-            modelBuilder.Entity("SecretSpots.Domain.CrystalWallet", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Balance")
-                        .HasColumnType("integer");
-
-                    b.Property<uint>("xmin")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("CrystalWallets");
                 });
 
             modelBuilder.Entity("SecretSpots.Domain.EmailVerificationToken", b =>
@@ -254,9 +200,6 @@ namespace SecretSpots.Features.Common.Persistence.Migrations
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CrystalsAwarded")
-                        .HasColumnType("integer");
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("boolean");

@@ -19,8 +19,7 @@ public class MarkNotificationAsReadTests
         {
             Id = Guid.NewGuid(),
             UserId = userId,
-            Type = NotificationType.CrystalsEarned,
-            CrystalsAwarded = 10,
+            Type = NotificationType.NewSpotNearby,
         };
 
         db.Notifications.Add(notification);
