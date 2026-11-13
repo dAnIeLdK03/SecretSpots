@@ -72,7 +72,6 @@ export interface AdminUserActivity {
   checkIns: number;
   ratings: number;
   reportsFiled: number;
-  crystalBalance: number;
 }
 
 export interface AdminUserDetails {

@@ -1,12 +1,11 @@
 "use client";
 
-import { useTranslations, useLocale } from "next-intl";
+import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatRelativeTime } from "@/lib/relativeTime";
 import type { MyCheckInResponse } from "@/lib/checkInsApi";
 
 export function CheckInHistoryItem({ checkIn }: { checkIn: MyCheckInResponse }) {
-  const t = useTranslations("CheckInsHistory");
   const locale = useLocale();
 
   return (
@@ -16,9 +15,6 @@ export function CheckInHistoryItem({ checkIn }: { checkIn: MyCheckInResponse }) 
           {checkIn.spotName}
         </Link>
         <span className="text-xs text-dim">{formatRelativeTime(checkIn.createdAt, locale)}</span>
-      </span>
-      <span className="whitespace-nowrap text-dim">
-        +{checkIn.crystalsAwarded} {t("crystalsUnit")}
       </span>
     </li>
   );

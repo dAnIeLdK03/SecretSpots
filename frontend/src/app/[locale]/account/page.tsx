@@ -39,8 +39,6 @@ export default function AccountPage() {
         <dd>{user.displayName}</dd>
         <dt className="text-dim">{t("emailLabel")}</dt>
         <dd>{user.email}</dd>
-        <dt className="text-dim">{t("crystalBalanceLabel")}</dt>
-        <dd>{user.crystalBalance}</dd>
       </dl>
 
       <div className="w-full max-w-sm">

@@ -76,10 +76,6 @@ export function CheckInModal({ spotId, onClose }: CheckInModalProps) {
         {result ? (
           <div className="flex flex-col gap-4">
             <h2 className="text-lg font-semibold">{t("successTitle")}</h2>
-            <p>{t("crystalsAwardedMessage", { count: result.crystalsAwarded })}</p>
-            <p className="text-sm text-dim">
-              {t("newBalanceLabel")}: {result.newCrystalBalance}
-            </p>
             <div className="flex justify-end">
               <button type="button" onClick={onClose} className="rounded bg-trail px-4 py-2 text-on-trail">
                 {t("closeButton")}
