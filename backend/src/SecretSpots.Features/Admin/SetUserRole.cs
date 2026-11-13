@@ -17,7 +17,7 @@ namespace SecretSpots.Features.Admin;
 public static class SetUserRole
 {
     // UserId comes from the route, not the request body — same convention as other
-    // admin-route commands (e.g. SetRewardActive).
+    // admin-route commands (e.g. RejectSpot).
     public record RequestBody(UserRole Role);
 
     public record Command(Guid UserId, UserRole Role) : IRequest<Result<AdminUserResponse>>;

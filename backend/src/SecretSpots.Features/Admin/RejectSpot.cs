@@ -15,7 +15,7 @@ namespace SecretSpots.Features.Admin;
 
 public static class RejectSpot
 {
-    // SpotId comes from the route, not the request body — same convention as SetRewardActive.
+    // SpotId comes from the route, not the request body.
     public record RequestBody(string Reason);
 
     public record Command(Guid SpotId, string Reason) : IRequest<Result<Unit>>;

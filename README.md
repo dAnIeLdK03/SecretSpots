@@ -36,7 +36,7 @@ backend/
 ├── SecretSpots.sln
 ├── src/
 │   ├── SecretSpots.Domain/      # чисти entities + value objects, нулеви зависимости
-│   ├── SecretSpots.Features/    # вертикалните срезове: Auth, Spots, CheckIns, Rewards, Businesses
+│   ├── SecretSpots.Features/    # вертикалните срезове: Auth, Spots, CheckIns, Comments, Ratings, Admin, Assistant
 │   │   └── Common/              # Mediator, IAppDbContext/AppDbContext, JWT service
 │   └── SecretSpots.Api/         # Program.cs, endpoint mapping, appsettings
 └── tests/
