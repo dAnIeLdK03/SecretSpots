@@ -42,7 +42,7 @@ public static class GetMyCheckIns
             return await baseQuery
                 .OrderByDescending(x => x.checkIn.CreatedAt)
                 .Select(x => new MyCheckInResponse(
-                    x.checkIn.Id, x.checkIn.SpotId, x.Name, x.checkIn.PhotoUrl, x.checkIn.CrystalsAwarded, x.checkIn.CreatedAt))
+                    x.checkIn.Id, x.checkIn.SpotId, x.Name, x.checkIn.PhotoUrl, x.checkIn.CreatedAt))
                 .ToPagedResponseAsync(query.Page, query.PageSize, cancellationToken);
         }
     }

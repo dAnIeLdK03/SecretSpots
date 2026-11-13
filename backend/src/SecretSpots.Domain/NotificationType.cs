@@ -1,26 +1,25 @@
 namespace SecretSpots.Domain;
 
-// Stored as int in the DB — existing members must keep their position/value, so new ones only
-// get appended.
+// Stored as int in the DB, so every member carries an explicit value that must never change —
+// new ones get the next free number. 0 belonged to a type that no longer exists and stays unused.
 public enum NotificationType
 {
-    CrystalsEarned,
-    NewSpotNearby,
-    NewCommentOnYourSpot,
-    NewRatingOnYourSpot,
-    YourContentRemoved,
-    ReportSubmitted,
-    NewVisitorOnYourSpot,
-    SpotSubmittedForReview,
-    SpotChangeRequestSubmitted,
-    SpotApproved,
-    SpotRejected,
-    SpotRemoved,
-    SpotRestored,
-    SpotEditApproved,
-    SpotEditRejected,
-    SpotDeletionApproved,
-    SpotDeletionRejected,
-    CheckInPhotoAddedToSpot,
-    RejectedSpotDeleted,
+    NewSpotNearby = 1,
+    NewCommentOnYourSpot = 2,
+    NewRatingOnYourSpot = 3,
+    YourContentRemoved = 4,
+    ReportSubmitted = 5,
+    NewVisitorOnYourSpot = 6,
+    SpotSubmittedForReview = 7,
+    SpotChangeRequestSubmitted = 8,
+    SpotApproved = 9,
+    SpotRejected = 10,
+    SpotRemoved = 11,
+    SpotRestored = 12,
+    SpotEditApproved = 13,
+    SpotEditRejected = 14,
+    SpotDeletionApproved = 15,
+    SpotDeletionRejected = 16,
+    CheckInPhotoAddedToSpot = 17,
+    RejectedSpotDeleted = 18,
 }

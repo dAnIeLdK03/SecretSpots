@@ -237,9 +237,6 @@
   <data name="Photos.ImageDimensionsTooLarge" xml:space="preserve">
     <value>The image dimensions are too large.</value>
   </data>
-  <data name="Notifications.CrystalsEarnedMessage" xml:space="preserve">
-    <value>You earned {0} crystals.</value>
-  </data>
   <data name="Notifications.NewSpotNearbyMessage" xml:space="preserve">
     <value>A new spot was added nearby.</value>
   </data>
@@ -247,7 +244,7 @@
     <value>Someone commented on your spot.</value>
   </data>
   <data name="Notifications.NewVisitorOnYourSpotMessage" xml:space="preserve">
-    <value>Someone checked in at your spot for the first time and you earned {0} crystals.</value>
+    <value>Someone checked in at your spot for the first time.</value>
   </data>
   <data name="Notifications.NewRatingOnYourSpotMessage" xml:space="preserve">
     <value>Someone rated your spot.</value>

@@ -1,7 +1,6 @@
 import { apiFetch, apiFetchVoid, type PagedResponse } from "@/lib/apiClient";
 
 export type NotificationType =
-  | "CrystalsEarned"
   | "NewSpotNearby"
   | "NewCommentOnYourSpot"
   | "NewRatingOnYourSpot"

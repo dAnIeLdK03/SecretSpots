@@ -9,8 +9,6 @@ public interface IAppDbContext
     DbSet<User> Users { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<Spot> Spots { get; }
-    DbSet<CrystalWallet> CrystalWallets { get; }
-    DbSet<CrystalTransaction> CrystalTransactions { get; }
     DbSet<CheckIn> CheckIns { get; }
     DbSet<Notification> Notifications { get; }
     DbSet<Comment> Comments { get; }

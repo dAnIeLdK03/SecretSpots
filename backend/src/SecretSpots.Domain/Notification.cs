@@ -10,7 +10,6 @@ public class Notification : IHasCreatedAt
     // Captured when the notification is created, so the message can still name the spot after
     // it's renamed or deleted (RelatedSpotId is cleared when a spot is deleted).
     public string? RelatedSpotName { get; set; }
-    public int? CrystalsAwarded { get; set; }
     public bool IsRead { get; set; }
     public DateTimeOffset? ReadAt { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
