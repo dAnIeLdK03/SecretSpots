@@ -99,7 +99,7 @@ git config blame.ignoreRevsFile .git-blame-ignore-revs
 
 ## E2E тестове (Playwright)
 
-Покриват основния цикъл (register → login → create spot → check-in → известие за кристали) срещу реално вдигнати backend + Postgres + MinIO + frontend. Пускат се автоматично в CI (`e2e` job), но може и локално:
+Покриват основния цикъл (register → login → create spot → check-in → история на посещенията) срещу реално вдигнати backend + Postgres + MinIO + frontend. Пускат се автоматично в CI (`e2e` job), но може и локално:
 
 ```bash
 docker compose up -d

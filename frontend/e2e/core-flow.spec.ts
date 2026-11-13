@@ -4,10 +4,9 @@ import { randomTestPassword } from "./helpers";
 
 const API_BASE_URL = process.env.PLAYWRIGHT_API_URL ?? "http://localhost:5193";
 const SPOT_COORDS = { latitude: 42.6977, longitude: 23.3219 }; // Sofia center
-const CRYSTALS_PER_CHECKIN = 10; // matches Crystals:CheckInReward in appsettings.Development.json
 const TEST_PHOTO = path.join(__dirname, "fixtures/test-photo.png");
 
-test("register, log in, create a spot, check in, and see the crystals notification", async ({
+test("register, log in, create a spot, check in, and see it in the check-in history", async ({
   page,
   context,
   request,
@@ -85,8 +84,8 @@ test("register, log in, create a spot, check in, and see the crystals notificati
   });
   expect(checkInResponse.ok()).toBe(true);
 
-  // See the crystals-earned notification — the bell fetches fresh on open,
-  // no reload needed even though the check-in happened outside the page.
-  await page.getByRole("button", { name: "Известия" }).click();
-  await expect(page.getByText(`Спечели ${CRYSTALS_PER_CHECKIN} кристала.`)).toBeVisible();
+  // See the check-in in the account's history — the page loads it fresh,
+  // even though the check-in happened outside the page.
+  await page.goto("/bg/account");
+  await expect(page.getByRole("link", { name: "E2E тестово място" })).toBeVisible();
 });

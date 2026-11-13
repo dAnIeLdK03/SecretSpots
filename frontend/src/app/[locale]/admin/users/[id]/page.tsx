@@ -26,7 +26,6 @@ const ACTIVITY_FIELDS: (keyof AdminUserActivity)[] = [
   "checkIns",
   "ratings",
   "reportsFiled",
-  "crystalBalance",
 ];
 
 function Field({ label, value }: { label: string; value: string }) {
