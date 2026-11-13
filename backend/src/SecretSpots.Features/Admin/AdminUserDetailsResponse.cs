@@ -20,5 +20,4 @@ public record AdminUserActivityResponse(
     int Comments,
     int CheckIns,
     int Ratings,
-    int ReportsFiled,
-    int CrystalBalance);
+    int ReportsFiled);

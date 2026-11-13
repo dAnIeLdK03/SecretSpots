@@ -19,7 +19,6 @@ public static class ExternalAuthCallback
         IAppDbContext db,
         IEnumerable<IExternalAuthProvider> providers,
         IOptions<ExternalAuthOptions> externalAuthOptions,
-        IOptions<CrystalsOptions> crystalsOptions,
         TimeProvider timeProvider,
         ILogger<Handler> logger)
         : IRequestHandler<Command, Result<string>>
@@ -123,7 +122,6 @@ public static class ExternalAuthCallback
                     IsEmailVerified = userInfo.EmailVerified,
                 };
                 db.Users.Add(user);
-                db.CrystalWallets.Add(new CrystalWallet { UserId = user.Id, Balance = crystalsOptions.Value.StartingBalance });
             }
 
             db.ExternalLogins.Add(new ExternalLogin

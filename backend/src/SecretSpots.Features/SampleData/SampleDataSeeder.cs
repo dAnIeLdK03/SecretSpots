@@ -18,7 +18,6 @@ namespace SecretSpots.Features.SampleData;
 public class SampleDataSeeder(
     IServiceScopeFactory scopeFactory,
     IOptions<SampleDataOptions> options,
-    IOptions<CrystalsOptions> crystalsOptions,
     IOptions<SpotModerationOptions> spotModerationOptions,
     ILogger<SampleDataSeeder> logger) : IHostedService
 {
@@ -80,11 +79,6 @@ public class SampleDataSeeder(
             })
             .ToList();
         db.Users.AddRange(users);
-
-        var wallets = users.ToDictionary(
-            u => u.Id,
-            u => new CrystalWallet { UserId = u.Id, Balance = crystalsOptions.Value.StartingBalance });
-        db.CrystalWallets.AddRange(wallets.Values);
 
         // Admins can't create spots or take part (see CreateSpot/CreateCheckIn/...), so only
         // regular users own and interact with sample content.
@@ -168,8 +162,6 @@ public class SampleDataSeeder(
             }
         }
 
-        // Check-ins mirror CreateCheckIn's crystal rules: the visitor earns CheckInReward, and the
-        // spot's creator earns OwnerRewardMin..Max for each first-time visitor.
         var checkInCount = 0;
         var savedCount = 0;
         foreach (var member in members)
@@ -185,22 +177,9 @@ public class SampleDataSeeder(
                     UserId = member.Id,
                     PhotoUrl = await UploadPhotoAsync(
                         photoStorage, member.Id, spot.Category, seed: random.Next(), CheckInPhotoWidth, CheckInPhotoHeight, cancellationToken),
-                    CrystalsAwarded = crystalsOptions.Value.CheckInReward,
                     CreatedAt = RandomTimeAfter(spot.CreatedAt, now, random),
                 };
                 db.CheckIns.Add(checkIn);
-                db.CrystalTransactions.Add(new CrystalTransaction
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = member.Id,
-                    Amount = checkIn.CrystalsAwarded,
-                    Reason = CrystalTransactionReason.CheckInReward,
-                    RelatedCheckInId = checkIn.Id,
-                    CreatedAt = checkIn.CreatedAt,
-                });
-                wallets[member.Id].Balance += checkIn.CrystalsAwarded;
-                wallets[spot.CreatedByUserId].Balance += random.Next(
-                    crystalsOptions.Value.OwnerRewardMin, crystalsOptions.Value.OwnerRewardMax + 1);
                 checkInCount++;
             }
 

@@ -36,8 +36,7 @@ public static class GetAdminUser
                         db.Comments.Count(c => c.UserId == u.Id),
                         db.CheckIns.Count(c => c.UserId == u.Id),
                         db.Ratings.Count(r => r.UserId == u.Id),
-                        db.Reports.Count(r => r.ReporterUserId == u.Id),
-                        db.CrystalWallets.Where(w => w.UserId == u.Id).Select(w => (int?)w.Balance).FirstOrDefault() ?? 0)))
+                        db.Reports.Count(r => r.ReporterUserId == u.Id))))
                 .SingleOrDefaultAsync(cancellationToken);
 
             if (user is null)

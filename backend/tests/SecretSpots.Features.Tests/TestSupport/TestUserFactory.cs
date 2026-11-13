@@ -16,7 +16,6 @@ internal static class TestUserFactory
         };
 
         db.Users.Add(user);
-        db.CrystalWallets.Add(new CrystalWallet { UserId = user.Id, Balance = 0 });
         await db.SaveChangesAsync();
 
         return user;
@@ -35,7 +34,6 @@ internal static class TestUserFactory
         };
 
         db.Users.Add(user);
-        db.CrystalWallets.Add(new CrystalWallet { UserId = user.Id, Balance = 0 });
         await db.SaveChangesAsync();
 
         return user;

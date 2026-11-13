@@ -20,7 +20,7 @@ public class ExternalAuthTests
     private static ExternalAuthCallback.Handler CreateCallbackHandler(IAppDbContext db, FakeExternalAuthProvider provider) =>
         new(db, [provider],
             Options.Create(new ExternalAuthOptions { ApiBaseUrl = "https://api.test.example", FrontendCallbackUrl = FrontendCallbackUrl }),
-            TestOptionsFactory.Crystals(startingBalance: 5), TimeProvider.System, NullLogger<ExternalAuthCallback.Handler>.Instance);
+            TimeProvider.System, NullLogger<ExternalAuthCallback.Handler>.Instance);
 
     private static ExchangeExternalAuthCode.Handler CreateExchangeHandler(IAppDbContext db) =>
         new(db, new JwtService(TestOptionsFactory.Jwt()), TestOptionsFactory.Jwt(), TimeProvider.System, TestLocalizerFactory.Create());
@@ -59,7 +59,6 @@ public class ExternalAuthTests
         var user = await db.Users.SingleAsync(u => u.Email == provider.UserInfo.Email);
         Assert.True(user.IsEmailVerified);
         Assert.Null(user.PasswordHash);
-        Assert.Equal(5, (await db.CrystalWallets.SingleAsync(w => w.UserId == user.Id)).Balance);
     }
 
     [Fact]

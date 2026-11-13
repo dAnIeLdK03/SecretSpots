@@ -102,50 +102,38 @@ public class CreateCheckInHandlerTests
     }
 
     private static CreateCheckIn.Handler CreateHandler(
-        IAppDbContext db, Guid userId, int checkInReward = 10, TimeProvider? time = null) =>
+        IAppDbContext db, Guid userId, TimeProvider? time = null) =>
         new(
             db,
             new FakeUserContext(userId),
-            TestOptionsFactory.Crystals(checkInReward: checkInReward),
             TestOptionsFactory.CheckIn(),
             time ?? TimeProvider.System,
             TestLocalizerFactory.Create(),
             NullLogger<CreateCheckIn.Handler>.Instance);
 
     [Fact]
-    public async Task Successful_checkin_awards_crystals_and_persists_the_checkin()
+    public async Task Successful_checkin_persists_the_checkin()
     {
         await using var db = TestDbContextFactory.Create();
         var spot = await SeedSpotAsync(db);
         var user = await TestUserFactory.SeedAsync(db, $"checkin-{Guid.NewGuid():N}@example.com", "Str0ng!Passw0rd1");
 
-        var handler = CreateHandler(db, user.Id, checkInReward: 10);
+        var handler = CreateHandler(db, user.Id);
         var command = new CreateCheckIn.Command(
             spot.Id, "https://example.com/proof.jpg", SofiaLatitude, SofiaLongitude);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(10, result.Value.CrystalsAwarded);
-        Assert.Equal(10, result.Value.NewCrystalBalance);
-
-        var savedWallet = await db.CrystalWallets.SingleAsync(w => w.UserId == user.Id);
-        Assert.Equal(10, savedWallet.Balance);
 
         var savedCheckIn = await db.CheckIns.SingleAsync(c => c.Id == result.Value.Id);
         Assert.Equal(spot.Id, savedCheckIn.SpotId);
         Assert.Equal(user.Id, savedCheckIn.UserId);
-        Assert.Equal(10, savedCheckIn.CrystalsAwarded);
+        Assert.False(await db.Notifications.AnyAsync(n => n.UserId == user.Id));
 
-        var notification = await db.Notifications.SingleAsync(n => n.UserId == user.Id);
-        Assert.Equal(NotificationType.CrystalsEarned, notification.Type);
-        Assert.Equal(spot.Id, notification.RelatedSpotId);
-        Assert.Equal(10, notification.CrystalsAwarded);
-
-        var crystalTransaction = await db.CrystalTransactions.SingleAsync(t => t.RelatedCheckInId == savedCheckIn.Id);
-        Assert.Equal(user.Id, crystalTransaction.UserId);
-        Assert.Equal(10, crystalTransaction.Amount);
-        Assert.Equal(CrystalTransactionReason.CheckInReward, crystalTransaction.Reason);
+        var ownerNotification = await db.Notifications.SingleAsync(n => n.UserId == spot.CreatedByUserId);
+        Assert.Equal(NotificationType.NewVisitorOnYourSpot, ownerNotification.Type);
+        Assert.Equal(spot.Id, ownerNotification.RelatedSpotId);
     }
 
     [Fact]
@@ -182,8 +170,6 @@ public class CreateCheckInHandlerTests
         Assert.Equal(CheckInsMessageKeys.TooFarFromSpot, result.Error.Code);
         Assert.Equal(StatusCodes.Status400BadRequest, result.Error.StatusCode);
 
-        var savedWallet = await db.CrystalWallets.SingleAsync(w => w.UserId == user.Id);
-        Assert.Equal(0, savedWallet.Balance);
         Assert.False(await db.CheckIns.AnyAsync(c => c.SpotId == spot.Id));
     }
 

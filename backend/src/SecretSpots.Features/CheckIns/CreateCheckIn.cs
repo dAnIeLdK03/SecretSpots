@@ -48,7 +48,6 @@ public static class CreateCheckIn
     public class Handler(
         IAppDbContext db,
         IUserContext userContext,
-        IOptions<CrystalsOptions> crystalsOptions,
         IOptions<CheckInOptions> checkInOptions,
         TimeProvider timeProvider,
         IStringLocalizer<SharedResources> localizer,
@@ -68,10 +67,9 @@ public static class CreateCheckIn
                 return Result<CheckInResponse>.Failure(Error.NotFound(CheckInsMessageKeys.SpotNotFound, localizer));
             }
 
-            // Otherwise a user could farm unlimited crystals for free: create a spot at their
-            // current location (trivially satisfies the distance check below since they set the
-            // coordinates themselves), check in once, repeat with a new spot. The per-spot
-            // cooldown below only stops repeat check-ins on the *same* spot, not this.
+            // A check-in is proof that someone else found the place — the creator set the
+            // coordinates themselves, so checking in at their own spot would prove nothing and
+            // only inflate its visits.
             if (spot.CreatedByUserId == userContext.UserId)
             {
                 return Result<CheckInResponse>.Failure(Error.BadRequest(CheckInsMessageKeys.CannotCheckInOwnSpot, localizer));
@@ -87,8 +85,8 @@ public static class CreateCheckIn
                 return Result<CheckInResponse>.Failure(Error.BadRequest(CheckInsMessageKeys.TooFarFromSpot, localizer));
             }
 
-            // Stops trivially farming crystals by repeatedly checking in at the same spot —
-            // one crystal-earning check-in per spot per user within the cooldown window.
+            // One check-in per spot per user within the cooldown window, so a spot's visits
+            // can't be inflated by checking in over and over.
             var cooldownStart = timeProvider.GetUtcNow().AddHours(-checkInOptions.Value.CooldownHours);
             var checkedInRecently = await db.CheckIns.AnyAsync(
                 c => c.SpotId == command.SpotId && c.UserId == userContext.UserId && c.CreatedAt > cooldownStart,
@@ -102,38 +100,24 @@ public static class CreateCheckIn
             // Same "current authenticated user" edge case as GetCurrentUser — handled the
             // same way (graceful 404), not an unhandled exception, in case the JWT outlives
             // the user row (e.g. account deleted after the token was issued).
-            var wallet = await db.CrystalWallets.SingleOrDefaultAsync(w => w.UserId == userContext.UserId, cancellationToken);
-            if (wallet is null)
+            if (!await db.Users.AnyAsync(u => u.Id == userContext.UserId, cancellationToken))
             {
                 return Result<CheckInResponse>.Failure(Error.NotFound(CommonMessageKeys.CurrentUserNotFound, localizer));
             }
 
-            var reward = crystalsOptions.Value.CheckInReward;
-            wallet.Balance += reward;
-
-            // The spot's creator earns a small amount the first time each visitor checks in —
-            // only the first, so repeat visits by the same person can't keep paying out.
+            // The spot's creator hears about it the first time each visitor checks in — only the
+            // first, so repeat visits by the same person don't keep notifying them.
             var isFirstVisitByUser = !await db.CheckIns.AnyAsync(
                 c => c.SpotId == spot.Id && c.UserId == userContext.UserId, cancellationToken);
-            Notification? ownerNotification = null;
             if (isFirstVisitByUser)
             {
-                var ownerWallet = await db.CrystalWallets.SingleOrDefaultAsync(w => w.UserId == spot.CreatedByUserId, cancellationToken);
-                if (ownerWallet is not null)
+                db.Notifications.Add(new Notification
                 {
-                    var ownerReward = Random.Shared.Next(
-                        crystalsOptions.Value.OwnerRewardMin, crystalsOptions.Value.OwnerRewardMax + 1);
-                    ownerWallet.Balance += ownerReward;
-                    ownerNotification = new Notification
-                    {
-                        Id = Guid.NewGuid(),
-                        UserId = ownerWallet.UserId,
-                        Type = NotificationType.NewVisitorOnYourSpot,
-                        RelatedSpotId = spot.Id,
-                        CrystalsAwarded = ownerReward,
-                    };
-                    db.Notifications.Add(ownerNotification);
-                }
+                    Id = Guid.NewGuid(),
+                    UserId = spot.CreatedByUserId,
+                    Type = NotificationType.NewVisitorOnYourSpot,
+                    RelatedSpotId = spot.Id,
+                });
             }
 
             var checkIn = new CheckIn
@@ -142,51 +126,18 @@ public static class CreateCheckIn
                 SpotId = spot.Id,
                 UserId = userContext.UserId,
                 PhotoUrl = command.PhotoUrl,
-                CrystalsAwarded = reward,
-            };
-
-            var notification = new Notification
-            {
-                Id = Guid.NewGuid(),
-                UserId = userContext.UserId,
-                Type = NotificationType.CrystalsEarned,
-                RelatedSpotId = spot.Id,
-                CrystalsAwarded = reward,
-            };
-
-            var crystalTransaction = new CrystalTransaction
-            {
-                Id = Guid.NewGuid(),
-                UserId = userContext.UserId,
-                Amount = reward,
-                Reason = CrystalTransactionReason.CheckInReward,
-                RelatedCheckInId = checkIn.Id,
             };
 
             db.CheckIns.Add(checkIn);
-            db.Notifications.Add(notification);
-            db.CrystalTransactions.Add(crystalTransaction);
-
-            try
-            {
-                await db.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                // This user's wallet changed concurrently (another check-in, a redemption) —
-                // reject rather than silently overwrite it with a stale value.
-                return Result<CheckInResponse>.Failure(Error.Conflict(CommonMessageKeys.ConcurrencyConflict, localizer));
-            }
+            await db.SaveChangesAsync(cancellationToken);
 
             logger.LogInformation(
-                CheckInsLogMessages.CheckInCreated, checkIn.Id, spot.Id, userContext.UserId, reward);
+                CheckInsLogMessages.CheckInCreated, checkIn.Id, spot.Id, userContext.UserId);
 
             return Result<CheckInResponse>.Success(new CheckInResponse(
                 checkIn.Id,
                 spot.Id,
                 checkIn.PhotoUrl,
-                reward,
-                wallet.Balance,
                 checkIn.CreatedAt));
         }
     }

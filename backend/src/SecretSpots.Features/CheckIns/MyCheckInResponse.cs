@@ -5,5 +5,4 @@ public record MyCheckInResponse(
     Guid SpotId,
     string SpotName,
     string PhotoUrl,
-    int CrystalsAwarded,
     DateTimeOffset CreatedAt);

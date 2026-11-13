@@ -57,7 +57,7 @@ public class GetMyCheckInsHandlerTests
         return spot;
     }
 
-    private static async Task<CheckIn> SeedCheckInAsync(IAppDbContext db, Guid userId, Guid spotId, int crystalsAwarded = 10)
+    private static async Task<CheckIn> SeedCheckInAsync(IAppDbContext db, Guid userId, Guid spotId)
     {
         var checkIn = new CheckIn
         {
@@ -65,7 +65,6 @@ public class GetMyCheckInsHandlerTests
             SpotId = spotId,
             UserId = userId,
             PhotoUrl = "https://example.com/proof.jpg",
-            CrystalsAwarded = crystalsAwarded,
         };
 
         db.CheckIns.Add(checkIn);
@@ -125,17 +124,16 @@ public class GetMyCheckInsHandlerTests
     }
 
     [Fact]
-    public async Task Includes_photo_url_and_crystals_awarded()
+    public async Task Includes_photo_url()
     {
         await using var db = TestDbContextFactory.Create();
         var userId = Guid.NewGuid();
         var spot = await SeedSpotAsync(db, "Vitosha Peak");
-        await SeedCheckInAsync(db, userId, spot.Id, crystalsAwarded: 15);
+        await SeedCheckInAsync(db, userId, spot.Id);
 
         var handler = CreateHandler(db, userId);
         var result = await handler.Handle(new GetMyCheckIns.Query(1, 20), CancellationToken.None);
 
         Assert.Equal("https://example.com/proof.jpg", result.Items[0].PhotoUrl);
-        Assert.Equal(15, result.Items[0].CrystalsAwarded);
     }
 }
