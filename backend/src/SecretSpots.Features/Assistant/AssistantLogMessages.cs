@@ -7,5 +7,6 @@ internal static class AssistantLogMessages
     public const string Answered =
         "Assistant answered user {UserId} in {ElapsedMs} ms: {ToolCalls} tool call(s), {SpotCount} spot(s), {InputTokens} input / {OutputTokens} output tokens.";
     public const string ModelFailed = "Assistant model call failed for user {UserId} after {ElapsedMs} ms.";
+    public const string ModelSetAside = "Assistant model {Model} refused a request (quota: {Quota}); skipping it for {CooldownSeconds} s.";
     public const string EmptyAnswer = "Assistant returned no text for user {UserId} after {ToolCalls} tool call(s).";
 }

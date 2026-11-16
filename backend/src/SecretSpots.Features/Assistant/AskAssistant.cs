@@ -130,7 +130,6 @@ public static partial class AskAssistant
             var options = assistantOptions.Value;
             var toolset = new AssistantToolset(tools, options.MaxToolCallsPerQuestion);
             var chatOptions = new ChatOptions { Tools = toolset.Tools, MaxOutputTokens = options.MaxOutputTokens };
-            AssistantChatClient.ApplyProviderOptions(chatOptions, options);
             var markers = new SpotMarkerStreamFilter();
             var text = new StringBuilder();
             long inputTokens = 0, outputTokens = 0;
@@ -144,7 +143,7 @@ public static partial class AskAssistant
             {
                 yield return AssistantEvent.Status(localizer[AssistantMessageKeys.StatusSearchingNearby].Value);
                 tools.UserLocation = (latitude, longitude);
-                var found = await tools.FindSpotsNearAsync(latitude, longitude, AssistantTools.MaxRadiusKm, cancellationToken: cancellationToken);
+                var found = await tools.FindSpotsNearAsync(AssistantTools.MaxRadiusKm, cancellationToken: cancellationToken);
                 nearest = found with { Spots = found.Spots.Take(NearestSpotsInContext).ToList() };
                 toolset.Remember(nearest);
             }
@@ -204,7 +203,11 @@ public static partial class AskAssistant
             {
                 logger.LogWarning(failure, AssistantLogMessages.ModelFailed, userId, stopwatch.ElapsedMilliseconds);
                 await AssistantUsageLimiter.RefundAsync(db, userId, today, CancellationToken.None);
-                yield return AssistantEvent.Error(AssistantMessageKeys.Unavailable, localizer[AssistantMessageKeys.Unavailable].Value);
+                // Every model out of quota is not an outage: say so, so the user knows to come back later.
+                var errorKey = failure is AssistantModelsExhaustedException || failure.InnerException is AssistantModelsExhaustedException
+                    ? AssistantMessageKeys.Exhausted
+                    : AssistantMessageKeys.Unavailable;
+                yield return AssistantEvent.Error(errorKey, localizer[errorKey].Value);
                 yield break;
             }
 
@@ -231,8 +234,9 @@ public static partial class AskAssistant
             yield return AssistantEvent.Done(answer, spotIds);
         }
 
-        // The system prompt stays fixed; the language, the location, the spots nearest to the user
-        // and the question travel together in the last user message.
+        // The system prompt stays fixed; the language, the spots nearest to the user and the question
+        // travel together in the last user message. The user's coordinates are never part of it:
+        // the model is only told whether a location was shared, and sees distances.
         private static List<ChatMessage> BuildMessages(Command command, int historyMessagesToModel, AssistantSpotsResult? nearest)
         {
             var messages = new List<ChatMessage> { new(ChatRole.System, AssistantSystemPrompt.Text) };
@@ -241,9 +245,7 @@ public static partial class AskAssistant
                 messages.Add(new ChatMessage(message.Role == AssistantRole ? ChatRole.Assistant : ChatRole.User, message.Text));
             }
 
-            var location = command.Latitude is { } latitude && command.Longitude is { } longitude
-                ? string.Create(CultureInfo.InvariantCulture, $"{latitude:0.####}, {longitude:0.####} (from the user's device)")
-                : "not shared";
+            var location = command.Latitude is not null && command.Longitude is not null ? "shared" : "not shared";
             var contents = new List<AIContent>
             {
                 new TextContent($"Context — language: {LanguageNames[command.Locale]}; user location: {location}."),

@@ -7,6 +7,21 @@ public static class AssistantProviders
 
     // Claude through the Anthropic API; the key comes from Anthropic:ApiKey or ANTHROPIC_API_KEY.
     public const string Anthropic = "Anthropic";
+
+    // Any hosted service that speaks the OpenAI chat API (Groq, Cerebras, ...): needs Endpoint and ApiKey.
+    public const string OpenAICompatible = "OpenAICompatible";
+}
+
+// One model the assistant can talk to.
+public class AssistantModelOptions
+{
+    public string Provider { get; set; } = AssistantProviders.Ollama;
+    public string Model { get; set; } = string.Empty;
+    // The service's base address, e.g. https://api.groq.com/openai/v1. Required for OpenAICompatible;
+    // for Ollama it overrides OllamaEndpoint.
+    public string? Endpoint { get; set; }
+    // From user-secrets or the environment — never appsettings.
+    public string? ApiKey { get; set; }
 }
 
 public class AssistantOptions
@@ -20,6 +35,16 @@ public class AssistantOptions
     // Context window asked of Ollama, in tokens. Its default is small, and a prompt that doesn't fit
     // is cut from the start — the system prompt first — so the model forgets its rules and loops.
     public int OllamaContextTokens { get; set; } = 8192;
+
+    // Endpoint and key of the model above when it is a hosted one (see AssistantModelOptions).
+    public string? Endpoint { get; set; }
+    public string? ApiKey { get; set; }
+
+    // Models tried, in this order, when the one above refuses a question — its free quota is used
+    // up, or it is down. Empty means there is only the one model.
+    public List<AssistantModelOptions> Fallbacks { get; set; } = [];
+    // How long a model with a used-up quota is skipped when it doesn't say when to try again.
+    public int QuotaCooldownMinutes { get; set; } = 10;
 
     public int DailyQuestionsPerUser { get; set; } = 30;
     // Across all users — the cost ceiling once a paid model is in use.

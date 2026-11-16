@@ -6,6 +6,7 @@ internal static class AssistantToolMessages
 {
     public const string UnknownCategory = "Unknown category. Use one of: {0}.";
     public const string InvalidCoordinates = "Latitude must be between -90 and 90 and longitude between -180 and 180.";
+    public const string UserLocationNotShared = "The user's location is not shared. Ask which town they start from, then use locate_place and pass its coordinates.";
     public const string InvalidMinRating = "minRating must be between 0 and 5.";
     public const string SearchNeedsTextOrCategory = "Give search words, a category, or both.";
     public const string SpotNotFound = "No such spot. Use an id returned by search_spots or find_spots_near.";

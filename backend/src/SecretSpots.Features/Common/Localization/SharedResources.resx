@@ -372,6 +372,9 @@
   <data name="Assistant.Unavailable" xml:space="preserve">
     <value>The assistant couldn't answer right now. Try again in a little while.</value>
   </data>
+  <data name="Assistant.Exhausted" xml:space="preserve">
+    <value>The assistant has reached its limit for now. Try again later.</value>
+  </data>
   <data name="Assistant.NoAnswer" xml:space="preserve">
     <value>The assistant didn't find an answer. Try asking more specifically.</value>
   </data>
