@@ -11,7 +11,10 @@ public record AssistantSpot(
     double AverageRating,
     int RatingsCount,
     double? DistanceKm,
-    string Description);
+    string Description,
+    // From the user's own position when they shared it — unlike DistanceKm, which is measured from
+    // the centre of a nearby search (a town, say).
+    double? DistanceFromUserKm = null);
 
 public record AssistantSpotsResult(IReadOnlyList<AssistantSpot> Spots, string? Error = null);
 

@@ -70,6 +70,10 @@ public sealed class AssistantToolset
         }
     }
 
+    // Spots the server looked up itself for this question (the ones nearest to the user): citable
+    // like any spot a tool returned.
+    public void Remember(AssistantSpotsResult result) => Record(result);
+
     private AIFunction Counted(AIFunction function) => new CountedFunction(function, this);
 
     // Results may come back as the tool's record or already serialized to JSON, depending on how

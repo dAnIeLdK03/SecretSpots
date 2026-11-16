@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using FluentValidation;
 using SecretSpots.Domain;
+using SecretSpots.Features.CheckIns;
 using SecretSpots.Features.Comments;
 using SecretSpots.Features.Common.Mediator;
 using SecretSpots.Features.Spots;
@@ -28,7 +29,12 @@ public class AssistantTools(ISender sender)
     // How many candidates to read before dropping unapproved/low-rated ones and keeping MaxSpots.
     private const int CandidatePageSize = 50;
 
-    [Description("Searches all spots by words in their name or description (tolerates typos), or by category alone. Use it when the user names a kind of place or a specific spot, e.g. \"waterfall\", \"quiet lake\", \"Devil's Throat\". Does not filter by location: for places near somewhere use find_spots_near. Returns up to 10 spots with their ids.")]
+    // Where the user asking this question is, if they shared it (set by AskAssistant, never by the
+    // model). With it every spot a tool returns says how far it is from the user, so a search by
+    // name or category can't pass a spot across the country off as nearby.
+    public (double Latitude, double Longitude)? UserLocation { get; set; }
+
+    [Description("Searches all spots by words in their name or description (tolerates typos), or by category alone. Use it when the user names a kind of place or a specific spot, e.g. \"waterfall\", \"quiet lake\", \"Devil's Throat\". Does not filter by location, so results can be anywhere in the country (check distanceFromUserKm): for places near somewhere use find_spots_near. Returns up to 10 spots with their ids.")]
     public async Task<AssistantSpotsResult> SearchSpotsAsync(
         [Description("One to three words, in Bulgarian or English, e.g. \"waterfall\" or \"водопад\". Keep it short; do not write a whole sentence. May be left out when a category is given.")] string? text = null,
         [Description("Optional category name (one of the listed categories, in English) to narrow the search. Alone, it lists the newest spots of that category.")] string? category = null,
@@ -58,12 +64,12 @@ public class AssistantTools(ISender sender)
         var spots = page.Items
             .Where(s => s.ModerationStatus == SpotModerationStatus.Approved && !excluded.Contains(s.Id))
             .Take(MaxSpots)
-            .Select(s => ToAssistantSpot(s.Id, s.Name, s.Category, s.AverageRating, s.RatingsCount, null, s.Description))
+            .Select(s => ToAssistantSpot(s.Id, s.Name, s.Category, s.AverageRating, s.RatingsCount, null, s.Description, s.Latitude, s.Longitude))
             .ToList();
         return new AssistantSpotsResult(spots);
     }
 
-    [Description("Finds spots within a radius of a point, nearest first, with their distance in km. Use it for \"near me\" (the user's coordinates from the context) and \"near <town>\" (call locate_place first for the coordinates). Returns up to 10 spots with their ids.")]
+    [Description("Finds spots within a radius of a point, nearest first, with their distance from that point in km (distanceKm). Use it for \"near me\" (the user's coordinates from the context) and \"near <town>\" (call locate_place first for the coordinates). Returns up to 10 spots with their ids.")]
     public async Task<AssistantSpotsResult> FindSpotsNearAsync(
         [Description("Latitude of the centre point.")] double latitude,
         [Description("Longitude of the centre point.")] double longitude,
@@ -105,7 +111,7 @@ public class AssistantTools(ISender sender)
             .Where(s => s.ModerationStatus == SpotModerationStatus.Approved && !excluded.Contains(s.Id))
             .Where(s => minRating is null || (s.RatingsCount > 0 && s.AverageRating >= minRating))
             .Take(MaxSpots)
-            .Select(s => ToAssistantSpot(s.Id, s.Name, s.Category, s.AverageRating, s.RatingsCount, s.DistanceKm, s.Description))
+            .Select(s => ToAssistantSpot(s.Id, s.Name, s.Category, s.AverageRating, s.RatingsCount, s.DistanceKm, s.Description, s.Latitude, s.Longitude))
             .ToList();
         return new AssistantSpotsResult(spots);
     }
@@ -122,7 +128,7 @@ public class AssistantTools(ISender sender)
         }
 
         return new AssistantSpotDetailsResult(
-            ToAssistantSpot(spot.Id, spot.Name, spot.Category, spot.AverageRating, spot.RatingsCount, null, spot.Description),
+            ToAssistantSpot(spot.Id, spot.Name, spot.Category, spot.AverageRating, spot.RatingsCount, null, spot.Description, spot.Latitude, spot.Longitude),
             spot.Latitude,
             spot.Longitude);
     }
@@ -191,16 +197,22 @@ public class AssistantTools(ISender sender)
     }
 
     // Rounded the way people expect (4.25 -> 4.3), not .NET's default banker's rounding (4.25 -> 4.2).
-    private static AssistantSpot ToAssistantSpot(
-        Guid id, string name, SpotCategory category, double averageRating, int ratingsCount, double? distanceKm, string description) =>
+    private AssistantSpot ToAssistantSpot(
+        Guid id, string name, SpotCategory category, double averageRating, int ratingsCount, double? distanceKm, string description,
+        double latitude, double longitude) =>
         new(
             id,
             name,
             category.ToString(),
             Math.Round(averageRating, 1, MidpointRounding.AwayFromZero),
             ratingsCount,
-            distanceKm is { } km ? Math.Round(km, 1, MidpointRounding.AwayFromZero) : null,
-            Truncate(description, MaxDescriptionLength));
+            RoundKm(distanceKm),
+            Truncate(description, MaxDescriptionLength),
+            UserLocation is { } user
+                ? RoundKm(HaversineDistanceCalculator.CalculateMeters(user.Latitude, user.Longitude, latitude, longitude) / 1000)
+                : null);
+
+    private static double? RoundKm(double? km) => km is { } value ? Math.Round(value, 1, MidpointRounding.AwayFromZero) : null;
 
     private static string Truncate(string text, int maxLength) =>
         text.Length <= maxLength ? text : string.Concat(text.AsSpan(0, maxLength - 1).TrimEnd(), "…");

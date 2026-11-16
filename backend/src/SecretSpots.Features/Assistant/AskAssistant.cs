@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -83,6 +84,9 @@ public static partial class AskAssistant
     // A shortened id is only trusted if it still pins down a single spot.
     private const int MinIdPrefixLength = 8;
 
+    // How many of the spots nearest to the user go into the question's context.
+    private const int NearestSpotsInContext = 8;
+
     public class Handler(
         [FromKeyedServices(AssistantChatClient.ServiceKey)] IChatClient chatClient,
         IAppDbContext db,
@@ -132,11 +136,24 @@ public static partial class AskAssistant
             long inputTokens = 0, outputTokens = 0;
             var stopwatch = Stopwatch.StartNew();
 
+            // With a shared location the server looks up what is nearby itself, before the model
+            // starts: "near me" then never depends on the model picking the right tool or copying
+            // the coordinates correctly, and it can answer in a single pass.
+            AssistantSpotsResult? nearest = null;
+            if (command.Latitude is { } latitude && command.Longitude is { } longitude)
+            {
+                yield return AssistantEvent.Status(localizer[AssistantMessageKeys.StatusSearchingNearby].Value);
+                tools.UserLocation = (latitude, longitude);
+                var found = await tools.FindSpotsNearAsync(latitude, longitude, AssistantTools.MaxRadiusKm, cancellationToken: cancellationToken);
+                nearest = found with { Spots = found.Spots.Take(NearestSpotsInContext).ToList() };
+                toolset.Remember(nearest);
+            }
+
             yield return AssistantEvent.Status(localizer[AssistantMessageKeys.StatusThinking].Value);
 
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             timeout.CancelAfter(TimeSpan.FromSeconds(options.TimeoutSeconds));
-            var updates = chatClient.GetStreamingResponseAsync(BuildMessages(command, options.HistoryMessagesToModel), chatOptions, timeout.Token);
+            var updates = chatClient.GetStreamingResponseAsync(BuildMessages(command, options.HistoryMessagesToModel, nearest), chatOptions, timeout.Token);
             await using var enumerator = updates.GetAsyncEnumerator(timeout.Token);
 
             Exception? failure = null;
@@ -214,9 +231,9 @@ public static partial class AskAssistant
             yield return AssistantEvent.Done(answer, spotIds);
         }
 
-        // The system prompt stays fixed; the language, the location and the question travel together
-        // in the last user message.
-        private static List<ChatMessage> BuildMessages(Command command, int historyMessagesToModel)
+        // The system prompt stays fixed; the language, the location, the spots nearest to the user
+        // and the question travel together in the last user message.
+        private static List<ChatMessage> BuildMessages(Command command, int historyMessagesToModel, AssistantSpotsResult? nearest)
         {
             var messages = new List<ChatMessage> { new(ChatRole.System, AssistantSystemPrompt.Text) };
             foreach (var message in (command.History ?? []).TakeLast(historyMessagesToModel))
@@ -227,11 +244,20 @@ public static partial class AskAssistant
             var location = command.Latitude is { } latitude && command.Longitude is { } longitude
                 ? string.Create(CultureInfo.InvariantCulture, $"{latitude:0.####}, {longitude:0.####} (from the user's device)")
                 : "not shared";
-            messages.Add(new ChatMessage(ChatRole.User,
-            [
+            var contents = new List<AIContent>
+            {
                 new TextContent($"Context — language: {LanguageNames[command.Locale]}; user location: {location}."),
-                new TextContent(command.Question.Trim()),
-            ]));
+            };
+            if (nearest is not null)
+            {
+                // Serialized the way tool results are, so the model reads one shape everywhere.
+                contents.Add(new TextContent(nearest.Spots.Count == 0
+                    ? string.Create(CultureInfo.InvariantCulture, $"Spots nearest to the user: none within {AssistantTools.MaxRadiusKm} km.")
+                    : string.Create(CultureInfo.InvariantCulture, $"Spots nearest to the user (within {AssistantTools.MaxRadiusKm} km, nearest first): {JsonSerializer.Serialize(nearest.Spots, AIJsonUtilities.DefaultOptions)}")));
+            }
+
+            contents.Add(new TextContent(command.Question.Trim()));
+            messages.Add(new ChatMessage(ChatRole.User, contents));
             return messages;
         }
 
