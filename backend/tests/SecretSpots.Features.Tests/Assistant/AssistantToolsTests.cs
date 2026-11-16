@@ -131,8 +131,8 @@ public class AssistantToolsTests
         await using var services = CreateServices(db);
         var tools = Tools(services);
 
-        var anyRating = await tools.FindSpotsNearAsync(lat, lng, 50);
-        var atLeastFour = await tools.FindSpotsNearAsync(lat, lng, 50, minRating: 4);
+        var anyRating = await tools.FindSpotsNearAsync(50, lat, lng);
+        var atLeastFour = await tools.FindSpotsNearAsync(50, lat, lng, minRating: 4);
 
         Assert.Equal([nearGood.Id, mediocre.Id, unrated.Id, farGood.Id], anyRating.Spots.Select(s => s.Id));
         Assert.Equal([nearGood.Id, farGood.Id], atLeastFour.Spots.Select(s => s.Id));
@@ -149,9 +149,9 @@ public class AssistantToolsTests
         var lat = Random.Shared.NextDouble() * 120 - 60;
         var lng = Random.Shared.NextDouble() * 300 - 150;
 
-        var hugeRadius = await tools.FindSpotsNearAsync(lat, lng, 5000);
-        var badLatitude = await tools.FindSpotsNearAsync(200, lng, 10);
-        var badRating = await tools.FindSpotsNearAsync(lat, lng, 10, minRating: 9);
+        var hugeRadius = await tools.FindSpotsNearAsync(5000, lat, lng);
+        var badLatitude = await tools.FindSpotsNearAsync(10, 200, lng);
+        var badRating = await tools.FindSpotsNearAsync(10, lat, lng, minRating: 9);
 
         Assert.Null(hugeRadius.Error);
         Assert.NotNull(badLatitude.Error);
@@ -203,7 +203,6 @@ public class AssistantToolsTests
         Assert.StartsWith($"Visit {AssistantTools.MaxComments + 1} ", result.Comments[0].Text);
         Assert.All(result.Comments, c =>
         {
-            Assert.Equal("Hiker Hristo", c.AuthorDisplayName);
             Assert.True(c.Text.Length <= AssistantTools.MaxCommentLength);
         });
         Assert.Empty(onRejected.Comments);

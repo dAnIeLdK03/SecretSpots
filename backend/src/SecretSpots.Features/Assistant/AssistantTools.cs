@@ -30,8 +30,9 @@ public class AssistantTools(ISender sender)
     private const int CandidatePageSize = 50;
 
     // Where the user asking this question is, if they shared it (set by AskAssistant, never by the
-    // model). With it every spot a tool returns says how far it is from the user, so a search by
-    // name or category can't pass a spot across the country off as nearby.
+    // model, which is not given the coordinates at all). With it every spot a tool returns says
+    // how far it is from the user, so a search by name or category can't pass a spot across the
+    // country off as nearby, and a nearby search can be centred on the user.
     public (double Latitude, double Longitude)? UserLocation { get; set; }
 
     [Description("Searches all spots by words in their name or description (tolerates typos), or by category alone. Use it when the user names a kind of place or a specific spot, e.g. \"waterfall\", \"quiet lake\", \"Devil's Throat\". Does not filter by location, so results can be anywhere in the country (check distanceFromUserKm): for places near somewhere use find_spots_near. Returns up to 10 spots with their ids.")]
@@ -69,17 +70,28 @@ public class AssistantTools(ISender sender)
         return new AssistantSpotsResult(spots);
     }
 
-    [Description("Finds spots within a radius of a point, nearest first, with their distance from that point in km (distanceKm). Use it for \"near me\" (the user's coordinates from the context) and \"near <town>\" (call locate_place first for the coordinates). Returns up to 10 spots with their ids.")]
+    [Description("Finds spots within a radius of a point, nearest first, with their distance from that point in km (distanceKm). For \"near <town>\" call locate_place first and pass its coordinates. For \"near me\" leave latitude and longitude out: the search is then centred on the user's own position, which only the server knows. Returns up to 10 spots with their ids.")]
     public async Task<AssistantSpotsResult> FindSpotsNearAsync(
-        [Description("Latitude of the centre point.")] double latitude,
-        [Description("Longitude of the centre point.")] double longitude,
         [Description("Search radius in kilometres, 1 to 99. Use about 20 for a town, 50 for a region; widen it if nothing is found.")] double radiusKm,
+        [Description("Latitude of the centre point, from locate_place. Leave out to search around the user.")] double? latitude = null,
+        [Description("Longitude of the centre point, from locate_place. Leave out to search around the user.")] double? longitude = null,
         [Description("Optional category name to narrow the search.")] string? category = null,
         [Description("Optional minimum average rating, 0 to 5. Spots without ratings are left out when this is set.")] double? minRating = null,
         [Description("Optional ids of spots to leave out, e.g. the ones already recommended when the user asks for other places.")] string[]? excludeIds = null,
         CancellationToken cancellationToken = default)
     {
-        if (!IsValidCoordinate(latitude, 90) || !IsValidCoordinate(longitude, 180))
+        if (latitude is null && longitude is null)
+        {
+            if (UserLocation is not { } user)
+            {
+                return new AssistantSpotsResult([], AssistantToolMessages.UserLocationNotShared);
+            }
+
+            (latitude, longitude) = user;
+        }
+
+        if (latitude is not { } centreLatitude || longitude is not { } centreLongitude
+            || !IsValidCoordinate(centreLatitude, 90) || !IsValidCoordinate(centreLongitude, 180))
         {
             return new AssistantSpotsResult([], AssistantToolMessages.InvalidCoordinates);
         }
@@ -99,7 +111,7 @@ public class AssistantTools(ISender sender)
         NearbySpotsResponse nearby;
         try
         {
-            nearby = await sender.Send(new SearchNearbySpots.Query(latitude, longitude, radius, spotCategory), cancellationToken);
+            nearby = await sender.Send(new SearchNearbySpots.Query(centreLatitude, centreLongitude, radius, spotCategory), cancellationToken);
         }
         catch (ValidationException ex)
         {
@@ -147,7 +159,7 @@ public class AssistantTools(ISender sender)
 
         var page = await sender.Send(new GetSpotComments.Query(spotId, 1, MaxComments), cancellationToken);
         var comments = page.Items
-            .Select(c => new AssistantComment(c.AuthorDisplayName, Truncate(c.Text, MaxCommentLength), c.CreatedAt))
+            .Select(c => new AssistantComment(Truncate(c.Text, MaxCommentLength), c.CreatedAt))
             .ToList();
         return new AssistantCommentsResult(comments, page.TotalCount);
     }

@@ -184,14 +184,17 @@ builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddSingleton(TimeProvider.System);
 
 // Spot discovery assistant: off unless Assistant:Enabled. Assistant:Provider/Model pick the model
-// (a local Ollama model in development, Claude in production); the Anthropic key, when used, comes
-// from Anthropic:ApiKey in user-secrets/env — never appsettings — or ANTHROPIC_API_KEY.
+// (a local Ollama model, Claude, or a hosted OpenAI-compatible service such as Groq), and
+// Assistant:Fallbacks lists the models to move on to when it runs out of quota. Keys come from
+// user-secrets/env — never appsettings: Assistant:ApiKey, Assistant:Fallbacks:<n>:ApiKey, and for
+// Claude Anthropic:ApiKey or ANTHROPIC_API_KEY.
 builder.Services.Configure<AssistantOptions>(builder.Configuration.GetSection("Assistant"));
 builder.Services.AddScoped<AssistantTools>();
 builder.Services.AddKeyedSingleton<IChatClient>(AssistantChatClient.ServiceKey, (sp, _) => AssistantChatClient.Create(
     sp.GetRequiredService<IOptions<AssistantOptions>>().Value,
     builder.Configuration["Anthropic:ApiKey"],
-    sp.GetRequiredService<ILoggerFactory>()));
+    sp.GetRequiredService<ILoggerFactory>(),
+    sp.GetRequiredService<TimeProvider>()));
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddSingleton<IPhotoStorage, R2PhotoStorage>();
 

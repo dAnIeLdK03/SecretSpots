@@ -131,6 +131,8 @@ try
             Model = model,
             OllamaEndpoint = baseOptions.OllamaEndpoint,
             OllamaContextTokens = baseOptions.OllamaContextTokens,
+            Endpoint = baseOptions.Endpoint,
+            ApiKey = baseOptions.ApiKey,
             DailyQuestionsPerUser = baseOptions.DailyQuestionsPerUser,
             DailyQuestionsTotal = baseOptions.DailyQuestionsTotal,
             MaxToolCallsPerQuestion = baseOptions.MaxToolCallsPerQuestion,

@@ -372,6 +372,9 @@
   <data name="Assistant.Unavailable" xml:space="preserve">
     <value>Асистентът не успя да отговори. Опитай отново след малко.</value>
   </data>
+  <data name="Assistant.Exhausted" xml:space="preserve">
+    <value>Асистентът достигна лимита си за момента. Опитай отново по-късно.</value>
+  </data>
   <data name="Assistant.NoAnswer" xml:space="preserve">
     <value>Асистентът не намери отговор. Опитай да зададеш въпроса по-конкретно.</value>
   </data>

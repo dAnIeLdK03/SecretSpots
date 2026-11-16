@@ -8,6 +8,7 @@ public static class AssistantMessageKeys
     public const string DailyLimitReached = "Assistant.DailyLimitReached";
     public const string ServiceLimitReached = "Assistant.ServiceLimitReached";
     public const string Unavailable = "Assistant.Unavailable";
+    public const string Exhausted = "Assistant.Exhausted";
     public const string NoAnswer = "Assistant.NoAnswer";
     public const string QuestionRequired = "Assistant.QuestionRequired";
     public const string QuestionTooLong = "Assistant.QuestionTooLong";

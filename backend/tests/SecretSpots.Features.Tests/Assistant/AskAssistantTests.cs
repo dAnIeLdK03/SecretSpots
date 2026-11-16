@@ -237,7 +237,10 @@ public class AskAssistantTests
         Assert.Equal([ChatRole.System, ChatRole.User, ChatRole.Assistant, ChatRole.User], sent.Select(m => m.Role));
         Assert.Equal(AssistantSystemPrompt.Text, sent[0].Text);
         Assert.Contains("language: Bulgarian", sent[^1].Text);
-        Assert.Contains("42.1354, 24.7453", sent[^1].Text);
+        // The user's coordinates stay on the server: the model only learns that a location was shared.
+        Assert.Contains("user location: shared", sent[^1].Text);
+        Assert.DoesNotContain("42.13", sent[^1].Text);
+        Assert.DoesNotContain("24.74", sent[^1].Text);
         Assert.EndsWith("Something near me?", sent[^1].Text);
     }
 
