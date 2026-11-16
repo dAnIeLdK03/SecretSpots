@@ -12,6 +12,7 @@ import { getSpot } from "@/lib/spotsApi";
 import type { SpotResponse } from "@/lib/spotsApi";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useGeolocationStore } from "@/store/useGeolocationStore";
+import type { Coordinates } from "@/store/useGeolocationStore";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { ErrorMessage } from "@/components/ErrorMessage";
 
@@ -31,6 +32,25 @@ interface ChatMessage {
   stopped?: boolean;
 }
 
+// The position once the browser has one, or null if it can't give one (denied, timed out,
+// unsupported). An earlier failure gets one fresh attempt; a request already in flight is awaited.
+function waitForLocation(): Promise<Coordinates | null> {
+  const store = useGeolocationStore;
+  const known = store.getState().coords;
+  if (known) return Promise.resolve(known);
+
+  store.getState().refreshLocation();
+  if (store.getState().status !== "locating") return Promise.resolve(store.getState().coords);
+
+  return new Promise((resolve) => {
+    const unsubscribe = store.subscribe((state) => {
+      if (state.status === "locating") return;
+      unsubscribe();
+      resolve(state.coords);
+    });
+  });
+}
+
 export function AssistantChat() {
   const status = useAuthStore((state) => state.status);
   if (!ASSISTANT_ENABLED || status !== "authenticated") return null;
@@ -42,7 +62,6 @@ function AssistantChatWidget() {
   const tCommon = useTranslations("Common");
   const locale = useLocale();
   const pathname = usePathname();
-  const coords = useGeolocationStore((state) => state.coords);
   const requestLocation = useGeolocationStore((state) => state.requestLocation);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -50,6 +69,7 @@ function AssistantChatWidget() {
   const [input, setInput] = useState("");
   const [liveStatus, setLiveStatus] = useState<string | null>(null);
   const [isAnswering, setIsAnswering] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const abortRef = useRef<AbortController | null>(null);
@@ -121,6 +141,8 @@ function AssistantChatWidget() {
     setLiveStatus(t("thinking"));
     setIsAnswering(true);
 
+    // Read at send time, not from the last render: the position may have arrived since.
+    const coords = useGeolocationStore.getState().coords;
     const controller = new AbortController();
     abortRef.current = controller;
     try {
@@ -163,6 +185,23 @@ function AssistantChatWidget() {
     }
   }
 
+  // A "near me" suggestion is only sent with a position: without one the model has nothing to
+  // measure from, so the user is told how to proceed instead.
+  async function sendNearMe(question: string) {
+    if (isAnswering || isLocating) return;
+    setError(null);
+    setIsLocating(true);
+    setLiveStatus(t("locating"));
+    const position = await waitForLocation();
+    setIsLocating(false);
+    setLiveStatus(null);
+    if (!position) {
+      setError(t("locationNeeded"));
+      return;
+    }
+    await send(question);
+  }
+
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     void send(input);
@@ -188,7 +227,11 @@ function AssistantChatWidget() {
   const bottomClass = pathname === "/map" ? "bottom-28" : "bottom-6";
   const panelBottomClass = pathname === "/map" ? "bottom-44" : "bottom-24";
 
-  const suggestions = [t("suggestion1"), t("suggestion2"), t("suggestion3")];
+  const suggestions = [
+    { text: t("suggestion1"), nearMe: false },
+    { text: t("suggestion2"), nearMe: true },
+    { text: t("suggestion3"), nearMe: false },
+  ];
 
   return (
     <>
@@ -229,12 +272,13 @@ function AssistantChatWidget() {
                 <div className="flex flex-col items-start gap-2">
                   {suggestions.map((suggestion) => (
                     <button
-                      key={suggestion}
+                      key={suggestion.text}
                       type="button"
-                      onClick={() => void send(suggestion)}
-                      className="rounded-full border border-contour px-3 py-1.5 text-left hover:bg-black/5 dark:hover:bg-white/5"
+                      disabled={isLocating}
+                      onClick={() => void (suggestion.nearMe ? sendNearMe(suggestion.text) : send(suggestion.text))}
+                      className="rounded-full border border-contour px-3 py-1.5 text-left hover:bg-black/5 disabled:opacity-50 dark:hover:bg-white/5"
                     >
-                      {suggestion}
+                      {suggestion.text}
                     </button>
                   ))}
                 </div>

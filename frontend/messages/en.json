@@ -15,6 +15,8 @@
     "stopped": "Stopped",
     "newChat": "New chat",
     "thinking": "Thinking...",
+    "locating": "Finding where you are...",
+    "locationNeeded": "I can't tell where you are. Allow location access in the browser, or name a town, e.g. \"What is there near Plovdiv?\".",
     "emptyHint": "Ask me where to find places in SecretSpots: by category, rating, or near a town or you.",
     "suggestion1": "Which waterfalls are worth visiting?",
     "suggestion2": "What is there to see near me?",
